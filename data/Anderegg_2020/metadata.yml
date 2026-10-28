@@ -1,0 +1,1268 @@
+source:
+  primary:
+    key: Anderegg_2020
+    bibtype: Article
+    year: 2021
+    author: Leander D. L. Anderegg and Xingwen Loy and Ian P. Markham and Christina
+      M. Elmer and Mark J. Hovenden and Janneke HilleRisLambers and Margaret M. Mayfield
+    title: Aridity drives coordinated trait shifts but not decreased trait variance
+      across the geographic range of eight Australian trees
+    journal: New Phytologist
+    volume: '229'
+    number: '3'
+    pages: 1375--1387
+    doi: 10.1111/nph.16795
+contributors:
+  data_collectors:
+  - last_name: Anderegg
+    given_name: Leander D. L.
+    ORCID: 0000-0002-5144-7254
+    affiliation: Department of Ecology, Evolution and Marine Biology, University of California, Santa Barabara,
+      USA  
+  - last_name: Mayfield
+    given_name: Margaret
+    ORCID: 0000-0002-5101-6542
+    affiliation: School of Biological Sciences, The University of Queensland, Australia
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data |>
+      dplyr::filter(Flag_LDMC != "3" | is.na(Flag_LDMC)) |>
+      dplyr::mutate(
+        taxon_name = dplyr::case_when(
+          Species == "ACAC" ~ "Acacia acuminata",
+          Species == "COCA" ~ "Corymbia calophylla",
+          Species == "EMARG" ~ "Eucalyptus marginata",
+          Species == "ESAL" ~ "Eucalyptus salmonophloia",
+          Species == "AMYG" ~ "Eucalyptus amygdalina",
+          Species == "OBLI" ~ "Eucalyptus obliqua",
+          Species == "OVAT" ~ "Eucalyptus ovata",
+          Species == "VIMI" ~ "Eucalyptus viminalis subsp. viminalis"
+        ),
+        LDMC = dplyr::if_else(Flag_LDMC %in% c("1", "2"), NA, as.numeric(LDMC)),
+        LMA = dplyr::if_else(
+          Flag_LDMC %in% c("1", "2") | Flag_Area %in% c("1") |
+            Branchtag == "VIMI-FREY-C-1-c" | Treetag == "ESAL-BEN-C-1",
+          NA, as.numeric(LMA)
+        ),
+        huber_value = dplyr::if_else(Flag_Area %in% c("1"), NA, 1 / as.numeric(Al_As)),
+        avg_area = dplyr::if_else(Flag_Area %in% c("1"), NA, as.numeric(avg_area)),
+        WD = dplyr::if_else(Branchtag == "ACAC-PER-B-5-1", NA, as.numeric(WD)),
+        twig_diameter = as.numeric(Stem_Di_corrected),
+        twig_length = as.numeric(Stem_Length),
+        WD_diameter = as.numeric(Diameter),
+        collection_date = dplyr::case_when(
+          Loc == "WA" ~ "2014-11",
+          Loc == "Tas" ~ "2016-02"
+        )
+      ) |>
+      dplyr::group_by(
+        Treetag, Plottag, Species, taxon_name, Loc, TreeDBH, StandBA, collection_date
+      ) |>
+      dplyr::summarise(
+        dplyr::across(
+          c(WD, LMA, LDMC, huber_value, avg_area),
+          ~ sum(!is.na(.x)),
+          .names = "{.col}_n"
+        ),
+        dplyr::across(
+          c(WD, LMA, LDMC, huber_value, avg_area),
+          ~ dplyr::if_else(all(is.na(.x)), NA_real_, mean(.x, na.rm = TRUE))
+        ),
+        dplyr::across(
+          c(twig_diameter, WD_diameter),
+          ~ dplyr::if_else(all(is.na(.x)), NA_real_, round(mean(.x, na.rm = TRUE), 2))
+        ),
+        twig_length = dplyr::if_else(
+          all(is.na(twig_length)), NA_real_, round(mean(twig_length, na.rm = TRUE), 1)
+        ),
+        .groups = "drop"
+      ) |>
+      dplyr::mutate(
+        stem_tissue = dplyr::if_else(Species == "ACAC", "sapwood and bark", "sapwood only")
+      )
+    '
+  collection_date: collection_date
+  taxon_name: taxon_name
+  location_name: Plottag
+  individual_id: Treetag
+  description: To test whether leaf and stem tissue robustness and leaf-to-stem allocation
+    shift consistently with aridity within and across closely related eucalypt species
+    and a co-occurring Acacia, whether these traits are coordinated within species,
+    and whether within-species trait variation is more constrained at drier sites.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: We collected trait data along two temperate aridity gradients
+    (Supporting Information Fig. S1), one in southwest Western Australia (sampled November
+    2014) and one in Tasmania (sampled February 2016). Along each gradient, we identified
+    three or four dominant eucalypt tree species (from the Eucalyptus or Corymbia genera
+    of the Myrtaceae family) that are easily identified in the field and do not widely
+    form cryptic hybrids or have notable subspecies within the sampled regions. In Western
+    Australia, we sampled Eucalyptus marginata Donn ex Sm., Eucalyptus salmonophloia
+    F.Muell., and Corymbia calophylla (Lindl.) K.D. Hill & L.A.S. Johnson. We also opportunistically
+    sampled the non-eucalypt Acacia acuminata Benth., which broadly co-occurs with the
+    most xeric sampled eucalypt, E. salmonophloia. In Tasmania we sampled Eucalyptus
+    amygdalina Labill., Eucalyptus obliqua L'Hér., Eucalyptus ovata Labill., and Eucalyptus
+    viminalis subsp. viminalis Labill, all of which cover the majority of their global
+    precipitation range within Tasmania. All focal species are evergreen, dominant or
+    co-dominant canopy trees with the exception of Acacia acuminata, which is a small
+    tree/tall shrub. All focal species are common in multiple vegetation types and are
+    both habitat generalists (i.e. not riparian affiliated) and soil type generalists
+    with the exception of E. marginata, which is a habitat generalist but principally
+    occurs on ironstone-derived soils. Collectively, sampled sites spanned a mean annual
+    precipitation range of 328-1574 mm yr-1 (328-1189 mm in Western Australia, 584-1574
+    mm in Tasmania). Mean annual temperature spanned 8-20°C and elevation ranged from
+    24-620 m asl., with no site experiencing significant frost (mean coldest month minimum
+    temperature > 0°C for all sites). Average site climate, soil, DBH (diameter at breast
+    height as a proxy for tree size) and stand basal area (measured for each tree with
+    a variable radius forestry wedge prism, Tasmania only) can be found in Table S1.
+    Sampled tree size and (where measured in Tasmania) stand basal area did not vary
+    strongly with aridity for most species (Table S1). ^p Trait measurements were collected
+    in a nested hierarchical design with four or five sites sampled per species to capture
+    broad climate gradients, three plots per site to capture topographic/edaphic variation,
+    five trees per plot to capture within-population variation, and three samples per
+    tree to capture within-individual variation (Fig. S1). For each species, four or
+    five forestry reserves, national parks, state forests, nature reserves or conservation
+    areas were selected to cover as much of each species' precipitation range as possible.
+    Each species' precipitation range was determined using collection locations of herbarium
+    specimens, initially downloaded from Australia Virtual Herbarium (www.avh.chah.org.au)
+    for identifying sampling locations and later validated with expanded occurrence records
+    from the Atlas of Living Australia (see species climate distributions and sampling
+    coverage in Fig. S3; ala.org.au). Edaphic variation was captured by locating three
+    plots that were > 500 m but < 5 km apart and each containing more than five individuals
+    of the focal species within a 30 m radius. In each of the three plots, we sampled
+    within-population variation by collecting three sun exposed branches from the north
+    side of each of five mature, healthy individuals using pole clippers and pull ropes.
+    Sampled individuals in a plot were apparently healthy, canopy dominant trees at least
+    5 m, but less than 60 m, apart. Our sample design resulted in 180-225 trait measurements
+    per species. ^p From each branch, we collected a section c. 8 mm in diameter for
+    WD measurement, and a terminal branch (first order branch collected at the point
+    of branching) for leaf and HV measurements. We selected terminal branches (typically
+    c. 1 mm in diameter, see Table S2 for details) with intact 'mature' leaves (i.e.
+    fully expanded, not soft green new growth), although most of the study species flush
+    sporadically throughout the year (Davison & Tay, 1989; Heatwole et al., 1997) so
+    it was not possible to perfectly control for leaf age. Sampling periods (November
+    in Western Australia and February in Tasmania) avoided large leaf flush events for
+    all species with the exception of Corymbia calophylla at two of its five sample sites.
+    Samples were rehydrated in moist ziplock bags in a cooler for at least 12 h before
+    trait measurement (Pérez-Harguindeguy et al., 2013).
+  original_file: Data sourced from the authors' GitHub repository (https://github.com/leanderegg/EucTraits).
+  notes: Each data.csv row is one branch; three branches were sampled per tree. custom_R_code
+    averages the branches of each tree (individual_id = Treetag), with replicates giving
+    the number of branches with a value for each trait (columns <trait>_n). Values omitted by the authors in their analysis were
+    removed in custom_R_code (LDMC and LMA where Flag_LDMC > 0 (young leaves, damaged or missing leaves), LMA,
+    Huber value and leaf area where Flag_Area > 0, and the three outliers the authors
+    removed during analysis (WD of ACAC-PER-B-5-1, LMA of VIMI-FREY-C-1-c and LMA of
+    tree ESAL-BEN-C-1). The four branches the authors flagged as misidentified samples
+    (Flag_LDMC = 3; AMYG-TMP-A-1-a/b/c, possibly E. tenuiramis, and VIMI-FREY-A-5-c,
+    possibly E. amygdalina) are removed entirely. The tree means
+    of terminal twig diameter (Stem_Di_corrected and length (Stem_Length) are entity contexts of the traits measured
+    on the terminal twig (leaf area, LMA, LDMC and Huber value), and the tree mean of
+    the oven-dried WD sample diameter (Diameter) is the entity context of wood density.
+    Huber value carries a method context for whether the stem area is sapwood only
+    (twig diameter measured under the bark) or sapwood and bark (Acacia acuminata).
+    Additional traits, leaf herbivory (qualitative, LIGHT/MID/HEAVY/EXTREME), leaf Feret diameter, leaf
+    aspect ratio, leaf circularity, leaf roundness and leaf solidity.
+identifiers: .na
+locations:
+  ACAC-BEN-A:
+    latitude (deg): -32.393988
+    longitude (deg): 118.388225
+    description: Acacia acuminata stand
+    locality: Bender Nature Reserve
+    elevation (m): 352
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 368
+    state: WA
+  ACAC-BEN-B:
+    latitude (deg): -32.401581
+    longitude (deg): 118.388298
+    description: Acacia acuminata stand
+    locality: Bender Nature Reserve
+    elevation (m): 344
+    temperature, MAT (C): 17.1
+    precipitation, MAP (mm): 362
+    state: WA
+  ACAC-BEN-C:
+    latitude (deg): -32.383115
+    longitude (deg): 118.387916
+    description: Acacia acuminata stand
+    locality: Bender Nature Reserve
+    elevation (m): 373
+    temperature, MAT (C): 16.9
+    precipitation, MAP (mm): 383
+    state: WA
+  ACAC-GNO-A:
+    latitude (deg): -33.96304
+    longitude (deg): 118.06681
+    description: Acacia acuminata stand
+    locality: Gnowangerup
+    elevation (m): 259
+    temperature, MAT (C): 15.3
+    precipitation, MAP (mm): 376
+    state: WA
+  ACAC-GNO-B:
+    latitude (deg): -34.01348
+    longitude (deg): 118.06584
+    description: Acacia acuminata stand
+    locality: Gnowangerup
+    elevation (m): 250
+    temperature, MAT (C): 15.3
+    precipitation, MAP (mm): 396
+    state: WA
+  ACAC-GNO-C:
+    latitude (deg): -34.02455
+    longitude (deg): 118.06579
+    description: Acacia acuminata stand
+    locality: Gnowangerup
+    elevation (m): 245
+    temperature, MAT (C): 15.4
+    precipitation, MAP (mm): 396
+    state: WA
+  ACAC-NAR-A:
+    latitude (deg): -32.97843
+    longitude (deg): 117.08683
+    description: Acacia acuminata stand
+    locality: Narrogin
+    elevation (m): 365
+    temperature, MAT (C): 15.7
+    precipitation, MAP (mm): 522
+    state: WA
+  ACAC-NAR-B:
+    latitude (deg): -32.98575
+    longitude (deg): 117.0865
+    description: Acacia acuminata stand
+    locality: Narrogin
+    elevation (m): 362
+    temperature, MAT (C): 15.7
+    precipitation, MAP (mm): 526
+    state: WA
+  ACAC-NAR-C:
+    latitude (deg): -32.98184
+    longitude (deg): 117.06678
+    description: Acacia acuminata stand
+    locality: Narrogin
+    elevation (m): 340
+    temperature, MAT (C): 15.9
+    precipitation, MAP (mm): 490
+    state: WA
+  ACAC-PER-A:
+    latitude (deg): -29.479125
+    longitude (deg): 116.195371
+    description: Acacia acuminata stand
+    locality: Perenjori
+    elevation (m): 306
+    temperature, MAT (C): 19.9
+    precipitation, MAP (mm): 332
+    state: WA
+  ACAC-PER-B:
+    latitude (deg): -29.480003
+    longitude (deg): 116.199188
+    description: Acacia acuminata stand
+    locality: Perenjori
+    elevation (m): 306
+    temperature, MAT (C): 19.9
+    precipitation, MAP (mm): 332
+    state: WA
+  ACAC-PER-C:
+    latitude (deg): -29.479992
+    longitude (deg): 116.206167
+    description: Acacia acuminata stand
+    locality: Perenjori
+    elevation (m): 313
+    temperature, MAT (C): 19.9
+    precipitation, MAP (mm): 335
+    state: WA
+  AMYG-CMP-A:
+    latitude (deg): -42.96091
+    longitude (deg): 147.70312
+    description: Eucalyptus amygdalina stand
+    locality: Coal Mine Point
+    elevation (m): 27
+    temperature, MAT (C): 12.8
+    precipitation, MAP (mm): 823
+    state: Tas
+  AMYG-CMP-B:
+    latitude (deg): -42.96592
+    longitude (deg): 147.70773
+    description: Eucalyptus amygdalina stand
+    locality: Coal Mine Point
+    elevation (m): 27
+    temperature, MAT (C): 12.8
+    precipitation, MAP (mm): 823
+    state: Tas
+  AMYG-CMP-C:
+    latitude (deg): -42.97668
+    longitude (deg): 147.714
+    description: Eucalyptus amygdalina stand
+    locality: Coal Mine Point
+    elevation (m): 48
+    temperature, MAT (C): 12.6
+    precipitation, MAP (mm): 836
+    state: Tas
+  AMYG-EPF-A:
+    latitude (deg): -41.77503
+    longitude (deg): 147.32176
+    description: Eucalyptus amygdalina stand
+    locality: Epping Forest
+    elevation (m): 212
+    temperature, MAT (C): 12.1
+    precipitation, MAP (mm): 583
+    state: Tas
+  AMYG-EPF-B:
+    latitude (deg): -41.77776
+    longitude (deg): 147.31636
+    description: Eucalyptus amygdalina stand
+    locality: Epping Forest
+    elevation (m): 212
+    temperature, MAT (C): 12
+    precipitation, MAP (mm): 611
+    state: Tas
+  AMYG-EPF-C:
+    latitude (deg): -41.77554
+    longitude (deg): 147.31485
+    description: Eucalyptus amygdalina stand
+    locality: Epping Forest
+    elevation (m): 212
+    temperature, MAT (C): 12
+    precipitation, MAP (mm): 611
+    state: Tas
+  AMYG-GRA-A:
+    latitude (deg): -42.63235
+    longitude (deg): 147.46458
+    description: Eucalyptus amygdalina stand
+    locality: Gravelly Ridge
+    elevation (m): 151
+    temperature, MAT (C): 12.2
+    precipitation, MAP (mm): 570
+    state: Tas
+  AMYG-GRA-B:
+    latitude (deg): -42.63062
+    longitude (deg): 147.46921
+    description: Eucalyptus amygdalina stand
+    locality: Gravelly Ridge
+    elevation (m): 167
+    temperature, MAT (C): 12.1
+    precipitation, MAP (mm): 552
+    state: Tas
+  AMYG-GRA-C:
+    latitude (deg): -42.62326
+    longitude (deg): 147.47597
+    description: Eucalyptus amygdalina stand
+    locality: Gravelly Ridge
+    elevation (m): 163
+    temperature, MAT (C): 12.1
+    precipitation, MAP (mm): 529
+    state: Tas
+  AMYG-MER-A:
+    latitude (deg): -41.56666
+    longitude (deg): 146.23785
+    description: Eucalyptus amygdalina stand
+    locality: Mersey Forest
+    elevation (m): 386
+    temperature, MAT (C): 10.6
+    precipitation, MAP (mm): 1431
+    state: Tas
+  AMYG-MER-B:
+    latitude (deg): -41.56674
+    longitude (deg): 146.24294
+    description: Eucalyptus amygdalina stand
+    locality: Mersey Forest
+    elevation (m): 619
+    temperature, MAT (C): 10.2
+    precipitation, MAP (mm): 1574
+    state: Tas
+  AMYG-MER-C:
+    latitude (deg): -41.55137
+    longitude (deg): 146.26996
+    description: Eucalyptus amygdalina stand
+    locality: Mersey Forest
+    elevation (m): 408
+    temperature, MAT (C): 10.5
+    precipitation, MAP (mm): 1232
+    state: Tas
+  AMYG-TMP-A:
+    latitude (deg): -43.02413
+    longitude (deg): 147.92552
+    description: Eucalyptus amygdalina stand
+    locality: Tasman Peninsula
+    elevation (m): 210
+    temperature, MAT (C): 12.9
+    precipitation, MAP (mm): 670
+    state: Tas
+  AMYG-TMP-B:
+    latitude (deg): -43.09256
+    longitude (deg): 147.87218
+    description: Eucalyptus amygdalina stand
+    locality: Tasman Peninsula
+    elevation (m): 87
+    temperature, MAT (C): 12.3
+    precipitation, MAP (mm): 803
+    state: Tas
+  AMYG-TMP-C:
+    latitude (deg): -43.02984
+    longitude (deg): 147.89471
+    description: Eucalyptus amygdalina stand
+    locality: Tasman Peninsula
+    elevation (m): 88
+    temperature, MAT (C): 12.4
+    precipitation, MAP (mm): 961
+    state: Tas
+  COCA-GRIM-A:
+    latitude (deg): -33.67655
+    longitude (deg): 116.02915
+    description: Corymbia calophylla stand
+    locality: Grimwade
+    elevation (m): 281
+    temperature, MAT (C): 15.4
+    precipitation, MAP (mm): 976
+    state: WA
+  COCA-GRIM-B:
+    latitude (deg): -33.68169
+    longitude (deg): 116.02752
+    description: Corymbia calophylla stand
+    locality: Grimwade
+    elevation (m): 281
+    temperature, MAT (C): 15.4
+    precipitation, MAP (mm): 976
+    state: WA
+  COCA-GRIM-C:
+    latitude (deg): -33.68674
+    longitude (deg): 116.03214
+    description: Corymbia calophylla stand
+    locality: Grimwade
+    elevation (m): 268
+    temperature, MAT (C): 15.4
+    precipitation, MAP (mm): 928
+    state: WA
+  COCA-LP-A:
+    latitude (deg): -33.27933
+    longitude (deg): 116.33047
+    description: Corymbia calophylla stand
+    locality: Lane Poole Reserve
+    elevation (m): 273
+    temperature, MAT (C): 15.8
+    precipitation, MAP (mm): 798
+    state: WA
+  COCA-LP-B:
+    latitude (deg): -33.28417
+    longitude (deg): 116.32838
+    description: Corymbia calophylla stand
+    locality: Lane Poole Reserve
+    elevation (m): 259
+    temperature, MAT (C): 15.9
+    precipitation, MAP (mm): 807
+    state: WA
+  COCA-LP-C:
+    latitude (deg): -33.2808
+    longitude (deg): 116.33977
+    description: Corymbia calophylla stand
+    locality: Lane Poole Reserve
+    elevation (m): 260
+    temperature, MAT (C): 15.9
+    precipitation, MAP (mm): 762
+    state: WA
+  COCA-MIDG-A:
+    latitude (deg): -32.23312
+    longitude (deg): 116.13979
+    description: Corymbia calophylla stand
+    locality: Midgegooroo
+    elevation (m): 341
+    temperature, MAT (C): 16.7
+    precipitation, MAP (mm): 1078
+    state: WA
+  COCA-MIDG-B:
+    latitude (deg): -32.23851
+    longitude (deg): 116.14604
+    description: Corymbia calophylla stand
+    locality: Midgegooroo
+    elevation (m): 345
+    temperature, MAT (C): 16.7
+    precipitation, MAP (mm): 1062
+    state: WA
+  COCA-MIDG-C:
+    latitude (deg): -32.256473
+    longitude (deg): 116.154882
+    description: Corymbia calophylla stand
+    locality: Midgegooroo
+    elevation (m): 315
+    temperature, MAT (C): 16.8
+    precipitation, MAP (mm): 1014
+    state: WA
+  COCA-STIR-A:
+    latitude (deg): -34.45007
+    longitude (deg): 118.06416
+    description: Corymbia calophylla stand
+    locality: Stirling Range National Park
+    elevation (m): 215
+    temperature, MAT (C): 15.1
+    precipitation, MAP (mm): 463
+    state: WA
+  COCA-STIR-B:
+    latitude (deg): -34.44511
+    longitude (deg): 118.06593
+    description: Corymbia calophylla stand
+    locality: Stirling Range National Park
+    elevation (m): 222
+    temperature, MAT (C): 15.1
+    precipitation, MAP (mm): 463
+    state: WA
+  COCA-STIR-C:
+    latitude (deg): -34.42324
+    longitude (deg): 118.08805
+    description: Corymbia calophylla stand
+    locality: Stirling Range National Park
+    elevation (m): 250
+    temperature, MAT (C): 14.9
+    precipitation, MAP (mm): 451
+    state: WA
+  COCA-WAL-A:
+    latitude (deg): -34.95733
+    longitude (deg): 116.59605
+    description: Corymbia calophylla stand
+    locality: Walpole
+    elevation (m): 32
+    temperature, MAT (C): 16
+    precipitation, MAP (mm): 1179
+    state: WA
+  COCA-WAL-B:
+    latitude (deg): -34.93768
+    longitude (deg): 116.58692
+    description: Corymbia calophylla stand
+    locality: Walpole
+    elevation (m): 24
+    temperature, MAT (C): 16.1
+    precipitation, MAP (mm): 1193
+    state: WA
+  COCA-WAL-C:
+    latitude (deg): -34.92979
+    longitude (deg): 116.57996
+    description: Corymbia calophylla stand
+    locality: Walpole
+    elevation (m): 32
+    temperature, MAT (C): 16
+    precipitation, MAP (mm): 1177
+    state: WA
+  EMARG-GRIM-A:
+    latitude (deg): -33.67655
+    longitude (deg): 116.02915
+    description: Eucalyptus marginata stand
+    locality: Grimwade
+    elevation (m): 281
+    temperature, MAT (C): 15.4
+    precipitation, MAP (mm): 976
+    state: WA
+  EMARG-GRIM-B:
+    latitude (deg): -33.68169
+    longitude (deg): 116.02752
+    description: Eucalyptus marginata stand
+    locality: Grimwade
+    elevation (m): 281
+    temperature, MAT (C): 15.4
+    precipitation, MAP (mm): 976
+    state: WA
+  EMARG-GRIM-C:
+    latitude (deg): -33.68674
+    longitude (deg): 116.03214
+    description: Eucalyptus marginata stand
+    locality: Grimwade
+    elevation (m): 268
+    temperature, MAT (C): 15.4
+    precipitation, MAP (mm): 928
+    state: WA
+  EMARG-LP-A:
+    latitude (deg): -33.27933
+    longitude (deg): 116.33047
+    description: Eucalyptus marginata stand
+    locality: Lane Poole Reserve
+    elevation (m): 273
+    temperature, MAT (C): 15.8
+    precipitation, MAP (mm): 798
+    state: WA
+  EMARG-LP-B:
+    latitude (deg): -33.28417
+    longitude (deg): 116.32838
+    description: Eucalyptus marginata stand
+    locality: Lane Poole Reserve
+    elevation (m): 259
+    temperature, MAT (C): 15.9
+    precipitation, MAP (mm): 807
+    state: WA
+  EMARG-LP-C:
+    latitude (deg): -33.2808
+    longitude (deg): 116.33977
+    description: Eucalyptus marginata stand
+    locality: Lane Poole Reserve
+    elevation (m): 260
+    temperature, MAT (C): 15.9
+    precipitation, MAP (mm): 762
+    state: WA
+  EMARG-MIDG-A:
+    latitude (deg): -32.23312
+    longitude (deg): 116.13979
+    description: Eucalyptus marginata stand
+    locality: Midgegooroo
+    elevation (m): 341
+    temperature, MAT (C): 16.7
+    precipitation, MAP (mm): 1078
+    state: WA
+  EMARG-MIDG-B:
+    latitude (deg): -32.23851
+    longitude (deg): 116.14604
+    description: Eucalyptus marginata stand
+    locality: Midgegooroo
+    elevation (m): 345
+    temperature, MAT (C): 16.7
+    precipitation, MAP (mm): 1062
+    state: WA
+  EMARG-MIDG-C:
+    latitude (deg): -32.256473
+    longitude (deg): 116.154882
+    description: Eucalyptus marginata stand
+    locality: Midgegooroo
+    elevation (m): 315
+    temperature, MAT (C): 16.8
+    precipitation, MAP (mm): 1014
+    state: WA
+  EMARG-STIR-A:
+    latitude (deg): -34.45007
+    longitude (deg): 118.06416
+    description: Eucalyptus marginata stand
+    locality: Stirling Range National Park
+    elevation (m): 215
+    temperature, MAT (C): 15.1
+    precipitation, MAP (mm): 463
+    state: WA
+  EMARG-STIR-B:
+    latitude (deg): -34.44511
+    longitude (deg): 118.06593
+    description: Eucalyptus marginata stand
+    locality: Stirling Range National Park
+    elevation (m): 222
+    temperature, MAT (C): 15.1
+    precipitation, MAP (mm): 463
+    state: WA
+  EMARG-STIR-C:
+    latitude (deg): -34.42324
+    longitude (deg): 118.08805
+    description: Eucalyptus marginata stand
+    locality: Stirling Range National Park
+    elevation (m): 250
+    temperature, MAT (C): 14.9
+    precipitation, MAP (mm): 451
+    state: WA
+  EMARG-WAL-A:
+    latitude (deg): -34.95733
+    longitude (deg): 116.59605
+    description: Eucalyptus marginata stand
+    locality: Walpole
+    elevation (m): 32
+    temperature, MAT (C): 16
+    precipitation, MAP (mm): 1179
+    state: WA
+  EMARG-WAL-B:
+    latitude (deg): -34.93768
+    longitude (deg): 116.58692
+    description: Eucalyptus marginata stand
+    locality: Walpole
+    elevation (m): 24
+    temperature, MAT (C): 16.1
+    precipitation, MAP (mm): 1193
+    state: WA
+  EMARG-WAL-C:
+    latitude (deg): -34.92979
+    longitude (deg): 116.57996
+    description: Eucalyptus marginata stand
+    locality: Walpole
+    elevation (m): 32
+    temperature, MAT (C): 16
+    precipitation, MAP (mm): 1177
+    state: WA
+  ESAL-BEN-A:
+    latitude (deg): -32.403466
+    longitude (deg): 118.388153
+    description: Eucalyptus salmonophloia stand
+    locality: Bender Nature Reserve
+    elevation (m): 344
+    temperature, MAT (C): 17.1
+    precipitation, MAP (mm): 362
+    state: WA
+  ESAL-BEN-B:
+    latitude (deg): -32.406556
+    longitude (deg): 118.385497
+    description: Eucalyptus salmonophloia stand
+    locality: Bender Nature Reserve
+    elevation (m): 344
+    temperature, MAT (C): 17.1
+    precipitation, MAP (mm): 362
+    state: WA
+  ESAL-BEN-C:
+    latitude (deg): -32.406631
+    longitude (deg): 118.378543
+    description: Eucalyptus salmonophloia stand
+    locality: Bender Nature Reserve
+    elevation (m): 355
+    temperature, MAT (C): 17
+    precipitation, MAP (mm): 376
+    state: WA
+  ESAL-GNO-A:
+    latitude (deg): -33.96299
+    longitude (deg): 118.06613
+    description: Eucalyptus salmonophloia stand
+    locality: Gnowangerup
+    elevation (m): 259
+    temperature, MAT (C): 15.3
+    precipitation, MAP (mm): 378
+    state: WA
+  ESAL-GNO-B:
+    latitude (deg): -33.96293
+    longitude (deg): 118.08241
+    description: Eucalyptus salmonophloia stand
+    locality: Gnowangerup
+    elevation (m): 260
+    temperature, MAT (C): 15.3
+    precipitation, MAP (mm): 377
+    state: WA
+  ESAL-GNO-C:
+    latitude (deg): -33.9637
+    longitude (deg): 118.10522
+    description: Eucalyptus salmonophloia stand
+    locality: Gnowangerup
+    elevation (m): 260
+    temperature, MAT (C): 15.3
+    precipitation, MAP (mm): 373
+    state: WA
+  ESAL-NAR-A:
+    latitude (deg): -32.84713
+    longitude (deg): 117.34258
+    description: Eucalyptus salmonophloia stand
+    locality: Narrogin
+    elevation (m): 381
+    temperature, MAT (C): 15.9
+    precipitation, MAP (mm): 467
+    state: WA
+  ESAL-NAR-B:
+    latitude (deg): -32.82431
+    longitude (deg): 117.29956
+    description: Eucalyptus salmonophloia stand
+    locality: Narrogin
+    elevation (m): 331
+    temperature, MAT (C): 16.2
+    precipitation, MAP (mm): 415
+    state: WA
+  ESAL-NAR-C:
+    latitude (deg): -32.83635
+    longitude (deg): 117.34265
+    description: Eucalyptus salmonophloia stand
+    locality: Narrogin
+    elevation (m): 360
+    temperature, MAT (C): 16
+    precipitation, MAP (mm): 452
+    state: WA
+  ESAL-PER-A:
+    latitude (deg): -29.477724
+    longitude (deg): 116.210765
+    description: Eucalyptus salmonophloia stand
+    locality: Perenjori
+    elevation (m): 317
+    temperature, MAT (C): 19.9
+    precipitation, MAP (mm): 342
+    state: WA
+  ESAL-PER-B:
+    latitude (deg): -29.471756
+    longitude (deg): 116.210874
+    description: Eucalyptus salmonophloia stand
+    locality: Perenjori
+    elevation (m): 325
+    temperature, MAT (C): 19.8
+    precipitation, MAP (mm): 353
+    state: WA
+  ESAL-PER-C:
+    latitude (deg): -29.465437
+    longitude (deg): 116.211048
+    description: Eucalyptus salmonophloia stand
+    locality: Perenjori
+    elevation (m): 328
+    temperature, MAT (C): 19.8
+    precipitation, MAP (mm): 355
+    state: WA
+  OBLI-BOF-A:
+    latitude (deg): -41.18608
+    longitude (deg): 148.25671
+    description: Eucalyptus obliqua stand
+    locality: Bay of Fires
+    elevation (m): 48
+    temperature, MAT (C): 13.6
+    precipitation, MAP (mm): 793
+    state: Tas
+  OBLI-BOF-B:
+    latitude (deg): -41.18829
+    longitude (deg): 148.25107
+    description: Eucalyptus obliqua stand
+    locality: Bay of Fires
+    elevation (m): 48
+    temperature, MAT (C): 13.6
+    precipitation, MAP (mm): 793
+    state: Tas
+  OBLI-BOF-C:
+    latitude (deg): -41.18939
+    longitude (deg): 148.24518
+    description: Eucalyptus obliqua stand
+    locality: Bay of Fires
+    elevation (m): 71
+    temperature, MAT (C): 13.5
+    precipitation, MAP (mm): 813
+    state: Tas
+  OBLI-GRA-A:
+    latitude (deg): -42.52637
+    longitude (deg): 147.46338
+    description: Eucalyptus obliqua stand
+    locality: Gravelly Ridge
+    elevation (m): 346
+    temperature, MAT (C): 11
+    precipitation, MAP (mm): 691
+    state: Tas
+  OBLI-GRA-B:
+    latitude (deg): -42.52876
+    longitude (deg): 147.45482
+    description: Eucalyptus obliqua stand
+    locality: Gravelly Ridge
+    elevation (m): 260
+    temperature, MAT (C): 11.5
+    precipitation, MAP (mm): 616
+    state: Tas
+  OBLI-GRA-C:
+    latitude (deg): -42.55066
+    longitude (deg): 147.45885
+    description: Eucalyptus obliqua stand
+    locality: Gravelly Ridge
+    elevation (m): 355
+    temperature, MAT (C): 11
+    precipitation, MAP (mm): 697
+    state: Tas
+  OBLI-MER-A:
+    latitude (deg): -41.5904
+    longitude (deg): 146.23767
+    description: Eucalyptus obliqua stand
+    locality: Mersey Forest
+    elevation (m): 421
+    temperature, MAT (C): 10.4
+    precipitation, MAP (mm): 1430
+    state: Tas
+  OBLI-MER-B:
+    latitude (deg): -41.56666
+    longitude (deg): 146.23785
+    description: Eucalyptus obliqua stand
+    locality: Mersey Forest
+    elevation (m): 386
+    temperature, MAT (C): 10.6
+    precipitation, MAP (mm): 1431
+    state: Tas
+  OBLI-MER-C:
+    latitude (deg): -41.55405
+    longitude (deg): 146.25417
+    description: Eucalyptus obliqua stand
+    locality: Mersey Forest
+    elevation (m): 437
+    temperature, MAT (C): 10.4
+    precipitation, MAP (mm): 1473
+    state: Tas
+  OBLI-TMP-A:
+    latitude (deg): -42.98604
+    longitude (deg): 147.91408
+    description: Eucalyptus obliqua stand
+    locality: Tasman Peninsula
+    elevation (m): 181
+    temperature, MAT (C): 11.9
+    precipitation, MAP (mm): 940
+    state: Tas
+  OBLI-TMP-B:
+    latitude (deg): -42.97981
+    longitude (deg): 147.90988
+    description: Eucalyptus obliqua stand
+    locality: Tasman Peninsula
+    elevation (m): 185
+    temperature, MAT (C): 11.8
+    precipitation, MAP (mm): 937
+    state: Tas
+  OBLI-TMP-C:
+    latitude (deg): -42.98851
+    longitude (deg): 147.92212
+    description: Eucalyptus obliqua stand
+    locality: Tasman Peninsula
+    elevation (m): 187
+    temperature, MAT (C): 11.8
+    precipitation, MAP (mm): 939
+    state: Tas
+  OVAT-CMP-A:
+    latitude (deg): -42.96091
+    longitude (deg): 147.70312
+    description: Eucalyptus ovata stand
+    locality: Coal Mine Point
+    elevation (m): 27
+    temperature, MAT (C): 12.8
+    precipitation, MAP (mm): 823
+    state: Tas
+  OVAT-CMP-B:
+    latitude (deg): -42.96394
+    longitude (deg): 147.70535
+    description: Eucalyptus ovata stand
+    locality: Coal Mine Point
+    elevation (m): 27
+    temperature, MAT (C): 12.8
+    precipitation, MAP (mm): 823
+    state: Tas
+  OVAT-CMP-C:
+    latitude (deg): -42.98524
+    longitude (deg): 147.705
+    description: Eucalyptus ovata stand
+    locality: Coal Mine Point
+    elevation (m): 27
+    temperature, MAT (C): 12.8
+    precipitation, MAP (mm): 824
+    state: Tas
+  OVAT-EPF-A:
+    latitude (deg): -41.77809
+    longitude (deg): 147.31425
+    description: Eucalyptus ovata stand
+    locality: Epping Forest
+    elevation (m): 212
+    temperature, MAT (C): 12
+    precipitation, MAP (mm): 611
+    state: Tas
+  OVAT-EPF-B:
+    latitude (deg): -41.77497
+    longitude (deg): 147.3183
+    description: Eucalyptus ovata stand
+    locality: Epping Forest
+    elevation (m): 205
+    temperature, MAT (C): 12.1
+    precipitation, MAP (mm): 583
+    state: Tas
+  OVAT-EPF-C:
+    latitude (deg): -41.7704
+    longitude (deg): 147.31842
+    description: Eucalyptus ovata stand
+    locality: Epping Forest
+    elevation (m): 205
+    temperature, MAT (C): 12.1
+    precipitation, MAP (mm): 583
+    state: Tas
+  OVAT-GRA-A:
+    latitude (deg): -42.48679
+    longitude (deg): 147.49072
+    description: Eucalyptus ovata stand
+    locality: Gravelly Ridge
+    elevation (m): 536
+    temperature, MAT (C): 9.9
+    precipitation, MAP (mm): 756
+    state: Tas
+  OVAT-GRA-B:
+    latitude (deg): -42.48779
+    longitude (deg): 147.50031
+    description: Eucalyptus ovata stand
+    locality: Gravelly Ridge
+    elevation (m): 542
+    temperature, MAT (C): 9.9
+    precipitation, MAP (mm): 761
+    state: Tas
+  OVAT-GRA-C:
+    latitude (deg): -42.48891
+    longitude (deg): 147.50865
+    description: Eucalyptus ovata stand
+    locality: Gravelly Ridge
+    elevation (m): 539
+    temperature, MAT (C): 9.9
+    precipitation, MAP (mm): 748
+    state: Tas
+  OVAT-MER-A:
+    latitude (deg): -41.55808
+    longitude (deg): 146.3334
+    description: Eucalyptus ovata stand
+    locality: Mersey Forest
+    elevation (m): 399
+    temperature, MAT (C): 10.6
+    precipitation, MAP (mm): 1205
+    state: Tas
+  OVAT-MER-B:
+    latitude (deg): -41.55779
+    longitude (deg): 146.33298
+    description: Eucalyptus ovata stand
+    locality: Mersey Forest
+    elevation (m): 398
+    temperature, MAT (C): 10.6
+    precipitation, MAP (mm): 1178
+    state: Tas
+  OVAT-MER-C:
+    latitude (deg): -41.55861
+    longitude (deg): 146.33336
+    description: Eucalyptus ovata stand
+    locality: Mersey Forest
+    elevation (m): 359
+    temperature, MAT (C): 10.8
+    precipitation, MAP (mm): 1237
+    state: Tas
+  VIMI-EPF-A:
+    latitude (deg): -41.77503
+    longitude (deg): 147.32176
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Epping Forest
+    elevation (m): 212
+    temperature, MAT (C): 12.1
+    precipitation, MAP (mm): 583
+    state: Tas
+  VIMI-EPF-B:
+    latitude (deg): -41.77809
+    longitude (deg): 147.31425
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Epping Forest
+    elevation (m): 212
+    temperature, MAT (C): 12
+    precipitation, MAP (mm): 611
+    state: Tas
+  VIMI-EPF-C:
+    latitude (deg): -41.77497
+    longitude (deg): 147.3183
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Epping Forest
+    elevation (m): 205
+    temperature, MAT (C): 12.1
+    precipitation, MAP (mm): 583
+    state: Tas
+  VIMI-FREY-A:
+    latitude (deg): -41.97012
+    longitude (deg): 148.13916
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Freycinet
+    elevation (m): 171
+    temperature, MAT (C): 12.5
+    precipitation, MAP (mm): 816
+    state: Tas
+  VIMI-FREY-B:
+    latitude (deg): -41.95651
+    longitude (deg): 148.13396
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Freycinet
+    elevation (m): 143
+    temperature, MAT (C): 12.7
+    precipitation, MAP (mm): 684
+    state: Tas
+  VIMI-FREY-C:
+    latitude (deg): -41.94839
+    longitude (deg): 148.13788
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Freycinet
+    elevation (m): 150
+    temperature, MAT (C): 12.6
+    precipitation, MAP (mm): 694
+    state: Tas
+  VIMI-GRA-A:
+    latitude (deg): -42.63235
+    longitude (deg): 147.46458
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Gravelly Ridge
+    elevation (m): 151
+    temperature, MAT (C): 12.2
+    precipitation, MAP (mm): 570
+    state: Tas
+  VIMI-GRA-B:
+    latitude (deg): -42.63062
+    longitude (deg): 147.46921
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Gravelly Ridge
+    elevation (m): 167
+    temperature, MAT (C): 12.1
+    precipitation, MAP (mm): 552
+    state: Tas
+  VIMI-GRA-C:
+    latitude (deg): -42.62326
+    longitude (deg): 147.47597
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Gravelly Ridge
+    elevation (m): 163
+    temperature, MAT (C): 12.1
+    precipitation, MAP (mm): 529
+    state: Tas
+  VIMI-MER-A:
+    latitude (deg): -41.5904
+    longitude (deg): 146.23767
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Mersey Forest
+    elevation (m): 421
+    temperature, MAT (C): 10.4
+    precipitation, MAP (mm): 1430
+    state: Tas
+  VIMI-MER-B:
+    latitude (deg): -41.58598
+    longitude (deg): 146.24649
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Mersey Forest
+    elevation (m): 450
+    temperature, MAT (C): 10.2
+    precipitation, MAP (mm): 1658
+    state: Tas
+  VIMI-MER-C:
+    latitude (deg): -41.55808
+    longitude (deg): 146.3334
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Mersey Forest
+    elevation (m): 399
+    temperature, MAT (C): 10.6
+    precipitation, MAP (mm): 1205
+    state: Tas
+  VIMI-TMP-A:
+    latitude (deg): -43.03981
+    longitude (deg): 147.94553
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Tasman Peninsula
+    elevation (m): 9
+    temperature, MAT (C): 12.8
+    precipitation, MAP (mm): 643
+    state: Tas
+  VIMI-TMP-B:
+    latitude (deg): -43.03198
+    longitude (deg): 147.92879
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Tasman Peninsula
+    elevation (m): 210
+    temperature, MAT (C): 12.8
+    precipitation, MAP (mm): 719
+    state: Tas
+  VIMI-TMP-C:
+    latitude (deg): -43.02413
+    longitude (deg): 147.92552
+    description: Eucalyptus viminalis subsp. viminalis stand
+    locality: Tasman Peninsula
+    elevation (m): 210
+    temperature, MAT (C): 12.9
+    precipitation, MAP (mm): 670
+    state: Tas
+contexts:
+- context_property: DBH (cm)
+  category: entity_context
+  var_in: TreeDBH
+- context_property: stand basal area (ft2/acre)
+  category: entity_context
+  var_in: StandBA
+- context_property: branch diameter (mm)
+  category: entity_context
+  var_in: branch_diameter
+- context_property: branch length (cm)
+  category: entity_context
+  var_in: branch_length
+- context_property: stem tissue measured
+  category: method_context
+  var_in: stem_tissue_measured
+  values:
+  - value: sapwood only
+    description: twig diameter measured under the bark, so the stem area excludes bark
+  - value: sapwood and bark
+    description: twig diameter measured over the bark, so the stem area includes bark
+traits:
+- var_in: WD
+  unit_in: g/cm3
+  trait_name: wood_density
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: WD_n
+  branch_diameter: WD_diameter
+  methods: From each branch, we collected a section c. 8 mm in diameter for WD measurement,
+    and a terminal branch (first order branch collected at the point of branching) for
+    leaf and HV measurements. ^p Bark was peeled from branch sections and WD quantified
+    from segments roughly 7 cm in length by dividing dry mass (following 72+ h drying
+    at 70°C). WD was weakly related to branch diameter for six species (Likelihood Ratio
+    Test of a linear mixed effects model with a fixed effect for diameter and site and
+    random effects for plot and tree was significant at alpha = 0.05 compared with an
+    identical model without diameter), so diameter was included as a covariate in models
+    of WD for these species. ^p Wood density is branch dry mass divided by green volume,
+    with green volume measured by water displacement. Each value is the mean of the three
+    branches sampled per tree.
+- var_in: LMA
+  unit_in: g/cm2
+  trait_name: leaf_mass_per_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: LMA_n
+  branch_diameter: twig_diameter
+  branch_length: twig_length
+  methods: All leaves subtending the selected terminal branch were collected for measurement
+    of leaf area, LMA and LDMC. Total fresh one-sided leaf area (including petioles)
+    of terminal branch samples was measured with a flatbed scanner and ImageJ image processing
+    software (Schneider et al., 2012). Leaves were then oven dried at 70°C to a constant
+    weight (typically 48+ h) and their dry mass measured. ^p For each terminal branch
+    HV, LMA and LDMC was calculated. Multivariate trait outliers were visually diagnosed
+    by plotting all traits against each other for each species and removed (n < 10 per
+    trait), as were LMA and LDMC values from still expanding leaves (< 10% of measurements).
+    ^p LMA of each terminal twig is the bulked dry mass of all its leaves divided by
+    their total area; each value is the mean of the three branches sampled per tree.
+    Phyllodes were measured for Acacia acuminata.
+- var_in: LDMC
+  unit_in: g/g
+  trait_name: leaf_dry_matter_content
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: LDMC_n
+  branch_diameter: twig_diameter
+  branch_length: twig_length
+  methods: Samples were rehydrated in moist ziplock bags in a cooler for at least 12
+    h before trait measurement (Pérez-Harguindeguy et al., 2013). ^p All leaves subtending
+    the selected terminal branch were collected for measurement of leaf area, LMA and
+    LDMC. Total fresh one-sided leaf area (including petioles) of terminal branch samples
+    was measured with a flatbed scanner and ImageJ image processing software (Schneider
+    et al., 2012). Leaves were then oven dried at 70°C to a constant weight (typically
+    48+ h) and their dry mass measured. ^p For each terminal branch HV, LMA and LDMC
+    was calculated. Multivariate trait outliers were visually diagnosed by plotting all
+    traits against each other for each species and removed (n < 10 per trait), as were
+    LMA and LDMC values from still expanding leaves (< 10% of measurements). ^p LDMC
+    of each terminal twig is the bulked dry mass of all its leaves divided by their rehydrated
+    fresh mass; each value is the mean of the three branches sampled per tree. Phyllodes
+    were measured for Acacia acuminata.
+- var_in: huber_value
+  unit_in: mm2{sapwood}/cm2{leaf}
+  trait_name: huber_value
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: huber_value_n
+  branch_diameter: twig_diameter
+  branch_length: twig_length
+  stem_tissue_measured: stem_tissue
+  methods: We measured branch WD (g dry mass per cm3 fresh volume), LMA (g dry mass
+    per cm2 fresh leaf area) and LDMC (g dry mass per g fresh mass) as metrics of stem
+    and leaf robustness, and terminal branch HV, the ratio of sapwood area to leaf area
+    (mm2 per cm2), as a metric of investment in water transport vs light capture. ^p
+    We selected terminal branches (typically c. 1 mm in diameter, see Table S2 for details)
+    with intact 'mature' leaves (i.e. fully expanded, not soft green new growth). ^p
+    Total fresh one-sided leaf area (including petioles) of terminal branch samples was
+    measured with a flatbed scanner and ImageJ image processing software (Schneider et
+    al., 2012). Terminal twig basal diameter was measured just above the swelling at
+    the branch base after gently peeling back bark (except in A. acuminata, where bark
+    was difficult to distinguish from woody tissue). For each terminal branch HV, LMA
+    and LDMC was calculated. ^p The data file gives total leaf area of each terminal twig
+    per twig cross-sectional area; its inverse is the Huber value of that twig, and each
+    value is the mean of the three branches sampled per tree. Phyllodes were measured
+    for Acacia acuminata.
+- var_in: avg_area
+  unit_in: cm2
+  trait_name: leaf_area
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: avg_area_n
+  branch_diameter: twig_diameter
+  branch_length: twig_length
+  methods: All leaves subtending the selected terminal branch were collected for measurement
+    of leaf area, LMA and LDMC. Total fresh one-sided leaf area (including petioles)
+    of terminal branch samples was measured with a flatbed scanner and ImageJ image processing
+    software (Schneider et al., 2012). ^p Mean leaf area of each terminal twig is its total
+    leaf area divided by its number of leaves; each value is the mean of the three branches
+    sampled per tree. Phyllodes were measured for Acacia acuminata.
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions: .na

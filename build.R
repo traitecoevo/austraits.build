@@ -29,9 +29,21 @@ Ahrens_2019_config <- dataset_configure("data/Ahrens_2019/metadata.yml", definit
 Ahrens_2019_raw <- dataset_process("data/Ahrens_2019/data.csv", Ahrens_2019_config, schema, resource_metadata, unit_conversions)
 Ahrens_2019 <- dataset_update_taxonomy(Ahrens_2019_raw, taxon_list)
 
+Allen_2024_config <- dataset_configure("data/Allen_2024/metadata.yml", definitions)
+Allen_2024_raw <- dataset_process("data/Allen_2024/data.csv", Allen_2024_config, schema, resource_metadata, unit_conversions)
+Allen_2024 <- dataset_update_taxonomy(Allen_2024_raw, taxon_list)
+
 ANBG_2019_config <- dataset_configure("data/ANBG_2019/metadata.yml", definitions)
 ANBG_2019_raw <- dataset_process("data/ANBG_2019/data.csv", ANBG_2019_config, schema, resource_metadata, unit_conversions)
 ANBG_2019 <- dataset_update_taxonomy(ANBG_2019_raw, taxon_list)
+
+Anderegg_2020_config <- dataset_configure("data/Anderegg_2020/metadata.yml", definitions)
+Anderegg_2020_raw <- dataset_process("data/Anderegg_2020/data.csv", Anderegg_2020_config, schema, resource_metadata, unit_conversions)
+Anderegg_2020 <- dataset_update_taxonomy(Anderegg_2020_raw, taxon_list)
+
+Andres_2024_config <- dataset_configure("data/Andres_2024/metadata.yml", definitions)
+Andres_2024_raw <- dataset_process("data/Andres_2024/data.csv", Andres_2024_config, schema, resource_metadata, unit_conversions)
+Andres_2024 <- dataset_update_taxonomy(Andres_2024_raw, taxon_list)
 
 Andrew_2022_config <- dataset_configure("data/Andrew_2022/metadata.yml", definitions)
 Andrew_2022_raw <- dataset_process("data/Andrew_2022/data.csv", Andrew_2022_config, schema, resource_metadata, unit_conversions)
@@ -61,6 +73,10 @@ Arnold_2024_config <- dataset_configure("data/Arnold_2024/metadata.yml", definit
 Arnold_2024_raw <- dataset_process("data/Arnold_2024/data.csv", Arnold_2024_config, schema, resource_metadata, unit_conversions)
 Arnold_2024 <- dataset_update_taxonomy(Arnold_2024_raw, taxon_list)
 
+Asao_2024_config <- dataset_configure("data/Asao_2024/metadata.yml", definitions)
+Asao_2024_raw <- dataset_process("data/Asao_2024/data.csv", Asao_2024_config, schema, resource_metadata, unit_conversions)
+Asao_2024 <- dataset_update_taxonomy(Asao_2024_raw, taxon_list)
+
 Atkinson_2020_config <- dataset_configure("data/Atkinson_2020/metadata.yml", definitions)
 Atkinson_2020_raw <- dataset_process("data/Atkinson_2020/data.csv", Atkinson_2020_config, schema, resource_metadata, unit_conversions)
 Atkinson_2020 <- dataset_update_taxonomy(Atkinson_2020_raw, taxon_list)
@@ -76,6 +92,10 @@ ATRP_2020 <- dataset_update_taxonomy(ATRP_2020_raw, taxon_list)
 Auld_2000_config <- dataset_configure("data/Auld_2000/metadata.yml", definitions)
 Auld_2000_raw <- dataset_process("data/Auld_2000/data.csv", Auld_2000_config, schema, resource_metadata, unit_conversions)
 Auld_2000 <- dataset_update_taxonomy(Auld_2000_raw, taxon_list)
+
+AVH_2026_config <- dataset_configure("data/AVH_2026/metadata.yml", definitions)
+AVH_2026_raw <- dataset_process("data/AVH_2026/data.csv", AVH_2026_config, schema, resource_metadata, unit_conversions)
+AVH_2026 <- dataset_update_taxonomy(AVH_2026_raw, taxon_list)
 
 Baker_2019_config <- dataset_configure("data/Baker_2019/metadata.yml", definitions)
 Baker_2019_raw <- dataset_process("data/Baker_2019/data.csv", Baker_2019_config, schema, resource_metadata, unit_conversions)
@@ -93,9 +113,17 @@ Bebawi_2015_config <- dataset_configure("data/Bebawi_2015/metadata.yml", definit
 Bebawi_2015_raw <- dataset_process("data/Bebawi_2015/data.csv", Bebawi_2015_config, schema, resource_metadata, unit_conversions)
 Bebawi_2015 <- dataset_update_taxonomy(Bebawi_2015_raw, taxon_list)
 
+Bell_1995_config <- dataset_configure("data/Bell_1995/metadata.yml", definitions)
+Bell_1995_raw <- dataset_process("data/Bell_1995/data.csv", Bell_1995_config, schema, resource_metadata, unit_conversions)
+Bell_1995 <- dataset_update_taxonomy(Bell_1995_raw, taxon_list)
+
 Benwell_2024_config <- dataset_configure("data/Benwell_2024/metadata.yml", definitions)
 Benwell_2024_raw <- dataset_process("data/Benwell_2024/data.csv", Benwell_2024_config, schema, resource_metadata, unit_conversions)
 Benwell_2024 <- dataset_update_taxonomy(Benwell_2024_raw, taxon_list)
+
+Bignell_1997_config <- dataset_configure("data/Bignell_1997/metadata.yml", definitions)
+Bignell_1997_raw <- dataset_process("data/Bignell_1997/data.csv", Bignell_1997_config, schema, resource_metadata, unit_conversions)
+Bignell_1997 <- dataset_update_taxonomy(Bignell_1997_raw, taxon_list)
 
 Blackman_2010_config <- dataset_configure("data/Blackman_2010/metadata.yml", definitions)
 Blackman_2010_raw <- dataset_process("data/Blackman_2010/data.csv", Blackman_2010_config, schema, resource_metadata, unit_conversions)
@@ -137,6 +165,10 @@ Britton_1994_config <- dataset_configure("data/Britton_1994/metadata.yml", defin
 Britton_1994_raw <- dataset_process("data/Britton_1994/data.csv", Britton_1994_config, schema, resource_metadata, unit_conversions)
 Britton_1994 <- dataset_update_taxonomy(Britton_1994_raw, taxon_list)
 
+Britton_2026_config <- dataset_configure("data/Britton_2026/metadata.yml", definitions)
+Britton_2026_raw <- dataset_process("data/Britton_2026/data.csv", Britton_2026_config, schema, resource_metadata, unit_conversions)
+Britton_2026 <- dataset_update_taxonomy(Britton_2026_raw, taxon_list)
+
 Brock_1993_config <- dataset_configure("data/Brock_1993/metadata.yml", definitions)
 Brock_1993_raw <- dataset_process("data/Brock_1993/data.csv", Brock_1993_config, schema, resource_metadata, unit_conversions)
 Brock_1993 <- dataset_update_taxonomy(Brock_1993_raw, taxon_list)
@@ -144,6 +176,10 @@ Brock_1993 <- dataset_update_taxonomy(Brock_1993_raw, taxon_list)
 Brodribb_2000_config <- dataset_configure("data/Brodribb_2000/metadata.yml", definitions)
 Brodribb_2000_raw <- dataset_process("data/Brodribb_2000/data.csv", Brodribb_2000_config, schema, resource_metadata, unit_conversions)
 Brodribb_2000 <- dataset_update_taxonomy(Brodribb_2000_raw, taxon_list)
+
+Brown_1997_config <- dataset_configure("data/Brown_1997/metadata.yml", definitions)
+Brown_1997_raw <- dataset_process("data/Brown_1997/data.csv", Brown_1997_config, schema, resource_metadata, unit_conversions)
+Brown_1997 <- dataset_update_taxonomy(Brown_1997_raw, taxon_list)
 
 Bryant_2021_config <- dataset_configure("data/Bryant_2021/metadata.yml", definitions)
 Bryant_2021_raw <- dataset_process("data/Bryant_2021/data.csv", Bryant_2021_config, schema, resource_metadata, unit_conversions)
@@ -209,6 +245,10 @@ Catford_2014_config <- dataset_configure("data/Catford_2014/metadata.yml", defin
 Catford_2014_raw <- dataset_process("data/Catford_2014/data.csv", Catford_2014_config, schema, resource_metadata, unit_conversions)
 Catford_2014 <- dataset_update_taxonomy(Catford_2014_raw, taxon_list)
 
+Cernusak_2004_config <- dataset_configure("data/Cernusak_2004/metadata.yml", definitions)
+Cernusak_2004_raw <- dataset_process("data/Cernusak_2004/data.csv", Cernusak_2004_config, schema, resource_metadata, unit_conversions)
+Cernusak_2004 <- dataset_update_taxonomy(Cernusak_2004_raw, taxon_list)
+
 Cernusak_2006_config <- dataset_configure("data/Cernusak_2006/metadata.yml", definitions)
 Cernusak_2006_raw <- dataset_process("data/Cernusak_2006/data.csv", Cernusak_2006_config, schema, resource_metadata, unit_conversions)
 Cernusak_2006 <- dataset_update_taxonomy(Cernusak_2006_raw, taxon_list)
@@ -233,6 +273,10 @@ Chen_2017_config <- dataset_configure("data/Chen_2017/metadata.yml", definitions
 Chen_2017_raw <- dataset_process("data/Chen_2017/data.csv", Chen_2017_config, schema, resource_metadata, unit_conversions)
 Chen_2017 <- dataset_update_taxonomy(Chen_2017_raw, taxon_list)
 
+Chhajed_2024_config <- dataset_configure("data/Chhajed_2024/metadata.yml", definitions)
+Chhajed_2024_raw <- dataset_process("data/Chhajed_2024/data.csv", Chhajed_2024_config, schema, resource_metadata, unit_conversions)
+Chhajed_2024 <- dataset_update_taxonomy(Chhajed_2024_raw, taxon_list)
+
 Chinnock_2007_config <- dataset_configure("data/Chinnock_2007/metadata.yml", definitions)
 Chinnock_2007_raw <- dataset_process("data/Chinnock_2007/data.csv", Chinnock_2007_config, schema, resource_metadata, unit_conversions)
 Chinnock_2007 <- dataset_update_taxonomy(Chinnock_2007_raw, taxon_list)
@@ -252,6 +296,10 @@ Clarke_2009 <- dataset_update_taxonomy(Clarke_2009_raw, taxon_list)
 Clarke_2015_config <- dataset_configure("data/Clarke_2015/metadata.yml", definitions)
 Clarke_2015_raw <- dataset_process("data/Clarke_2015/data.csv", Clarke_2015_config, schema, resource_metadata, unit_conversions)
 Clarke_2015 <- dataset_update_taxonomy(Clarke_2015_raw, taxon_list)
+
+Coates_2024_config <- dataset_configure("data/Coates_2024/metadata.yml", definitions)
+Coates_2024_raw <- dataset_process("data/Coates_2024/data.csv", Coates_2024_config, schema, resource_metadata, unit_conversions)
+Coates_2024 <- dataset_update_taxonomy(Coates_2024_raw, taxon_list)
 
 Cochrane_2001_config <- dataset_configure("data/Cochrane_2001/metadata.yml", definitions)
 Cochrane_2001_raw <- dataset_process("data/Cochrane_2001/data.csv", Cochrane_2001_config, schema, resource_metadata, unit_conversions)
@@ -273,6 +321,10 @@ Collette_2021_config <- dataset_configure("data/Collette_2021/metadata.yml", def
 Collette_2021_raw <- dataset_process("data/Collette_2021/data.csv", Collette_2021_config, schema, resource_metadata, unit_conversions)
 Collette_2021 <- dataset_update_taxonomy(Collette_2021_raw, taxon_list)
 
+Cook_2005_config <- dataset_configure("data/Cook_2005/metadata.yml", definitions)
+Cook_2005_raw <- dataset_process("data/Cook_2005/data.csv", Cook_2005_config, schema, resource_metadata, unit_conversions)
+Cook_2005 <- dataset_update_taxonomy(Cook_2005_raw, taxon_list)
+
 Cooper_2004_config <- dataset_configure("data/Cooper_2004/metadata.yml", definitions)
 Cooper_2004_raw <- dataset_process("data/Cooper_2004/data.csv", Cooper_2004_config, schema, resource_metadata, unit_conversions)
 Cooper_2004 <- dataset_update_taxonomy(Cooper_2004_raw, taxon_list)
@@ -280,6 +332,10 @@ Cooper_2004 <- dataset_update_taxonomy(Cooper_2004_raw, taxon_list)
 Cooper_2013_config <- dataset_configure("data/Cooper_2013/metadata.yml", definitions)
 Cooper_2013_raw <- dataset_process("data/Cooper_2013/data.csv", Cooper_2013_config, schema, resource_metadata, unit_conversions)
 Cooper_2013 <- dataset_update_taxonomy(Cooper_2013_raw, taxon_list)
+
+Cornwell_2018_config <- dataset_configure("data/Cornwell_2018/metadata.yml", definitions)
+Cornwell_2018_raw <- dataset_process("data/Cornwell_2018/data.csv", Cornwell_2018_config, schema, resource_metadata, unit_conversions)
+Cornwell_2018 <- dataset_update_taxonomy(Cornwell_2018_raw, taxon_list)
 
 Cowling_1987_config <- dataset_configure("data/Cowling_1987/metadata.yml", definitions)
 Cowling_1987_raw <- dataset_process("data/Cowling_1987/data.csv", Cowling_1987_config, schema, resource_metadata, unit_conversions)
@@ -337,6 +393,22 @@ Curtis_2012_config <- dataset_configure("data/Curtis_2012/metadata.yml", definit
 Curtis_2012_raw <- dataset_process("data/Curtis_2012/data.csv", Curtis_2012_config, schema, resource_metadata, unit_conversions)
 Curtis_2012 <- dataset_update_taxonomy(Curtis_2012_raw, taxon_list)
 
+Dadswell_1972_config <- dataset_configure("data/Dadswell_1972/metadata.yml", definitions)
+Dadswell_1972_raw <- dataset_process("data/Dadswell_1972/data.csv", Dadswell_1972_config, schema, resource_metadata, unit_conversions)
+Dadswell_1972 <- dataset_update_taxonomy(Dadswell_1972_raw, taxon_list)
+
+Davila_2002_config <- dataset_configure("data/Davila_2002/metadata.yml", definitions)
+Davila_2002_raw <- dataset_process("data/Davila_2002/data.csv", Davila_2002_config, schema, resource_metadata, unit_conversions)
+Davila_2002 <- dataset_update_taxonomy(Davila_2002_raw, taxon_list)
+
+Davila_2007_config <- dataset_configure("data/Davila_2007/metadata.yml", definitions)
+Davila_2007_raw <- dataset_process("data/Davila_2007/data.csv", Davila_2007_config, schema, resource_metadata, unit_conversions)
+Davila_2007 <- dataset_update_taxonomy(Davila_2007_raw, taxon_list)
+
+Davis_2026_config <- dataset_configure("data/Davis_2026/metadata.yml", definitions)
+Davis_2026_raw <- dataset_process("data/Davis_2026/data.csv", Davis_2026_config, schema, resource_metadata, unit_conversions)
+Davis_2026 <- dataset_update_taxonomy(Davis_2026_raw, taxon_list)
+
 deCampos_2013_config <- dataset_configure("data/deCampos_2013/metadata.yml", definitions)
 deCampos_2013_raw <- dataset_process("data/deCampos_2013/data.csv", deCampos_2013_config, schema, resource_metadata, unit_conversions)
 deCampos_2013 <- dataset_update_taxonomy(deCampos_2013_raw, taxon_list)
@@ -344,6 +416,10 @@ deCampos_2013 <- dataset_update_taxonomy(deCampos_2013_raw, taxon_list)
 Denton_2007_config <- dataset_configure("data/Denton_2007/metadata.yml", definitions)
 Denton_2007_raw <- dataset_process("data/Denton_2007/data.csv", Denton_2007_config, schema, resource_metadata, unit_conversions)
 Denton_2007 <- dataset_update_taxonomy(Denton_2007_raw, taxon_list)
+
+DeSmedt_2018_config <- dataset_configure("data/DeSmedt_2018/metadata.yml", definitions)
+DeSmedt_2018_raw <- dataset_process("data/DeSmedt_2018/data.csv", DeSmedt_2018_config, schema, resource_metadata, unit_conversions)
+DeSmedt_2018 <- dataset_update_taxonomy(DeSmedt_2018_raw, taxon_list)
 
 Detombeur_2021_config <- dataset_configure("data/Detombeur_2021/metadata.yml", definitions)
 Detombeur_2021_raw <- dataset_process("data/Detombeur_2021/data.csv", Detombeur_2021_config, schema, resource_metadata, unit_conversions)
@@ -353,6 +429,10 @@ Detombeur_2025_config <- dataset_configure("data/Detombeur_2025/metadata.yml", d
 Detombeur_2025_raw <- dataset_process("data/Detombeur_2025/data.csv", Detombeur_2025_config, schema, resource_metadata, unit_conversions)
 Detombeur_2025 <- dataset_update_taxonomy(Detombeur_2025_raw, taxon_list)
 
+Dilly_2024_config <- dataset_configure("data/Dilly_2024/metadata.yml", definitions)
+Dilly_2024_raw <- dataset_process("data/Dilly_2024/data.csv", Dilly_2024_config, schema, resource_metadata, unit_conversions)
+Dilly_2024 <- dataset_update_taxonomy(Dilly_2024_raw, taxon_list)
+
 Doherty_2021_config <- dataset_configure("data/Doherty_2021/metadata.yml", definitions)
 Doherty_2021_raw <- dataset_process("data/Doherty_2021/data.csv", Doherty_2021_config, schema, resource_metadata, unit_conversions)
 Doherty_2021 <- dataset_update_taxonomy(Doherty_2021_raw, taxon_list)
@@ -361,6 +441,18 @@ Dong_2017_config <- dataset_configure("data/Dong_2017/metadata.yml", definitions
 Dong_2017_raw <- dataset_process("data/Dong_2017/data.csv", Dong_2017_config, schema, resource_metadata, unit_conversions)
 Dong_2017 <- dataset_update_taxonomy(Dong_2017_raw, taxon_list)
 
+Dorken_2020_config <- dataset_configure("data/Dorken_2020/metadata.yml", definitions)
+Dorken_2020_raw <- dataset_process("data/Dorken_2020/data.csv", Dorken_2020_config, schema, resource_metadata, unit_conversions)
+Dorken_2020 <- dataset_update_taxonomy(Dorken_2020_raw, taxon_list)
+
+Doyle_2023_config <- dataset_configure("data/Doyle_2023/metadata.yml", definitions)
+Doyle_2023_raw <- dataset_process("data/Doyle_2023/data.csv", Doyle_2023_config, schema, resource_metadata, unit_conversions)
+Doyle_2023 <- dataset_update_taxonomy(Doyle_2023_raw, taxon_list)
+
+Doyle_2025_config <- dataset_configure("data/Doyle_2025/metadata.yml", definitions)
+Doyle_2025_raw <- dataset_process("data/Doyle_2025/data.csv", Doyle_2025_config, schema, resource_metadata, unit_conversions)
+Doyle_2025 <- dataset_update_taxonomy(Doyle_2025_raw, taxon_list)
+
 Drake_2011_config <- dataset_configure("data/Drake_2011/metadata.yml", definitions)
 Drake_2011_raw <- dataset_process("data/Drake_2011/data.csv", Drake_2011_config, schema, resource_metadata, unit_conversions)
 Drake_2011 <- dataset_update_taxonomy(Drake_2011_raw, taxon_list)
@@ -368,6 +460,10 @@ Drake_2011 <- dataset_update_taxonomy(Drake_2011_raw, taxon_list)
 Draper_2023_config <- dataset_configure("data/Draper_2023/metadata.yml", definitions)
 Draper_2023_raw <- dataset_process("data/Draper_2023/data.csv", Draper_2023_config, schema, resource_metadata, unit_conversions)
 Draper_2023 <- dataset_update_taxonomy(Draper_2023_raw, taxon_list)
+
+DrewSmythe_2023_config <- dataset_configure("data/DrewSmythe_2023/metadata.yml", definitions)
+DrewSmythe_2023_raw <- dataset_process("data/DrewSmythe_2023/data.csv", DrewSmythe_2023_config, schema, resource_metadata, unit_conversions)
+DrewSmythe_2023 <- dataset_update_taxonomy(DrewSmythe_2023_raw, taxon_list)
 
 Du_2018_config <- dataset_configure("data/Du_2018/metadata.yml", definitions)
 Du_2018_raw <- dataset_process("data/Du_2018/data.csv", Du_2018_config, schema, resource_metadata, unit_conversions)
@@ -393,6 +489,14 @@ Dwyer_2018_config <- dataset_configure("data/Dwyer_2018/metadata.yml", definitio
 Dwyer_2018_raw <- dataset_process("data/Dwyer_2018/data.csv", Dwyer_2018_config, schema, resource_metadata, unit_conversions)
 Dwyer_2018 <- dataset_update_taxonomy(Dwyer_2018_raw, taxon_list)
 
+EakinBusher_2016_config <- dataset_configure("data/EakinBusher_2016/metadata.yml", definitions)
+EakinBusher_2016_raw <- dataset_process("data/EakinBusher_2016/data.csv", EakinBusher_2016_config, schema, resource_metadata, unit_conversions)
+EakinBusher_2016 <- dataset_update_taxonomy(EakinBusher_2016_raw, taxon_list)
+
+EakinBusher_2020_config <- dataset_configure("data/EakinBusher_2020/metadata.yml", definitions)
+EakinBusher_2020_raw <- dataset_process("data/EakinBusher_2020/data.csv", EakinBusher_2020_config, schema, resource_metadata, unit_conversions)
+EakinBusher_2020 <- dataset_update_taxonomy(EakinBusher_2020_raw, taxon_list)
+
 Eamus_1998_config <- dataset_configure("data/Eamus_1998/metadata.yml", definitions)
 Eamus_1998_raw <- dataset_process("data/Eamus_1998/data.csv", Eamus_1998_config, schema, resource_metadata, unit_conversions)
 Eamus_1998 <- dataset_update_taxonomy(Eamus_1998_raw, taxon_list)
@@ -416,6 +520,10 @@ eFLOWER_2021 <- dataset_update_taxonomy(eFLOWER_2021_raw, taxon_list)
 eFLOWER_Dun_2022_config <- dataset_configure("data/eFLOWER_Dun_2022/metadata.yml", definitions)
 eFLOWER_Dun_2022_raw <- dataset_process("data/eFLOWER_Dun_2022/data.csv", eFLOWER_Dun_2022_config, schema, resource_metadata, unit_conversions)
 eFLOWER_Dun_2022 <- dataset_update_taxonomy(eFLOWER_Dun_2022_raw, taxon_list)
+
+Elliott_2026_config <- dataset_configure("data/Elliott_2026/metadata.yml", definitions)
+Elliott_2026_raw <- dataset_process("data/Elliott_2026/data.csv", Elliott_2026_config, schema, resource_metadata, unit_conversions)
+Elliott_2026 <- dataset_update_taxonomy(Elliott_2026_raw, taxon_list)
 
 Ellsworth_2015_config <- dataset_configure("data/Ellsworth_2015/metadata.yml", definitions)
 Ellsworth_2015_raw <- dataset_process("data/Ellsworth_2015/data.csv", Ellsworth_2015_config, schema, resource_metadata, unit_conversions)
@@ -461,6 +569,26 @@ Farrell_2017_config <- dataset_configure("data/Farrell_2017/metadata.yml", defin
 Farrell_2017_raw <- dataset_process("data/Farrell_2017/data.csv", Farrell_2017_config, schema, resource_metadata, unit_conversions)
 Farrell_2017 <- dataset_update_taxonomy(Farrell_2017_raw, taxon_list)
 
+Fernando_2006_config <- dataset_configure("data/Fernando_2006/metadata.yml", definitions)
+Fernando_2006_raw <- dataset_process("data/Fernando_2006/data.csv", Fernando_2006_config, schema, resource_metadata, unit_conversions)
+Fernando_2006 <- dataset_update_taxonomy(Fernando_2006_raw, taxon_list)
+
+Fernando_2007_config <- dataset_configure("data/Fernando_2007/metadata.yml", definitions)
+Fernando_2007_raw <- dataset_process("data/Fernando_2007/data.csv", Fernando_2007_config, schema, resource_metadata, unit_conversions)
+Fernando_2007 <- dataset_update_taxonomy(Fernando_2007_raw, taxon_list)
+
+Fernando_2009_config <- dataset_configure("data/Fernando_2009/metadata.yml", definitions)
+Fernando_2009_raw <- dataset_process("data/Fernando_2009/data.csv", Fernando_2009_config, schema, resource_metadata, unit_conversions)
+Fernando_2009 <- dataset_update_taxonomy(Fernando_2009_raw, taxon_list)
+
+Fernando_2018_config <- dataset_configure("data/Fernando_2018/metadata.yml", definitions)
+Fernando_2018_raw <- dataset_process("data/Fernando_2018/data.csv", Fernando_2018_config, schema, resource_metadata, unit_conversions)
+Fernando_2018 <- dataset_update_taxonomy(Fernando_2018_raw, taxon_list)
+
+Fernando_2021_config <- dataset_configure("data/Fernando_2021/metadata.yml", definitions)
+Fernando_2021_raw <- dataset_process("data/Fernando_2021/data.csv", Fernando_2021_config, schema, resource_metadata, unit_conversions)
+Fernando_2021 <- dataset_update_taxonomy(Fernando_2021_raw, taxon_list)
+
 Firn_2019_config <- dataset_configure("data/Firn_2019/metadata.yml", definitions)
 Firn_2019_raw <- dataset_process("data/Firn_2019/data.csv", Firn_2019_config, schema, resource_metadata, unit_conversions)
 Firn_2019 <- dataset_update_taxonomy(Firn_2019_raw, taxon_list)
@@ -468,6 +596,10 @@ Firn_2019 <- dataset_update_taxonomy(Firn_2019_raw, taxon_list)
 Fonseca_2000_config <- dataset_configure("data/Fonseca_2000/metadata.yml", definitions)
 Fonseca_2000_raw <- dataset_process("data/Fonseca_2000/data.csv", Fonseca_2000_config, schema, resource_metadata, unit_conversions)
 Fonseca_2000 <- dataset_update_taxonomy(Fonseca_2000_raw, taxon_list)
+
+Ford_2024_config <- dataset_configure("data/Ford_2024/metadata.yml", definitions)
+Ford_2024_raw <- dataset_process("data/Ford_2024/data.csv", Ford_2024_config, schema, resource_metadata, unit_conversions)
+Ford_2024 <- dataset_update_taxonomy(Ford_2024_raw, taxon_list)
 
 Forster_1992_config <- dataset_configure("data/Forster_1992/metadata.yml", definitions)
 Forster_1992_raw <- dataset_process("data/Forster_1992/data.csv", Forster_1992_config, schema, resource_metadata, unit_conversions)
@@ -477,9 +609,21 @@ Forster_1995_config <- dataset_configure("data/Forster_1995/metadata.yml", defin
 Forster_1995_raw <- dataset_process("data/Forster_1995/data.csv", Forster_1995_config, schema, resource_metadata, unit_conversions)
 Forster_1995 <- dataset_update_taxonomy(Forster_1995_raw, taxon_list)
 
+Freeman_2017_config <- dataset_configure("data/Freeman_2017/metadata.yml", definitions)
+Freeman_2017_raw <- dataset_process("data/Freeman_2017/data.csv", Freeman_2017_config, schema, resource_metadata, unit_conversions)
+Freeman_2017 <- dataset_update_taxonomy(Freeman_2017_raw, taxon_list)
+
+Freeman_2018_config <- dataset_configure("data/Freeman_2018/metadata.yml", definitions)
+Freeman_2018_raw <- dataset_process("data/Freeman_2018/data.csv", Freeman_2018_config, schema, resource_metadata, unit_conversions)
+Freeman_2018 <- dataset_update_taxonomy(Freeman_2018_raw, taxon_list)
+
 French_2017_config <- dataset_configure("data/French_2017/metadata.yml", definitions)
 French_2017_raw <- dataset_process("data/French_2017/data.csv", French_2017_config, schema, resource_metadata, unit_conversions)
 French_2017 <- dataset_update_taxonomy(French_2017_raw, taxon_list)
+
+Fuller_2025_config <- dataset_configure("data/Fuller_2025/metadata.yml", definitions)
+Fuller_2025_raw <- dataset_process("data/Fuller_2025/data.csv", Fuller_2025_config, schema, resource_metadata, unit_conversions)
+Fuller_2025 <- dataset_update_taxonomy(Fuller_2025_raw, taxon_list)
 
 Funk_2016_config <- dataset_configure("data/Funk_2016/metadata.yml", definitions)
 Funk_2016_raw <- dataset_process("data/Funk_2016/data.csv", Funk_2016_config, schema, resource_metadata, unit_conversions)
@@ -521,9 +665,17 @@ Ghannoum_2010_config <- dataset_configure("data/Ghannoum_2010/metadata.yml", def
 Ghannoum_2010_raw <- dataset_process("data/Ghannoum_2010/data.csv", Ghannoum_2010_config, schema, resource_metadata, unit_conversions)
 Ghannoum_2010 <- dataset_update_taxonomy(Ghannoum_2010_raw, taxon_list)
 
+Gille_2024_config <- dataset_configure("data/Gille_2024/metadata.yml", definitions)
+Gille_2024_raw <- dataset_process("data/Gille_2024/data.csv", Gille_2024_config, schema, resource_metadata, unit_conversions)
+Gille_2024 <- dataset_update_taxonomy(Gille_2024_raw, taxon_list)
+
 Goble_1981_config <- dataset_configure("data/Goble_1981/metadata.yml", definitions)
 Goble_1981_raw <- dataset_process("data/Goble_1981/data.csv", Goble_1981_config, schema, resource_metadata, unit_conversions)
 Goble_1981 <- dataset_update_taxonomy(Goble_1981_raw, taxon_list)
+
+Gosper_1999_config <- dataset_configure("data/Gosper_1999/metadata.yml", definitions)
+Gosper_1999_raw <- dataset_process("data/Gosper_1999/data.csv", Gosper_1999_config, schema, resource_metadata, unit_conversions)
+Gosper_1999 <- dataset_update_taxonomy(Gosper_1999_raw, taxon_list)
 
 Gosper_2004_config <- dataset_configure("data/Gosper_2004/metadata.yml", definitions)
 Gosper_2004_raw <- dataset_process("data/Gosper_2004/data.csv", Gosper_2004_config, schema, resource_metadata, unit_conversions)
@@ -548,6 +700,10 @@ GrassBase_2014 <- dataset_update_taxonomy(GrassBase_2014_raw, taxon_list)
 Gray_2019_config <- dataset_configure("data/Gray_2019/metadata.yml", definitions)
 Gray_2019_raw <- dataset_process("data/Gray_2019/data.csv", Gray_2019_config, schema, resource_metadata, unit_conversions)
 Gray_2019 <- dataset_update_taxonomy(Gray_2019_raw, taxon_list)
+
+Griffith_2015_config <- dataset_configure("data/Griffith_2015/metadata.yml", definitions)
+Griffith_2015_raw <- dataset_process("data/Griffith_2015/data.csv", Griffith_2015_config, schema, resource_metadata, unit_conversions)
+Griffith_2015 <- dataset_update_taxonomy(Griffith_2015_raw, taxon_list)
 
 Grigg_2008_config <- dataset_configure("data/Grigg_2008/metadata.yml", definitions)
 Grigg_2008_raw <- dataset_process("data/Grigg_2008/data.csv", Grigg_2008_config, schema, resource_metadata, unit_conversions)
@@ -601,9 +757,17 @@ Guilherme_Pereira_2019_config <- dataset_configure("data/Guilherme_Pereira_2019/
 Guilherme_Pereira_2019_raw <- dataset_process("data/Guilherme_Pereira_2019/data.csv", Guilherme_Pereira_2019_config, schema, resource_metadata, unit_conversions)
 Guilherme_Pereira_2019 <- dataset_update_taxonomy(Guilherme_Pereira_2019_raw, taxon_list)
 
+Gurung_2025_config <- dataset_configure("data/Gurung_2025/metadata.yml", definitions)
+Gurung_2025_raw <- dataset_process("data/Gurung_2025/data.csv", Gurung_2025_config, schema, resource_metadata, unit_conversions)
+Gurung_2025 <- dataset_update_taxonomy(Gurung_2025_raw, taxon_list)
+
 Hall_1981_config <- dataset_configure("data/Hall_1981/metadata.yml", definitions)
 Hall_1981_raw <- dataset_process("data/Hall_1981/data.csv", Hall_1981_config, schema, resource_metadata, unit_conversions)
 Hall_1981 <- dataset_update_taxonomy(Hall_1981_raw, taxon_list)
+
+Hallam_1970_config <- dataset_configure("data/Hallam_1970/metadata.yml", definitions)
+Hallam_1970_raw <- dataset_process("data/Hallam_1970/data.csv", Hallam_1970_config, schema, resource_metadata, unit_conversions)
+Hallam_1970 <- dataset_update_taxonomy(Hallam_1970_raw, taxon_list)
 
 Hanley_2001_config <- dataset_configure("data/Hanley_2001/metadata.yml", definitions)
 Hanley_2001_raw <- dataset_process("data/Hanley_2001/data.csv", Hanley_2001_config, schema, resource_metadata, unit_conversions)
@@ -649,6 +813,22 @@ Hocking_1986_config <- dataset_configure("data/Hocking_1986/metadata.yml", defin
 Hocking_1986_raw <- dataset_process("data/Hocking_1986/data.csv", Hocking_1986_config, schema, resource_metadata, unit_conversions)
 Hocking_1986 <- dataset_update_taxonomy(Hocking_1986_raw, taxon_list)
 
+Hodges_2019_config <- dataset_configure("data/Hodges_2019/metadata.yml", definitions)
+Hodges_2019_raw <- dataset_process("data/Hodges_2019/data.csv", Hodges_2019_config, schema, resource_metadata, unit_conversions)
+Hodges_2019 <- dataset_update_taxonomy(Hodges_2019_raw, taxon_list)
+
+Hodges_2021_config <- dataset_configure("data/Hodges_2021/metadata.yml", definitions)
+Hodges_2021_raw <- dataset_process("data/Hodges_2021/data.csv", Hodges_2021_config, schema, resource_metadata, unit_conversions)
+Hodges_2021 <- dataset_update_taxonomy(Hodges_2021_raw, taxon_list)
+
+Hopper_2024_config <- dataset_configure("data/Hopper_2024/metadata.yml", definitions)
+Hopper_2024_raw <- dataset_process("data/Hopper_2024/data.csv", Hopper_2024_config, schema, resource_metadata, unit_conversions)
+Hopper_2024 <- dataset_update_taxonomy(Hopper_2024_raw, taxon_list)
+
+Houston_2002_config <- dataset_configure("data/Houston_2002/metadata.yml", definitions)
+Houston_2002_raw <- dataset_process("data/Houston_2002/data.csv", Houston_2002_config, schema, resource_metadata, unit_conversions)
+Houston_2002 <- dataset_update_taxonomy(Houston_2002_raw, taxon_list)
+
 Huang_2015_config <- dataset_configure("data/Huang_2015/metadata.yml", definitions)
 Huang_2015_raw <- dataset_process("data/Huang_2015/data.csv", Huang_2015_config, schema, resource_metadata, unit_conversions)
 Huang_2015 <- dataset_update_taxonomy(Huang_2015_raw, taxon_list)
@@ -685,9 +865,17 @@ Jagdish_2020_config <- dataset_configure("data/Jagdish_2020/metadata.yml", defin
 Jagdish_2020_raw <- dataset_process("data/Jagdish_2020/data.csv", Jagdish_2020_config, schema, resource_metadata, unit_conversions)
 Jagdish_2020 <- dataset_update_taxonomy(Jagdish_2020_raw, taxon_list)
 
+Jiang_2021_config <- dataset_configure("data/Jiang_2021/metadata.yml", definitions)
+Jiang_2021_raw <- dataset_process("data/Jiang_2021/data.csv", Jiang_2021_config, schema, resource_metadata, unit_conversions)
+Jiang_2021 <- dataset_update_taxonomy(Jiang_2021_raw, taxon_list)
+
 Jin_2019_config <- dataset_configure("data/Jin_2019/metadata.yml", definitions)
 Jin_2019_raw <- dataset_process("data/Jin_2019/data.csv", Jin_2019_config, schema, resource_metadata, unit_conversions)
 Jin_2019 <- dataset_update_taxonomy(Jin_2019_raw, taxon_list)
+
+Johnson_1980_config <- dataset_configure("data/Johnson_1980/metadata.yml", definitions)
+Johnson_1980_raw <- dataset_process("data/Johnson_1980/data.csv", Johnson_1980_config, schema, resource_metadata, unit_conversions)
+Johnson_1980 <- dataset_update_taxonomy(Johnson_1980_raw, taxon_list)
 
 Jordan_2001_config <- dataset_configure("data/Jordan_2001/metadata.yml", definitions)
 Jordan_2001_raw <- dataset_process("data/Jordan_2001/data.csv", Jordan_2001_config, schema, resource_metadata, unit_conversions)
@@ -704,6 +892,10 @@ Jordan_2015 <- dataset_update_taxonomy(Jordan_2015_raw, taxon_list)
 Jordan_2020_config <- dataset_configure("data/Jordan_2020/metadata.yml", definitions)
 Jordan_2020_raw <- dataset_process("data/Jordan_2020/data.csv", Jordan_2020_config, schema, resource_metadata, unit_conversions)
 Jordan_2020 <- dataset_update_taxonomy(Jordan_2020_raw, taxon_list)
+
+Judd_1996_config <- dataset_configure("data/Judd_1996/metadata.yml", definitions)
+Judd_1996_raw <- dataset_process("data/Judd_1996/data.csv", Judd_1996_config, schema, resource_metadata, unit_conversions)
+Judd_1996 <- dataset_update_taxonomy(Judd_1996_raw, taxon_list)
 
 Jurado_1991_config <- dataset_configure("data/Jurado_1991/metadata.yml", definitions)
 Jurado_1991_raw <- dataset_process("data/Jurado_1991/data.csv", Jurado_1991_config, schema, resource_metadata, unit_conversions)
@@ -745,6 +937,10 @@ Kew_2019_6_config <- dataset_configure("data/Kew_2019_6/metadata.yml", definitio
 Kew_2019_6_raw <- dataset_process("data/Kew_2019_6/data.csv", Kew_2019_6_config, schema, resource_metadata, unit_conversions)
 Kew_2019_6 <- dataset_update_taxonomy(Kew_2019_6_raw, taxon_list)
 
+Kingston_1961_config <- dataset_configure("data/Kingston_1961/metadata.yml", definitions)
+Kingston_1961_raw <- dataset_process("data/Kingston_1961/data.csv", Kingston_1961_config, schema, resource_metadata, unit_conversions)
+Kingston_1961 <- dataset_update_taxonomy(Kingston_1961_raw, taxon_list)
+
 Kirkpatrick_2020_config <- dataset_configure("data/Kirkpatrick_2020/metadata.yml", definitions)
 Kirkpatrick_2020_raw <- dataset_process("data/Kirkpatrick_2020/data.csv", Kirkpatrick_2020_config, schema, resource_metadata, unit_conversions)
 Kirkpatrick_2020 <- dataset_update_taxonomy(Kirkpatrick_2020_raw, taxon_list)
@@ -773,6 +969,18 @@ Kuo_1982_config <- dataset_configure("data/Kuo_1982/metadata.yml", definitions)
 Kuo_1982_raw <- dataset_process("data/Kuo_1982/data.csv", Kuo_1982_config, schema, resource_metadata, unit_conversions)
 Kuo_1982 <- dataset_update_taxonomy(Kuo_1982_raw, taxon_list)
 
+Ladd_2006_config <- dataset_configure("data/Ladd_2006/metadata.yml", definitions)
+Ladd_2006_raw <- dataset_process("data/Ladd_2006/data.csv", Ladd_2006_config, schema, resource_metadata, unit_conversions)
+Ladd_2006 <- dataset_update_taxonomy(Ladd_2006_raw, taxon_list)
+
+Ladd_2019_config <- dataset_configure("data/Ladd_2019/metadata.yml", definitions)
+Ladd_2019_raw <- dataset_process("data/Ladd_2019/data.csv", Ladd_2019_config, schema, resource_metadata, unit_conversions)
+Ladd_2019 <- dataset_update_taxonomy(Ladd_2019_raw, taxon_list)
+
+Ladd_2023_config <- dataset_configure("data/Ladd_2023/metadata.yml", definitions)
+Ladd_2023_raw <- dataset_process("data/Ladd_2023/data.csv", Ladd_2023_config, schema, resource_metadata, unit_conversions)
+Ladd_2023 <- dataset_update_taxonomy(Ladd_2023_raw, taxon_list)
+
 Laliberte_2012_config <- dataset_configure("data/Laliberte_2012/metadata.yml", definitions)
 Laliberte_2012_raw <- dataset_process("data/Laliberte_2012/data.csv", Laliberte_2012_config, schema, resource_metadata, unit_conversions)
 Laliberte_2012 <- dataset_update_taxonomy(Laliberte_2012_raw, taxon_list)
@@ -780,6 +988,10 @@ Laliberte_2012 <- dataset_update_taxonomy(Laliberte_2012_raw, taxon_list)
 Lamont_2002_config <- dataset_configure("data/Lamont_2002/metadata.yml", definitions)
 Lamont_2002_raw <- dataset_process("data/Lamont_2002/data.csv", Lamont_2002_config, schema, resource_metadata, unit_conversions)
 Lamont_2002 <- dataset_update_taxonomy(Lamont_2002_raw, taxon_list)
+
+Lane_2026_config <- dataset_configure("data/Lane_2026/metadata.yml", definitions)
+Lane_2026_raw <- dataset_process("data/Lane_2026/data.csv", Lane_2026_config, schema, resource_metadata, unit_conversions)
+Lane_2026 <- dataset_update_taxonomy(Lane_2026_raw, taxon_list)
 
 Lawes_2012_config <- dataset_configure("data/Lawes_2012/metadata.yml", definitions)
 Lawes_2012_raw <- dataset_process("data/Lawes_2012/data.csv", Lawes_2012_config, schema, resource_metadata, unit_conversions)
@@ -829,9 +1041,17 @@ Lemmens_1994_config <- dataset_configure("data/Lemmens_1994/metadata.yml", defin
 Lemmens_1994_raw <- dataset_process("data/Lemmens_1994/data.csv", Lemmens_1994_config, schema, resource_metadata, unit_conversions)
 Lemmens_1994 <- dataset_update_taxonomy(Lemmens_1994_raw, taxon_list)
 
+Lequerica_Tamara_2025_config <- dataset_configure("data/Lequerica_Tamara_2025/metadata.yml", definitions)
+Lequerica_Tamara_2025_raw <- dataset_process("data/Lequerica_Tamara_2025/data.csv", Lequerica_Tamara_2025_config, schema, resource_metadata, unit_conversions)
+Lequerica_Tamara_2025 <- dataset_update_taxonomy(Lequerica_Tamara_2025_raw, taxon_list)
+
 Lewis_2015_config <- dataset_configure("data/Lewis_2015/metadata.yml", definitions)
 Lewis_2015_raw <- dataset_process("data/Lewis_2015/data.csv", Lewis_2015_config, schema, resource_metadata, unit_conversions)
 Lewis_2015 <- dataset_update_taxonomy(Lewis_2015_raw, taxon_list)
+
+Li_1997_config <- dataset_configure("data/Li_1997/metadata.yml", definitions)
+Li_1997_raw <- dataset_process("data/Li_1997/data.csv", Li_1997_config, schema, resource_metadata, unit_conversions)
+Li_1997 <- dataset_update_taxonomy(Li_1997_raw, taxon_list)
 
 Li_2018_config <- dataset_configure("data/Li_2018/metadata.yml", definitions)
 Li_2018_raw <- dataset_process("data/Li_2018/data.csv", Li_2018_config, schema, resource_metadata, unit_conversions)
@@ -840,6 +1060,10 @@ Li_2018 <- dataset_update_taxonomy(Li_2018_raw, taxon_list)
 Li_2019_config <- dataset_configure("data/Li_2019/metadata.yml", definitions)
 Li_2019_raw <- dataset_process("data/Li_2019/data.csv", Li_2019_config, schema, resource_metadata, unit_conversions)
 Li_2019 <- dataset_update_taxonomy(Li_2019_raw, taxon_list)
+
+Li_2025_config <- dataset_configure("data/Li_2025/metadata.yml", definitions)
+Li_2025_raw <- dataset_process("data/Li_2025/data.csv", Li_2025_config, schema, resource_metadata, unit_conversions)
+Li_2025 <- dataset_update_taxonomy(Li_2025_raw, taxon_list)
 
 Lim_2017_config <- dataset_configure("data/Lim_2017/metadata.yml", definitions)
 Lim_2017_raw <- dataset_process("data/Lim_2017/data.csv", Lim_2017_config, schema, resource_metadata, unit_conversions)
@@ -893,6 +1117,14 @@ McGlone_2015_config <- dataset_configure("data/McGlone_2015/metadata.yml", defin
 McGlone_2015_raw <- dataset_process("data/McGlone_2015/data.csv", McGlone_2015_config, schema, resource_metadata, unit_conversions)
 McGlone_2015 <- dataset_update_taxonomy(McGlone_2015_raw, taxon_list)
 
+McNeice_2026_config <- dataset_configure("data/McNeice_2026/metadata.yml", definitions)
+McNeice_2026_raw <- dataset_process("data/McNeice_2026/data.csv", McNeice_2026_config, schema, resource_metadata, unit_conversions)
+McNeice_2026 <- dataset_update_taxonomy(McNeice_2026_raw, taxon_list)
+
+McQuillan_2020_config <- dataset_configure("data/McQuillan_2020/metadata.yml", definitions)
+McQuillan_2020_raw <- dataset_process("data/McQuillan_2020/data.csv", McQuillan_2020_config, schema, resource_metadata, unit_conversions)
+McQuillan_2020 <- dataset_update_taxonomy(McQuillan_2020_raw, taxon_list)
+
 Meers_2007_config <- dataset_configure("data/Meers_2007/metadata.yml", definitions)
 Meers_2007_raw <- dataset_process("data/Meers_2007/data.csv", Meers_2007_config, schema, resource_metadata, unit_conversions)
 Meers_2007 <- dataset_update_taxonomy(Meers_2007_raw, taxon_list)
@@ -920,6 +1152,10 @@ Milberg_1997 <- dataset_update_taxonomy(Milberg_1997_raw, taxon_list)
 Milberg_1998_config <- dataset_configure("data/Milberg_1998/metadata.yml", definitions)
 Milberg_1998_raw <- dataset_process("data/Milberg_1998/data.csv", Milberg_1998_config, schema, resource_metadata, unit_conversions)
 Milberg_1998 <- dataset_update_taxonomy(Milberg_1998_raw, taxon_list)
+
+Miller_2001_config <- dataset_configure("data/Miller_2001/metadata.yml", definitions)
+Miller_2001_raw <- dataset_process("data/Miller_2001/data.csv", Miller_2001_config, schema, resource_metadata, unit_conversions)
+Miller_2001 <- dataset_update_taxonomy(Miller_2001_raw, taxon_list)
 
 Mitchell_2008_config <- dataset_configure("data/Mitchell_2008/metadata.yml", definitions)
 Mitchell_2008_raw <- dataset_process("data/Mitchell_2008/data.csv", Mitchell_2008_config, schema, resource_metadata, unit_conversions)
@@ -985,9 +1221,25 @@ Munroe_2019_config <- dataset_configure("data/Munroe_2019/metadata.yml", definit
 Munroe_2019_raw <- dataset_process("data/Munroe_2019/data.csv", Munroe_2019_config, schema, resource_metadata, unit_conversions)
 Munroe_2019 <- dataset_update_taxonomy(Munroe_2019_raw, taxon_list)
 
+Munroe_2024_config <- dataset_configure("data/Munroe_2024/metadata.yml", definitions)
+Munroe_2024_raw <- dataset_process("data/Munroe_2024/data.csv", Munroe_2024_config, schema, resource_metadata, unit_conversions)
+Munroe_2024 <- dataset_update_taxonomy(Munroe_2024_raw, taxon_list)
+
 Myers_1997_config <- dataset_configure("data/Myers_1997/metadata.yml", definitions)
 Myers_1997_raw <- dataset_process("data/Myers_1997/data.csv", Myers_1997_config, schema, resource_metadata, unit_conversions)
 Myers_1997 <- dataset_update_taxonomy(Myers_1997_raw, taxon_list)
+
+Myrans_2021_config <- dataset_configure("data/Myrans_2021/metadata.yml", definitions)
+Myrans_2021_raw <- dataset_process("data/Myrans_2021/data.csv", Myrans_2021_config, schema, resource_metadata, unit_conversions)
+Myrans_2021 <- dataset_update_taxonomy(Myrans_2021_raw, taxon_list)
+
+Myrans_2024_config <- dataset_configure("data/Myrans_2024/metadata.yml", definitions)
+Myrans_2024_raw <- dataset_process("data/Myrans_2024/data.csv", Myrans_2024_config, schema, resource_metadata, unit_conversions)
+Myrans_2024 <- dataset_update_taxonomy(Myrans_2024_raw, taxon_list)
+
+Myrans_2025_config <- dataset_configure("data/Myrans_2025/metadata.yml", definitions)
+Myrans_2025_raw <- dataset_process("data/Myrans_2025/data.csv", Myrans_2025_config, schema, resource_metadata, unit_conversions)
+Myrans_2025 <- dataset_update_taxonomy(Myrans_2025_raw, taxon_list)
 
 Nano_2011_config <- dataset_configure("data/Nano_2011/metadata.yml", definitions)
 Nano_2011_raw <- dataset_process("data/Nano_2011/data.csv", Nano_2011_config, schema, resource_metadata, unit_conversions)
@@ -1049,6 +1301,18 @@ NTH_2023_config <- dataset_configure("data/NTH_2023/metadata.yml", definitions)
 NTH_2023_raw <- dataset_process("data/NTH_2023/data.csv", NTH_2023_config, schema, resource_metadata, unit_conversions)
 NTH_2023 <- dataset_update_taxonomy(NTH_2023_raw, taxon_list)
 
+OGrady_1999_config <- dataset_configure("data/OGrady_1999/metadata.yml", definitions)
+OGrady_1999_raw <- dataset_process("data/OGrady_1999/data.csv", OGrady_1999_config, schema, resource_metadata, unit_conversions)
+OGrady_1999 <- dataset_update_taxonomy(OGrady_1999_raw, taxon_list)
+
+OGrady_2006_config <- dataset_configure("data/OGrady_2006/metadata.yml", definitions)
+OGrady_2006_raw <- dataset_process("data/OGrady_2006/data.csv", OGrady_2006_config, schema, resource_metadata, unit_conversions)
+OGrady_2006 <- dataset_update_taxonomy(OGrady_2006_raw, taxon_list)
+
+OGrady_2009_config <- dataset_configure("data/OGrady_2009/metadata.yml", definitions)
+OGrady_2009_raw <- dataset_process("data/OGrady_2009/data.csv", OGrady_2009_config, schema, resource_metadata, unit_conversions)
+OGrady_2009 <- dataset_update_taxonomy(OGrady_2009_raw, taxon_list)
+
 Onoda_2010_config <- dataset_configure("data/Onoda_2010/metadata.yml", definitions)
 Onoda_2010_raw <- dataset_process("data/Onoda_2010/data.csv", Onoda_2010_config, schema, resource_metadata, unit_conversions)
 Onoda_2010 <- dataset_update_taxonomy(Onoda_2010_raw, taxon_list)
@@ -1069,6 +1333,38 @@ Osborne_2014_config <- dataset_configure("data/Osborne_2014/metadata.yml", defin
 Osborne_2014_raw <- dataset_process("data/Osborne_2014/data.csv", Osborne_2014_config, schema, resource_metadata, unit_conversions)
 Osborne_2014 <- dataset_update_taxonomy(Osborne_2014_raw, taxon_list)
 
+Osmolovsky_2026_config <- dataset_configure("data/Osmolovsky_2026/metadata.yml", definitions)
+Osmolovsky_2026_raw <- dataset_process("data/Osmolovsky_2026/data.csv", Osmolovsky_2026_config, schema, resource_metadata, unit_conversions)
+Osmolovsky_2026 <- dataset_update_taxonomy(Osmolovsky_2026_raw, taxon_list)
+
+Ottaviani_2015_config <- dataset_configure("data/Ottaviani_2015/metadata.yml", definitions)
+Ottaviani_2015_raw <- dataset_process("data/Ottaviani_2015/data.csv", Ottaviani_2015_config, schema, resource_metadata, unit_conversions)
+Ottaviani_2015 <- dataset_update_taxonomy(Ottaviani_2015_raw, taxon_list)
+
+Oyanoghafo_2021_config <- dataset_configure("data/Oyanoghafo_2021/metadata.yml", definitions)
+Oyanoghafo_2021_raw <- dataset_process("data/Oyanoghafo_2021/data.csv", Oyanoghafo_2021_config, schema, resource_metadata, unit_conversions)
+Oyanoghafo_2021 <- dataset_update_taxonomy(Oyanoghafo_2021_raw, taxon_list)
+
+Pan_2025_config <- dataset_configure("data/Pan_2025/metadata.yml", definitions)
+Pan_2025_raw <- dataset_process("data/Pan_2025/data.csv", Pan_2025_config, schema, resource_metadata, unit_conversions)
+Pan_2025 <- dataset_update_taxonomy(Pan_2025_raw, taxon_list)
+
+Pan_2026_config <- dataset_configure("data/Pan_2026/metadata.yml", definitions)
+Pan_2026_raw <- dataset_process("data/Pan_2026/data.csv", Pan_2026_config, schema, resource_metadata, unit_conversions)
+Pan_2026 <- dataset_update_taxonomy(Pan_2026_raw, taxon_list)
+
+Paroissien_2021_config <- dataset_configure("data/Paroissien_2021/metadata.yml", definitions)
+Paroissien_2021_raw <- dataset_process("data/Paroissien_2021/data.csv", Paroissien_2021_config, schema, resource_metadata, unit_conversions)
+Paroissien_2021 <- dataset_update_taxonomy(Paroissien_2021_raw, taxon_list)
+
+Paroissien_2026_config <- dataset_configure("data/Paroissien_2026/metadata.yml", definitions)
+Paroissien_2026_raw <- dataset_process("data/Paroissien_2026/data.csv", Paroissien_2026_config, schema, resource_metadata, unit_conversions)
+Paroissien_2026 <- dataset_update_taxonomy(Paroissien_2026_raw, taxon_list)
+
+Paroissien_2026_2_config <- dataset_configure("data/Paroissien_2026_2/metadata.yml", definitions)
+Paroissien_2026_2_raw <- dataset_process("data/Paroissien_2026_2/data.csv", Paroissien_2026_2_config, schema, resource_metadata, unit_conversions)
+Paroissien_2026_2 <- dataset_update_taxonomy(Paroissien_2026_2_raw, taxon_list)
+
 Pate_1989_config <- dataset_configure("data/Pate_1989/metadata.yml", definitions)
 Pate_1989_raw <- dataset_process("data/Pate_1989/data.csv", Pate_1989_config, schema, resource_metadata, unit_conversions)
 Pate_1989 <- dataset_update_taxonomy(Pate_1989_raw, taxon_list)
@@ -1088,6 +1384,22 @@ Peeters_2002 <- dataset_update_taxonomy(Peeters_2002_raw, taxon_list)
 Pekin_2011_config <- dataset_configure("data/Pekin_2011/metadata.yml", definitions)
 Pekin_2011_raw <- dataset_process("data/Pekin_2011/data.csv", Pekin_2011_config, schema, resource_metadata, unit_conversions)
 Pekin_2011 <- dataset_update_taxonomy(Pekin_2011_raw, taxon_list)
+
+PerezMartinez_2025_config <- dataset_configure("data/PerezMartinez_2025/metadata.yml", definitions)
+PerezMartinez_2025_raw <- dataset_process("data/PerezMartinez_2025/data.csv", PerezMartinez_2025_config, schema, resource_metadata, unit_conversions)
+PerezMartinez_2025 <- dataset_update_taxonomy(PerezMartinez_2025_raw, taxon_list)
+
+Peters_2020_config <- dataset_configure("data/Peters_2020/metadata.yml", definitions)
+Peters_2020_raw <- dataset_process("data/Peters_2020/data.csv", Peters_2020_config, schema, resource_metadata, unit_conversions)
+Peters_2020 <- dataset_update_taxonomy(Peters_2020_raw, taxon_list)
+
+Peters_2021_config <- dataset_configure("data/Peters_2021/metadata.yml", definitions)
+Peters_2021_raw <- dataset_process("data/Peters_2021/data.csv", Peters_2021_config, schema, resource_metadata, unit_conversions)
+Peters_2021 <- dataset_update_taxonomy(Peters_2021_raw, taxon_list)
+
+Peters_2025_config <- dataset_configure("data/Peters_2025/metadata.yml", definitions)
+Peters_2025_raw <- dataset_process("data/Peters_2025/data.csv", Peters_2025_config, schema, resource_metadata, unit_conversions)
+Peters_2025 <- dataset_update_taxonomy(Peters_2025_raw, taxon_list)
 
 Pfautsch_2016_config <- dataset_configure("data/Pfautsch_2016/metadata.yml", definitions)
 Pfautsch_2016_raw <- dataset_process("data/Pfautsch_2016/data.csv", Pfautsch_2016_config, schema, resource_metadata, unit_conversions)
@@ -1129,6 +1441,26 @@ Portelli_2023_config <- dataset_configure("data/Portelli_2023/metadata.yml", def
 Portelli_2023_raw <- dataset_process("data/Portelli_2023/data.csv", Portelli_2023_config, schema, resource_metadata, unit_conversions)
 Portelli_2023 <- dataset_update_taxonomy(Portelli_2023_raw, taxon_list)
 
+Prendergast_2022_config <- dataset_configure("data/Prendergast_2022/metadata.yml", definitions)
+Prendergast_2022_raw <- dataset_process("data/Prendergast_2022/data.csv", Prendergast_2022_config, schema, resource_metadata, unit_conversions)
+Prendergast_2022 <- dataset_update_taxonomy(Prendergast_2022_raw, taxon_list)
+
+Prendergast_2022_2_config <- dataset_configure("data/Prendergast_2022_2/metadata.yml", definitions)
+Prendergast_2022_2_raw <- dataset_process("data/Prendergast_2022_2/data.csv", Prendergast_2022_2_config, schema, resource_metadata, unit_conversions)
+Prendergast_2022_2 <- dataset_update_taxonomy(Prendergast_2022_2_raw, taxon_list)
+
+Prendergast_2026_config <- dataset_configure("data/Prendergast_2026/metadata.yml", definitions)
+Prendergast_2026_raw <- dataset_process("data/Prendergast_2026/data.csv", Prendergast_2026_config, schema, resource_metadata, unit_conversions)
+Prendergast_2026 <- dataset_update_taxonomy(Prendergast_2026_raw, taxon_list)
+
+Prendergast_2026_2_config <- dataset_configure("data/Prendergast_2026_2/metadata.yml", definitions)
+Prendergast_2026_2_raw <- dataset_process("data/Prendergast_2026_2/data.csv", Prendergast_2026_2_config, schema, resource_metadata, unit_conversions)
+Prendergast_2026_2 <- dataset_update_taxonomy(Prendergast_2026_2_raw, taxon_list)
+
+Prendergast_2026_3_config <- dataset_configure("data/Prendergast_2026_3/metadata.yml", definitions)
+Prendergast_2026_3_raw <- dataset_process("data/Prendergast_2026_3/data.csv", Prendergast_2026_3_config, schema, resource_metadata, unit_conversions)
+Prendergast_2026_3 <- dataset_update_taxonomy(Prendergast_2026_3_raw, taxon_list)
+
 Prior_2000_config <- dataset_configure("data/Prior_2000/metadata.yml", definitions)
 Prior_2000_raw <- dataset_process("data/Prior_2000/data.csv", Prior_2000_config, schema, resource_metadata, unit_conversions)
 Prior_2000 <- dataset_update_taxonomy(Prior_2000_raw, taxon_list)
@@ -1144,6 +1476,10 @@ Prior_2016 <- dataset_update_taxonomy(Prior_2016_raw, taxon_list)
 Prior_2022_config <- dataset_configure("data/Prior_2022/metadata.yml", definitions)
 Prior_2022_raw <- dataset_process("data/Prior_2022/data.csv", Prior_2022_config, schema, resource_metadata, unit_conversions)
 Prior_2022 <- dataset_update_taxonomy(Prior_2022_raw, taxon_list)
+
+Pritzkow_2022_config <- dataset_configure("data/Pritzkow_2022/metadata.yml", definitions)
+Pritzkow_2022_raw <- dataset_process("data/Pritzkow_2022/data.csv", Pritzkow_2022_config, schema, resource_metadata, unit_conversions)
+Pritzkow_2022 <- dataset_update_taxonomy(Pritzkow_2022_raw, taxon_list)
 
 Purdie_1976_config <- dataset_configure("data/Purdie_1976/metadata.yml", definitions)
 Purdie_1976_raw <- dataset_process("data/Purdie_1976/data.csv", Purdie_1976_config, schema, resource_metadata, unit_conversions)
@@ -1164,6 +1500,10 @@ RBGV_2022 <- dataset_update_taxonomy(RBGV_2022_raw, taxon_list)
 RBGV_2023_config <- dataset_configure("data/RBGV_2023/metadata.yml", definitions)
 RBGV_2023_raw <- dataset_process("data/RBGV_2023/data.csv", RBGV_2023_config, schema, resource_metadata, unit_conversions)
 RBGV_2023 <- dataset_update_taxonomy(RBGV_2023_raw, taxon_list)
+
+Read_1985_config <- dataset_configure("data/Read_1985/metadata.yml", definitions)
+Read_1985_raw <- dataset_process("data/Read_1985/data.csv", Read_1985_config, schema, resource_metadata, unit_conversions)
+Read_1985 <- dataset_update_taxonomy(Read_1985_raw, taxon_list)
 
 Read_2003_config <- dataset_configure("data/Read_2003/metadata.yml", definitions)
 Read_2003_raw <- dataset_process("data/Read_2003/data.csv", Read_2003_config, schema, resource_metadata, unit_conversions)
@@ -1192,6 +1532,10 @@ Richards_2008 <- dataset_update_taxonomy(Richards_2008_raw, taxon_list)
 Richards_2021_config <- dataset_configure("data/Richards_2021/metadata.yml", definitions)
 Richards_2021_raw <- dataset_process("data/Richards_2021/data.csv", Richards_2021_config, schema, resource_metadata, unit_conversions)
 Richards_2021 <- dataset_update_taxonomy(Richards_2021_raw, taxon_list)
+
+Ritchie_2021_config <- dataset_configure("data/Ritchie_2021/metadata.yml", definitions)
+Ritchie_2021_raw <- dataset_process("data/Ritchie_2021/data.csv", Ritchie_2021_config, schema, resource_metadata, unit_conversions)
+Ritchie_2021 <- dataset_update_taxonomy(Ritchie_2021_raw, taxon_list)
 
 Roberts_2006_config <- dataset_configure("data/Roberts_2006/metadata.yml", definitions)
 Roberts_2006_raw <- dataset_process("data/Roberts_2006/data.csv", Roberts_2006_config, schema, resource_metadata, unit_conversions)
@@ -1273,6 +1617,18 @@ Santini_2016_config <- dataset_configure("data/Santini_2016/metadata.yml", defin
 Santini_2016_raw <- dataset_process("data/Santini_2016/data.csv", Santini_2016_config, schema, resource_metadata, unit_conversions)
 Santini_2016 <- dataset_update_taxonomy(Santini_2016_raw, taxon_list)
 
+Saraeian_2025_config <- dataset_configure("data/Saraeian_2025/metadata.yml", definitions)
+Saraeian_2025_raw <- dataset_process("data/Saraeian_2025/data.csv", Saraeian_2025_config, schema, resource_metadata, unit_conversions)
+Saraeian_2025 <- dataset_update_taxonomy(Saraeian_2025_raw, taxon_list)
+
+Saunders_2024_config <- dataset_configure("data/Saunders_2024/metadata.yml", definitions)
+Saunders_2024_raw <- dataset_process("data/Saunders_2024/data.csv", Saunders_2024_config, schema, resource_metadata, unit_conversions)
+Saunders_2024 <- dataset_update_taxonomy(Saunders_2024_raw, taxon_list)
+
+Sauquet_2026_config <- dataset_configure("data/Sauquet_2026/metadata.yml", definitions)
+Sauquet_2026_raw <- dataset_process("data/Sauquet_2026/data.csv", Sauquet_2026_config, schema, resource_metadata, unit_conversions)
+Sauquet_2026 <- dataset_update_taxonomy(Sauquet_2026_raw, taxon_list)
+
 Schmidt_1993_config <- dataset_configure("data/Schmidt_1993/metadata.yml", definitions)
 Schmidt_1993_raw <- dataset_process("data/Schmidt_1993/data.csv", Schmidt_1993_config, schema, resource_metadata, unit_conversions)
 Schmidt_1993 <- dataset_update_taxonomy(Schmidt_1993_raw, taxon_list)
@@ -1317,6 +1673,14 @@ Sendall_2016_config <- dataset_configure("data/Sendall_2016/metadata.yml", defin
 Sendall_2016_raw <- dataset_process("data/Sendall_2016/data.csv", Sendall_2016_config, schema, resource_metadata, unit_conversions)
 Sendall_2016 <- dataset_update_taxonomy(Sendall_2016_raw, taxon_list)
 
+Sevenello_2026_config <- dataset_configure("data/Sevenello_2026/metadata.yml", definitions)
+Sevenello_2026_raw <- dataset_process("data/Sevenello_2026/data.csv", Sevenello_2026_config, schema, resource_metadata, unit_conversions)
+Sevenello_2026 <- dataset_update_taxonomy(Sevenello_2026_raw, taxon_list)
+
+Shaw_2024_config <- dataset_configure("data/Shaw_2024/metadata.yml", definitions)
+Shaw_2024_raw <- dataset_process("data/Shaw_2024/data.csv", Shaw_2024_config, schema, resource_metadata, unit_conversions)
+Shaw_2024 <- dataset_update_taxonomy(Shaw_2024_raw, taxon_list)
+
 Shedley_2007_config <- dataset_configure("data/Shedley_2007/metadata.yml", definitions)
 Shedley_2007_raw <- dataset_process("data/Shedley_2007/data.csv", Shedley_2007_config, schema, resource_metadata, unit_conversions)
 Shedley_2007 <- dataset_update_taxonomy(Shedley_2007_raw, taxon_list)
@@ -1324,6 +1688,14 @@ Shedley_2007 <- dataset_update_taxonomy(Shedley_2007_raw, taxon_list)
 Simpson_2021_config <- dataset_configure("data/Simpson_2021/metadata.yml", definitions)
 Simpson_2021_raw <- dataset_process("data/Simpson_2021/data.csv", Simpson_2021_config, schema, resource_metadata, unit_conversions)
 Simpson_2021 <- dataset_update_taxonomy(Simpson_2021_raw, taxon_list)
+
+SimpsonSouthward_2026_config <- dataset_configure("data/SimpsonSouthward_2026/metadata.yml", definitions)
+SimpsonSouthward_2026_raw <- dataset_process("data/SimpsonSouthward_2026/data.csv", SimpsonSouthward_2026_config, schema, resource_metadata, unit_conversions)
+SimpsonSouthward_2026 <- dataset_update_taxonomy(SimpsonSouthward_2026_raw, taxon_list)
+
+Sims_2026_config <- dataset_configure("data/Sims_2026/metadata.yml", definitions)
+Sims_2026_raw <- dataset_process("data/Sims_2026/data.csv", Sims_2026_config, schema, resource_metadata, unit_conversions)
+Sims_2026 <- dataset_update_taxonomy(Sims_2026_raw, taxon_list)
 
 SinghRamesh_2019_config <- dataset_configure("data/SinghRamesh_2019/metadata.yml", definitions)
 SinghRamesh_2019_raw <- dataset_process("data/SinghRamesh_2019/data.csv", SinghRamesh_2019_config, schema, resource_metadata, unit_conversions)
@@ -1344,6 +1716,10 @@ Smith_1996 <- dataset_update_taxonomy(Smith_1996_raw, taxon_list)
 Smith_2012_config <- dataset_configure("data/Smith_2012/metadata.yml", definitions)
 Smith_2012_raw <- dataset_process("data/Smith_2012/data.csv", Smith_2012_config, schema, resource_metadata, unit_conversions)
 Smith_2012 <- dataset_update_taxonomy(Smith_2012_raw, taxon_list)
+
+Smith_2023_config <- dataset_configure("data/Smith_2023/metadata.yml", definitions)
+Smith_2023_raw <- dataset_process("data/Smith_2023/data.csv", Smith_2023_config, schema, resource_metadata, unit_conversions)
+Smith_2023 <- dataset_update_taxonomy(Smith_2023_raw, taxon_list)
 
 SmithMartin_2020_config <- dataset_configure("data/SmithMartin_2020/metadata.yml", definitions)
 SmithMartin_2020_raw <- dataset_process("data/SmithMartin_2020/data.csv", SmithMartin_2020_config, schema, resource_metadata, unit_conversions)
@@ -1369,9 +1745,21 @@ Staples_2019_config <- dataset_configure("data/Staples_2019/metadata.yml", defin
 Staples_2019_raw <- dataset_process("data/Staples_2019/data.csv", Staples_2019_config, schema, resource_metadata, unit_conversions)
 Staples_2019 <- dataset_update_taxonomy(Staples_2019_raw, taxon_list)
 
+Steart_2009_config <- dataset_configure("data/Steart_2009/metadata.yml", definitions)
+Steart_2009_raw <- dataset_process("data/Steart_2009/data.csv", Steart_2009_config, schema, resource_metadata, unit_conversions)
+Steart_2009 <- dataset_update_taxonomy(Steart_2009_raw, taxon_list)
+
+Stephens_2020_config <- dataset_configure("data/Stephens_2020/metadata.yml", definitions)
+Stephens_2020_raw <- dataset_process("data/Stephens_2020/data.csv", Stephens_2020_config, schema, resource_metadata, unit_conversions)
+Stephens_2020 <- dataset_update_taxonomy(Stephens_2020_raw, taxon_list)
+
 Stephens_2021_config <- dataset_configure("data/Stephens_2021/metadata.yml", definitions)
 Stephens_2021_raw <- dataset_process("data/Stephens_2021/data.csv", Stephens_2021_config, schema, resource_metadata, unit_conversions)
 Stephens_2021 <- dataset_update_taxonomy(Stephens_2021_raw, taxon_list)
+
+Stephens_2022_config <- dataset_configure("data/Stephens_2022/metadata.yml", definitions)
+Stephens_2022_raw <- dataset_process("data/Stephens_2022/data.csv", Stephens_2022_config, schema, resource_metadata, unit_conversions)
+Stephens_2022 <- dataset_update_taxonomy(Stephens_2022_raw, taxon_list)
 
 Stephens_2023_config <- dataset_configure("data/Stephens_2023/metadata.yml", definitions)
 Stephens_2023_raw <- dataset_process("data/Stephens_2023/data.csv", Stephens_2023_config, schema, resource_metadata, unit_conversions)
@@ -1381,6 +1769,10 @@ Stephens_2024_config <- dataset_configure("data/Stephens_2024/metadata.yml", def
 Stephens_2024_raw <- dataset_process("data/Stephens_2024/data.csv", Stephens_2024_config, schema, resource_metadata, unit_conversions)
 Stephens_2024 <- dataset_update_taxonomy(Stephens_2024_raw, taxon_list)
 
+Stephens_2024_2_config <- dataset_configure("data/Stephens_2024_2/metadata.yml", definitions)
+Stephens_2024_2_raw <- dataset_process("data/Stephens_2024_2/data.csv", Stephens_2024_2_config, schema, resource_metadata, unit_conversions)
+Stephens_2024_2 <- dataset_update_taxonomy(Stephens_2024_2_raw, taxon_list)
+
 Stewart_1995_config <- dataset_configure("data/Stewart_1995/metadata.yml", definitions)
 Stewart_1995_raw <- dataset_process("data/Stewart_1995/data.csv", Stewart_1995_config, schema, resource_metadata, unit_conversions)
 Stewart_1995 <- dataset_update_taxonomy(Stewart_1995_raw, taxon_list)
@@ -1388,6 +1780,10 @@ Stewart_1995 <- dataset_update_taxonomy(Stewart_1995_raw, taxon_list)
 Stuart_2007_config <- dataset_configure("data/Stuart_2007/metadata.yml", definitions)
 Stuart_2007_raw <- dataset_process("data/Stuart_2007/data.csv", Stuart_2007_config, schema, resource_metadata, unit_conversions)
 Stuart_2007 <- dataset_update_taxonomy(Stuart_2007_raw, taxon_list)
+
+Suriyagoda_2023_config <- dataset_configure("data/Suriyagoda_2023/metadata.yml", definitions)
+Suriyagoda_2023_raw <- dataset_process("data/Suriyagoda_2023/data.csv", Suriyagoda_2023_config, schema, resource_metadata, unit_conversions)
+Suriyagoda_2023 <- dataset_update_taxonomy(Suriyagoda_2023_raw, taxon_list)
 
 Sweedman_2006_config <- dataset_configure("data/Sweedman_2006/metadata.yml", definitions)
 Sweedman_2006_raw <- dataset_process("data/Sweedman_2006/data.csv", Sweedman_2006_config, schema, resource_metadata, unit_conversions)
@@ -1397,9 +1793,17 @@ Taseski_2021_config <- dataset_configure("data/Taseski_2021/metadata.yml", defin
 Taseski_2021_raw <- dataset_process("data/Taseski_2021/data.csv", Taseski_2021_config, schema, resource_metadata, unit_conversions)
 Taseski_2021 <- dataset_update_taxonomy(Taseski_2021_raw, taxon_list)
 
+Tasker_2026_config <- dataset_configure("data/Tasker_2026/metadata.yml", definitions)
+Tasker_2026_raw <- dataset_process("data/Tasker_2026/data.csv", Tasker_2026_config, schema, resource_metadata, unit_conversions)
+Tasker_2026 <- dataset_update_taxonomy(Tasker_2026_raw, taxon_list)
+
 Taylor_2008_config <- dataset_configure("data/Taylor_2008/metadata.yml", definitions)
 Taylor_2008_raw <- dataset_process("data/Taylor_2008/data.csv", Taylor_2008_config, schema, resource_metadata, unit_conversions)
 Taylor_2008 <- dataset_update_taxonomy(Taylor_2008_raw, taxon_list)
+
+Tennakoon_1997_config <- dataset_configure("data/Tennakoon_1997/metadata.yml", definitions)
+Tennakoon_1997_raw <- dataset_process("data/Tennakoon_1997/data.csv", Tennakoon_1997_config, schema, resource_metadata, unit_conversions)
+Tennakoon_1997 <- dataset_update_taxonomy(Tennakoon_1997_raw, taxon_list)
 
 Thomas_2017_config <- dataset_configure("data/Thomas_2017/metadata.yml", definitions)
 Thomas_2017_raw <- dataset_process("data/Thomas_2017/data.csv", Thomas_2017_config, schema, resource_metadata, unit_conversions)
@@ -1517,6 +1921,10 @@ Warren_2006_config <- dataset_configure("data/Warren_2006/metadata.yml", definit
 Warren_2006_raw <- dataset_process("data/Warren_2006/data.csv", Warren_2006_config, schema, resource_metadata, unit_conversions)
 Warren_2006 <- dataset_update_taxonomy(Warren_2006_raw, taxon_list)
 
+Warwick_2017_config <- dataset_configure("data/Warwick_2017/metadata.yml", definitions)
+Warwick_2017_raw <- dataset_process("data/Warwick_2017/data.csv", Warwick_2017_config, schema, resource_metadata, unit_conversions)
+Warwick_2017 <- dataset_update_taxonomy(Warwick_2017_raw, taxon_list)
+
 Weerasinghe_2014_config <- dataset_configure("data/Weerasinghe_2014/metadata.yml", definitions)
 Weerasinghe_2014_raw <- dataset_process("data/Weerasinghe_2014/data.csv", Weerasinghe_2014_config, schema, resource_metadata, unit_conversions)
 Weerasinghe_2014 <- dataset_update_taxonomy(Weerasinghe_2014_raw, taxon_list)
@@ -1536,6 +1944,14 @@ Wenk_2023 <- dataset_update_taxonomy(Wenk_2023_raw, taxon_list)
 Wenk_2023_2_config <- dataset_configure("data/Wenk_2023_2/metadata.yml", definitions)
 Wenk_2023_2_raw <- dataset_process("data/Wenk_2023_2/data.csv", Wenk_2023_2_config, schema, resource_metadata, unit_conversions)
 Wenk_2023_2 <- dataset_update_taxonomy(Wenk_2023_2_raw, taxon_list)
+
+Wenk_2025_config <- dataset_configure("data/Wenk_2025/metadata.yml", definitions)
+Wenk_2025_raw <- dataset_process("data/Wenk_2025/data.csv", Wenk_2025_config, schema, resource_metadata, unit_conversions)
+Wenk_2025 <- dataset_update_taxonomy(Wenk_2025_raw, taxon_list)
+
+Westerband_2023_config <- dataset_configure("data/Westerband_2023/metadata.yml", definitions)
+Westerband_2023_raw <- dataset_process("data/Westerband_2023/data.csv", Westerband_2023_config, schema, resource_metadata, unit_conversions)
+Westerband_2023 <- dataset_update_taxonomy(Westerband_2023_raw, taxon_list)
 
 Westman_1977_config <- dataset_configure("data/Westman_1977/metadata.yml", definitions)
 Westman_1977_raw <- dataset_process("data/Westman_1977/data.csv", Westman_1977_config, schema, resource_metadata, unit_conversions)
@@ -1585,6 +2001,10 @@ Wilson_2008_config <- dataset_configure("data/Wilson_2008/metadata.yml", definit
 Wilson_2008_raw <- dataset_process("data/Wilson_2008/data.csv", Wilson_2008_config, schema, resource_metadata, unit_conversions)
 Wilson_2008 <- dataset_update_taxonomy(Wilson_2008_raw, taxon_list)
 
+Wirthensohn_1998_config <- dataset_configure("data/Wirthensohn_1998/metadata.yml", definitions)
+Wirthensohn_1998_raw <- dataset_process("data/Wirthensohn_1998/data.csv", Wirthensohn_1998_config, schema, resource_metadata, unit_conversions)
+Wirthensohn_1998 <- dataset_update_taxonomy(Wirthensohn_1998_raw, taxon_list)
+
 Witkowski_1991_config <- dataset_configure("data/Witkowski_1991/metadata.yml", definitions)
 Witkowski_1991_raw <- dataset_process("data/Witkowski_1991/data.csv", Witkowski_1991_config, schema, resource_metadata, unit_conversions)
 Witkowski_1991 <- dataset_update_taxonomy(Witkowski_1991_raw, taxon_list)
@@ -1621,9 +2041,17 @@ Wright_2019_config <- dataset_configure("data/Wright_2019/metadata.yml", definit
 Wright_2019_raw <- dataset_process("data/Wright_2019/data.csv", Wright_2019_config, schema, resource_metadata, unit_conversions)
 Wright_2019 <- dataset_update_taxonomy(Wright_2019_raw, taxon_list)
 
+Wright_2025_config <- dataset_configure("data/Wright_2025/metadata.yml", definitions)
+Wright_2025_raw <- dataset_process("data/Wright_2025/data.csv", Wright_2025_config, schema, resource_metadata, unit_conversions)
+Wright_2025 <- dataset_update_taxonomy(Wright_2025_raw, taxon_list)
+
 Yang_2023_config <- dataset_configure("data/Yang_2023/metadata.yml", definitions)
 Yang_2023_raw <- dataset_process("data/Yang_2023/data.csv", Yang_2023_config, schema, resource_metadata, unit_conversions)
 Yang_2023 <- dataset_update_taxonomy(Yang_2023_raw, taxon_list)
+
+Yates_2004_config <- dataset_configure("data/Yates_2004/metadata.yml", definitions)
+Yates_2004_raw <- dataset_process("data/Yates_2004/data.csv", Yates_2004_config, schema, resource_metadata, unit_conversions)
+Yates_2004 <- dataset_update_taxonomy(Yates_2004_raw, taxon_list)
 
 Yunusa_2010_config <- dataset_configure("data/Yunusa_2010/metadata.yml", definitions)
 Yunusa_2010_raw <- dataset_process("data/Yunusa_2010/data.csv", Yunusa_2010_config, schema, resource_metadata, unit_conversions)
@@ -1659,7 +2087,10 @@ austraits_raw <- austraits::bind_databases(
   ABRS_2022,
   ABRS_2023,
   Ahrens_2019,
+  Allen_2024,
   ANBG_2019,
+  Anderegg_2020,
+  Andres_2024,
   Andrew_2022,
   Angevin_2011,
   Apgaua_2015,
@@ -1667,15 +2098,19 @@ austraits_raw <- austraits::bind_databases(
   Arnold_2021,
   Arnold_2022,
   Arnold_2024,
+  Asao_2024,
   Atkinson_2020,
   Atkinson_2020_2,
   ATRP_2020,
   Auld_2000,
+  AVH_2026,
   Baker_2019,
   Barrett_2009,
   Bean_1997,
   Bebawi_2015,
+  Bell_1995,
   Benwell_2024,
+  Bignell_1997,
   Blackman_2010,
   Blackman_2019,
   Blackman_2023,
@@ -1686,8 +2121,10 @@ austraits_raw <- austraits::bind_databases(
   BRAIN_2007,
   Briggs_2010,
   Britton_1994,
+  Britton_2026,
   Brock_1993,
   Brodribb_2000,
+  Brown_1997,
   Bryant_2021,
   Bryant_2021_2,
   Bryant_2021_3,
@@ -1704,24 +2141,29 @@ austraits_raw <- austraits::bind_databases(
   Canham_2023,
   Carey_2003,
   Catford_2014,
+  Cernusak_2004,
   Cernusak_2006,
   Cernusak_2011,
   Chandler_2002,
   Cheal_2017,
   Cheesman_2020,
   Chen_2017,
+  Chhajed_2024,
   Chinnock_2007,
   Choat_2006,
   Choat_2012,
   Clarke_2009,
   Clarke_2015,
+  Coates_2024,
   Cochrane_2001,
   Cochrane_2017,
   Cochrane_2018,
   Cochrane_2019,
   Collette_2021,
+  Cook_2005,
   Cooper_2004,
   Cooper_2013,
+  Cornwell_2018,
   Cowling_1987,
   CPBR_2002,
   Craven_1987,
@@ -1736,26 +2178,39 @@ austraits_raw <- austraits::bind_databases(
   Cunningham_1999,
   Curran_2009,
   Curtis_2012,
+  Dadswell_1972,
+  Davila_2002,
+  Davila_2007,
+  Davis_2026,
   deCampos_2013,
   Denton_2007,
+  DeSmedt_2018,
   Detombeur_2021,
   Detombeur_2025,
+  Dilly_2024,
   Doherty_2021,
   Dong_2017,
+  Dorken_2020,
+  Doyle_2023,
+  Doyle_2025,
   Drake_2011,
   Draper_2023,
+  DrewSmythe_2023,
   Du_2018,
   Du_2019,
   Duan_2015,
   Duncan_1998,
   Dwyer_2017,
   Dwyer_2018,
+  EakinBusher_2016,
+  EakinBusher_2020,
   Eamus_1998,
   Eamus_1999,
   Eamus_2000,
   Edwards_2000,
   eFLOWER_2021,
   eFLOWER_Dun_2022,
+  Elliott_2026,
   Ellsworth_2015,
   Enright_2014,
   EsperonRodriguez_2019,
@@ -1767,11 +2222,20 @@ austraits_raw <- austraits::bind_databases(
   Farrell_2012,
   Farrell_2013,
   Farrell_2017,
+  Fernando_2006,
+  Fernando_2007,
+  Fernando_2009,
+  Fernando_2018,
+  Fernando_2021,
   Firn_2019,
   Fonseca_2000,
+  Ford_2024,
   Forster_1992,
   Forster_1995,
+  Freeman_2017,
+  Freeman_2018,
   French_2017,
+  Fuller_2025,
   Funk_2016,
   Gallagher_2011_1,
   Gallagher_2011_3,
@@ -1782,13 +2246,16 @@ austraits_raw <- austraits::bind_databases(
   Geange_2017,
   Geange_2020,
   Ghannoum_2010,
+  Gille_2024,
   Goble_1981,
+  Gosper_1999,
   Gosper_2004,
   Gosper_2012,
   Gosper_2018,
   Gosper_2022,
   GrassBase_2014,
   Gray_2019,
+  Griffith_2015,
   Grigg_2008,
   Groom_1997,
   Groom_2010,
@@ -1802,7 +2269,9 @@ austraits_raw <- austraits::bind_databases(
   Grubb_2008,
   Guilherme_Pereira_2018,
   Guilherme_Pereira_2019,
+  Gurung_2025,
   Hall_1981,
+  Hallam_1970,
   Hanley_2001,
   Hanley_2002,
   Harrison_2009,
@@ -1814,6 +2283,10 @@ austraits_raw <- austraits::bind_databases(
   Henery_2001,
   Hocking_1982,
   Hocking_1986,
+  Hodges_2019,
+  Hodges_2021,
+  Hopper_2024,
+  Houston_2002,
   Huang_2015,
   Hughes_1992,
   Hughes_2005,
@@ -1823,11 +2296,14 @@ austraits_raw <- austraits::bind_databases(
   Islam_1999_1,
   Islam_1999_2,
   Jagdish_2020,
+  Jiang_2021,
   Jin_2019,
+  Johnson_1980,
   Jordan_2001,
   Jordan_2007,
   Jordan_2015,
   Jordan_2020,
+  Judd_1996,
   Jurado_1991,
   Jurado_1992,
   Kanowski_2000,
@@ -1838,6 +2314,7 @@ austraits_raw <- austraits::bind_databases(
   Kew_2019_4,
   Kew_2019_5,
   Kew_2019_6,
+  Kingston_1961,
   Kirkpatrick_2020,
   Knox_2011,
   Kocacinar_2003,
@@ -1845,8 +2322,12 @@ austraits_raw <- austraits::bind_databases(
   Kotowska_2020,
   Kubiak_2009,
   Kuo_1982,
+  Ladd_2006,
+  Ladd_2019,
+  Ladd_2023,
   Laliberte_2012,
   Lamont_2002,
+  Lane_2026,
   Lawes_2012,
   Lawes_2014,
   Lawson_2015,
@@ -1859,9 +2340,12 @@ austraits_raw <- austraits::bind_databases(
   Leishman_1995,
   Leishman_2007,
   Lemmens_1994,
+  Lequerica_Tamara_2025,
   Lewis_2015,
+  Li_1997,
   Li_2018,
   Li_2019,
+  Li_2025,
   Lim_2017,
   Liu_2023,
   Lord_1997,
@@ -1875,6 +2359,8 @@ austraits_raw <- austraits::bind_databases(
   Maslin_2012,
   McCarthy_2017,
   McGlone_2015,
+  McNeice_2026,
+  McQuillan_2020,
   Meers_2007,
   Mesaglio_2022,
   Metcalfe_2009,
@@ -1882,6 +2368,7 @@ austraits_raw <- austraits::bind_databases(
   Metcalfe_2020_2,
   Milberg_1997,
   Milberg_1998,
+  Miller_2001,
   Mitchell_2008,
   Mokany_2008,
   Mokany_2015,
@@ -1898,7 +2385,11 @@ austraits_raw <- austraits::bind_databases(
   Mott_1978,
   Muir_2014,
   Munroe_2019,
+  Munroe_2024,
   Myers_1997,
+  Myrans_2021,
+  Myrans_2024,
+  Myrans_2025,
   Nano_2011,
   NHNSW_2014,
   NHNSW_2014_2,
@@ -1914,16 +2405,31 @@ austraits_raw <- austraits::bind_databases(
   NTH_2014,
   NTH_2022,
   NTH_2023,
+  OGrady_1999,
+  OGrady_2006,
+  OGrady_2009,
   Onoda_2010,
   Ooi_2007,
   Ooi_2018,
   OReillyNugent_2018,
   Osborne_2014,
+  Osmolovsky_2026,
+  Ottaviani_2015,
+  Oyanoghafo_2021,
+  Pan_2025,
+  Pan_2026,
+  Paroissien_2021,
+  Paroissien_2026,
+  Paroissien_2026_2,
   Pate_1989,
   Pate_1990,
   Pate_1998,
   Peeters_2002,
   Pekin_2011,
+  PerezMartinez_2025,
+  Peters_2020,
+  Peters_2021,
+  Peters_2025,
   Pfautsch_2016,
   Pickering_2014,
   Pickup_2002,
@@ -1934,15 +2440,22 @@ austraits_raw <- austraits::bind_databases(
   Pollock_2012,
   Pollock_2018,
   Portelli_2023,
+  Prendergast_2022,
+  Prendergast_2022_2,
+  Prendergast_2026,
+  Prendergast_2026_2,
+  Prendergast_2026_3,
   Prior_2000,
   Prior_2003,
   Prior_2016,
   Prior_2022,
+  Pritzkow_2022,
   Purdie_1976,
   RadfordSmith_2024,
   RBGK_2014,
   RBGV_2022,
   RBGV_2023,
+  Read_1985,
   Read_2003,
   Read_2005,
   Reynolds_2018,
@@ -1950,6 +2463,7 @@ austraits_raw <- austraits::bind_databases(
   Richards_2003,
   Richards_2008,
   Richards_2021,
+  Ritchie_2021,
   Roberts_2006,
   Roderick_1999,
   Roderick_2002,
@@ -1970,6 +2484,9 @@ austraits_raw <- austraits::bind_databases(
   Santini_2012,
   Santini_2013,
   Santini_2016,
+  Saraeian_2025,
+  Saunders_2024,
+  Sauquet_2026,
   Schmidt_1993,
   Schmidt_1997,
   Schmidt_2003,
@@ -1981,27 +2498,39 @@ austraits_raw <- austraits::bind_databases(
   Scott_2010,
   Searson_2004,
   Sendall_2016,
+  Sevenello_2026,
+  Shaw_2024,
   Shedley_2007,
   Simpson_2021,
+  SimpsonSouthward_2026,
+  Sims_2026,
   SinghRamesh_2019,
   SinghRamesh_2023,
   Sjostrom_2006,
   Smith_1996,
   Smith_2012,
+  Smith_2023,
   SmithMartin_2020,
   Soliveres_2012,
   Soper_2014,
   SPRAT_2025_2,
   Standish_2019,
   Staples_2019,
+  Steart_2009,
+  Stephens_2020,
   Stephens_2021,
+  Stephens_2022,
   Stephens_2023,
   Stephens_2024,
+  Stephens_2024_2,
   Stewart_1995,
   Stuart_2007,
+  Suriyagoda_2023,
   Sweedman_2006,
   Taseski_2021,
+  Tasker_2026,
   Taylor_2008,
+  Tennakoon_1997,
   Thomas_2017,
   Thompson_2001,
   TMAG_2009,
@@ -2031,11 +2560,14 @@ austraits_raw <- austraits::bind_databases(
   WAH_2023_2,
   Warren_2005,
   Warren_2006,
+  Warwick_2017,
   Weerasinghe_2014,
   Wells_2012,
   Wenk_2022,
   Wenk_2023,
   Wenk_2023_2,
+  Wenk_2025,
+  Westerband_2023,
   Westman_1977,
   Westoby_2003,
   Westoby_2004,
@@ -2048,6 +2580,7 @@ austraits_raw <- austraits::bind_databases(
   Wills_2018,
   Wilson_2004,
   Wilson_2008,
+  Wirthensohn_1998,
   Witkowski_1991,
   Wooller_2002,
   Wright_2000,
@@ -2057,7 +2590,9 @@ austraits_raw <- austraits::bind_databases(
   Wright_2008,
   Wright_2009,
   Wright_2019,
+  Wright_2025,
   Yang_2023,
+  Yates_2004,
   Yunusa_2010,
   Zanne_2007,
   Zanne_2009,
