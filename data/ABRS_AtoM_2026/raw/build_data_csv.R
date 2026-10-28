@@ -75,6 +75,10 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Orobanchaceae", "Osmundaceae", "Oxalidaceae", "Pandanaceae", "Papaveraceae", "Paracryphiaceae", "Passifloraceae",
                    "Pedaliaceae", "Pennantiaceae", "Petermanniaceae", "Philydraceae", "Phyllanthaceae", "Phytolaccaceae", "Picrodendraceae",
                    "Pinaceae", "Piperaceae", "Pittosporaceae", "Plantaginaceae", "Plumbaginaceae",
+                   # (batch of 2026-10-28: Podocarpaceae - Restionaceae, without Proteaceae (own dataset), 546 taxa)
+                   "Podocarpaceae", "Podostemaceae", "Polygalaceae", "Polygonaceae", "Polypodiaceae", "Pontederiaceae", "Posidoniaceae",
+                   "Potamogetonaceae", "Primulaceae", "Psilotaceae", "Pteridaceae", "Putranjivaceae", "Ranunculaceae", "Resedaceae",
+                   "Restionaceae",
                    # Fabaceae (ABRS_Fabaceae_2026, long format), checked in batches of 500 taxa: see partial_n below
                    "Fabaceae")
 # very large families checked in batches of taxa (in name order): only the first N taxa of these families are written
@@ -388,13 +392,20 @@ unit_mult <- c(mm = 1, cm = 10, dm = 100, m = 1000)
 to_mm <- function(v, u) ifelse(is.na(v), NA_real_, as.numeric(v) * unname(unit_mult[u]))
 lo_unit <- "(?:\\s?(mm|cm|dm|m)(?=\\s*(?:-|to)\\s*[0-9]))?"
 mk_lo <- paste0("(?:\u27e8(?:lo|q:[a-z ]+):", num, "\u27e9\\s*)?")
-mk_hi <- paste0("(?:\\s*\u27e8(?:hi|q:[a-z ]+):", num, "\u27e9)?")
+mk_hi <- paste0("(?:\\s*\u27e8(?:hi|q:[a-z ]+):", num, "(?:~[^\u27e9]*)?\u27e9)?")
 # ("Plants to c. 0.5 m high": "to" and "c." together, so the value stays a maximum)
 meas <- paste0("(?:(?:up to|to|about|approximately|c\\.|ca\\.|less than|more than|under|mostly|usually|commonly|generally|often|frequently|reaching)\\s+)?",
                "(?:(?:c\\.|ca\\.|about|approximately)\\s+)?",
                mk_lo, "(", num, ")", lo_unit, "(?:", dash, "(", num, "))?", mk_hi, "\\s?(mm|cm|dm|m)\\b", mk_hi)
 mark_extremes <- function(x) {
   if (is.na(x)) return(x)
+  # (an upper extreme in its own unit, Desmocladus "to 40 cm (–1 m) across": the marker carries the value in the main unit and the
+  # source words, <hi:100~1 m>)
+  x <- str_replace_all(x, paste0("(", num, ")\\s?(mm|cm|dm|m)\\b(\\s*\\(\\s*-\\s*)(", num, ")\\s*(mm|cm|dm|m)\\s*\\)"), function(z) map_chr(z, function(zz) {
+    m <- str_match(zz, paste0("(", num, ")\\s?(mm|cm|dm|m)\\b(\\s*\\(\\s*-\\s*)(", num, ")\\s*(mm|cm|dm|m)\\s*\\)"))
+    if (m[3] == m[6]) return(zz)
+    v <- as.numeric(m[5]) * unname(unit_mult[m[6]]) / unname(unit_mult[m[3]])
+    paste0(m[2], " ", m[3], "\u27e8hi:", format(signif(v, 6), scientific = FALSE, drop0trailing = TRUE, trim = TRUE), "~", m[5], " ", m[6], "\u27e9") }))
   x <- str_replace_all(x, paste0("\\(\\s*(", num, ")\\s*-?\\s*\\)\\s*-?\\s*(?=[0-9])"), "\u27e8lo:\\1\u27e9")
   x <- str_replace_all(x, paste0("\\s*\\(\\s*-\\s*(", num, ")\\s*(?:mm|cm|dm|m)?\\s*\\)"), "\u27e8hi:\\1\u27e9")
   x <- str_replace_all(x, paste0("(?<=[0-9])\\s*\\(\\s*(", num, ")\\s*\\)(?=\\s*(?:mm|cm|dm|m)\\b)"), "\u27e8hi:\\1\u27e9")
@@ -405,13 +416,14 @@ mark_extremes <- function(x) {
 # markers back to the source wording, for the *_description columns
 unmark <- function(x) {
   x <- str_replace_all(x, "\u27e8lo:([0-9.]+)\u27e9\\s*", "(\\1-) ")
+  x <- str_replace_all(x, "\u27e8hi:[0-9.]+~([^\u27e9]+)\u27e9", " (-\\1)")
   x <- str_replace_all(x, "\u27e8hi:([0-9.]+)\u27e9", " (-\\1)")
   str_squish(str_replace_all(x, "\u27e8q:([a-z ]+):([0-9.]+)\u27e9", " (\\1 \\2)"))
 }
 # extremes in a matched measurement, in mm (unit `u`), placed below / above the typical range
 extremes_of <- function(txt, u, typ_min, typ_max, scale_unit = TRUE) {
   f <- function(v) if (scale_unit) to_mm(v, u) else as.numeric(v)
-  lo <- str_match(txt, "\u27e8lo:([0-9.]+)\u27e9")[2]; hi <- str_match(txt, "\u27e8hi:([0-9.]+)\u27e9")[2]
+  lo <- str_match(txt, "\u27e8lo:([0-9.]+)\u27e9")[2]; hi <- str_match(txt, "\u27e8hi:([0-9.]+)(?:~[^\u27e9]*)?\u27e9")[2]
   q <- str_match_all(txt, "\u27e8q:[a-z ]+:([0-9.]+)\u27e9")[[1]][, 2]
   emin <- if (!is.na(lo)) f(lo) else NA_real_; emax <- if (!is.na(hi)) f(hi) else NA_real_
   for (v in q) { vv <- f(v); ref <- coalesce(typ_min, typ_max)
@@ -652,7 +664,7 @@ casuarina_mode <- FALSE
 orchid_mode <- FALSE
 legume_mode <- FALSE
 grass_mode <- FALSE
-graminoid_rule_families <- c("Poaceae", "Cyperaceae", "Juncaceae")
+graminoid_rule_families <- c("Poaceae", "Cyperaceae", "Juncaceae", "Restionaceae")
 bamboo_genera <- c("Bambusa", "Dendrocalamus", "Mullerochloa", "Neololeba", "Phyllostachys", "Pseudosasa", "Arundinaria", "Thyrsostachys", "Gigantochloa")
 grass_qual <- "(?:lower|upper|first|second|fertile|sterile|lowest|basal|terminal|lateral|central|median)"
 classify_token <- function(tok) {
@@ -1922,6 +1934,23 @@ extract_one <- function(r, group_filter = TRUE) {
         !str_detect(unmark(sp[1]), rx("(?<!\\bof )(?<!\\bof [a-z]{3,12} )\\b(?:trunks?|stems?|canes?|culms?|branch(?:es|lets)?)\\s+(?:(?:to|up to|c\\.)\\s+)?[0-9][^,;|]*$")))
       wd <- list(v = meas_of(sp[2]), txt = unmark(sp[1]))
   }
+  # (not an underground organ's size: Loxocarya "forming small dense clumps from short slender rhizomes to 20 cm long and 1.8-2 mm diam.",
+  # Nymphaea "with vertical tuber 1.5-3.5 cm long, 1-2 cm wide", Wurmbea "from an ovoid corm to 3 cm diam.": the organ is in the
+  # measurement's own comma segment, or in the one before it ending "... long"; but Macarthuria "with a thick tap root, multi-stemmed,
+  # 0.5-0.75 m tall, to c. 1 m across" is the plant's width)
+  if (!is.null(wd)) {
+    hj <- join_units(habit) %||% ""; wpos <- str_locate(hj, fixed(wd$txt))[1, 1]
+    if (!is.na(wpos)) {
+      segs <- str_split(paste0(str_extract(str_sub(hj, 1, wpos - 1), "[^;|]*$"), wd$txt), ",")[[1]]
+      org_re <- rx("\\b(?:rhizomes?|stolons?|roots?|tubers?|bulbs?|corms?|cataphylls?)\\b")
+      last <- segs[length(segs)]; prev <- if (length(segs) > 1) segs[length(segs) - 1] else ""
+      # (within the measurement's own segment, the organ must come after any spread word: "clumps from ... rhizomes to 20 cm long ...")
+      # (Loxocarya striata "forming large clumps with creeping rhizomes to 40 cm long, 3-4 mm diam.": the organ follows the spread word)
+      org_after <- function(z) { o <- str_locate_all(z, org_re)[[1]]; sp <- str_locate_all(z, rx(spread_re))[[1]]
+        nrow(o) > 0 && (!nrow(sp) || max(o[, 1]) > max(sp[, 1])) }
+      if (org_after(last) || (org_after(prev) && str_detect(prev, rx("\\b(?:long|thick)\\s*$")))) wd <- NULL
+    }
+  }
   if (!is.null(wd)) addn("plant_width", wd$v, wd$txt, scale = 1 / 1000)
 
   # ---- stems, bark, underground organs
@@ -1968,7 +1997,9 @@ extract_one <- function(r, group_filter = TRUE) {
   for (org in setdiff(c("bulb", "corm", "tuber", "pseudobulb", "rhizome", "lignotuber", "caudex"), if (fern_mode) c("rhizome", "caudex"))) {
     ou <- unit_text(u, "underground", subj_re = paste0("^(?:the )?", org, "s?$"))
     if (!length(ou)) next
-    od <- dims(join_units(ou), excl(paste0(org, "s?")))
+    # (spread wording in the organ's clause is the plant's spread: Baloskion "Rhizome shortly horizontal, but plants forming patches to
+    # 80 cm across")
+    od <- dims(str_remove_all(join_units(ou), rx(paste0("(?:\\b(?:but |and )?plants? )?", spread_re, "[^,;|]*"))), excl(paste0(org, "s?")))
     if (!is.null(od$L)) addn("storage_organ_length", od$L$v, od$L$txt, "entity_measured", org)
     if (!is.null(od$W)) addn("storage_organ_diameter", od$W$v, od$W$txt, "entity_measured", org)
   }
@@ -2081,9 +2112,10 @@ extract_one <- function(r, group_filter = TRUE) {
   if (!nrow(cmp) && length(leaflet)) cmp <- tibble(pos = 1L, value = "compound", term = "leaflets", qual = NA)
   add(rec_cat("leaf_compoundness", cmp, div_txt %||% join_units(leaflet)))
   expand_degrees <- function(x) {
-    x <- str_replace_all(x, "\\b([1-4])\\s*(?:-|or|to)\\s*([1-4])-(pinnate|pinnatifid|pinnatisect)", function(z) {
-      m <- str_match(z, "([1-4])\\s*(?:-|or|to)\\s*([1-4])-(pinnate|pinnatifid|pinnatisect)")
-      paste(paste0(seq(as.integer(m[2]), as.integer(m[3])), "-", m[4]), collapse = " ") })
+    # (vectorised: Cheilanthes "2-3-pinnate at base, 1-2-pinnate above" has two matches)
+    x <- str_replace_all(x, "\\b([1-4])\\s*(?:-|or|to)\\s*([1-4])-(pinnate|pinnatifid|pinnatisect)", function(z) map_chr(z, function(zz) {
+      m <- str_match(zz, "([1-4])\\s*(?:-|or|to)\\s*([1-4])-(pinnate|pinnatifid|pinnatisect)")
+      paste(paste0(seq(as.integer(m[2]), as.integer(m[3])), "-", m[4]), collapse = " ") }))
     str_replace_all(x, "\\b([1-4])-?\\s*or\\s*([1-4])-(pinnate)", "\\1-\\3 \\2-\\3")
   }
   addc("leaf_lamina_division", div_txt, division_dict, prep_fun = function(x) expand_degrees(str_remove_all(x, "[a-z-]*(?:pinnate|palmate)(?:ly)? (?:veined|nerved|venation|veins)|(?:pinnately|palmately) (?:veined|nerved)|(?:pinnate|palmate) venation|venation (?:is )?(?:pinnate|palmate)")))
@@ -3538,6 +3570,11 @@ recs <- bind_rows(recs, ros_add)
 inf_text <- d %>% left_join(main %>% select(taxon_name, habit_description), by = c("scientific_name" = "taxon_name")) %>%
   transmute(taxon_name = scientific_name,
                             txt = str_to_lower(paste(if_else(family == "Fabaceae", coalesce(habit_description, ""), coalesce(Description, "")), coalesce(Habitat, ""), coalesce(Ecology, ""), coalesce(Notes, ""))),
+                            # (user, 2026-10-28: default values unless the text names a special case; the broad water / epiphyte / rock
+                            # test reads the habit sentence and the Habitat / Ecology / Notes text, the morphology only for unambiguous
+                            # words: "spikelets ... on secondary branches", "persisting on tree" are not epiphyte wording)
+                            stxt = str_to_lower(paste(coalesce(habit_description, ""), coalesce(Habitat, ""), coalesce(Ecology, ""), coalesce(Notes, ""))),
+                            dtxt = str_to_lower(coalesce(Description, "")),
                             hab = str_to_lower(coalesce(Habitat, "")))
 inf_fam_aquatic <- c("Hydrocharitaceae", "Potamogetonaceae", "Ruppiaceae", "Zosteraceae", "Posidoniaceae", "Cymodoceaceae", "Zannichelliaceae",
                      "Najadaceae", "Nymphaeaceae", "Nelumbonaceae", "Cabombaceae", "Ceratophyllaceae", "Aponogetonaceae", "Hydatellaceae",
@@ -3556,13 +3593,18 @@ inf_gen_parasitic <- c("Cassytha", "Cuscuta", "Exocarpos", "Santalum", "Leptomer
                        "Anthobolus", "Dendrotrophe", "Notothixos", "Korthalsella", "Viscum", "Nuytsia", "Euphrasia", "Striga", "Buchnera",
                        "Centranthera", "Rhamphicarpa", "Parentucellia", "Bartsia", "Odontites", "Orobanche", "Sopubia", "Alectra", "Melasma",
                        "Pilostyles", "Balanophora", "Mystropetalon")
-inf_fam_leafless <- c("Casuarinaceae", "Cactaceae", "Psilotaceae", "Equisetaceae", "Balanophoraceae", "Apodanthaceae", "Corsiaceae",
+inf_fam_leafless <- c("Casuarinaceae", "Cactaceae", "Restionaceae", "Psilotaceae", "Equisetaceae", "Balanophoraceae", "Apodanthaceae", "Corsiaceae",
                       "Triuridaceae", "Burmanniaceae", "Thismiaceae", "Cytinaceae")
 inf_gen_leafless <- c("Tecticornia", "Salicornia", "Sarcocornia", "Halosarcia", "Cassytha", "Cuscuta", "Exocarpos", "Ephedra")
 # (Fabaceae, user's choice 2026-10-19: plants "on granite rocks", "in crevices" are scored terrestrial on a CHECK-flagged inferred row;
 # "on coastal cliffs" is plain terrestrial; rock words therefore do not block the Fabaceae inference)
 inf_rock_re <- "\\b(?:on (?:the )?(?:[a-z-]+ ){0,2}(?:rocks?|boulders?)|among (?:the )?(?:[a-z-]+ ){0,2}(?:rocks?|boulders?)|in (?:rock )?crevices|crevices|(?:granite|rock) (?:outcrops?|pavements?|sheets?))\\b"
 inf_water_strong <- "\\b(?:aquatic|submerged|submersed|free-floating|floating|in (?:shallow |still |running |fresh |brackish |deep |standing )?water|semi-?aquatic|epiphyt\\w*|hemi-?epiphyt\\w*|lithophyt\\w*|strangl\\w*|on (?:the )?(?:[a-z-]+ ){0,2}(?:rocks?|boulders?|cliffs?|trees?|branches|trunks?)|in rock crevices|crevices|marine|tidal|intertidal|mangroves?|estuar\\w*|rheophyt\\w*|parasit\\w*|on hosts?)\\b"
+# (duckweeds, Araceae since Lemnaceae was merged: "grows in eutrophic, quiet waters")
+inf_water_strong <- paste0(inf_water_strong, "|\\b(?:quiet|still|open|stagnant|fresh|eutrophic|mesotrophic) waters\\b|\\b(?:grows|found|floating) in (?:[a-z-]+,? ){0,3}waters\\b")
+# ("midrib submerged", "gland submerged ... within the lamina" are morphology; but Myriophyllum "submerged leaves trifid", Ludwigia
+# "pneumatophores arising from submerged or buried roots" are water plants)
+inf_water_desc <- "\\b(?:submerged|submersed|floating)(?:,? (?:or|and) [a-z]+)? (?:leaves|leaf|stems?|shoots?|plants?|parts|forms?|roots?|lamina)\\b|\\bif submerged\\b|\\b(?:aquatic|free-floating|semi-?aquatic|epiphyt\\w*|hemi-?epiphyt\\w*|lithophyt\\w*|strangl\\w*|marine|seagrass\\w*|mangroves?)\\b"
 inf_water_strong_leg <- str_replace(str_replace(inf_water_strong, fixed("rocks?|boulders?|cliffs?|"), ""), fixed("|in rock crevices|crevices"), "")
 inf_water_wet <- "\\b(?:swamps?|swampy|marsh\\w*|bogs?|boggy|ponds?|lakes?|lagoons?|billabongs?|waterholes?|creek ?beds?|stream ?beds?|river ?beds?|beds of|inundat\\w*|flooded|flooding|waterlogged|mud\\w*|wetlands?|seepages?|soaks?|claypans?|gilgais?|saline|salt ?lakes?|stream margins|water's edge|edges? of (?:streams|creeks|rivers|pools|lakes))\\b"
 inf_noleaf_re <- "\\b(?:phyllod\\w*|cladod\\w*|phyllocla\\w*|(?<!flowering plants )(?<!flowering plants are )(?<!flowering plant is )leafless(?! (?:at|when|while|during) (?:the time of )?(?:flowering|anthesis))(?! (?:flower(?:ing)? )?(?:portions?|parts?|sections?|lengths?|internodes?|stems?|scapes?|peduncles?|inflorescences?))|aphyllous|photosynthetic stems?|stems? (?:green and )?photosynthetic|assimilat\\w* (?:stems?|branchlets?)|scale-?like leaves|(?<!upper |uppermost |floral |cauline |distal |stem |bract-like |inflorescence )leaves (?:reduced|scale-like|minute|vestigial|caducous|early caducous|soon falling|ephemeral)|reduced to (?:minute )?scales|scale leaves|leaves (?:absent|0)|broom-like|switch-like|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*|(?:without|lacking|lacks) chlorophyll|non-green|holoparasit\\w*)\\b"
@@ -3590,12 +3632,15 @@ inf <- main %>% transmute(taxon_name, family, genus = word(taxon_name, 1)) %>%
   left_join(tv("leaf_lamina_division") %>% rename(div = v), by = "taxon_name") %>%
   left_join(recs %>% filter(trait == "leaf_width", !is.na(min) | !is.na(max)) %>% group_by(taxon_name) %>% summarise(lw = min(coalesce(min, max)), .groups = "drop"), by = "taxon_name") %>%
   left_join(main %>% transmute(taxon_name, ltxt = str_to_lower(coalesce(leaf_description, ""))), by = "taxon_name") %>%
-  mutate(txt = coalesce(txt, ""), hab = coalesce(hab, ""),
+  mutate(txt = coalesce(txt, ""), hab = coalesce(hab, ""), stxt = coalesce(stxt, ""), dtxt = coalesce(dtxt, ""),
          leafy = taxon_name %in% has_num(c("leaf_length", "leaf_width", "leaflet_length", "leaflet_width")) | !is.na(shp),
          woody = str_detect(coalesce(gf, ""), "\\b(?:tree|shrub|mallee|subshrub|climber_woody)\\b"))
 inf <- inf %>% mutate(
-  sub_ok = is.na(sub) & !is.na(gf) & !family %in% inf_fam_aquatic & !genus %in% inf_gen_parasitic & !family %in% c("Loranthaceae", "Viscaceae") &
-    !str_detect(txt, ifelse(family == "Fabaceae", inf_water_strong_leg, inf_water_strong)) & (woody | (hab != "" & !str_detect(txt, inf_water_wet))),
+  # (herbs with no Habitat text get the default too; wetland wording in the habitat text still blocks it for herbs: swamp and creek-bed
+  # plants may be semiaquatic; a taxon without a growth form is not blocked)
+  sub_ok = is.na(sub) & !family %in% inf_fam_aquatic & !genus %in% inf_gen_parasitic & !family %in% c("Loranthaceae", "Viscaceae") &
+    !str_detect(stxt, ifelse(family == "Fabaceae", inf_water_strong_leg, inf_water_strong)) & !str_detect(dtxt, inf_water_desc) &
+    (woody | !str_detect(stxt, inf_water_wet)),
   rock_chk = family == "Fabaceae" & str_detect(txt, inf_rock_re),
   rock_txt = str_extract(txt, paste0("[^.;]{0,60}", inf_rock_re, "[^.;]{0,30}")),
   pho_ok = is.na(pho) & leafy & !family %in% inf_fam_leafless & !genus %in% inf_gen_leafless &
