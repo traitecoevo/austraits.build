@@ -81,6 +81,16 @@ families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae
                    "Restionaceae",
                    # (batch of 2026-10-28: Rhamnaceae - Rutaceae, 912 taxa)
                    "Rhamnaceae", "Rhizophoraceae", "Ripogonaceae", "Rubiaceae", "Ruppiaceae", "Rutaceae",
+                   # (batch of 2026-10-28: Salicaceae - Solanaceae, 675 taxa)
+                   "Salicaceae", "Salviniaceae", "Santalaceae", "Sapindaceae", "Sapotaceae", "Sarraceniaceae", "Schizaeaceae",
+                   "Scrophulariaceae", "Selaginellaceae", "Simaroubaceae", "Smilacaceae", "Solanaceae",
+                   # (batch of 2026-10-28: Sparganiaceae - Zygophyllaceae, c. 600 described taxa; Stylidiaceae, Surianaceae and
+                   # most Symplocaceae profiles are names only)
+                   "Sparganiaceae", "Sphenocleaceae", "Stemonaceae", "Stylidiaceae", "Surianaceae", "Symplocaceae", "Taccaceae",
+                   "Tamaricaceae", "Tecophilaeaceae", "Tectariaceae", "Theaceae", "Thelypteridaceae", "Thymelaeaceae", "Trimeniaceae",
+                   "Triuridaceae", "Tropaeolaceae", "Typhaceae", "Ulmaceae", "Urticaceae", "Verbenaceae", "Viburnaceae", "Violaceae",
+                   "Vitaceae", "Winteraceae", "Woodsiaceae", "Xanthorrhoeaceae", "Zamiaceae", "Zingiberaceae", "Zosteraceae",
+                   "Zygophyllaceae",
                    # Fabaceae (ABRS_Fabaceae_2026, long format), checked in batches of 500 taxa: see partial_n below
                    "Fabaceae")
 # very large families checked in batches of taxa (in name order): only the first N taxa of these families are written
@@ -269,7 +279,12 @@ fix_text <- tribble(
   # A. heteranthera "shoots intra- or extra-vaginal; 3–7 mm high" (dm intended: its Diagnostic Features give flowering culms "≤ 600 mm high")
   "Austrostipa heteranthera", "extra-vaginal; 3–7 mm high", "extra-vaginal; 300–700 mm high",
   # Acacia sp. Indiana Station: a tree to 15 m high "with d.b.h. to c. 2.5 m" (2.5 dm most likely, user)
-  "Acacia sp. Indiana Station (P.K.Latz 4430)", "d.b.h. to c. 2.5 m", "d.b.h. to c. 2.5 dm"
+  "Acacia sp. Indiana Station (P.K.Latz 4430)", "d.b.h. to c. 2.5 m", "d.b.h. to c. 2.5 dm",
+  # Euphrasia amphisysepala: anther awns "0.1–02 mm long" (0.1–0.2)
+  "Euphrasia amphisysepala", "0.1–02 mm long", "0.1–0.2 mm long",
+  # Tacca: "'floral bracts' c. 40-100, filiform, mostly 10-15 cm long" (the quotes hid the bracts, read as flower length)
+  "Tacca leontopetaloides", "'floral bracts'", "floral bracts",
+  "Tacca maculata", "'floral bracts'", "floral bracts"
 )
 for (i in seq_len(nrow(fix_text))) {
   fx <- function(z) z %>% mutate(Description = ifelse(scientific_name == fix_text$taxon[i],
@@ -699,6 +714,11 @@ classify_token <- function(tok) {
   # Casuarinaceae: the woody "cone" is the infructescence (sizes on entity_measured = cone rows, as for chenopod dispersal units);
   # the samara is the fruit
   if (casuarina_mode && str_detect(tok, rx("^(?:the )?(?:mature )?cones?(?: body| bodies)?\\b"))) return(list(kind = "organ", sec = "diaspore", part = NA_character_, subj = "cone"))
+  # cycads and conifers: seed / pollen cones are their own organ, not the seed (Macrozamia communis "Seed cones ovoid, 20-45 cm
+  # long, 10-20 cm diam."; the seeds follow: "Seeds flattened-ovoid, 30-45 mm long"); their sizes are the seed_cone_* and
+  # pollen_cone_* candidate traits
+  m <- str_match(tok, rx("^(?:the )?(?:mature |young |immature )?((?:male and female|female and male|seed|pollen|ovulate|male|female|microsporangiate|megasporangiate) (?:cones?|strobil(?:i|us)))\\b"))
+  if (!is.na(m[1]) && !casuarina_mode) return(list(kind = "organ", sec = "cone", part = NA_character_, subj = str_to_lower(m[2])))
   # Chenopodiaceae (Tecticornia, Salicornia): the stem "articles" (in other families articles are fruit segments)
   if (chenopod_mode && str_detect(tok, rx("^(?:the )?(?:vegetative |flowering |fertile |sterile )?articles?\\b"))) return(list(kind = "organ", sec = "stem", part = NA_character_, subj = "articles"))
   if (fern_mode && str_detect(tok, rx("^(?:the )?stipes?\\b"))) return(list(kind = "organ", sec = "petiole", part = NA_character_, subj = "stipe"))
@@ -1335,7 +1355,7 @@ months_from_text <- function(x) {
   sort(unique(out))
 }
 yn <- function(m) if (!length(m)) NA_character_ else paste(ifelse(1:12 %in% m, "y", "n"), collapse = "")
-hedge <- "(?:,\\s*)?(?:\\b(?:and|but|although)\\s+)?\\b(?:possibly|probably|likely|almost certainly|it may also|may also|could|might|may occur|thought to be|is thought|appears to be|appear to be|seems to be|presumably)\\b.*$"
+hedge <- "(?:,\\s*)?(?:\\b(?:and|but|although)\\s+)?\\b(?:possibly|probably|likely|almost certainly|it may also|may also|could|might|may occur|may continue|may start|may commence|thought to be|is thought|appears to be|appear to be|seems to be|appears? to|seems? to|presumably|apparently|perhaps|seemingly)\\b.*$"
 kw_both <- "\\b(?:flower(?:s|ing)?,? (?:and |, )?(?:(?:semi-mature|mature|ripe|immature|young) )?(?:fruit(?:s|ing)?|seeds?)|flowers, fruit and seed|flowers and fruit|flowering and fruiting)\\b"
 kw_flower <- "\\b(?:flower(?:s|ing|ed)?|in flower|anthesis)\\b"
 kw_bud <- "\\b(?:flower buds?|buds?)\\b"
@@ -1974,6 +1994,12 @@ extract_one <- function(r, group_filter = TRUE) {
       trk <- m_first(unit_text(u, "stem", subj_re = "^(?:the )?trunks?$"), "tall|high", excl("trunks?"))
       # (tree ferns: trunk height on a plant_organ_measured = trunk row, as in LucidFerns_2026)
       if (!is.null(trk)) addn("plant_height", trk$v, paste("[trunk]", trk$txt), if (fern_mode) "plant_organ_measured" else NA_character_, if (fern_mode) "trunk" else NA_character_, scale = 1 / 1000)
+      # (grass-trees: "Trunk usually 1-2 m long", "Trunk none or up to 30 cm long": the trunk's height below the leaf crown, on a
+      # plant_organ_measured = trunk row as for tree ferns)
+      if (is.null(trk) && fam == "Xanthorrhoeaceae") {
+        trk <- m_first(unit_text(u, "stem", subj_re = "^(?:the )?trunks?$"), "long", excl("trunks?"))
+        if (!is.null(trk)) addn("plant_height", trk$v, paste("[trunk]", trk$txt), "plant_organ_measured", "trunk", scale = 1 / 1000)
+      }
     }
   }
   # Poaceae, Cyperaceae, Juncaceae: culm / plant heights are flowering heights, written to both plant_height and plant_height_reproductive
@@ -2429,7 +2455,11 @@ extract_one <- function(r, group_filter = TRUE) {
        prep_fun = function(x) str_remove_all(x, "\\b(?:[0-9]+|one|two|three)?-?headed\\b|\\bfruiting heads?\\b|\\bspine-tipped\\b|\\bspines?\\b|\\b(?:flowers |dichasia )?(?:solitary|single)(?: or [a-z ]+?)? (?:on|at|along) (?:each |the )?(?:nodes?|rachis)\\b"))
   addc("inflorescence_shape", join_units(unit_text(u, "inflorescence", subj_re = "head|capitul|spike|glomerule|umbel")),
        if (legume_mode) c(infl_shape_dict, "obloid|short-obloid|ellipsoid|ovoid" = "elongated") else infl_shape_dict)
-  in_other <- paste0(excl("inflorescences?", "racemes?", "spikes?", "heads?", "flowers?"), "|peduncled|pedunculate")
+  # (Pimelea "Inflorescence: receptacle 3.5-6 mm long at first", Acacia incognita heads "4-6 x 4-5 mm; receptacles usually 1-2 mm
+  # long": the receptacle, not the inflorescence; but an Acacia spike's receptacle is its axis, Acacia sp. Castletower "spikes
+  # interrupted; receptacle 8-11 cm long", and A. pudica "spikes (judging from receptacles) 20-25 mm long")
+  rcp_excl <- !legume_mode || !str_detect(str_to_lower(join_units(unit_text(u, "inflorescence")) %||% ""), "\\bspikes?\\b")
+  in_other <- paste0(excl("inflorescences?", "racemes?", "spikes?", "heads?", "flowers?"), "|peduncled|pedunculate", if (rcp_excl) "|receptacles?(?!\\s*\\))")
   il <- m_first(unit_text(u, "inflorescence", subj_re = "inflorescence|raceme|spike|panicle|cyme|thyrse|corymb|synflorescence|conflorescence|spadix"), "long|in length", in_other)
   # (Fabaceae: the length of the heads / spikes is the inflorescence length; a raceme or panicle bearing them goes on an
   # entity_measured = raceme axis / panicle row: "Inflorescences rudimentary racemes 1-3 mm long ...; spikes 25-50 mm long")
@@ -2734,6 +2764,16 @@ extract_one <- function(r, group_filter = TRUE) {
   # (an infructescence is not the fruit: "Infructescence a raceme, 5.5-46 cm long" is infructescence_length)
   fr <- unit_text(u, "fruit", subj_re = "^(?!(?:the )?infructescences?\\b).*$")
   fr_txt <- join_units(fr)
+  # cycads and conifers: seed and pollen cone length and diameter (candidate traits, user 2026-10-29); seed cones are also
+  # "female / ovulate cones", pollen cones "male cones" ("Pollen cones fusiform, 25-45 cm long, 8-12 cm diam.; microsporophyll
+  # lamina 20-40 mm long": not the sporophylls, scales, spines or stalks)
+  cone_other <- paste0(excl("cones?"), "|sporophylls?|microsporophylls?|megasporophylls?|receptacles?")
+  for (ck in list(c("seed_cone", "^(?:the )?(?:seed|ovulate|female|megasporangiate) (?:cones?|strobil(?:i|us))$"),
+                  c("pollen_cone", "^(?:the )?(?:pollen|male|microsporangiate) (?:cones?|strobil(?:i|us))$"))) {
+    cd <- d_first(unit_text(u, "cone", subj_re = ck[2]), cone_other)
+    if (!is.null(cd$L)) addn(paste0(ck[1], "_length"), cd$L$v, cd$L$txt)
+    if (!is.null(cd$W)) addn(paste0(ck[1], "_diameter"), cd$W$v, cd$W$txt)
+  }
   fr_dim <- unit_text(u, "fruit", subj_re = "^(?!(?:the )?(?:pericarps?|endocarps?|valves|cocci|mericarps?|infructescences?)$).*$")
   fr_dim_txt <- join_units(fr_dim)
   fr_subj <- u$subj[u$sec == "fruit"]
@@ -2764,6 +2804,10 @@ extract_one <- function(r, group_filter = TRUE) {
   if (length(fr)) {
     fo <- excl("fruits?", "capsules?", "pods?", "legumes?", "drupes?", "nuts?", "nutlets?", "achenes?", "follicles?", "mericarps?", "samaras?", "valves", "cones?", "endocarps?", "pericarps?")
     frd <- d_first(fr_dim, fo)
+    # the base-to-apex height is the fruit length when no length is given (Tribulus "Fruit 10-14 mm high, 18-25 mm wide",
+    # Leionema "Cocci 4-5 mm high")
+    high_len <- function(texts) { for (x in texts) { h <- first_meas(x, "high|tall", fo); if (!is.null(h)) return(h) }; NULL }
+    if (is.null(frd$L)) frd$L <- high_len(fr_dim)
     if (!is.null(frd$L)) addn("fruit_length", frd$L$v, frd$L$txt)
     if (!is.null(frd$W)) addn("fruit_width", frd$W$v, frd$W$txt)
     fth <- m_first(fr_dim, "thick|deep", fo)
@@ -2777,7 +2821,9 @@ extract_one <- function(r, group_filter = TRUE) {
     if (!is.null(fth)) addn("fruit_height", fth$v, fth$txt)
     # fruits measured only as their mericarps / cocci ("Cocci 5-10 mm long"): entity_measured rows
     if (is.null(frd$L)) {
-      mc <- d_first(unit_text(u, "fruit", subj_re = "^(?:the )?(?:mericarps?|cocci|coccus|fruitlets?)$"), fo)
+      mc_txt <- unit_text(u, "fruit", subj_re = "^(?:the )?(?:mericarps?|cocci|coccus|fruitlets?)$")
+      mc <- d_first(mc_txt, fo)
+      if (is.null(mc$L)) mc$L <- high_len(mc_txt)
       if (!is.null(mc$L)) { addn("fruit_length", mc$L$v, mc$L$txt, "entity_measured", "mericarps"); frd$L <- mc$L }
       if (!is.null(mc$W)) addn("fruit_width", mc$W$v, mc$W$txt, "entity_measured", "mericarps")
     }
@@ -3239,6 +3285,45 @@ extract_one <- function(r, group_filter = TRUE) {
                                ctx_type = NA, ctx_value = NA, qualifier = "rarely"))
   }
 
+  # hedged calendars ("Flowers June-February or possibly all year", "Flowering apparently occurs between late August and December"):
+  # the months a hedged sentence adds to the stated calendar go on their own rows, with the hedge word as the scoring_certainty
+  # context (user 2026-10-29); "may occur at any time of the year" counts as stated (user 2026-10-28)
+  if (!is.na(ph_txt)) {
+    cert_re <- "\\b(probably|possibly|perhaps|likely|almost certainly|apparently|presumably|seemingly|suspected|thought to(?: be)?|is thought(?: to be)?|it may also|appears? to(?: be)?|seems? to(?: be)?)\\b"
+    may_re <- "\\b(may|could|might)\\b"
+    ym <- function(x) if (is.null(x) || is.na(x)) integer(0) else which(str_split(x, "")[[1]] == "y")
+    qx_m <- function(k) if (nrow(ph$q_extra)) unlist(ph$q_extra$m[ph$q_extra$k == k]) else integer(0)
+    cert_m <- list(fl = c(ym(ph$fl), ym(ph$fl_x), qx_m("fl")), fr = c(ym(ph$fr), ym(ph$fr_x), qx_m("fr")))
+    hrows <- list()
+    for (s in sentences(ph_txt)) {
+      if (!str_detect(s, regex(cert_re, ignore_case = TRUE)) && !str_detect(s, may_re)) next
+      anytime <- str_detect(s, regex("\\b(?:may|could|might|can) (?:also )?(?:occur|flower|be found|fruit)\\b[^.;]{0,40}\\b(?:any time|any month|all year|throughout the year)", ignore_case = TRUE)) &&
+        !str_detect(s, regex(cert_re, ignore_case = TRUE))
+      cw <- str_to_lower(coalesce(str_match(s, regex(cert_re, ignore_case = TRUE))[, 2], str_match(s, may_re)[, 2]))
+      cw <- if (anytime) NA_character_ else if (str_detect(cw, "^(?:appears?|seems?) to")) "apparently" else if (str_detect(cw, "^(?:thought to|is thought)")) "thought to be" else
+        if (cw %in% c("may", "could", "might", "it may also")) "possibly" else cw
+      sd <- str_squish(str_remove_all(str_remove_all(s, regex(paste0(cert_re, "\\s*"), ignore_case = TRUE)), paste0(may_re, "(?: also)?\\s*")))
+      # (the cause is not a calendar: Triodia mallota "Flowers recorded in March, presumably following summer rainfall")
+      sd <- str_squish(str_remove_all(sd, regex(",?\\s*\\b(?:after|following|in response to|dependent on|depending on|due to|as (?:the|a) result of)\\b[^.;,]*?\\brain\\w*(?:\\s+respectively)?", ignore_case = TRUE)))
+      hp <- phenology_parse(sd)
+      for (k in c("fl", "fr")) {
+        hq <- if (!is.null(hp$main_q) && !is.na(hp$main_q[[k]])) hp$main_q[[k]] else NA_character_
+        cand <- list(list(m = ym(hp[[k]]), q = hq), list(m = ym(hp[[paste0(k, "_x")]]), q = "rarely"))
+        if (nrow(hp$q_extra)) for (j in which(hp$q_extra$k == k)) cand[[length(cand) + 1]] <- list(m = unlist(hp$q_extra$m[j]), q = hp$q_extra$q[j])
+        for (cc in cand) {
+          m <- setdiff(cc$m, cert_m[[k]])
+          q <- if (is.na(cw) && is.na(cc$q) && length(cert_m[[k]])) "occasionally" else cc$q
+          if (length(m)) hrows[[length(hrows) + 1]] <- tibble(k = k, q = q, cw = cw, m = list(m), s = s)
+        }
+      }
+    }
+    if (length(hrows)) {
+      hr <- bind_rows(hrows) %>% group_by(k, q, cw) %>% summarise(m = list(sort(unique(unlist(m)))), s = collapse_text(s, " "), .groups = "drop")
+      for (j in seq_len(nrow(hr))) add(tibble(trait = c(fl = "flowering_time", fr = "fruiting_time")[[hr$k[j]]], value = yn(hr$m[[j]]), desc = hr$s[j],
+                                              min = NA, max = NA, ctx_type = NA, ctx_value = NA, qualifier = hr$q[j], certainty = hr$cw[j]))
+    }
+  }
+
   # Poaceae: the "flowers" measured are florets (candidate floret_length / _width, "Floret 6.5-9 mm long"); the caryopsis embryo and
   # hilum lengths ("embryo 0.7-1.6 mm long; hilum 3-3.3 mm long") are candidate traits
   if (grass_mode) {
@@ -3263,6 +3348,7 @@ extract_one <- function(r, group_filter = TRUE) {
     inflorescence_description = join_units(unit_text(u, c("inflorescence", "spadix_part", "peduncle", "bract", "pedicel"), parts = "any")),
     flower_description = join_units(unit_text(u, c("flower", "bud", "calyx", "corolla", "androecium", "gynoecium"), parts = "any")),
     fruit_description = join_units(unit_text(u, c("diaspore", "fruit"), parts = "any")), seed_description = join_units(unit_text(u, "seed", parts = "any")),
+    cone_description = join_units(unit_text(u, "cone", parts = "any")),
     phenology_text = ph_txt,
     pollination_description = grab_sent(eco_all, "pollinat|self-poll|visited by|visitors|cleistogam"),
     dispersal_description = grab_sent(eco_all, "dispers|flung|explod|\\bants?\\b|birds? (?:eat|feed)|eaten by|carried by|by water|currents?\\b|spread by"),
@@ -3406,7 +3492,8 @@ if (file.exists(ph_over_file)) {
   recs <- bind_rows(recs, pho %>% pivot_longer(c(flowering_time, fruiting_time), names_to = "trait", values_to = "value") %>%
                       filter(!is.na(value)) %>%
                       transmute(taxon_name, trait, value, desc = description, min = NA_real_, max = NA_real_,
-                                ctx_type = NA_character_, ctx_value = NA_character_, qualifier = commonness_qualifier, region = population_region))
+                                ctx_type = NA_character_, ctx_value = NA_character_, qualifier = commonness_qualifier, region = population_region,
+                                scoring = na_if(trait_scoring_method, ""), certainty = na_if(scoring_certainty, "")))
 }
 # ecology traits vetted by reading each Ecology / Notes text (pollination, dispersal, clonality, fire, lifespan ...)
 eco_file <- file.path(raw_dir, "ecology_vetted.csv")
@@ -3683,7 +3770,7 @@ if (Sys.getenv("FOA_QA") != "") saveRDS(list(main = main, recs = recs, units = m
 # ---------------------------------------------------------------- assemble rows
 # one row per taxon x (commonness_qualifier, leaf_division, entity_measured, population_region, trait_scoring_method);
 # the main row has no context
-for (cc in c("region", "scoring", "extreme_min", "extreme_max", "kind")) if (!cc %in% names(recs)) recs[[cc]] <- NA
+for (cc in c("region", "scoring", "certainty", "extreme_min", "extreme_max", "kind")) if (!cc %in% names(recs)) recs[[cc]] <- NA
 # phenology, overrides, vetted ecology and copy-down rows are categorical
 recs <- recs %>% mutate(kind = coalesce(kind, "cat"))
 recs <- recs %>%
@@ -3693,14 +3780,14 @@ recs <- recs %>%
          population_region = coalesce(region, ifelse(ctx_type %in% "population_region", ctx_value, NA)),
          plant_organ_measured = ifelse(ctx_type %in% "plant_organ_measured", ctx_value, NA),
          phenological_stage = ifelse(ctx_type %in% "phenological_stage", ctx_value, NA),
-         trait_scoring_method = scoring) %>%
+         trait_scoring_method = scoring, scoring_certainty = certainty) %>%
   # categorical values found twice for the same row are merged (stem spines + spiny leaf teeth); for numbers the first statement wins
-  group_by(taxon_name, trait, commonness_qualifier, leaf_division, entity_measured, population_region, plant_organ_measured, phenological_stage, trait_scoring_method) %>%
+  group_by(taxon_name, trait, commonness_qualifier, leaf_division, entity_measured, population_region, plant_organ_measured, phenological_stage, trait_scoring_method, scoring_certainty) %>%
   summarise(is_num = first(kind) == "num",
             desc = if (first(kind) == "num") first(desc) else collapse_text(desc, "; "),
             value = if (first(kind) == "num") NA_character_ else collapse_unique(value[!is.na(value) & value != ""]),
             min = first(min), max = first(max), extreme_min = first(extreme_min), extreme_max = first(extreme_max), .groups = "drop")
-keys <- c("taxon_name", "commonness_qualifier", "leaf_division", "entity_measured", "population_region", "plant_organ_measured", "phenological_stage", "trait_scoring_method")
+keys <- c("taxon_name", "commonness_qualifier", "leaf_division", "entity_measured", "population_region", "plant_organ_measured", "phenological_stage", "trait_scoring_method", "scoring_certainty")
 cat_w <- recs %>% filter(!is_num) %>% select(all_of(keys), trait, value, desc) %>%
   pivot_wider(names_from = trait, values_from = c(value, desc), names_glue = "{trait}{ifelse(.value == 'desc', '_description', '')}")
 num_w <- recs %>% filter(is_num) %>% mutate(across(c(min, max, extreme_min, extreme_max), ~ signif(.x, 6))) %>%
@@ -3743,7 +3830,7 @@ num_cols <- num_cols[!str_detect(num_cols, "_extreme_(min|max)$") | map_lgl(num_
 for (cc in cat_cols) if (!cc %in% names(rows)) rows[[cc]] <- NA
 rows <- rows %>% select(all_of(keys), all_of(cat_cols), all_of(num_cols))
 
-ctx <- c("commonness_qualifier", "leaf_division", "entity_measured", "population_region", "plant_organ_measured", "phenological_stage", "trait_scoring_method")
+ctx <- c("commonness_qualifier", "leaf_division", "entity_measured", "population_region", "plant_organ_measured", "phenological_stage", "trait_scoring_method", "scoring_certainty")
 ids <- main %>% select(taxon_name, family, taxon_rank, foa_url)
 is_main <- rowSums(!is.na(rows[, ctx])) == 0
 out_df <- bind_rows(
