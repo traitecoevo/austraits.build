@@ -45,10 +45,11 @@ dataset:
           "plant_growth_substrate", "plant_height", "plant_height_reproductive", "plant_photosynthetic_organ",
           "plant_physical_defence_structures", "plant_width", "pollination_syndrome", "post_fire_flowering",
           "post_fire_recruitment", "resprouting_capacity", "resprouting_capacity_non_fire_disturbance", "seed_colour",
-          "seed_length", "seed_shape", "seed_surface_texture", "seed_width",
-          "seedbank_location", "seeds_per_fruit", "serotiny", "sex_type",
-          "stem_branching_form", "stem_diameter", "stem_growth_habit", "stem_hairs",
-          "stem_length", "storage_organ", "vegetative_reproduction_ability"
+          "seed_height", "seed_length", "seed_shape", "seed_surface_texture",
+          "seed_width", "seedbank_location", "seeds_per_fruit", "serotiny",
+          "sex_type", "stem_branching_form", "stem_diameter", "stem_growth_habit",
+          "stem_hairs", "stem_length", "storage_organ", "vegetative_reproduction_ability",
+          "woodiness_detailed"
         ),
         is.na(measurement_range) | measurement_range != "extreme"
       )
@@ -657,7 +658,9 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: Scored from the taxon description (verbatim source terms in value_description).
+  methods: Scored from the taxon description (verbatim source terms in value_description). Where the profile gives no life
+    history, perennial is recorded on a trait_scoring_method = inferred_from_growth_form row for trees, shrubs, mallees, palmoids,
+    woody climbers and geophytes (the ABRS_2022 rule).
 - var_in: mycorrhizal_association_type
   unit_in: .na
   trait_name: mycorrhizal_association_type
@@ -721,7 +724,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: Scored from the taxon description (verbatim source terms in value_description).
+  methods: Scored from the taxon description (verbatim source terms in value_description). Where the profile names no growth
+    form but a life history, herb is recorded on a trait_scoring_method = inferred_from_life_history row (the ABRS_2022 rule).
 - var_in: plant_growth_substrate
   unit_in: .na
   trait_name: plant_growth_substrate
@@ -837,6 +841,16 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Scored from the taxon description (verbatim source terms in value_description).
+- var_in: seed_height
+  unit_in: mm
+  trait_name: seed_height
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
+    maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
+    parenthetical extremes are on measurement_range = extreme rows (not mapped).'
 - var_in: seed_length
   unit_in: mm
   trait_name: seed_length
@@ -966,6 +980,17 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Scored from statements in the Ecology and Notes text of the taxon profile (verbatim in value_description).
+- var_in: woodiness_detailed
+  unit_in: .na
+  trait_name: woodiness_detailed
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the habit text (woody base, suffruticose -> woody_base; woody rootstock or taproot -> woody_root;
+    soft-wooded -> semi_woody; verbatim in value_description) and, for taxa without one, inferred from the growth form on
+    trait_scoring_method = inferred_from_growth_form rows: herb, graminoid, fern, tussock, hummock, herbaceous climber, geophyte
+    -> herbaceous; tree, shrub, mallee, woody climber, palmoid -> woody; both when the forms are mixed (the ABRS_2022 rules).'
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na

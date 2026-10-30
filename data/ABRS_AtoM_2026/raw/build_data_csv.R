@@ -34,8 +34,8 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
                  Proteaceae = "ABRS_Proteaceae_2026")
 # datasets written in long format (see "long format" below); ABRS_NtoZ_2026 since the second Orchidaceae batch (user's request,
 # 2026-10-22); ABRS_Proteaceae_2026 and ABRS_Asteraceae_2026 from the start (user, 2026-10-29)
-# (ABRS_Myrtaceae_2026 converted from wide, user 2026-10-29)
-long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026")
+# (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
+long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026")
 dataset_of <- function(fam) unname(ifelse(fam %in% names(own_dataset), own_dataset[fam],
                                           ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -308,6 +308,10 @@ fix_text <- tribble(
   "Taraxacum pachymerum", "9–13 cm long", "9–13 mm long",
   # Streptoglossa decurrens: "those of main branches 20–60 mm long" ("branches" would own the number)
   "Streptoglossa decurrens", "those of main branches 20–60 mm long", "20–60 mm long (those of main branches)",
+  # "Tree to 10 m, rarely 20 m high": the unit word belongs to both heights
+  "Corymbia peltata", "Tree to 10 m, rarely 20 m high", "Tree to 10 m high, rarely to 20 m high",
+  "Cyathea brownii", "trunk usually to 5 m, rarely to 18 m tall", "trunk usually to 5 m tall, rarely to 18 m tall",
+  "Eucalyptus kabiana", "A mallee to 5 m, rarely a small tree to 10 m high", "A mallee to 5 m high, rarely a small tree to 10 m high",
   # Xanthium diagnoses: "differing in the leaves being ..., and the conceptacles longer, ... mm long" as organ-led clauses
   "Xanthium cavanillesii", "the leaves being shallowly and irregularly lobed, and the conceptacles longer, (15–) 28–33 mm long", "leaves shallowly and irregularly lobed; conceptacles (15–) 28–33 mm long",
   "Xanthium italicum", "leaves bluntly to acutely shallowly lobed, and the conceptacles generally larger, 22–30 mm long", "leaves bluntly to acutely shallowly lobed; conceptacles 22–30 mm long",
@@ -383,6 +387,8 @@ prep <- function(x, keep_q = FALSE) {
   x <- str_replace_all(x, "(?<=[0-9])\u00b7(?=[0-9])", ".")
   x <- str_replace_all(x, "(?<![A-Za-z])l\\.(?=[0-9])", "1.")
   x <- str_replace_all(x, "(?<=[0-9])\\s*-\\s*-\\s*(?=[0-9])", "-")
+  # ("Lamina 30-c. 200 cm long": the "c." of the upper bound does not break the range)
+  x <- str_replace_all(x, "(?<=[0-9])\\s*-\\s*c\\.\\s*(?=[0-9])", "-")
   # ("Flowers usually August–-October": a doubled dash between month names)
   x <- str_replace_all(x, "(?<=[A-Za-z.])\\s*-\\s*-\\s*(?=[A-Z])", "-")
   # thousands separators in measurements ("Flower stem 500-1,000 mm tall", Thelymitra "Flower stem 200–1,000 × 4–9 mm")
@@ -863,6 +869,19 @@ units_of <- function(desc) {
         em <- str_match(tk, entity_re)[2]
         if (!is.na(em) && cc$kind == "organ" && cc$sec %in% c("flower", "inflorescence")) entity <- str_to_lower(em)
         if (asteraceae_mode && cc$kind == "organ" && cc$sec == "flower") { am <- str_match(tk, rx(aster_ent_re))[2]; if (!is.na(am)) entity <- str_to_lower(am) }
+        # a blade named after a floral organ in the same sentence is that organ's blade (Diuris "Petals obliquely erect; stalk 4-6 mm long;
+        # blade ovate, 10-12 x 7-9 mm", Demorchis "Labellum ..., blade c. 5.5 x 3 mm"), and a blade or leaves named after juvenile
+        # leaves are juvenile (eucalypt "Juvenile growth ...: juvenile leaves opposite, ..., blade ovate, to 5-12 cm long; ..., upper leaves
+        # less setose"), not the leaf lamina
+        if (cc$kind == "organ" && !is.null(cur)) {
+          if (cc$sec == "lamina" && cur$sec %in% c("corolla", "calyx", "orchid_part", "flower", "bract", "androecium", "gynoecium", "corona"))
+            cc <- list(kind = "part", sec = cur$sec, part = "blade", subj = cur$subj)
+          # (only after a juvenile-leaf statement, not "young leaves light green" (Andersonia); explicitly typed cauline, basal or adult
+          # leaves stay the plant's: Lepidium "juvenile leaves bipinnatifid; cauline leaves pinnately lobed")
+          else if (cc$sec %in% c("lamina", "leaf") && cur$sec == "juvenile" && str_detect(coalesce(cur$subj, ""), "juvenile|seedling|coppice|intermediate") &&
+                   !str_detect(coalesce(cc$subj, ""), "adult|mature|crown|cauline|stem|basal|radical|rosette"))
+            cc <- list(kind = "organ", sec = "juvenile", part = NA_character_, subj = cur$subj)
+        }
         # (Asteraceae: "outer bracts c. 7, ..., 1.5-4 cm long, ..., inner bracts 2- or 3-seriate, ..., 6-10 mm long": each bract type on
         # its own entity_measured rows; bare "bracts" and any other organ end it)
         if (asteraceae_mode && cc$kind == "organ" && cc$sec == "bract" && identical(cc$subj, "involucral bracts")) {
@@ -950,7 +969,7 @@ growth_form_dict <- c(
 life_history_dict <- c("short-lived perennials?" = "short_lived_perennial", "annuals?" = "annual", "biennials?" = "biennial",
                        "perennials?" = "perennial", "ephemerals?" = "ephemeral")
 stem_habit_dict <- c(
-  "erect|upright" = "erect", "prostrate|procumbent|prostate" = "prostrate", "decumbent" = "decumbent",
+  "erect|upright" = "erect", "prostrate|procumbent|prostate" = "prostrate", "decumbent|ascending" = "decumbent",
   "spreading" = "spreading", "sprawling" = "sprawling", "creeping" = "creeping", "trailing" = "prostrate",
   "scandent|climbing|twining|scrambling|clambering" = "climbing", "mat-forming|forming mats|mats" = "mat-forming",
   "cushion-forming|cushions?" = "cushion-forming", "tufted" = "tufted", "caespitose|cespitose" = "caespitose",
@@ -958,6 +977,9 @@ stem_habit_dict <- c(
   "pendulous|pendent|weeping" = "pendulous", "bushy" = "bushy", "open(?=,? (?:[a-z-]+ )?(?:shrubs?|trees?|subshrubs?|crowns?|habit|herbs?))" = "open", "(?:dense|compact)(?=,? (?:[a-z-]+ )?(?:shrubs?|subshrubs?|herbs?|mats?|cushions?|tussocks?|clumps?|habit|crowns?))" = "dense", "lax" = "lax",
   "low-growing" = "low-growing", "acaulescent|stemless" = "acaulescent", "arborescent" = "arborescent",
   "suffrutescent" = "suffrutescent", "submerged" = "submerged", "floating" = "floating")
+# woodiness_detailed from the habit text (the ABRS_2022 terms, user 2026-10-30); plain woody / herbaceous come from the growth form
+woodiness_dict <- c("woody[- ]based|(?:with |having )?(?:a )?woody base|woody at (?:the )?base|base woody|suffruticose|woody below" = "woody_base",
+                    "woody (?:rootstock|root-stock|taproot|tap-root|tap root|roots?|caudex|stock)" = "woody_root", "soft[- ]wooded|softwooded" = "semi_woody")
 branching_dict <- c(
   "multi-?stemmed" = "multi-stemmed", "many-stemmed" = "many-stemmed", "few-stemmed" = "few-stemmed",
   "single-stemmed|single stemmed|with a single stem" = "single_basal_stem", "unbranched" = "unbranched",
@@ -974,7 +996,7 @@ leaf_defence_dict <- c("pungent(?:-pointed)?|spine-tipped|spinose-tipped|pungent
                        "spiny-toothed|spinose-dentate|spinulose-dentate|(?:the )?teeth (?:often |usually |sometimes )?(?:spine-tipped|spinose|pungent)|spiny teeth|spine-tipped teeth" = "sharp_pointed_defence")
 storage_dict <- c(
   "lignotuber(?:ous)?|forming a lignotuber" = "lignotuber", "tuberous roots?|roots? tuberous|root[- ]tubers?|tuberous-rooted|tuberous rootstock" = "root_tuber",
-  "stem[- ]tubers?" = "stem_tuber", "tuberous|tubers?" = "tuber", "bulbs?|bulbous" = "bulb", "corms?|cormous" = "corm",
+  "stem[- ]tubers?" = "stem_tuber", "tuberous|tubers?" = "stem_tuber", "bulbs?|bulbous" = "bulb", "corms?|cormous" = "corm",
   "pseudobulbs?" = "pseudobulb", "caudex|caudices" = "caudex", "fleshy rhizomes?|rhizomes? (?:thick, )?fleshy|succulent rhizomes?" = "rhizome_fleshy",
   "woody rhizomes?|rhizomes? woody" = "rhizome_woody", "rhizomes?|rhizomatous" = "rhizome")
 storage_neg <- c("without (?:a )?lignotuber|lignotuber absent|lacking (?:a )?lignotuber|not forming a lignotuber|non-lignotuberous|lignotuber (?:not|lacking)" = "lignotuber_absent")
@@ -1004,7 +1026,7 @@ arrangement_dict <- c("decussate" = "decussate", "crowded" = "crowded", "cluster
                       "fascicled|fasciculate|in fascicles|tufted" = "fasciculate", "basal rosettes?|rosettes?|rosulate" = "rosette",
                       "basal|radical" = "clustered_basal", "imbricate|overlapping" = "imbricate",
                       "distichous|in 2 rows|in two rows|two-ranked|2-ranked" = "distichous", "spirally arranged|spiral" = "spiral",
-                      "scattered" = "scattered")
+                      "scattered" = "scattered", "(?:single|solitary)(?= or (?:clustered|in clusters|fascicled|in fascicles|tufted))" = "scattered")
 compound_dict <- c("simple|undivided" = "simple",
                    # fan-palm leaves: no leaf_compoundness level (recorded, not mapped)
                    "costapalmate|palmate(?! ?compound)" = "",
@@ -1016,7 +1038,7 @@ division_dict <- c("bipinnate|2-pinnate" = "bipinnate", "tripinnate|3-pinnate" =
                    "pinnatipartite" = "pinnatipartite", "pinnately lobed" = "pinnately_lobed", "palmately lobed|palmatifid|palmatisect" = "palmately_lobed",
                    "dichotomously (?:divided|lobed|forked)" = "dichotomously_lobed")
 lobation_dict <- c("shallowly to deeply (?:[0-9]-)?lobed" = "lobed_shallow lobed_deep", "deeply (?:[0-9]-)?lobed" = "lobed_deep", "shallowly (?:[0-9]-)?lobed" = "lobed_shallow", "(?:[0-9]-)?lobed" = "lobed")
-lobation_neg <- c("unlobed|not lobed|without lobes" = "unlobed")
+lobation_neg <- c("unlobed|not lobed|without lobes|undivided|entire(?=,? (?:or |to |(?:rarely|sometimes|occasionally|often|usually|less often) )(?:[a-z]+ly )?(?:[0-9]-)?lobed)" = "unlobed")
 leaf_shape_dict <- c(
   "narrow(?:ly)? linear" = "narrowly_linear", "linear" = "linear", "narrow(?:ly)? lanceolate" = "narrowly_lanceolate",
   "broad(?:ly)? lanceolate|wide(?:ly)? lanceolate" = "lanceolate", "lanceolate|lance-shaped" = "lanceolate",
@@ -1030,23 +1052,25 @@ leaf_shape_dict <- c(
   "falcate|sickle-shaped" = "falcate", "spathulate|spatulate" = "spathulate", "subulate|awl-shaped" = "subulate",
   "acicular|needle-like|needle-shaped" = "acicular", "strap-shaped|strap-like|ligulate|lorate" = "strap-shaped", "peltate" = "peltate",
   "narrow(?:ly)? rhombic|narrow(?:ly)? rhomboid(?:al)?" = "narrowly_rhomboidal", "rhombic|rhomboid(?:al)?|diamond-shaped" = "rhomboidal",
-  "deltate|deltoid" = "deltate", "obtriangular|obdeltate|obdeltoid" = "obtriangular", "narrow(?:ly)? triangular" = "narrowly_triangular",
+  "deltate|deltoid" = "deltate", "obtriangular|obdeltate|obdeltoid|cuneate|wedge-shaped|cuneiform|flabellate|flabelliform|fan-shaped" = "obtriangular", "narrow(?:ly)? triangular" = "narrowly_triangular",
   "triangular" = "triangular", "narrow(?:ly)? obtrullate" = "narrowly_obtrullate", "obtrullate" = "obtrullate", "trullate" = "trullate",
   "ensiform|sword-shaped" = "ensiform", "setaceous|bristle-like" = "setaceous", "oblate" = "oblate",
   # no leaf_shape level: recorded, not mapped
-  "sagittate|hastate|triquetrous|rhomboid-ovate|clavate|semi-?terete|subulate-terete|flabellate|cuneiform" = "")
+  "sagittate|hastate|triquetrous|rhomboid-ovate|clavate|semi-?terete|subulate-terete" = "")
 shape_words <- "ovate|obovate|elliptic|elliptical|lanceolate|oblanceolate|oblong|linear|orbicular|suborbicular|spathulate|cordate|deltate|deltoid|triangular|rhombic|rhomboid|obtriangular|obdeltate|falcate|terete|subulate|obcordate|reniform|trullate|obtrullate|circular"
 shape_prep <- function(x) {
+  # ("lanceolate to narrowly or broadly ovate": both widths apply to the shape)
+  x <- str_replace_all(x, "\\b(narrow(?:ly)?|broad(?:ly)?|wide(?:ly)?) (or|to|and) (narrow(?:ly)?|broad(?:ly)?|wide(?:ly)?) ([a-z-]+)", "\\1 \\4 \\2 \\3 \\4")
   x <- str_replace_all(x, paste0("(?<=[a-z])-(?=(?:", shape_words, ")\\b)"), " ")
   x <- str_replace_all(x, "\\bnarrow-(?=[a-z])", "narrowly ")
   x <- str_replace_all(x, "\\bbroad-(?=[a-z])", "broadly ")
   x
 }
 base_dict <- c("cuneate|wedge-shaped" = "cuneate", "attenuate|long-attenuate|tapering|tapered|narrowed|narrowing" = "attenuate",
-               "rounded" = "rounded", "truncate" = "truncate", "cordate" = "cordate", "auriculate|auricled|eared" = "auriculate",
+               "rounded" = "rounded", "truncate" = "truncate", "cordate|subcordate" = "cordate", "auriculate|auricled|eared" = "auriculate",
                "oblique|asymmetric" = "oblique", "obtuse" = "obtuse", "acute" = "acute", "sagittate" = "sagittate", "hastate" = "hastate",
                "sheathing|sheath(?:ing)? at (?:the )?base" = "sheathing",
-               "decurrent|amplexicaul|connate|perfoliate|clasping|peltate|subcordate|unequal" = "")
+               "decurrent|amplexicaul|connate|perfoliate|clasping|peltate|unequal" = "")
 apex_dict <- c("acuminate|long-acuminate|caudate|attenuate|cuspidate" = "acuminate", "acute|pointed" = "acute", "obtuse|blunt" = "obtuse",
                "rounded" = "rounded", "apiculate|mucronate|mucronulate|mucro|apiculum" = "apiculate",
                "emarginate|retuse|truncate|notched|bifid|aristate" = "")
@@ -1054,13 +1078,14 @@ margin_dict <- c("entire" = "entire", "dentate|denticulate|spiny-toothed" = "too
                  "crenate|crenulate" = "toothed_crenate", "toothed|teeth" = "toothed")
 margin_posture_dict <- c("revolute|recurved" = "revolute", "involute|incurved" = "involute", "undulate|wavy|crisped|crispate" = "undulate", "flat" = "flat")
 lamina_posture_dict <- c("flat" = "flat", "concave|channelled|canaliculate" = "concave", "convex" = "convex", "conduplicate|folded" = "conduplicate",
-                         "plicate" = "plicate", "incurved" = "incurved", "recurved" = "recurved", "undulate|wavy" = "undulate")
+                         "plicate" = "plicate", "incurved" = "incurved", "recurved" = "recurved", "undulate|wavy" = "undulate",
+                         "involute|inrolled" = "involute", "convolute" = "convolute", "revolute" = "revolute")
 hairs_dict <- c("glandular-(?:pubescent|hairy|pilose|puberulous|puberulent|villous|tomentose|setose)|glandular hairs|glandular-hairs" = "glandular_pubescent",
                 "glabrous|glabrescent|hairless|subglabrous" = "glabrous",
                 "eglandular-(?:hairy|pubescent)|hairy|pubescent|puberulous|puberulent|tomentose|tomentellous|villous|pilose|hirsute|hispid|hispidulous|strigose|strigulose|sericeous|silky|setose|lanate|woolly|velutinous|velvety|floccose|araneose|canescent|hoary|stellate-hairy|pilosulous|scabrid|hirtellous|hairs|indumentum" = "hairy",
                 "indumentum (?:lacking|absent|0)|without indumentum" = "glabrous")
 glaucous_dict <- c("subglaucous|slightly glaucous|somewhat glaucous|faintly glaucous" = "subglaucous", "glaucous|pruinose" = "glaucous")
-glaucous_neg <- c("not glaucous|non-glaucous|not pruinose" = "not_glaucous")
+glaucous_neg <- c("not glaucous|non-glaucous|not pruinose|\\bgreen(?= (?:or|to) (?:[a-z]+ )?(?:glaucous|pruinose))|(?<=glaucous (?:or|to) )green\\b" = "not_glaucous")
 leaf_colour_dict <- c(
   "dark grey[- ]green|dark greyish[- ]green" = "dark_grey_green", "(?:pale|light) grey[- ]green|(?:pale|light) greyish[- ]green" = "pale_grey_green",
   "grey[- ]green|greyish[- ]green|gray[- ]green|glaucous[- ]green" = "grey_green", "blue[- ]green|bluish[- ]green" = "blue_green",
@@ -1166,10 +1191,11 @@ flower_colour_map <- c(
   "pink|pinkish|rose|salmon|magenta|cerise" = "pink",
   "blue|bluish|purple|purplish|mauve|lilac|violet|lavender|indigo|plum" = "blue_purple",
   "green|greenish|lime|olive" = "green", "black|blackish" = "black", "grey|greyish|gray|silver|silvery" = "grey")
-fruit_colour_map <- c(
+# (reddish brown is its own level, user 2026-10-30: about 400 taxa)
+fruit_colour_map <- c("reddish[- ]brown|red[- ]brown|rufous" = "reddish_brown",
   "white|whitish" = "white", "cream|creamy|ivory" = "cream", "yellow|yellowish|lemon|golden|gold|straw|amber" = "yellow",
   "orange|apricot" = "orange", "red|reddish|crimson|scarlet|maroon|burgundy|vermilion|carmine|claret|wine-red" = "red",
-  "brown|brownish|bronze|rufous|fawn|rust|russet|copper|coppery|tan|chestnut|buff|ochre" = "brown",
+  "brown|brownish|bronze|fawn|rust|russet|copper|coppery|tan|chestnut|buff|ochre" = "brown",
   "pink|pinkish|rose|salmon|magenta|cerise" = "pink", "blue|bluish" = "blue",
   "purple|purplish|mauve|lilac|violet|lavender|indigo|plum" = "purple", "green|greenish|lime|olive" = "green",
   "black|blackish" = "black", "grey|greyish|gray|silver|silvery" = "grey")
@@ -1662,6 +1688,9 @@ extract_one <- function(r, group_filter = TRUE) {
   asteraceae_mode <<- fam == "Asteraceae"
   trt <- pick_treatment(r[["Description"]])
   desc <- dehedge(prep(trt$text))
+  # (eucalypts: "Crown of juvenile leaves which are always opposite ...; blade ..., 9.5-25.5 cm long" is the mature foliage of a
+  # juvenile-leaved species, not the seedling leaves of the "Juvenile growth" sentence)
+  if (!is.na(desc)) desc <- str_replace_all(desc, "\\bCrown (?:(?:predominantly|mostly|chiefly|entirely|usually) )?of ((?:juvenile|intermediate|adult)(?:,? (?:to|and|or) (?:juvenile|intermediate|adult))*) leaves\\b", "Leaves of the crown (\\1)")
   # gametophyte sentences (Lycopodiaceae, ferns) describe the gametophyte, not the plant
   if (!is.na(desc)) desc <- str_remove_all(desc, "(?:^|(?<=\\.\\s))Gametophytes?\\b[^.]*\\.\\s*")
   # "Similar to subsp. variabilis but leaves broadly orbicular, ...": what follows "but" is this taxon's own description
@@ -1676,7 +1705,15 @@ extract_one <- function(r, group_filter = TRUE) {
   # species", "most species ...") and comma segments carrying a commonness word are not universal, so they are dropped
   if (r[["rank"]] %in% c("genus", "family") && group_filter) {
     ss <- sentences(desc)
-    ss <- ss[!str_detect(ss, rx("\\b(?:species|spp|some|most|many|several|others?|introduced|naturalised|cultivated|exotic)\\b"))]
+    # (only from the segment that names the subset: "Tuberous terrestrial orchids, usually single, but some species form localised
+    # tufts" keeps "Tuberous terrestrial orchids"; a sentence opening with the subset goes whole; user 2026-10-30)
+    scope_re <- "\\b(?:species|spp|some|most|many|several|others?|introduced|naturalised|cultivated|exotic)\\b"
+    ss <- map_chr(ss, function(z) {
+      if (!str_detect(z, rx(scope_re))) return(z)
+      sg <- str_split(z, "(?<=[,;:])\\s+")[[1]]
+      k <- which(str_detect(sg, rx(scope_re)))[1]
+      if (k == 1) "" else str_remove(paste(sg[seq_len(k - 1)], collapse = " "), "[,;:]\\s*$")
+    })
     # ("Habit varied, including: (i) ... (ii) ...": an enumeration of different habits in the group)
     ss <- ss[!str_detect(ss, rx("\\b(?:varied|various|variable)\\b[^.]*\\bincluding\\b|\\(i\\)"))]
     ss <- map_chr(ss, function(x) {
@@ -1684,33 +1721,53 @@ extract_one <- function(r, group_filter = TRUE) {
       # removed, the rest of the segment kept ("Fruit a globose to obloid-ovoid, syncarpous fleshy berry")
       adv <- "(?:(?:slightly|weakly|strongly|very|more|less|shortly|narrowly|broadly|widely|deeply|shallowly|densely|sparsely|somewhat|minutely|finely|irregularly)\\s+)?"
       x <- str_remove_all(x, paste0(adv, "\\b(?!(?:up|reduced|similar|adnate|attached|fused|close|due|next|equal|subequal|inserted|appressed|confined|restricted|tapering|tapered|narrowed|narrowing|extending|leading|according|relative|opposite|decurrent|connate|joined)\\b)[a-z-]+(?: to ", adv, "(?!the\\b|an?\\b|[0-9])[a-z-]+)+"))
+      # ("Leaves simple or palmately lobed": the alternative is the lobing, so it is "simple, palmately lobed or not")
+      x <- str_replace_all(x, rx("\\bsimple or ((?:[a-z]+ly )?(?:lobed|dissected|divided|incised))\\b"), "simple, \\1 or not \\1")
       seg <- str_split(x, "(?<=[,;:])\\s+")[[1]]
       # segments naming a particular genus ("glandular-pubescent (Hydrocleys)") describe only that genus
       # ... and alternatives ("smooth or variously winged") are variation across the group
-      drop <- str_detect(seg, rx(qual_re)) | str_detect(seg, "\\([A-Z][a-z]+") | str_detect(seg, "\\bor\\b")
+      # (a commonness word governs what follows it in its segment, not what precedes it: "Fruit a capsule with a usually woody
+      # hypanthium" keeps the capsule, "Fruit a caryopsis (grain) or, very rarely, the pericarp free" the caryopsis, "Leaves
+      # alternate or rarely opposite" the alternate; as in the ABRS_2023 genus / family inferences, user 2026-10-30)
+      seg0 <- seg
+      # (a bracketed commonness word goes with its brackets, "free to base (mostly)", and the cut segment keeps its closing
+      # punctuation, so the next clause stays a clause: Dilleniaceae "in 1 to rarely 2 whorls; styles free")
+      cut_q <- function(z) {
+        z2 <- str_remove_all(z, rx(paste0("\\s*\\([^()]*", qual_re, "[^()]*\\)")))
+        z2 <- str_remove(z2, rx(paste0(",?\\s*(?:\\b(?:or|and|but)\\b\\s*,?\\s*)?", qual_re, ".*$")))
+        if (z2 != z && str_detect(z, "[,;:]$") && !str_detect(z2, "[,;:]$") && str_detect(z2, "[a-z0-9)]")) z2 <- paste0(z2, str_extract(z, "[,;:]$"))
+        z2
+      }
+      seg <- ifelse(str_detect(seg, "\\([A-Z][a-z]+"), seg, map_chr(seg, cut_q))
+      drop <- str_detect(seg0, "\\([A-Z][a-z]+") | str_detect(seg, "\\bor\\b") | seg == ""
       # (a clause in which any segment names a genus describes alternatives across genera: "Leaves reduced to scales
       # (Cassytha), or fully developed, simple, exstipulate": the whole clause is dropped)
       # (only the alternatives: segments before an "X or Y (Genus)" segment, and segments after it that continue with "or";
       # "Flowers zygomorphic or rarely actinomorphic (Brunonia), bisexual" keeps "bisexual")
-      cl_id <- cumsum(c(1, head(str_detect(seg, ";$|:$"), -1)))
+      cl_id <- cumsum(c(1, head(str_detect(seg0, ";$|:$"), -1)))
       for (gk in which(str_detect(seg, "\\([A-Z][a-z]+(?:,| and| or|\\))"))) {
         same <- which(cl_id == cl_id[gk])
-        if (str_detect(seg[gk], "\\bor\\b")) drop[same[same <= gk]] <- TRUE
+        if (str_detect(seg0[gk], "\\bor\\b")) drop[same[same <= gk]] <- TRUE
         nx <- same[same > gk]
-        if (length(nx) && str_detect(seg[nx[1]], "^or\\b")) drop[nx] <- TRUE
+        if (length(nx) && str_detect(seg0[nx[1]], "^or\\b")) drop[nx] <- TRUE
       }
       # a commonness word at the head of a list ("Flowers mostly hermaphroditic, hypogynous, actinomorphic", "Leaves usually
       # petiolate, fleshy, coriaceous ...") may govern the whole list: the rest of the clause is dropped too
       # (only for the clause's opening segment, and not when the commonness word governs a count: "Seeds usually 3-6, angled, black")
-      clause_end <- str_detect(seg, ";$|:$")
+      clause_end <- str_detect(seg0, ";$|:$")
       opens <- c(TRUE, head(clause_end, -1))
       # ("Deciduous or sometimes evergreen trees": a commonness word after "or" governs only that alternative)
-      lead_q <- opens & str_detect(map_chr(str_split(str_remove_all(seg, "\\([^)]*\\)"), "\\s+"), ~ paste(head(.x, 3), collapse = " ")), rx(qual_re)) &
-        !str_detect(seg, rx(paste0("\\bor\\s+", qual_re))) &
-        !str_detect(seg, rx(paste0(qual_re, "\\s+(?:c\\.\\s*)?[0-9(]")))
-      for (k in which(lead_q)) { j <- k; while (j <= length(seg)) { drop[j] <- TRUE; if (clause_end[j]) break; j <- j + 1 } }
+      lead_q <- opens & str_detect(map_chr(str_split(str_remove_all(seg0, "\\([^)]*\\)"), "\\s+"), ~ paste(head(.x, 3), collapse = " ")), rx(qual_re)) &
+        !str_detect(seg0, rx(paste0("\\bor\\s+", qual_re))) &
+        !str_detect(seg0, rx(paste0(qual_re, "\\s+(?:c\\.\\s*)?[0-9(]")))
+      # (only when no later item of the clause carries its own commonness word: "Leaves usually alternate, simple, often succulent"
+      # qualifies the list item by item, so "simple" stays)
+      for (k in which(lead_q)) {
+        ce <- which(clause_end & seq_along(seg) >= k); ce <- if (length(ce)) min(ce) else length(seg)
+        if (ce > k && any(str_detect(seg0[(k + 1):ce], rx(qual_re)))) { drop[k] <- TRUE; next }
+        j <- k; while (j <= length(seg)) { drop[j] <- TRUE; if (clause_end[j]) break; j <- j + 1 } }
       # a dropped segment keeps its organ noun, so the segments after it still belong to that organ ("Seeds ... or ..., black")
-      seg[drop] <- map_chr(seg[drop], function(z) {
+      seg[drop] <- map_chr(seg0[drop], function(z) {
         cc <- classify_token(z)
         # the kept head carries a marker so that it is not read as a statement ("stipules absent or small" is not "stipules present")
         if (cc$kind == "organ") paste0(str_sub(z, 1, nchar(cc$subj)), " \u2205,") else ""
@@ -1849,6 +1906,7 @@ extract_one <- function(r, group_filter = TRUE) {
   is_tree <- nrow(gf) && all(gf$value %in% c("tree", "mallee", "palmoid"))
   # (orchids: "dense clumps with thin, spreading roots", "forming spreading clonal colonies": the roots or the colonies (of many
   # plants) spread, not the stems; a plant's own clump can be dense or spreading)
+  addc("woodiness_detailed", habit_txt, woodiness_dict)
   addc("stem_growth_habit", collapse_text(c(habit_txt, stem_lead), " | "), stem_habit_dict,
        prep_fun = function(x) {
          if (is_tree) x <- str_remove_all(x, "\\b(?:with|and) (?:[a-z-]+,? (?:and |or )?){1,3}(?:branches|branchlets)\\b")
@@ -2036,9 +2094,10 @@ extract_one <- function(r, group_filter = TRUE) {
     cl <- m_first(habit, "long|in length|", h_other)
     if (!is.null(cl)) addn("plant_height_climbing_plant", cl$v, cl$txt, scale = 1 / 1000)
   }
-  # Fabaceae: "Tree 6-30 (-45) m high; sometimes a shrub 1.5-3 m high": a height given for a qualified growth form goes on that
-  # form's commonness row, and the first height then on a "usually" row
-  if (legume_mode && !is.null(ht) && nrow(gf) && any(gf$qual %in% rare_quals)) {
+  # "Tree 6-30 (-45) m high; sometimes a shrub 1.5-3 m high": a height given for a qualified growth form goes on that
+  # form's commonness row, and the first height then on a "usually" row (Fabaceae first; all families from 2026-10-30:
+  # Eucalyptus boliviana "Shrub or mallee to 5 m high, occasionally a tree to 12 m high")
+  if (!is.null(ht) && nrow(gf) && any(gf$qual %in% rare_quals)) {
     hx <- mark_extremes(str_to_lower(join_units(habit)))
     for (gi in which(gf$qual %in% rare_quals)) {
       m <- str_match(hx, paste0("\\b", gf$qual[gi], "\\s+(?:an?\\s+)?(?:[a-z-]+\\s+){0,2}?", fixed_re(str_to_lower(gf$term[gi])), "\\b[^,;|]{0,20}?(", meas, ")\\s*(?:high|tall)?"))
@@ -2047,9 +2106,9 @@ extract_one <- function(r, group_filter = TRUE) {
       for (k in seq_along(recs)) if (all(recs[[k]]$trait == "plant_height") && all(is.na(recs[[k]]$qualifier))) recs[[k]]$qualifier <- "usually"
     }
   }
-  # Fabaceae: "Shrub 1-2 m high, sometimes 3-4 m", "Tree 3-6 m high, occasionally 10-12 m": a qualified second height with no
-  # growth-form noun goes on that commonness row
-  if (legume_mode && !is.null(ht)) {
+  # "Shrub 1-2 m high, sometimes 3-4 m", "Tree 3-6 m high, occasionally 10-12 m": a qualified second height with no
+  # growth-form noun goes on that commonness row (all families from 2026-10-30)
+  if (!is.null(ht)) {
     hx <- mark_extremes(str_to_lower(join_units(habit) %||% ""))
     qh <- str_match(hx, paste0("(?:,|;|\\bor)\\s*", qual_re, "\\s+(?:to |up to |reaching )?(", meas, ")\\s*(?:high|tall)?(?=\\s*(?:[,;|.]|$))"))
     if (!is.na(qh[1]) && qh[2] %in% rare_quals && !any(map_lgl(recs, ~ all(.x$trait == "plant_height") && any(!is.na(.x$qualifier) & .x$qualifier == qh[2])))) {
@@ -2262,6 +2321,9 @@ extract_one <- function(r, group_filter = TRUE) {
   }
   venation_rm <- function(x) str_remove_all(x, "[a-z-]*(?:pinnate|palmate)(?:ly)? (?:veined|nerved|venation|veins)|(?:pinnately|palmately) (?:veined|nerved)|(?:pinnate|palmate) venation|venation (?:is )?(?:pinnate|palmate)|leaflets? [^,;|]*")
   div_txt <- if (fern_mode) join_units(c(leaf_gen, lam)) else gen_txt
+  # ("lamina simple" says the leaf is simple: Goodeniaceae "Leaves mostly alternate ...; lamina simple, margin entire ...")
+  if (!fern_mode) { lam_cmp <- unlist(str_extract_all(str_to_lower(join_units(lam) %||% ""), "\\b(?:lamina|blade)s? (?:simple|compound)\\b"))
+    if (length(lam_cmp)) div_txt <- collapse_text(c(div_txt, lam_cmp), " | ") }
   # (Fabaceae: "simple or stellate hairs" are hairs, not simple leaves)
   cmp <- scan_terms(div_txt, compound_dict, prep_fun = function(x) str_remove_all(x, paste0("[a-z-]*(?:pinnate|palmate)(?:ly)? (?:veined|nerved|venation|veins)|(?:pinnately|palmately) (?:veined|nerved)|(?:pinnate|palmate) venation|venation (?:is )?(?:pinnate|palmate)",
                                                                                      if (legume_mode) "|\\bsimple\\b(?: (?:or|and|to) [a-z-]+)? (?:hairs|trichomes)|\\b[a-z-]+ (?:and|or) simple (?:hairs|trichomes)" else "")))
@@ -2308,7 +2370,7 @@ extract_one <- function(r, group_filter = TRUE) {
   addc("leaf_shape", shape_txt, leaf_shape_dict, prep_fun = shape_clean, ctx_type = shape_ctx[1], ctx_value = shape_ctx[2])
   # base: "base cuneate", "cuneate at base", "basally attenuate", bare "attenuate" / "cuneate" tokens
   base_parts <- u %>% filter(sec %in% (if (compound_leaf) "leaflet" else c("leaf", "lamina")), part %in% c("base", "bases")) %>% pull(text)
-  base_inline <- unlist(str_extract_all(str_to_lower(shape_txt %||% ""), "\\b(?:(?:[a-z-]+ ){1,2}(?:to|or|and) ){0,3}(?:[a-z]+ )?[a-z-]+ (?:at|towards) (?:the )?base\\b|\\bbasally [a-z-]+(?: to [a-z-]+)?|(?<=, |^)(?:long-)?(?:attenuate|cuneate)(?=,|$| \\|)|(?<=, |^)(?:[a-z]+ly )?(?:[a-z-]+ (?:to|or) )?(?!at\\b|the\\b|to\\b|its\\b|from\\b|towards\\b|near\\b|with\\b|on\\b)[a-z-]+ base\\b"))
+  base_inline <- unlist(str_extract_all(str_to_lower(shape_txt %||% ""), "\\b(?:[a-z-]+, ){1,4}(?:[a-z-]+ )?(?:or|to|and) [a-z-]+ (?:at|towards) (?:the )?base\\b|\\b(?:(?:[a-z-]+ ){1,2}(?:to|or|and) ){0,3}(?:[a-z]+ )?[a-z-]+ (?:at|towards) (?:the )?base\\b|\\bbasally [a-z-]+(?: to [a-z-]+)?|(?<=, |^)(?:long-)?(?:attenuate|cuneate)(?=,|$| \\|)|(?<=, |^)(?:[a-z]+ly )?(?:[a-z-]+ (?:to|or) )?(?!at\\b|the\\b|to\\b|its\\b|from\\b|towards\\b|near\\b|with\\b|on\\b)[a-z-]+ base\\b"))
   base_txt <- collapse_text(c(base_parts, base_inline), " | ")
   addc("leaf_base_shape", base_txt, base_dict, prep_fun = function(x) str_remove_all(x, "\\bbases?\\b|\\bbasally\\b|\\bat\\b"), ctx_type = shape_ctx[1], ctx_value = shape_ctx[2])
   apex_parts <- u %>% filter(sec %in% (if (compound_leaf) "leaflet" else c("leaf", "lamina")), part %in% c("apex", "apices", "tip", "tips")) %>% pull(text)
@@ -2337,7 +2399,7 @@ extract_one <- function(r, group_filter = TRUE) {
   margin_parts <- u %>% filter(sec %in% (if (compound_leaf) "leaflet" else c("leaf", "lamina")), part %in% c("margin", "margins", "teeth")) %>% pull(text)
   mg_txt <- collapse_text(c(shape_txt, margin_parts), " | ")
   mh <- scan_terms(mg_txt, margin_dict, prep_fun = function(x) str_remove_all(x, "\\([^)]*\\b(?:teeth|lobes)\\b[^)]*\\)|\\blobes? [^,;|]*|\\bentire (?:plant|length)\\b|(?<!margins? )\\bentire\\b(?=(?:,? (?:to|or) |, [a-z]+ (?:to|or) )(?:[a-z]+ ){0,2}(?:[0-9]-)?lobed\\b)"))
-  if (nrow(mh) && any(mh$value != "toothed")) mh <- mh %>% filter(value != "toothed")
+  if (nrow(mh) && any(str_detect(mh$value, "^toothed_"))) mh <- mh %>% filter(value != "toothed")
   add(rec_cat("leaf_margin", mh, mg_txt, shape_ctx[1], shape_ctx[2]))
   mp_txt <- collapse_text(c(margin_parts, unlist(str_extract_all(str_to_lower(shape_txt %||% ""), "[^,;|]*\\bmargins?\\b[^,;|]*"))), " | ")
   addc("leaf_margin_posture", mp_txt, margin_posture_dict, prep_fun = function(x) str_remove_all(x, "\\bmargins?\\b"), ctx_type = shape_ctx[1], ctx_value = shape_ctx[2])
@@ -3009,6 +3071,10 @@ extract_one <- function(r, group_filter = TRUE) {
     high_len <- function(texts) { for (x in texts) { h <- first_meas(x, "high|tall", fo); if (!is.null(h)) return(h) }; NULL }
     l_from_high <- is.null(frd$L)
     if (is.null(frd$L)) frd$L <- high_len(fr_dim)
+    # a diameter is the fruit's width and height (a round cross-section), and a globose fruit's length when no length is given
+    # (Solanum "Berry globular, 10-13 mm diam."; the ABRS_2023 convention, user 2026-10-30)
+    fr_diam <- !is.null(frd$W) && str_detect(frd$W$txt, rx("\\bdiam"))
+    if (is.null(frd$L) && fr_diam && str_detect(str_to_lower(fr_dim_txt %||% ""), "\\b(?:sub)?glob(?:ose|ular)\\b|\\bspherical\\b")) frd$L <- frd$W
     if (!is.null(frd$L)) addn("fruit_length", frd$L$v, frd$L$txt)
     if (!is.null(frd$W)) addn("fruit_width", frd$W$v, frd$W$txt)
     # (Banksia "Follicles broadly elliptic, 20-35 mm long, 10-15 mm high, 14-20 mm wide": the height beside a length)
@@ -3023,7 +3089,7 @@ extract_one <- function(r, group_filter = TRUE) {
       fwg <- str_match(mark_extremes(join_units(unit_text(u, "fruit", parts = "any")) %||% ""), rx(paste0("\\bwing(?:s|ed margins?)?\\b[^,;|]{0,20}?(", meas, ")\\s*wide")))
       if (!is.na(fwg[1])) addn("fruit_wing_width", meas_of(fwg[2]), unmark(fwg[1]))
     }
-    if (!is.null(fth)) addn("fruit_height", fth$v, fth$txt)
+    if (!is.null(fth)) addn("fruit_height", fth$v, fth$txt) else if (fr_diam) addn("fruit_height", frd$W$v, frd$W$txt)
     for (en in unique(ach_seg$ent)) {
       ad <- d_first(ach_seg$t[ach_seg$ent == en], paste0(fo, "|bod(?:y|ies)"))
       # (Helminthotheca "marginal achenes ..., with body 2.9-3.8 mm long": only the body below the beak is measured)
@@ -3087,23 +3153,37 @@ extract_one <- function(r, group_filter = TRUE) {
     la <- str_match(mark_extremes(join_units(sd) %||% ""), rx(paste0("(", meas, ")\\s*(?:across|along|on) (?:the )?long(?:est|er) axis|long(?:est|er) axis (?:c\\. )?(", meas, ")")))
     if (!is.na(la[1])) sdd$L <- list(v = meas_of(coalesce(la[2], la[7])), txt = unmark(la[1]))
   }
+  # (a diameter is the seed's width and height, and a globose seed's length too: Acacia "Seeds ... globose, 5-9 mm diam."; ABRS_2023
+  # convention, user 2026-10-30)
+  sd_diam <- !is.null(sdd$W) && str_detect(sdd$W$txt, rx("\\bdiam"))
+  if (is.null(sdd$L) && sd_diam && str_detect(str_to_lower(sd_txt %||% ""), "\\b(?:sub)?glob(?:ose|ular)\\b|\\bspherical\\b")) sdd$L <- sdd$W
   if (!is.null(sdd$L)) addn("seed_length", sdd$L$v, sdd$L$txt)
   if (!is.null(sdd$W)) addn("seed_width", sdd$W$v, sdd$W$txt)
-  if (!legume_mode) addc("seed_shape", sd_txt, seed_shape_dict, prep_fun = function(x) str_remove_all(x, "\\bin (?:cross[- ])?section\\b[^,;|]*|\\b(?:arils?|wings?|hilum|embryo)\\b[^,;|]*"))
+  if (sd_diam && !legume_mode) addn("seed_height", sdd$W$v, sdd$W$txt)
+  # seed_shape is 3-dimensional (traits.yml), scored with the ABRS_2023 conventions in every family (user 2026-10-30): oblong / elongate ->
+  # ovoid_elongated; elliptic / ellipsoid / obloid / oval -> ellipsoid; ovoid / ovate / obovate / pyriform -> ovoid; globose / spherical ->
+  # globoid; circular -> discoid; orbicular -> orbicular; angular / rhombic / quadrate / triangular -> polyhedral; D-shaped ->
+  # hemispheric_flattened; biconvex -> lenticular. A "compressed" / "flattened" seed (not "turgid") takes the *_flattened level of an
+  # ellipsoid, ovoid or globoid outline. A seed with a wing is also winged (the wing's own shape is not the seed's: Corymbia
+  # "ellipsoidal with terminal wing")
+  sh_raw <- str_to_lower(sd_txt %||% "")
+  sh_src <- str_remove_all(sh_raw, "\\bin (?:cross[- ])?section\\b[^,;|]*|\\b(?:arils?|wings?|hilum|embryo|areoles?|pleurograms?|funicles?|halo|fold\\w*)\\b[^,;|]*|\\b(?:longitudinal|oblique|transverse)(?:ly)?\\b|\\brounded (?:at|over)\\b[^,;|]*")
+  flat <- str_detect(sh_src, "\\b(?:compressed|flattened|flat|dorsiventrally|laterally compressed)\\b|\\bcompressed-") && !str_detect(sh_src, "\\bturgid\\b")
+  ss <- scan_terms(sh_src, c("oblong|elongate|elongated" = "ovoid_elongated", "elliptic(?:al)?|obloid|ellipsoid(?:al)?|oval" = "ellipsoid", "linear" = "",
+                             "ovate|obovate|ovoid|obovoid|pyriform|egg-shaped" = "ovoid", "globose|subglobose|globular|subglobular|spherical|rotund" = "globoid",
+                             "circular|subcircular" = "discoid", "orbicular|suborbicular" = "orbicular", "reniform|kidney-shaped|heart-shaped" = "reniform",
+                             "rhombic|rhomboid|quadrate|subquadrate|square|rectangular|angular|triangular" = "polyhedral", "d-shaped" = "hemispheric_flattened",
+                             "lenticular|lens-shaped|biconvex" = "lenticular", "discoid|subdiscoid|disc-shaped|discoidal" = "discoid", "conical|conic|turbinate" = "conical",
+                             "cylindrical|cylindric" = "cylindrical", "fusiform" = "fusiform", "cuneate|wedge-shaped" = "cuneate", "hemispherical" = "hemispheric",
+                             "comma-shaped" = "comma-shaped", "winged" = "winged"))
+  if (flat && nrow(ss)) ss <- ss %>% mutate(term = paste0(term, ifelse(value %in% c("ellipsoid", "ovoid", "globoid"), " [compressed]", "")),
+                                            value = ifelse(value %in% c("ellipsoid", "ovoid", "globoid"), paste0(value, "_flattened"), value))
+  # (the wing can be its own clause of the seed sentence: Banksia "Seed 11-14 mm long; seed body cuneate, ...; wing notched")
+  sd_sent <- collapse_text(str_to_lower(keep(sentences(desc %||% ""), ~ str_detect(.x, "^\\s*Seeds?\\b"))), " | ")
+  sw <- scan_terms(collapse_text(c(sh_raw, sd_sent), " | "), c("wings?" = "winged"), neg = c("wingless|unwinged|not winged|without (?:a )?wings?" = NA_character_), generic_neg = FALSE)
+  if (nrow(sw) && !any(ss$value == "winged")) ss <- bind_rows(ss, sw %>% slice(1)) %>% filter(value != "")
+  add(rec_cat("seed_shape", ss, sd_txt))
   if (legume_mode) {
-    # seed_shape is 3-dimensional (traits.yml): the outline terms of legume seeds ("oblong", "elliptic", "ovate", "circular") map to
-    # ellipsoid / ovoid / globoid (traits.yml lists obloid and oblong as ellipsoid synonyms), and to the *_flattened levels when the
-    # seed is "compressed" / "flattened" (not when "turgid")
-    sh_src <- str_remove_all(str_to_lower(sd_txt %||% ""), "\\bin (?:cross[- ])?section\\b[^,;|]*|\\b(?:arils?|wings?|hilum|embryo|areoles?|pleurograms?|funicles?|halo|fold\\w*)\\b[^,;|]*|\\b(?:longitudinal|oblique|transverse)(?:ly)?\\b|\\brounded (?:at|over)\\b[^,;|]*")
-    flat <- str_detect(sh_src, "\\b(?:compressed|flattened|flat|dorsiventrally|laterally compressed)\\b|\\bcompressed-") && !str_detect(sh_src, "\\bturgid\\b")
-    ss <- scan_terms(sh_src, c("oblong|elliptic(?:al)?|obloid|ellipsoid(?:al)?|oval" = "ellipsoid", "linear" = "", "ovate|obovate|ovoid|obovoid|pyriform|egg-shaped" = "ovoid",
-                               "circular|subcircular|orbicular|suborbicular|rotund|round|rounded|globose|subglobose|globular|subglobular|spherical" = "globoid",
-                               "reniform|kidney-shaped|heart-shaped" = "reniform", "rhombic|quadrate|subquadrate|square|rectangular|angular" = "polyhedral",
-                               "lenticular|lens-shaped" = "lenticular", "discoid|subdiscoid|disc-shaped" = "discoid", "conical|turbinate" = "conical",
-                               "cylindrical|cylindric" = "cylindrical", "fusiform" = "fusiform"))
-    if (flat && nrow(ss)) ss <- ss %>% mutate(value = ifelse(value %in% c("ellipsoid", "ovoid", "globoid"), paste0(value, "_flattened"), value),
-                                              term = paste0(term, ifelse(value %in% c("ellipsoid_flattened", "ovoid_flattened", "globoid_flattened"), " [compressed]", "")))
-    add(rec_cat("seed_shape", ss, sd_txt))
     # position of the seeds in the pod (candidate seed_orientation_in_fruit): "Seeds longitudinal", "oblique to longitudinal", "transverse"
     so_tok <- unlist(map(sd, split_tokens))
     so_tok <- so_tok[map_lgl(str_extract_all(str_to_lower(str_remove_all(so_tok, "∅")), "[a-z±-]+"),
@@ -3113,7 +3193,7 @@ extract_one <- function(r, group_filter = TRUE) {
     addc("seed_orientation_in_fruit", paste(so_tok, collapse = " | "), c("longitudinal(?:ly)?" = "longitudinal", "oblique(?:ly)?" = "oblique", "transverse(?:ly)?" = "transverse"))
     # seed thickness ("compressed (1-2.5 mm thick)") is the seed height (traits.yml: the shortest axis)
     sth <- m_first(sd, "thick|deep", excl("seeds?"))
-    if (!is.null(sth)) addn("seed_height", sth$v, sth$txt)
+    if (!is.null(sth)) addn("seed_height", sth$v, sth$txt) else if (sd_diam) addn("seed_height", sdd$W$v, sdd$W$txt)
     # pleurogram (candidate seed_pleurogram, present / absent): "pleurogram U-shaped", "areole open", "without a pleurogram"
     addc("seed_pleurogram", join_units(unit_text(u, "seed", parts = "any")), c("pleurograms?|areoles?|areolate" = "present"),
          neg = c("without (?:a )?pleurogram|pleurograms? (?:absent|lacking|0)|lacking (?:a )?pleurogram|no pleurogram|exareolate" = "absent"), generic_neg = FALSE)
@@ -3651,6 +3731,9 @@ hi_variable <- hi_full_vals %>% mutate(facet = facet_of(trait, value)) %>%
 # group statements that read as universal but are not (vetted by reading the group description)
 copydown_exclude <- tribble(
   ~group_name, ~trait,
+  # "Petals 5, sometimes 4, free or fused, imbricate": the operculate eucalypts (Eucalyptus, Corymbia, Angophora in part) have no
+  # free imbricate petals
+  "Myrtaceae", "petal_orientation", "Myrtaceae", "sepal_orientation",
   # "monoecious spadices with female zone lowermost" describes the unisexual-flowered genera only; Pothos, Gymnostachys,
   # Rhaphidophora etc. have bisexual flowers
   "Araceae", "sex_type",
@@ -3820,6 +3903,8 @@ compatible_traits <- c("storage_organ", "plant_growth_substrate", "plant_physica
                        "leaf_arrangement", "stem_branching_form", "plant_succulence")
 conflicts <- function(trait, value, vals) {
   if (trait %in% compatible_traits) return(FALSE)
+  # (Persoonia genus "pyrene", species "drupe": the same fruit at different resolution)
+  if (trait == "fruit_type" && value %in% c("drupe", "pyrene") && any(vals %in% c("drupe", "pyrene"))) return(FALSE)
   # generic and specific climbers are the same growth form at different resolution
   if (trait == "plant_growth_form" && str_detect(value, "^climber")) return(!any(str_detect(vals, "^climber")))
   if (trait %in% names(exclusive_sets)) {
@@ -3879,6 +3964,32 @@ ros_add <- bind_rows(
   ros %>% filter(trait == "leaf_arrangement") %>% anti_join(ros %>% filter(trait == "stem_growth_habit"), by = "taxon_name") %>% mutate(trait = "stem_growth_habit")) %>%
   mutate(value = "rosette") %>% distinct(taxon_name, trait, .keep_all = TRUE)
 recs <- bind_rows(recs, ros_add)
+
+# ---------------------------------------------------------------- inferences between traits (the ABRS_2022 rules, user 2026-10-30)
+# For taxa without their own (or copied) value: life_history perennial from a perennial growth form (tree, shrub, mallee, palmoid,
+# woody climber, geophyte; a generic climber may accompany them); woodiness_detailed from the growth form (herb, graminoid, fern,
+# tussock, hummock, herbaceous climber, geophyte -> herbaceous; tree, shrub, mallee, woody climber, palmoid -> woody; both when the
+# forms are mixed; subshrubs and generic climbers give none; a tree fern is a fern); plant_growth_form herb from a stated life
+# history when no growth form is named. Rows carry trait_scoring_method = inferred_from_growth_form / inferred_from_life_history.
+gf_tv <- recs %>% filter(trait == "plant_growth_form", !is.na(value), value != "") %>% group_by(taxon_name) %>%
+  summarise(gf = list(unique(unlist(str_split(value, " ")))), gf_desc = collapse_text(desc, "; "), .groups = "drop")
+has_tr <- function(tr) recs %>% filter(trait == tr, !is.na(value), value != "") %>% distinct(taxon_name) %>% pull()
+inf_row <- function(taxa, trait, value, desc, scoring) tibble(taxon_name = taxa, trait = trait, value = value, desc = desc, min = NA_real_, max = NA_real_,
+  ctx_type = NA_character_, ctx_value = NA_character_, qualifier = NA_character_, region = NA_character_, scoring = scoring)
+perennial_gf <- c("tree", "shrub", "mallee", "palmoid", "climber_woody", "geophyte")
+wood_gf <- c(tree = "woody", shrub = "woody", mallee = "woody", climber_woody = "woody", palmoid = "woody", herb = "herbaceous", graminoid = "herbaceous",
+             fern = "herbaceous", tussock = "herbaceous", hummock = "herbaceous", climber_herbaceous = "herbaceous", geophyte = "herbaceous")
+lh_add <- gf_tv %>% filter(!taxon_name %in% has_tr("life_history"),
+                           map_lgl(gf, ~ all(.x %in% c(perennial_gf, "climber")) && any(.x %in% perennial_gf)))
+wd_add <- gf_tv %>% filter(!taxon_name %in% has_tr("woodiness_detailed")) %>%
+  mutate(w = map_chr(gf, function(g) { if ("fern" %in% g) g <- setdiff(g, "palmoid"); paste(unique(na.omit(wood_gf[g])), collapse = " ") })) %>% filter(w != "")
+lh_tv <- recs %>% filter(trait == "life_history", !is.na(value), value != "") %>% group_by(taxon_name) %>% summarise(lh_desc = collapse_text(desc, "; "), .groups = "drop")
+gf_add <- lh_tv %>% filter(!taxon_name %in% has_tr("plant_growth_form"))
+recs <- bind_rows(recs,
+  inf_row(lh_add$taxon_name, "life_history", rep("perennial", nrow(lh_add)), paste("[inferred from growth form]", lh_add$gf_desc), "inferred_from_growth_form"),
+  inf_row(wd_add$taxon_name, "woodiness_detailed", wd_add$w, paste("[inferred from growth form]", wd_add$gf_desc), "inferred_from_growth_form"),
+  inf_row(gf_add$taxon_name, "plant_growth_form", rep("herb", nrow(gf_add)), paste("[inferred from life history]", gf_add$lh_desc), "inferred_from_life_history"))
+cat("inferred between traits: life_history", nrow(lh_add), " woodiness_detailed", nrow(wd_add), " plant_growth_form", nrow(gf_add), "\n")
 
 # ---------------------------------------------------------------- inferred typical values (user's request, 2026-10-19)
 # Substrate, photosynthetic organ, parasitism and leaf type are usually stated only when atypical (epiphyte, aquatic, leafless,
@@ -4003,7 +4114,7 @@ recs <- bind_rows(recs,
   inf_rec(inf$par_ok, "parasitic", "not_parasitic", "green plant outside parasitic families and genera; no parasitism, host or mycoheterotrophy named"),
   inf_rec(inf$lt_ok, "leaf_type", "broadleaf", "leaf or leaflet shapes all flat-lamina shapes, or leaves at least 3 mm wide, or a divided fern lamina; no terete, needle, involute or scale leaves named"))
 if (Sys.getenv("FOA_QA") != "") saveRDS(list(main = main, recs = recs, units = map2_dfr(res, d$scientific_name, ~ mutate(.x$units, taxon_name = .y)),
-                                             src = d, universal = universal, rejected = rejected, copied = copied), Sys.getenv("FOA_QA"))
+                                             src = d, universal = universal, rejected = rejected, copied = copied, recs_hi = recs_hi, hi_variable = hi_variable, hi_full_vals = hi_full_vals), Sys.getenv("FOA_QA"))
 
 # ---------------------------------------------------------------- assemble rows
 # one row per taxon x (commonness_qualifier, leaf_division, entity_measured, population_region, trait_scoring_method);

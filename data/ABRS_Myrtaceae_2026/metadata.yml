@@ -25,27 +25,28 @@ dataset:
       dplyr::filter(
         trait_name %in% c(
           "bark_colour", "bark_texture", "bud_bank_location", "bud_length",
-          "bud_width", "dispersal_appendage", "dispersal_syndrome", "dispersers",
-          "flower_anther_length", "flower_bract_length", "flower_colour", "flower_diameter",
-          "flower_fertile_stamens_count", "flower_filament_length", "flower_nectar_production", "flower_orientation",
-          "flower_ovary_position", "flower_perianth_merism", "flower_perianth_symmetry", "flower_petal_length",
-          "flower_scent_production", "flower_sepal_length", "flower_structural_sex_type", "flower_style_length",
-          "flower_visitor", "flowering_cues", "flowering_time", "flowers_per_inflorescence",
-          "fruit_colour", "fruit_dehiscence", "fruit_fleshiness", "fruit_height",
-          "fruit_length", "fruit_surface_hairs", "fruit_type", "fruit_width",
-          "fruiting_time", "germination_cues", "inflorescence_length", "inflorescence_type",
-          "leaf_apex_shape", "leaf_arrangement", "leaf_base_shape", "leaf_compoundness",
-          "leaf_glaucousness", "leaf_hairs_adult_leaves", "leaf_hairs_juvenile_leaves", "leaf_lamina_posture",
-          "leaf_length", "leaf_lobation", "leaf_margin", "leaf_margin_posture",
-          "leaf_phenology", "leaf_phyllotaxis", "leaf_shape", "leaf_surface_colour",
-          "leaf_surface_reflectivity", "leaf_type", "leaf_width", "parasitic",
-          "pedicel_length", "peduncle_length", "petiole_length", "plant_climbing_mechanism",
-          "plant_growth_form", "plant_growth_substrate", "plant_height", "plant_photosynthetic_organ",
-          "plant_width", "pollination_syndrome", "post_fire_recruitment", "resprouting_capacity",
-          "seed_colour", "seed_length", "seed_shape", "seed_surface_reflectivity",
+          "bud_width", "buds_per_inflorescence", "dispersal_appendage", "dispersal_syndrome",
+          "dispersers", "flower_anther_length", "flower_bract_length", "flower_colour",
+          "flower_diameter", "flower_fertile_stamens_count", "flower_filament_length", "flower_nectar_production",
+          "flower_orientation", "flower_ovary_position", "flower_perianth_merism", "flower_perianth_symmetry",
+          "flower_petal_length", "flower_scent_production", "flower_sepal_length", "flower_structural_sex_type",
+          "flower_style_length", "flower_visitor", "flowering_cues", "flowering_time",
+          "flowers_per_inflorescence", "fruit_colour", "fruit_dehiscence", "fruit_fleshiness",
+          "fruit_height", "fruit_length", "fruit_surface_hairs", "fruit_type",
+          "fruit_width", "fruiting_time", "germination_cues", "inflorescence_length",
+          "inflorescence_type", "leaf_apex_shape", "leaf_arrangement", "leaf_base_shape",
+          "leaf_compoundness", "leaf_glaucousness", "leaf_glaucousness_juvenile_leaves", "leaf_hairs_adult_leaves",
+          "leaf_hairs_juvenile_leaves", "leaf_lamina_posture", "leaf_length", "leaf_lobation",
+          "leaf_margin", "leaf_margin_posture", "leaf_phenology", "leaf_phyllotaxis",
+          "leaf_shape", "leaf_surface_colour", "leaf_surface_reflectivity", "leaf_type",
+          "leaf_width", "life_history", "parasitic", "pedicel_length",
+          "peduncle_length", "petiole_length", "plant_climbing_mechanism", "plant_growth_form",
+          "plant_growth_substrate", "plant_height", "plant_photosynthetic_organ", "plant_width",
+          "pollination_syndrome", "post_fire_recruitment", "resprouting_capacity", "seed_colour",
+          "seed_height", "seed_length", "seed_shape", "seed_surface_reflectivity",
           "seed_surface_texture", "seed_width", "seeds_per_fruit", "sex_type",
           "stem_branching_form", "stem_diameter", "stem_growth_habit", "stem_hairs",
-          "stem_length", "storage_organ"
+          "stem_length", "storage_organ", "woodiness_detailed"
         ),
         is.na(measurement_range) | measurement_range != "extreme"
       )
@@ -132,6 +133,17 @@ traits:
   methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
     maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
     parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: buds_per_inflorescence
+  unit_in: '{count}/{count}'
+  trait_name: buds_per_inflorescence
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of buds per inflorescence (umbel or umbellaster, e.g. "buds 7 per umbel") given in the taxon description
+    (verbatim in value_description): a range is recorded as minimum and maximum values, a single count as a mode, and alternatives
+    ("buds 3 or 7 per umbel") as minimum and maximum values; parenthetical extremes are on measurement_range = extreme rows
+    (not mapped).'
 - var_in: dispersal_appendage
   unit_in: .na
   trait_name: dispersal_appendage
@@ -487,6 +499,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Scored from the taxon description (verbatim source terms in value_description).
+- var_in: leaf_glaucousness_juvenile_leaves
+  unit_in: .na
+  trait_name: leaf_glaucousness_juvenile_leaves
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the description of the juvenile leaves (verbatim source terms in value_description).
 - var_in: leaf_hairs_adult_leaves
   unit_in: .na
   trait_name: leaf_hairs_adult_leaves
@@ -606,6 +626,16 @@ traits:
   methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
     maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
     parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the taxon description (verbatim source terms in value_description). Where the profile gives no life
+    history, perennial is recorded on a trait_scoring_method = inferred_from_growth_form row for trees, shrubs, mallees, palmoids,
+    woody climbers and geophytes (the ABRS_2022 rule).
 - var_in: parasitic
   unit_in: .na
   trait_name: parasitic
@@ -661,7 +691,8 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: Scored from the taxon description (verbatim source terms in value_description).
+  methods: Scored from the taxon description (verbatim source terms in value_description). Where the profile names no growth
+    form but a life history, herb is recorded on a trait_scoring_method = inferred_from_life_history row (the ABRS_2022 rule).
 - var_in: plant_growth_substrate
   unit_in: .na
   trait_name: plant_growth_substrate
@@ -740,6 +771,16 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Scored from the taxon description (verbatim source terms in value_description).
+- var_in: seed_height
+  unit_in: mm
+  trait_name: seed_height
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
+    maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
+    parenthetical extremes are on measurement_range = extreme rows (not mapped).'
 - var_in: seed_length
   unit_in: mm
   trait_name: seed_length
@@ -853,6 +894,17 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Scored from the taxon description (verbatim source terms in value_description).
+- var_in: woodiness_detailed
+  unit_in: .na
+  trait_name: woodiness_detailed
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the habit text (woody base, suffruticose -> woody_base; woody rootstock or taproot -> woody_root;
+    soft-wooded -> semi_woody; verbatim in value_description) and, for taxa without one, inferred from the growth form on
+    trait_scoring_method = inferred_from_growth_form rows: herb, graminoid, fern, tussock, hummock, herbaceous climber, geophyte
+    -> herbaceous; tree, shrub, mallee, woody climber, palmoid -> woody; both when the forms are mixed (the ABRS_2022 rules).'
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na

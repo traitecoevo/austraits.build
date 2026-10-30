@@ -41,17 +41,17 @@ dataset:
           "leaf_margin", "leaf_margin_posture", "leaf_phenology", "leaf_phyllotaxis",
           "leaf_shape", "leaf_surface_colour", "leaf_surface_reflectivity", "leaf_type",
           "leaf_width", "leaflet_count", "leaflet_length", "leaflet_width",
-          "life_history", "nitrogen_fixing", "parasitic", "pedicel_length",
-          "peduncle_length", "petiole_length", "plant_canopy_form", "plant_climbing_mechanism",
-          "plant_diameter_breast_height", "plant_growth_form", "plant_growth_substrate", "plant_height",
-          "plant_height_climbing_plant", "plant_photosynthetic_organ", "plant_physical_defence_structures", "plant_succulence",
-          "plant_tolerance_frost", "plant_tolerance_salt", "plant_width", "pollination_syndrome",
-          "post_fire_recruitment", "resprouting_capacity", "resprouting_capacity_non_fire_disturbance", "seed_colour",
-          "seed_height", "seed_length", "seed_shape", "seed_surface_reflectivity",
-          "seed_surface_texture", "seed_width", "seedbank_location", "seedling_establishment_conditions",
-          "seeds_per_fruit", "sex_type", "stem_branching_form", "stem_diameter",
-          "stem_growth_habit", "stem_hairs", "stem_length", "storage_organ",
-          "vegetative_reproduction_ability"
+          "life_history", "lifespan", "nitrogen_fixing", "parasitic",
+          "pedicel_length", "peduncle_length", "petiole_length", "plant_canopy_form",
+          "plant_climbing_mechanism", "plant_diameter_breast_height", "plant_growth_form", "plant_growth_substrate",
+          "plant_height", "plant_height_climbing_plant", "plant_photosynthetic_organ", "plant_physical_defence_structures",
+          "plant_succulence", "plant_tolerance_frost", "plant_tolerance_salt", "plant_width",
+          "pollination_syndrome", "post_fire_recruitment", "resprouting_capacity", "resprouting_capacity_non_fire_disturbance",
+          "seed_colour", "seed_height", "seed_length", "seed_shape",
+          "seed_surface_reflectivity", "seed_surface_texture", "seed_width", "seedbank_location",
+          "seedling_establishment_conditions", "seeds_per_fruit", "sex_type", "stem_branching_form",
+          "stem_diameter", "stem_growth_habit", "stem_hairs", "stem_length",
+          "storage_organ", "vegetative_reproduction_ability", "woodiness_detailed"
         ),
         is.na(measurement_range) | measurement_range != "extreme"
       )
@@ -797,7 +797,17 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: 'Scored from the taxon description (verbatim source terms in
-    value_description).'
+    value_description). Where the profile gives no life history, perennial is recorded on a trait_scoring_method = inferred_from_growth_form row for trees, shrubs, mallees, palmoids, woody climbers and geophytes (the ABRS_2022 rule).'
+- var_in: lifespan
+  unit_in: a
+  trait_name: lifespan
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from Ecology and Notes statements of how long plants live (e.g. "a life span of about 20--30 years",
+    "Trees may live to 500 years or longer"; verbatim in value_description): a range is recorded as minimum and maximum
+    values, "less than X" or "to X" as a maximum and "X or longer" as a minimum.'
 - var_in: nitrogen_fixing
   unit_in: .na
   trait_name: nitrogen_fixing
@@ -885,7 +895,7 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: 'Scored from the taxon description (verbatim source terms in
-    value_description).'
+    value_description). Where the profile names no growth form but a life history, herb is recorded on a trait_scoring_method = inferred_from_life_history row (the ABRS_2022 rule).'
 - var_in: plant_growth_substrate
   unit_in: .na
   trait_name: plant_growth_substrate
@@ -1184,6 +1194,14 @@ traits:
   replicates: .na
   methods: 'Scored from statements in the Ecology and Notes text of the taxon profile
     (verbatim in value_description).'
+- var_in: woodiness_detailed
+  unit_in: .na
+  trait_name: woodiness_detailed
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the habit text (woody base, suffruticose -> woody_base; woody rootstock or taproot -> woody_root; soft-wooded -> semi_woody; verbatim in value_description) and, for taxa without one, inferred from the growth form on trait_scoring_method = inferred_from_growth_form rows: herb, graminoid, fern, tussock, hummock, herbaceous climber, geophyte -> herbaceous; tree, shrub, mallee, woody climber, palmoid -> woody; both when the forms are mixed (the ABRS_2022 rules).'
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na

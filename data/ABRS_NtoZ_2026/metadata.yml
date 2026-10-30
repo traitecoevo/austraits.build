@@ -24,35 +24,38 @@ dataset:
     data |>
       dplyr::filter(
         trait_name %in% c(
-          "bark_colour", "bark_texture", "breeding_system", "bud_length",
-          "bud_width", "clonal_spread_mechanism", "dispersal_appendage", "dispersal_syndrome",
-          "dispersers", "flower_anther_length", "flower_bract_length", "flower_colour",
-          "flower_diameter", "flower_fertile_stamens_count", "flower_filament_length", "flower_length",
-          "flower_lifespan", "flower_nectar_production", "flower_orientation", "flower_ovary_position",
-          "flower_perianth_merism", "flower_perianth_symmetry", "flower_petal_length", "flower_pollinator_reward",
-          "flower_scent_production", "flower_sepal_length", "flower_shape", "flower_structural_sex_type",
-          "flower_style_length", "flower_tube_length", "flower_visitor", "flowering_cues",
-          "flowering_time", "flowers_per_inflorescence", "fruit_colour", "fruit_dehiscence",
-          "fruit_fleshiness", "fruit_height", "fruit_length", "fruit_surface_hairs",
-          "fruit_type", "fruit_width", "fruiting_time", "inflorescence_diameter",
-          "inflorescence_length", "inflorescence_shape", "inflorescence_type", "leaf_apex_shape",
-          "leaf_arrangement", "leaf_base_shape", "leaf_compoundness", "leaf_count",
-          "leaf_glaucousness", "leaf_hairs_adult_leaves", "leaf_hairs_juvenile_leaves", "leaf_heterogeneity",
-          "leaf_lamina_division", "leaf_lamina_posture", "leaf_length", "leaf_length_type",
-          "leaf_lobation", "leaf_margin", "leaf_margin_posture", "leaf_phenology",
-          "leaf_phyllotaxis", "leaf_shape", "leaf_surface_colour", "leaf_surface_reflectivity",
-          "leaf_type", "leaf_width", "leaflet_count", "leaflet_count_pairs",
-          "leaflet_length", "leaflet_width", "life_history", "parasitic",
-          "pedicel_length", "peduncle_length", "petiole_length", "plant_alternative_energy_and_nutrient_acquisition_strategy",
+          "bark_colour", "bark_texture", "breeding_system", "bud_bank_location",
+          "bud_length", "bud_width", "clonal_spread_mechanism", "dispersal_appendage",
+          "dispersal_syndrome", "dispersal_unit", "dispersers", "flower_anther_length",
+          "flower_bract_length", "flower_colour", "flower_diameter", "flower_fertile_stamens_count",
+          "flower_filament_length", "flower_length", "flower_lifespan", "flower_nectar_production",
+          "flower_orientation", "flower_ovary_position", "flower_perianth_merism", "flower_perianth_symmetry",
+          "flower_petal_length", "flower_pollinator_reward", "flower_scent_production", "flower_sepal_length",
+          "flower_shape", "flower_structural_sex_type", "flower_style_length", "flower_tube_length",
+          "flower_visitor", "flowering_cues", "flowering_time", "flowers_per_inflorescence",
+          "fruit_colour", "fruit_dehiscence", "fruit_fleshiness", "fruit_height",
+          "fruit_length", "fruit_surface_hairs", "fruit_type", "fruit_width",
+          "fruiting_time", "germination_cues", "inflorescence_diameter", "inflorescence_length",
+          "inflorescence_shape", "inflorescence_type", "leaf_apex_shape", "leaf_arrangement",
+          "leaf_base_shape", "leaf_compoundness", "leaf_count", "leaf_glaucousness",
+          "leaf_hairs_adult_leaves", "leaf_hairs_juvenile_leaves", "leaf_heterogeneity", "leaf_lamina_division",
+          "leaf_lamina_posture", "leaf_length", "leaf_length_type", "leaf_lobation",
+          "leaf_margin", "leaf_margin_posture", "leaf_phenology", "leaf_phyllotaxis",
+          "leaf_shape", "leaf_surface_colour", "leaf_surface_reflectivity", "leaf_type",
+          "leaf_width", "leaflet_count", "leaflet_count_pairs", "leaflet_length",
+          "leaflet_width", "life_history", "parasitic", "pedicel_length",
+          "peduncle_length", "petiole_length", "photosynthetic_pathway", "plant_alternative_energy_and_nutrient_acquisition_strategy",
           "plant_climbing_mechanism", "plant_growth_form", "plant_growth_substrate", "plant_height",
           "plant_height_climbing_plant", "plant_height_reproductive", "plant_photosynthetic_organ", "plant_physical_defence_structures",
-          "plant_succulence", "plant_width", "pollination_syndrome", "pollination_vector_possible",
-          "post_fire_flowering", "post_fire_recruitment", "resprouting_capacity_non_fire_disturbance", "rhizome_form",
-          "seed_colour", "seed_length", "seed_shape", "seed_surface_hairs",
-          "seed_surface_reflectivity", "seed_surface_texture", "seed_width", "seedling_establishment_conditions",
-          "sex_type", "stem_branching_form", "stem_diameter", "stem_growth_habit",
-          "stem_hairs", "stem_length", "storage_organ", "storage_organ_diameter",
-          "storage_organ_length", "vegetative_reproduction_ability"
+          "plant_succulence", "plant_tolerance_frost", "plant_tolerance_salt", "plant_width",
+          "pollination_syndrome", "pollination_vector_possible", "post_fire_flowering", "post_fire_recruitment",
+          "resprouting_capacity", "resprouting_capacity_non_fire_disturbance", "rhizome_form", "seed_colour",
+          "seed_dormancy_class", "seed_height", "seed_length", "seed_shape",
+          "seed_surface_hairs", "seed_surface_reflectivity", "seed_surface_texture", "seed_width",
+          "seedbank_location", "seedling_establishment_conditions", "seeds_per_fruit", "sex_type",
+          "stem_branching_form", "stem_diameter", "stem_growth_habit", "stem_hairs",
+          "stem_length", "storage_organ", "storage_organ_diameter", "storage_organ_length",
+          "vegetative_reproduction_ability", "woodiness_detailed"
         ),
         is.na(measurement_range) | measurement_range != "extreme"
       )
@@ -66,37 +69,52 @@ dataset:
     Biological Resources Study; families N to Z, except Proteaceae.
   basis_of_record: preserved_specimen
   life_stage: adult
-  sampling_strategy: 'Species, subspecies, variety and form profiles of the Flora
-    of Australia online (profiles.ala.org.au/opus/foa) were downloaded, together with
-    genus and family profiles. Trait values were extracted from the Description, Phenology,
-    Ecology, Notes and Habitat text with a scripted parser (ABRS_AtoM_2026/raw/build_data_csv.R):
-    each description is split into sentences, clauses and comma-separated segments,
-    each segment is assigned to the organ it describes (habit, stem, leaf, leaflet,
-    inflorescence, flower, fruit, seed, ...), and categorical terms and measurements
-    are read from the segments of the relevant organ. Categorical terms are mapped
-    to AusTraits trait values, with the source terms kept verbatim in value_description; several values are listed in the order they appear in the text, and alternatives
-    qualified by a commonness word (usually, rarely, sometimes ...) or a region are
-    recorded on separate rows. A measured range is recorded as minimum and maximum
-    values, a single measurement as a mean, a single count as a mode, "to X" as a
-    maximum and "X or more" as a minimum; parenthetical extremes are kept on separate
-    rows (measurement_range = extreme). Where a profile describes several
-    earlier treatments, the most recent is used. Categorical values stated as a single,
-    unqualified value in a genus (or family) description, and not contradicted by
-    any member taxon that describes the trait, are copied to member taxa whose own
-    description is silent on that trait. Subspecies, varieties and forms whose own description
-    is silent on a trait take the values (categorical and numeric) from the description
-    of their species. Where the description names no growth form, palms and cycads are
-    scored as palmoid, ferns as fern (fern palmoid when a trunk height is given), and
-    sedges, grasses, rushes, restiads and Centrolepidaceae as graminoid herbs. Each family
-    was checked against the source text after extraction, and source typographical errors
-    were corrected in the script.'
+  sampling_strategy: 'Species, subspecies, variety and form profiles of the Flora of Australia online
+    (profiles.ala.org.au/opus/foa) were downloaded, together with genus and family profiles. Trait values were extracted
+    from the Description, Phenology, Ecology, Notes and Habitat text with a scripted parser
+    (ABRS_AtoM_2026/raw/build_data_csv.R): each description is split into sentences, clauses and comma-separated segments,
+    each segment is assigned to the organ it describes (habit, stem, leaf, leaflet, inflorescence, flower, fruit, seed,
+    ...), and categorical terms and measurements are read from the segments of the relevant organ. Categorical terms are
+    mapped to AusTraits trait values, with the source terms kept verbatim in value_description; several values are listed in
+    the order they appear in the text, and alternatives qualified by a commonness word (usually, rarely, sometimes ...) or a
+    region are recorded on separate rows. A measured range is recorded as minimum and maximum values, a single measurement
+    as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are kept
+    on separate rows (measurement_range = extreme). Where a profile describes several earlier treatments, the most recent is
+    used. Ecological traits (fire response, bud bank, clonality, dispersal, pollination, tolerances, lifespan) were scored
+    by reading each Ecology, Notes and Habitat statement; hedged statements were left unscored. Categorical values stated as
+    a single, unqualified value in a genus (or family) description, and not contradicted by any member taxon that describes
+    the trait, are copied to member taxa whose own description is silent on that trait. Subspecies, varieties and forms
+    whose own description is silent on a trait take the values (categorical and numeric) from the description of their
+    species. Values that descriptions state only when atypical (terrestrial substrate, leaf as photosynthetic organ, not
+    parasitic, broadleaf) are recorded on trait_scoring_method = inferred rows when nothing in the profile suggests
+    otherwise. Where the description names no growth form, palms and cycads are scored as palmoid, ferns as fern (fern
+    palmoid when a trunk height is given), and sedges, grasses, rushes, restiads and Centrolepidaceae as graminoid herbs.
+    Each family (the largest genus by genus) was checked against the source text after extraction, and source typographical
+    errors were corrected in the script.'
   original_file: foa_profiles.csv (Flora of Australia online profiles, downloaded
     30 September 2026)
-  notes: 'The Flora of Australia extraction is split across datasets by family, to
-    keep each data.csv within GitHub file-size limits: ABRS_AtoM_2026 (families A to
-    M), ABRS_NtoZ_2026 (families N to Z), and ABRS_Asteraceae_2026, ABRS_Fabaceae_2026,
-    ABRS_Myrtaceae_2026 and ABRS_Proteaceae_2026. One parser, ABRS_AtoM_2026/raw/build_data_csv.R,
-    builds all of them; this dataset is written in long format (since October 2026). Families in this dataset so far (13, plus part of Orchidaceae): Nelumbonaceae, Nepenthaceae, Nitrariaceae, Nothofagaceae, Nyctaginaceae, Nymphaeaceae, Ochnaceae, Olacaceae, Oleaceae, Oleandraceae, Onagraceae, Ophioglossaceae, Opiliaceae; Orchidaceae genera Acianthus to Cooktownia (Acianthus, Acriopsis, Adenochilus, Anoectochilus, Aphyllorchis, Apostasia, Appendicula, Arthrochilus, Arundina, Blepharoglossum, Bogoria, Brachypeza, Bromheadia, Bryobium, Bulbophyllum, Burnettia, Cadetia, Caladenia, Calanthe, Caleana, Calochilus, Cheirostylis, Chiloglottis, Chiloschista, Coelogyne, Cooktownia). Candidate traits not yet in traits.yml (unmapped; mostly organ x character traits such as calyx_hairs, petal_count, sepal_club_length, column_gland_colour) are listed with their coverage in raw/candidate_traits.csv, which the build script rewrites on every full build; custom_R_code keeps only the traits mapped below. Rows whose trait_name is a text field (habit_description, leaf_description, common_name, ...) carry the verbatim organ-level text and are unmapped. Parenthetical extremes (measurement_range = extreme) are in data.csv but not mapped.'
+  notes: 'The Flora of Australia extraction is split across datasets by family, to keep each data.csv within GitHub
+    file-size limits: ABRS_AtoM_2026 (families A to M), ABRS_NtoZ_2026 (families N to Z), and ABRS_Asteraceae_2026,
+    ABRS_Fabaceae_2026, ABRS_Myrtaceae_2026 and ABRS_Proteaceae_2026. One parser, ABRS_AtoM_2026/raw/build_data_csv.R,
+    builds all of them; this dataset is written in long format (since October 2026). Families in this dataset (95):
+    Nelumbonaceae, Nepenthaceae, Nitrariaceae, Nothofagaceae, Nyctaginaceae, Nymphaeaceae, Ochnaceae, Olacaceae, Oleaceae,
+    Oleandraceae, Onagraceae, Ophioglossaceae, Opiliaceae, Orchidaceae, Orobanchaceae, Osmundaceae, Oxalidaceae,
+    Pandanaceae, Papaveraceae, Paracryphiaceae, Passifloraceae, Pedaliaceae, Pennantiaceae, Petermanniaceae, Philydraceae,
+    Phyllanthaceae, Phytolaccaceae, Picrodendraceae, Pinaceae, Piperaceae, Pittosporaceae, Plantaginaceae, Plumbaginaceae,
+    Poaceae, Podocarpaceae, Podostemaceae, Polygalaceae, Polygonaceae, Polypodiaceae, Pontederiaceae, Posidoniaceae,
+    Potamogetonaceae, Primulaceae, Psilotaceae, Pteridaceae, Putranjivaceae, Ranunculaceae, Resedaceae, Restionaceae,
+    Rhamnaceae, Rhizophoraceae, Ripogonaceae, Rubiaceae, Ruppiaceae, Rutaceae, Salicaceae, Salviniaceae, Santalaceae,
+    Sapindaceae, Sapotaceae, Sarraceniaceae, Schizaeaceae, Scrophulariaceae, Selaginellaceae, Simaroubaceae, Smilacaceae,
+    Solanaceae, Sparganiaceae, Sphenocleaceae, Stemonaceae, Stylidiaceae, Symplocaceae, Taccaceae, Tamaricaceae,
+    Tecophilaeaceae, Tectariaceae, Theaceae, Thelypteridaceae, Thymelaeaceae, Trimeniaceae, Triuridaceae, Tropaeolaceae,
+    Typhaceae, Ulmaceae, Urticaceae, Verbenaceae, Violaceae, Vitaceae, Winteraceae, Woodsiaceae, Xanthorrhoeaceae,
+    Zamiaceae, Zingiberaceae, Zosteraceae, Zygophyllaceae. Surianaceae and Viburnaceae were also processed, but their
+    species profiles have no description text. Candidate traits not yet in traits.yml (unmapped; mostly organ x character
+    traits such as calyx_hairs, petal_count, sepal_club_length, column_gland_colour) are listed with their coverage in
+    raw/candidate_traits.csv, which the build script rewrites on every full build; custom_R_code keeps only the traits
+    mapped below. Rows whose trait_name is a text field (habit_description, leaf_description, common_name, ...) carry the
+    verbatim organ-level text and are unmapped. Parenthetical extremes (measurement_range = extreme) are in data.csv but not
+    mapped.'
 identifiers: .na
 locations: .na
 contexts:
@@ -132,7 +150,7 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+  methods: 'Scored from the taxon description (verbatim source terms in value_description). Where the profile names no growth form but a life history, herb is recorded on a trait_scoring_method = inferred_from_life_history row (the ABRS_2022 rule).'
 - var_in: life_history
   unit_in: .na
   trait_name: life_history
@@ -140,7 +158,7 @@ traits:
   value_type: value_type
   basis_of_value: expert_score
   replicates: .na
-  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+  methods: 'Scored from the taxon description (verbatim source terms in value_description). Where the profile gives no life history, perennial is recorded on a trait_scoring_method = inferred_from_growth_form row for trees, shrubs, mallees, palmoids, woody climbers and geophytes (the ABRS_2022 rule).'
 - var_in: stem_growth_habit
   unit_in: .na
   trait_name: stem_growth_habit
@@ -1037,6 +1055,16 @@ traits:
   basis_of_value: measurement
   replicates: .na
   methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: seed_height
+  unit_in: mm
+  trait_name: seed_height
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
+    maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
+    parenthetical extremes are on measurement_range = extreme rows (not mapped).'
 - var_in: seed_length
   unit_in: mm
   trait_name: seed_length
@@ -1125,6 +1153,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: 'Scored from statements in the Ecology and Notes text of the taxon profile (verbatim in value_description), e.g. "colonises disturbed sites and track margins" as establish_post_disturbance.'
+- var_in: woodiness_detailed
+  unit_in: .na
+  trait_name: woodiness_detailed
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the habit text (woody base, suffruticose -> woody_base; woody rootstock or taproot -> woody_root; soft-wooded -> semi_woody; verbatim in value_description) and, for taxa without one, inferred from the growth form on trait_scoring_method = inferred_from_growth_form rows: herb, graminoid, fern, tussock, hummock, herbaceous climber, geophyte -> herbaceous; tree, shrub, mallee, woody climber, palmoid -> woody; both when the forms are mixed (the ABRS_2022 rules).'
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
@@ -1150,3 +1186,6 @@ questions:
   question12: 'Caladenia fuscata petals are "6-1 x 2 mm" in the source (a reversed range; probably 6-10 or 6-11 mm); petal length and width were dropped. Caladenia viridescens labellum "17-22 x 0-14 mm": the zero width was dropped (length kept). Check against the printed Flora.'
   question13: '"Flowers freely after fire" is scored post_fire_flowering = fire_enhanced_flowering, and "Flowers freely only in wet years" / "poorly in dry years" as flowering_cues = rain. Confirm.'
   question14: 'Candidate traits new in this batch: sepal_club_length / _colour / _shape / _surface (Caladenia osmophores), basal_gland_* ("basal glands": on the column in Caladenia, on the labellum callus in Acianthus) and column_gland_* (explicitly "column glands"). Keep separate or merge?'
+  question15: petiole_shape (82 rows; mostly terete, flattened, cylindrical) is not mapped because these cross-section and
+    outline shapes are not allowed values of petiole_shape (decurrent, not_decurrent, slender). Add the values, or a
+    separate trait?
