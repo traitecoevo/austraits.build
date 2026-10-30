@@ -26,18 +26,25 @@ suppressPackageStartupMessages({
 })
 
 src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv"
+# EUCLID mode (env FOA_SOURCE=euclid; user 2026-10-30): the same parser reads the EUCLID 2.0 eucalypt profiles
+# (euclid_species_profiles.csv: Eucalyptus, Corymbia, Angophora, 935 taxa) into the long-format dataset CPBR_2026. EUCLID
+# shares its descriptions with the FoA eucalypt treatment, but it is a separate source, so it has no genus / family profiles
+# (no copy-down), and its override / vetted CSVs live in CPBR_2026/raw.
+euclid_mode <- Sys.getenv("FOA_SOURCE") == "euclid"
+if (euclid_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/euclid_species_profiles.csv"
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
-raw_dir <- "data/ABRS_AtoM_2026/raw"
+raw_dir <- if (euclid_mode) "data/CPBR_2026/raw" else "data/ABRS_AtoM_2026/raw"
 own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_2026", Myrtaceae = "ABRS_Myrtaceae_2026",
                  Proteaceae = "ABRS_Proteaceae_2026")
 # datasets written in long format (see "long format" below); ABRS_NtoZ_2026 since the second Orchidaceae batch (user's request,
 # 2026-10-22); ABRS_Proteaceae_2026 and ABRS_Asteraceae_2026 from the start (user, 2026-10-29)
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
-long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026")
-dataset_of <- function(fam) unname(ifelse(fam %in% names(own_dataset), own_dataset[fam],
-                                          ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
+long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
+              "CPBR_2026")
+dataset_of <- function(fam) if (euclid_mode) rep("CPBR_2026", length(fam)) else
+  unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
 families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae", "Aizoaceae", "Akaniaceae", "Alismataceae",
                    "Alliaceae", "Alseuosmiaceae", "Alstroemeriaceae", "Amaranthaceae", "Amaryllidaceae", "Anacardiaceae",
@@ -147,6 +154,33 @@ fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES
 gens <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_GENERA"), ",")[[1]] %>% .[. != ""] else genera_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
+if (euclid_mode) {
+  fams <- "Myrtaceae"; gens <- character(0)
+  # EUCLID columns in FoA form: the "Cultivated seedlings (measured at ca node 10): ..." text closing each description is the
+  # FoA Seedlings field; flowering_time ("Flowering has been recorded in March, May and July.") is the Phenology field; the
+  # notes (distribution, habitat, relationships) are the Notes field
+  d_all <- d_all %>% transmute(scientific_name, rank = NA_character_, family = "Myrtaceae", url,
+                               Description = str_trim(str_remove(description, "\\s*Cultivated seedlings?\\b.*$")),
+                               Seedlings = str_extract(description, "Cultivated seedlings?\\b.*$"),
+                               Phenology = flowering_time, Notes = notes, `Common Name` = common_name, Etymology = origin_of_name)
+  # (the parser reads the other FoA fields too - Habitat, Ecology, Biostatus, Author ...: here they are empty input fields, so
+  # nothing is scored from them; data.csv is long and has rows only for what EUCLID states)
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+  # EUCLID notation in the FoA form the parser reads (the words are otherwise kept): "lignotuberBark" with no full stop, "ca 15 m" ->
+  # "c. 15 m", "Tree to20 m" -> "to 20 m", a second height without its own "to" ("Tree to 10 m, rarely 20 m tall" -> "Tree to
+  # 10 m tall, rarely to 20 m"), and FoA spelling of "-ish" colour compounds ("reddish-brown" -> "reddish brown": the head
+  # colour, as in FoA); the lignotuber sentence is joined to the habit sentence below, as in FoA. ("sub-opposite", "sub-basifixed"
+  # stay as written: FoA has both "sub-basifixed" and "subdorsifixed")
+  eu_norm <- function(x) {
+    x <- str_replace_all(x, "\\b((?:Non-)?lignotuber(?:ous)?)(?=[A-Z])", "\\1. ")
+    x %>% str_replace_all("\\bca\\.?\\s+(?=[0-9]|node)", "c. ") %>% str_replace_all("\\bto(?=[0-9])", "to ") %>%
+      str_replace_all("(?<=[a-z]ish)-(?=[a-z])", " ") %>%
+      # ("Shrub or mallee to 5 m, occasionally a tree to 12 m tall", "to 5 m, rarely to 12 m tall")
+      str_replace("\\bto ([0-9.]+) m, ([^.;]{0,40}?)(?:to )?([0-9.]+) m tall\\b", "to \\1 m tall, \\2to \\3 m")
+  }
+  d_all <- d_all %>% mutate(Description = eu_norm(Description), Seedlings = eu_norm(Seedlings))
+}
 # genus key: the first word of the name, or the first two for nothogenera ("x Cyanthera glossodioides" -> "x Cyanthera"), so that
 # "x" does not pull together hybrids of different families (x Abacopterella, x Cynochloris)
 gkey <- function(x) ifelse(word(x, 1) == "x", word(x, 1, 2), word(x, 1))
@@ -155,7 +189,7 @@ gen_fam <- d_all %>% filter(!is.na(family)) %>% transmute(genus = gkey(scientifi
 tl_fam <- read_csv("config/taxon_list.csv", show_col_types = FALSE, col_types = cols(.default = "c")) %>% distinct(genus, family) %>% filter(!is.na(genus)) %>% distinct(genus, .keep_all = TRUE)
 d_all <- d_all %>%
   mutate(rank = case_when(!is.na(rank) ~ rank, str_detect(scientific_name, " subsp\\. ") ~ "subspecies", str_detect(scientific_name, " var\\. ") ~ "variety",
-                          str_detect(scientific_name, " f\\. ") ~ "form", str_detect(scientific_name, "^[A-Z][a-z-]+ (?:[a-z-]+|sp\\. .+)$") ~ "species", TRUE ~ NA_character_),
+                          str_detect(scientific_name, " f\\. ") ~ "form", str_detect(scientific_name, "^[A-Z][a-z-]+ (?:x )?(?:[a-z-]+|sp\\. .+)$") ~ "species", TRUE ~ NA_character_),
          genus = gkey(scientific_name)) %>%
   left_join(gen_fam %>% rename(fam_g = family), by = "genus") %>% left_join(tl_fam %>% rename(fam_t = family), by = "genus") %>%
   mutate(family = coalesce(family, fam_g, fam_t)) %>% select(-genus, -fam_g, -fam_t)
@@ -324,6 +358,20 @@ for (i in seq_len(nrow(fix_text))) {
                                                      str_replace(Description, fixed(fix_text$find[i]), fix_text$replace[i]), Description))
   d <- fx(d); d_higher <- fx(d_higher)
 }
+# a lignotuber sentence ("Tree to 20 m high. Forming a lignotuber.", "Non-lignotuberous."; 120 FoA Myrtaceae profiles and most of EUCLID)
+# is moved into the habit sentence, as most FoA eucalypts are written ("Mallee to 3 m high; forming a lignotuber"), so it is read with
+# the habit (2026-10-30: as its own sentence it gave no storage_organ); also when another sentence comes between ("Tree to 20 m tall.
+# Ironbark throughout ... Forming a lignotuber.")
+join_lignotuber <- function(x) {
+  m <- str_match(x, "\\.\\s*((?:Forming|Forms|Not forming|Probably forming|Lacking|Some plants seem to form)[^.]{0,25}lignotuber[^.]*|Non-lignotuberous[^.]*)(?=\\.)")
+  ok <- !is.na(m[, 1])
+  x[ok] <- str_replace(x[ok], fixed(m[ok, 1]), "")
+  x[ok] <- str_replace(x[ok], "(?<![0-9])\\.(?=\\s*[A-Z])", paste0("; ", str_to_lower(str_sub(m[ok, 2], 1, 1)), str_sub(m[ok, 2], 2), "."))
+  x
+}
+d <- d %>% mutate(Description = join_lignotuber(Description) %>%
+                    # ("Tree to 10 m high, occasionally taller to 15 m": the second height was missed)
+                    str_replace_all("\\b(occasionally|sometimes|rarely|often) (?:taller|higher) (?=to [0-9])", "\\1 "))
 
 # ---------------------------------------------------------------- helpers
 fixed_re <- function(x) str_replace_all(x, "([.()\\[\\]{}+*?^$|\\\\])", "\\\\\\1")
@@ -410,6 +458,17 @@ prep <- function(x, keep_q = FALSE) {
   x <- str_replace_all(x, "(?<=[a-z])(?=(?:Jan|Feb|Mar|Apr|May|June?|July?|Aug|Sept?|Oct|Nov|Dec)[a-z]*(?=[.,;\\s-]|$))", " ")
   x <- str_replace_all(x, "(?i)\\b(fruits|flowers|and)(?=(?:all|fruits|flowers|sporadically)\\b)", "\\1 ")
   x <- str_replace_all(x, "\\ballmonths\\b", "all months")
+  # "(recorded in) all months except November", "all months of the year except September and October", "all months except
+  # Dec.-Feb.": the other months, written out (2026-10-30: read as all year before); "all months from September to April" is that window
+  x <- str_replace_all(x, regex("\\b(?:in )?all months(?: of the year)? from\\b", ignore_case = TRUE), "from")
+  x <- map_chr(x, function(z) {
+    mo <- "(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\.?"
+    m <- str_match(z, regex(paste0("\\ball months(?: of the year)? except (", mo, "(?:\\s*(?:,|and|[-\u2013])\\s*", mo, ")*)"), ignore_case = TRUE))
+    if (is.na(m[1])) return(z)
+    idx <- match(str_extract_all(m[2], "Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec")[[1]], month.abb)
+    if (str_detect(m[2], "[-\u2013]") && length(idx) == 2) { r <- idx[1]; out <- r; while (r != idx[2]) { r <- r %% 12 + 1; out <- c(out, r) }; idx <- out }
+    str_replace(z, fixed(m[1]), paste(month.name[setdiff(1:12, idx)], collapse = ", "))
+  })
   # missing space after a comma ("erect stem,with short lactifers")
   x <- str_replace_all(x, ",(?=[a-z])", ", ")
   # states that do not occur in Australia ("acaulescent (not in Australia)", "spiny (not in Australia)") are dropped
@@ -592,6 +651,8 @@ places <- "qld|queensland|nsw|new south wales|victoria|vic|tasmania|tas|western 
 region_re <- paste0("\\b(?:in|on|at|from|towards|throughout|across)\\s+(?:the\\s+)?((?:(?:", region_words, ")\\b[a-z -]*?\\b(?:parts?|populations?|range|areas?|regions?|districts?|forms?|plants?|specimens?|collections?|states?|coast|ranges)\\b(?:\\s+of\\s+(?:its|the)\\s+(?:range|distribution))?|(?:", region_words, ")\\b(?:\\s+(?:of\\s+(?:its|the)\\s+(?:range|distribution)))?|(?:[a-z]+ )?(?:", places, ")\\b))")
 negators <- "\\b(?:not|non|without|lacking|never|scarcely|hardly|devoid of|free of)\\b[^,;|.)]*"
 
+# allowed levels of each traits.yml trait (rec_cat: sub- levels)
+trait_levels <- map(yaml::read_yaml("config/traits.yml")$traits$elements, ~ names(.x$allowed_values_levels))
 scan_terms <- function(text, dict, neg = NULL, generic_neg = TRUE, prep_fun = NULL, fillers = filler_words) {
   empty <- tibble(pos = integer(), end = integer(), value = character(), term = character(), qual = character(), region = character())
   if (is.na(text) || !nzchar(text)) return(empty)
@@ -603,9 +664,15 @@ scan_terms <- function(text, dict, neg = NULL, generic_neg = TRUE, prep_fun = NU
     if (is.null(dd)) return(invisible())
     keys <- names(dd)[order(-nchar(names(dd)))]
     for (k in keys) {
-      loc <- str_locate_all(t, paste0("(?<![a-z])(?:", k, ")(?![a-z]|-(?:like|shaped))"))[[1]]
+      # (an optional "sub" / "sub-" prefix is part of the term: "subspherical", "sub-basifixed" give the base value, unless
+      # "sub" + value is itself a level of the trait - see rec_cat - or the dictionary has its own sub- key, matched first as
+      # the longer key; user 2026-10-30)
+      loc <- str_locate_all(t, paste0("(?<![a-z])(?:sub-?)?(?:", k, ")(?![a-z]|-(?:like|shaped))"))[[1]]
       for (i in seq_len(nrow(loc))) {
-        hits[[length(hits) + 1]] <<- tibble(pos = loc[i, 1], end = loc[i, 2], value = unname(dd[[k]]), term = str_sub(t0, loc[i, 1], loc[i, 2]))
+        tm <- str_sub(t0, loc[i, 1], loc[i, 2])
+        # (sub = the "sub" was a prefix added to the key, not part of it: "subspherical", but not "submerged", "subulate", "subshrub")
+        hits[[length(hits) + 1]] <<- tibble(pos = loc[i, 1], end = loc[i, 2], value = unname(dd[[k]]), term = tm,
+                                            sub = str_detect(tm, "^sub-?") && !str_detect(tm, paste0("^(?:", k, ")$")))
         str_sub(t, loc[i, 1], loc[i, 2]) <<- strrep("\u0001", loc[i, 2] - loc[i, 1] + 1)
       }
     }
@@ -649,6 +716,17 @@ scan_terms <- function(text, dict, neg = NULL, generic_neg = TRUE, prep_fun = NU
 # records: one row per (trait, context) value
 rec_cat <- function(trait, h, desc = NA_character_, ctx_type = NA_character_, ctx_value = NA_character_) {
   if (is.null(h) || !nrow(h)) return(NULL)
+  # a "sub" term (user 2026-10-30): the trait's sub- level if it has one ("subglaucous"), else its semi- level ("subwoody" ->
+  # semi_woody, "subaquatic" -> semiaquatic, "subdeciduous" -> semi_deciduous), else the base value ("subspherical" -> globoid);
+  # sub- and semi- levels added to traits.yml later are picked up
+  if ("sub" %in% names(h) && !is.null(trait_levels[[trait]])) {
+    lv <- trait_levels[[trait]]
+    h$value <- map2_chr(h$value, coalesce(h$sub, FALSE), function(v, is_sub) {
+      if (is.na(v) || !is_sub) return(v)
+      alt <- c(paste0("sub", v), paste0("semi", v), paste0("semi_", v), paste0("semi-", v))
+      if (any(alt %in% lv)) alt[alt %in% lv][1] else v
+    })
+  }
   if (!"region" %in% names(h)) h$region <- NA_character_
   if (!"term" %in% names(h)) h$term <- desc
   h <- h %>% mutate(src_term = ifelse(is.na(qual), term, paste(qual, term)),
@@ -1010,7 +1088,7 @@ branching_neg <- c("not or (?:sparingly|sparsely|little|rarely) branched" = "unb
 stem_constitution_dict <- c("rigid|stiff|stiffly" = "rigid", "robust|stout|sturdy" = "robust", "wiry" = "wiry", "slender" = "slender",
                             "straggly|straggling" = "straggly", "flexible|flexuous|pliable|whip-like" = "flexible", "wispy" = "wispy", "spindly" = "spindly")
 defence_dict <- c(
-  "spiny|spinose|spinescent|armed|axillary spines|spines|stipular spines|thorny|thorns" = "spine",
+  "sub-?spinescent" = "subspinescent", "spiny|spinose|spinescent|armed|axillary spines|spines|stipular spines|thorny|thorns" = "spine",
   "prickly|prickles" = "prickle", "stinging(?: hairs)?|urticating" = "stinging_or_irritant_hairs")
 defence_neg <- c("unarmed|spineless|without (?:[a-z-]+ )?spines|lacking spines|spines absent" = "absent")
 leaf_defence_dict <- c("pungent(?:-pointed)?|spine-tipped|spinose-tipped|pungent-tipped|sharply pointed" = "pungent_leaf_apex",
@@ -3737,6 +3815,9 @@ d_hi_parts <- d_higher %>%
   filter(str_detect(Description, "[a-z]")) %>%
   group_by(scientific_name) %>% mutate(part = row_number(), n_parts = n()) %>% ungroup()
 hi_recs <- function(group_filter) {
+  # (no group profiles, as in EUCLID mode: an empty table with the record columns, so nothing is copied down)
+  if (!nrow(d_hi_parts)) return(recs[0, ] %>% select(-taxon_name) %>%
+                                  mutate(group_name = character(), group_rank = character(), part = integer(), n_parts = integer()))
   res <- parallel::mclapply(seq_len(nrow(d_hi_parts)), function(i) extract_one(d_hi_parts[i, ], group_filter = group_filter),
                             mc.cores = n_cores)
   stop_failed(res)
@@ -3923,55 +4004,59 @@ recs <- bind_rows(recs, inherited)
 # "terete" has a level), and only when no member taxon describing the trait itself contradicts it.
 # (cues and recruitment come from Ecology statements, often about one member species: never copied down; nor the climbing
 # mechanism, which genus descriptions give as one of several growth forms: Scaevola "herbs, scramblers, shrubs or small trees")
-universal <- recs_hi %>%
-  filter(!is.na(value), value != "", is.na(qualifier), is.na(region), is.na(ctx_type), !str_detect(value, " "),
-         coalesce(alts, 1L) == 1, !trait %in% c("flowering_time", "fruiting_time", "flowering_cues", "fruiting_cues", "germination_cues", "post_fire_recruitment",
-                                       "plant_climbing_mechanism", "post_fire_flowering")) %>%
-  group_by(group_name, trait, value) %>% filter(n_distinct(part) == first(n_parts)) %>% ungroup() %>%
-  mutate(facet = facet_of(trait, value)) %>% anti_join(hi_variable, by = c("group_name", "trait", "facet")) %>%
-  semi_join(hi_full_vals, by = c("group_name", "trait", "value")) %>%
-  anti_join(copydown_exclude, by = c("group_name", "trait")) %>% filter(!group_name %in% copydown_exclude_groups) %>%
-  select(group_name, group_rank, trait, value, desc) %>% distinct(group_name, trait, .keep_all = TRUE)
-own_tv <- recs %>% filter(!is.na(value), value != "", !trait %in% c("flowering_time", "fruiting_time")) %>%
-  group_by(taxon_name, trait) %>% summarise(vals = paste(value, collapse = " "), .groups = "drop") %>%
-  left_join(main %>% transmute(taxon_name, genus = gkey(taxon_name), family), by = "taxon_name")
-# Values that can co-occur do not conflict (a plant can be tufted and rhizomatous): for these traits a member taxon
-# contradicts the group value only with another value from the same mutually exclusive set (erect vs prostrate).
-compatible_traits <- c("storage_organ", "plant_growth_substrate", "plant_physical_defence_structures", "plant_climbing_mechanism",
-                       "leaf_arrangement", "stem_branching_form", "plant_succulence")
-conflicts <- function(trait, value, vals) {
-  if (trait %in% compatible_traits) return(FALSE)
-  # (Persoonia genus "pyrene", species "drupe": the same fruit at different resolution)
-  if (trait == "fruit_type" && value %in% c("drupe", "pyrene") && any(vals %in% c("drupe", "pyrene"))) return(FALSE)
-  # generic and specific climbers are the same growth form at different resolution
-  if (trait == "plant_growth_form" && str_detect(value, "^climber")) return(!any(str_detect(vals, "^climber")))
-  if (trait %in% names(exclusive_sets)) {
-    set <- keep(exclusive_sets[[trait]], ~ value %in% .x)
-    if (!length(set)) return(FALSE)
-    return(any(vals %in% set[[1]]) && !value %in% vals)
+# (no group profiles, as in EUCLID mode: nothing to copy down)
+universal <- rejected <- copied <- tibble()
+if (nrow(recs_hi)) {
+  universal <- recs_hi %>%
+    filter(!is.na(value), value != "", is.na(qualifier), is.na(region), is.na(ctx_type), !str_detect(value, " "),
+           coalesce(alts, 1L) == 1, !trait %in% c("flowering_time", "fruiting_time", "flowering_cues", "fruiting_cues", "germination_cues", "post_fire_recruitment",
+                                         "plant_climbing_mechanism", "post_fire_flowering")) %>%
+    group_by(group_name, trait, value) %>% filter(n_distinct(part) == first(n_parts)) %>% ungroup() %>%
+    mutate(facet = facet_of(trait, value)) %>% anti_join(hi_variable, by = c("group_name", "trait", "facet")) %>%
+    semi_join(hi_full_vals, by = c("group_name", "trait", "value")) %>%
+    anti_join(copydown_exclude, by = c("group_name", "trait")) %>% filter(!group_name %in% copydown_exclude_groups) %>%
+    select(group_name, group_rank, trait, value, desc) %>% distinct(group_name, trait, .keep_all = TRUE)
+  own_tv <- recs %>% filter(!is.na(value), value != "", !trait %in% c("flowering_time", "fruiting_time")) %>%
+    group_by(taxon_name, trait) %>% summarise(vals = paste(value, collapse = " "), .groups = "drop") %>%
+    left_join(main %>% transmute(taxon_name, genus = gkey(taxon_name), family), by = "taxon_name")
+  # Values that can co-occur do not conflict (a plant can be tufted and rhizomatous): for these traits a member taxon
+  # contradicts the group value only with another value from the same mutually exclusive set (erect vs prostrate).
+  compatible_traits <- c("storage_organ", "plant_growth_substrate", "plant_physical_defence_structures", "plant_climbing_mechanism",
+                         "leaf_arrangement", "stem_branching_form", "plant_succulence")
+  conflicts <- function(trait, value, vals) {
+    if (trait %in% compatible_traits) return(FALSE)
+    # (Persoonia genus "pyrene", species "drupe": the same fruit at different resolution)
+    if (trait == "fruit_type" && value %in% c("drupe", "pyrene") && any(vals %in% c("drupe", "pyrene"))) return(FALSE)
+    # generic and specific climbers are the same growth form at different resolution
+    if (trait == "plant_growth_form" && str_detect(value, "^climber")) return(!any(str_detect(vals, "^climber")))
+    if (trait %in% names(exclusive_sets)) {
+      set <- keep(exclusive_sets[[trait]], ~ value %in% .x)
+      if (!length(set)) return(FALSE)
+      return(any(vals %in% set[[1]]) && !value %in% vals)
+    }
+    !value %in% vals
   }
-  !value %in% vals
+  universal <- universal %>% rowwise() %>%
+    mutate(members_reporting = sum(own_tv$trait == trait & (if (group_rank == "genus") own_tv$genus == group_name else own_tv$family == group_name)),
+           members_agree = members_reporting - sum(map_lgl(str_split(own_tv$vals[own_tv$trait == trait & (if (group_rank == "genus") own_tv$genus == group_name else own_tv$family == group_name)], " "),
+                                                          function(v) conflicts(trait, value, v)))) %>% ungroup()
+  rejected <- universal %>% filter(members_agree < members_reporting)
+  universal <- universal %>% filter(members_agree == members_reporting)
+  taxa <- main %>% transmute(taxon_name, genus = gkey(taxon_name), family)
+  copied <- list()
+  for (lvl in c("genus", "family")) {
+    have <- bind_rows(recs %>% select(taxon_name, trait), if (length(copied)) bind_rows(copied) %>% select(taxon_name, trait)) %>% distinct()
+    key <- if (lvl == "genus") "genus" else "family"
+    cp <- taxa %>% inner_join(universal %>% filter(group_rank == lvl), by = setNames("group_name", key), relationship = "many-to-many") %>%
+      anti_join(have, by = c("taxon_name", "trait")) %>%
+      transmute(taxon_name, trait, value, desc = paste0("[", lvl, " description] ", desc), min = NA_real_, max = NA_real_,
+                ctx_type = NA_character_, ctx_value = NA_character_, qualifier = NA_character_, region = NA_character_,
+                scoring = paste0("inferred_from_", lvl))
+    copied[[lvl]] <- cp
+  }
+  copied <- bind_rows(copied)
+  recs <- bind_rows(recs, copied)
 }
-universal <- universal %>% rowwise() %>%
-  mutate(members_reporting = sum(own_tv$trait == trait & (if (group_rank == "genus") own_tv$genus == group_name else own_tv$family == group_name)),
-         members_agree = members_reporting - sum(map_lgl(str_split(own_tv$vals[own_tv$trait == trait & (if (group_rank == "genus") own_tv$genus == group_name else own_tv$family == group_name)], " "),
-                                                        function(v) conflicts(trait, value, v)))) %>% ungroup()
-rejected <- universal %>% filter(members_agree < members_reporting)
-universal <- universal %>% filter(members_agree == members_reporting)
-taxa <- main %>% transmute(taxon_name, genus = gkey(taxon_name), family)
-copied <- list()
-for (lvl in c("genus", "family")) {
-  have <- bind_rows(recs %>% select(taxon_name, trait), if (length(copied)) bind_rows(copied) %>% select(taxon_name, trait)) %>% distinct()
-  key <- if (lvl == "genus") "genus" else "family"
-  cp <- taxa %>% inner_join(universal %>% filter(group_rank == lvl), by = setNames("group_name", key), relationship = "many-to-many") %>%
-    anti_join(have, by = c("taxon_name", "trait")) %>%
-    transmute(taxon_name, trait, value, desc = paste0("[", lvl, " description] ", desc), min = NA_real_, max = NA_real_,
-              ctx_type = NA_character_, ctx_value = NA_character_, qualifier = NA_character_, region = NA_character_,
-              scoring = paste0("inferred_from_", lvl))
-  copied[[lvl]] <- cp
-}
-copied <- bind_rows(copied)
-recs <- bind_rows(recs, copied)
 # orchid "flower stem" lengths (mm): for terrestrial orchids both the height of the flowering plant (plant_height_reproductive, m)
 # and the inflorescence length (user's choice); for epiphytes and lithophytes (whose flower stems arch or hang from the
 # pseudobulb / stem) and reed-stem orchids with a stated height, the inflorescence length only
@@ -4053,6 +4138,13 @@ inf_text <- d %>% left_join(main %>% select(taxon_name, habit_description), by =
                             stxt = str_to_lower(paste(coalesce(habit_description, ""), coalesce(Habitat, ""), coalesce(Ecology, ""), coalesce(Notes, ""))),
                             dtxt = str_to_lower(coalesce(Description, "")),
                             hab = str_to_lower(coalesce(Habitat, "")))
+# (EUCLID notes repeat the bark and bud morphology: "rough bark on the lower trunk", "buds on the same tree" are not epiphyte wording;
+# and they name swamps in place names, comparisons and the "swamp gum" group (Bacchus Marsh, "the swamp gum E. camphora", "non-swampy
+# habitat", series "swamp-dwellers"), so swamp and marsh words are not read: swampy is vetted from each taxon's own habitat
+# sentence in CPBR_2026/raw/ecology_vetted.csv; "swampy" since 2026-10-30)
+if (euclid_mode) inf_text <- inf_text %>%
+  mutate(across(c(txt, stxt), ~ str_remove_all(.x, "\\bon (?:the |their |its |these |base of (?:the )?)?(?:[a-z-]+ ){0,2}(?:trunks?|limbs?|branch\\w*|stems?|trees?)\\b")),
+         stxt = str_remove_all(stxt, "\\b(?:swamps?|swampy|marsh(?:es)?|marshy)\\b"))
 inf_fam_aquatic <- c("Hydrocharitaceae", "Potamogetonaceae", "Ruppiaceae", "Zosteraceae", "Posidoniaceae", "Cymodoceaceae", "Zannichelliaceae",
                      "Najadaceae", "Nymphaeaceae", "Nelumbonaceae", "Cabombaceae", "Ceratophyllaceae", "Aponogetonaceae", "Hydatellaceae",
                      "Marsileaceae", "Salviniaceae", "Azollaceae", "Podostemaceae", "Pontederiaceae", "Lemnaceae", "Menyanthaceae",
@@ -4085,7 +4177,8 @@ inf_swamp_re <- "\\b(?:swamps?|swampy|marsh(?:es)?|marshy)\\b"
 inf_water_desc <- "\\b(?:submerged|submersed|floating)(?:,? (?:or|and) [a-z]+)? (?:leaves|leaf|stems?|shoots?|plants?|parts|forms?|roots?|lamina)\\b|\\bif submerged\\b|\\b(?:aquatic|free-floating|semi-?aquatic|epiphyt\\w*|hemi-?epiphyt\\w*|lithophyt\\w*|strangl\\w*|marine|seagrass\\w*|mangroves?)\\b"
 inf_water_strong_leg <- str_replace(str_replace(inf_water_strong, fixed("rocks?|boulders?|cliffs?|"), ""), fixed("|in rock crevices|crevices"), "")
 inf_water_wet <- "\\b(?:swamps?|swampy|marsh\\w*|bogs?|boggy|ponds?|lakes?|lagoons?|billabongs?|waterholes?|creek ?beds?|stream ?beds?|river ?beds?|beds of|inundat\\w*|flooded|flooding|waterlogged|mud\\w*|wetlands?|seepages?|soaks?|claypans?|gilgais?|saline|salt ?lakes?|stream margins|water's edge|edges? of (?:streams|creeks|rivers|pools|lakes))\\b"
-inf_noleaf_re <- "\\b(?:phyllod\\w*|cladod\\w*|phyllocla\\w*|(?<!flowering plants )(?<!flowering plants are )(?<!flowering plant is )leafless(?! (?:at|when|while|during) (?:the time of )?(?:flowering|anthesis))(?! (?:flower(?:ing)? )?(?:portions?|parts?|sections?|lengths?|internodes?|stems?|scapes?|peduncles?|inflorescences?))|aphyllous|photosynthetic stems?|stems? (?:green and )?photosynthetic|assimilat\\w* (?:stems?|branchlets?)|scale-?like leaves|(?<!upper |uppermost |floral |cauline |distal |stem |bract-like |inflorescence )leaves (?:reduced|scale-like|minute|vestigial|caducous|early caducous|soon falling|ephemeral)|reduced to (?:minute )?scales|scale leaves|leaves (?:absent|0)|broom-like|switch-like|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*|(?:without|lacking|lacks) chlorophyll|non-green|holoparasit\\w*)\\b"
+# ("leaves 0" is a leaf count of zero, not "leaves 0.3-0.7 cm wide")
+inf_noleaf_re <- "\\b(?:phyllod\\w*|cladod\\w*|phyllocla\\w*|(?<!flowering plants )(?<!flowering plants are )(?<!flowering plant is )leafless(?! (?:at|when|while|during) (?:the time of )?(?:flowering|anthesis))(?! (?:flower(?:ing)? |terminal |axillary )?(?:portions?|parts?|sections?|lengths?|internodes?|stems?|scapes?|peduncles?|inflorescences?))|aphyllous|photosynthetic stems?|stems? (?:green and )?photosynthetic|assimilat\\w* (?:stems?|branchlets?)|scale-?like leaves|(?<!upper |uppermost |floral |cauline |distal |stem |bract-like |inflorescence )leaves (?:reduced|scale-like|minute|vestigial|caducous|early caducous|soon falling|ephemeral)|reduced to (?:minute )?scales|scale leaves|leaves (?:absent|0(?![.,0-9]))|broom-like|switch-like|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*|(?:without|lacking|lacks) chlorophyll|non-green|holoparasit\\w*)\\b"
 inf_par_re <- "\\b(?:parasit\\w*|hemiparasit\\w*|haustor\\w*|host plants?|on the roots of|attached to (?:the )?roots|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*)\\b"
 inf_nonflat_re <- "\\b(?:terete|subterete|semi-?terete|needle\\w*|acicular|subulate|filiform|setaceous|involute|convolute|inrolled|rolled|scale-like|cylindrical|triquetrous|trigonous|quadrangular|channelled|grooved above)\\b"
 # (Fabaceae: phyllodes are the leaves of most Acacia; a flat phyllode is a broadleaf, so phyllode wording does not block leaf_type)
@@ -4122,7 +4215,8 @@ inf <- inf %>% mutate(
   sub_ok = is.na(sub) & !family %in% inf_fam_aquatic & !genus %in% inf_gen_parasitic & !family %in% c("Loranthaceae", "Viscaceae") &
     !str_detect(stxt, ifelse(family == "Fabaceae", inf_water_strong_leg, inf_water_strong)) & !str_detect(dtxt, inf_water_desc) &
     (woody | !str_detect(stxt, inf_water_wet)) & !str_detect(stxt, inf_swamp_re),
-  # (user, 2026-10-28: plants of swamps or marshes, herbs and woody plants alike, are "terrestrial semiaquatic"; other wet wording,
+  # (user, 2026-10-28: plants of swamps or marshes, herbs and woody plants alike, are "terrestrial semiaquatic" - "terrestrial swampy"
+  # since 2026-10-30, a new substrate level; other wet wording,
   # creek beds, lake margins, seepages ..., leaves herbs unscored)
   semi_ok = is.na(sub) & !family %in% inf_fam_aquatic & !genus %in% inf_gen_parasitic & !family %in% c("Loranthaceae", "Viscaceae") &
     !str_detect(stxt, ifelse(family == "Fabaceae", inf_water_strong_leg, inf_water_strong)) & !str_detect(dtxt, inf_water_desc) &
@@ -4145,7 +4239,7 @@ inf_rec <- function(ok, trait, value, why) inf %>% filter(ok) %>%
             ctx_type = NA_character_, ctx_value = NA_character_, qualifier = NA_character_, region = NA_character_, scoring = "inferred", kind = "cat")
 recs <- bind_rows(recs,
   inf_rec(inf$sub_ok & !inf$rock_chk, "plant_growth_substrate", "terrestrial", "no aquatic, epiphytic, lithophytic or marine habit named; growth form and habitat typical of terrestrial plants"),
-  inf_rec(inf$semi_ok, "plant_growth_substrate", "terrestrial semiaquatic", "grows in swamps or marshes"),
+  inf_rec(inf$semi_ok, "plant_growth_substrate", "terrestrial swampy", "grows in swamps or marshes"),
   inf_rec(inf$sub_ok & inf$rock_chk, "plant_growth_substrate", "terrestrial", "CHECK: grows on or among rocks, assumed rooted in soil") %>%
     mutate(desc = paste0(str_remove(desc, "\\]$"), ": '", str_squish(inf$rock_txt[inf$sub_ok & inf$rock_chk]), "']")),
   inf_rec(inf$pho_ok, "plant_photosynthetic_organ", "leaf", "leaves described; no leafless, scale-leaved, phyllode, cladode or photosynthetic-stem wording"),
@@ -4349,6 +4443,8 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
   for (id in sort(unique(dataset_of(out_df$family)))) {
     if (id %in% long_ids) {
       df <- long_of(main$taxon_name[dataset_of(main$family) == id])
+      # (CPBR_2026: the profile links are EUCLID's, and context columns with no values are left out)
+      if (euclid_mode) df <- df %>% rename(euclid_url = foa_url) %>% select(!any_of(ctx[map_lgl(ctx, ~ all(is.na(df[[.x]]) | df[[.x]] == ""))]))
       dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
       write_csv(df, file.path("data", id, "data.csv"), na = "")
       write_candidates_long(df, file.path("data", id, "raw", "candidate_traits.csv"), id)

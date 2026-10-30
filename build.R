@@ -349,6 +349,10 @@ CPBR_2002_config <- dataset_configure("data/CPBR_2002/metadata.yml", definitions
 CPBR_2002_raw <- dataset_process("data/CPBR_2002/data.csv", CPBR_2002_config, schema, resource_metadata, unit_conversions)
 CPBR_2002 <- dataset_update_taxonomy(CPBR_2002_raw, taxon_list)
 
+CPBR_2026_config <- dataset_configure("data/CPBR_2026/metadata.yml", definitions)
+CPBR_2026_raw <- dataset_process("data/CPBR_2026/data.csv", CPBR_2026_config, schema, resource_metadata, unit_conversions)
+CPBR_2026 <- dataset_update_taxonomy(CPBR_2026_raw, taxon_list)
+
 Craven_1987_config <- dataset_configure("data/Craven_1987/metadata.yml", definitions)
 Craven_1987_raw <- dataset_process("data/Craven_1987/data.csv", Craven_1987_config, schema, resource_metadata, unit_conversions)
 Craven_1987 <- dataset_update_taxonomy(Craven_1987_raw, taxon_list)
@@ -2015,6 +2019,7 @@ austraits_raw <- austraits::bind_databases(
   Cornwell_2018,
   Cowling_1987,
   CPBR_2002,
+  CPBR_2026,
   Craven_1987,
   Craven_2010,
   Creek_2018,
