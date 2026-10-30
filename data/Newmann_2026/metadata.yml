@@ -1,0 +1,387 @@
+source:
+  primary:
+    key: Newmann_2026
+    bibtype: Online
+    author: Ramón Newmann and Andrew Brown
+    year: '2026'
+    title: Key to the Native Orchids of Western Australia
+    publisher: Western Australian Native Orchid Study and Conservation Group (WANOSCG), Perth
+    url: https://keys.lucidcentral.org/keys/v4/wa-orchids/
+    note: Orchid Fact Sheets, version Jan 2026; accessed 1 October 2026
+contributors:
+  data_collectors:
+  - last_name: Wenk
+    given_name: Elizabeth
+    ORCID: 0000-0001-5640-5910
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    notes: Extracted the trait data from the WA Orchid Fact Sheets
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data |>
+      dplyr::filter(taxon_rank != "genus")
+    '
+  collection_date: '2026'
+  taxon_name: taxon_name
+  description: 'To compile plant trait values from the Orchid Fact Sheets of the Key to the Native Orchids of Western
+    Australia, written by Ramón Newmann and Andrew Brown for the Western Australian Native Orchid Study and Conservation
+    Group, which describe each orchid species, subspecies and named hybrid in Western Australia.'
+  basis_of_record: literature
+  life_stage: adult
+  sampling_strategy: 'Every fact sheet in the WA Orchid Fact Sheets index (keys.lucidcentral.org/keys/v4/wa-orchids) was
+    downloaded on 1 October 2026, including genus fact sheets. Trait values were extracted with a scripted parser
+    (raw/build_data_csv.R) from the Flowering Months, Description, Distribution and Habitat, and Notes fields. The
+    Description follows a set pattern ("A ... species 100--350 mm high with a hairy leaf 100--200 mm long by 2--5 mm wide
+    and up to three flowers 20--30 mm across"), from which the height of the flowering plant, leaf and flower counts and
+    dimensions, and leaf hairiness and shape are read. Categorical terms are mapped to AusTraits trait values, with the
+    source phrase kept verbatim in a matching *_description column; several values are listed in the order they appear in
+    the text. Measurements are in mm, and a range is recorded as minimum and maximum values. Values that carry a context are
+    written on their own rows: northern and southern flowering calendars (population_region), rosette width and separate
+    basal and cauline leaf counts (entity_measured). Statements in a genus fact sheet that apply to every species without
+    hedging are copied to member species whose own sheet is silent on that trait (trait_scoring_method =
+    inferred_from_genus). Source typographical errors were corrected in the script.'
+  original_file: wa_orchids_fact_sheets.csv (WA Orchid Fact Sheets, downloaded 1 October 2026)
+  notes: 'Genus fact sheet rows (taxon_rank = genus) are in data.csv but filtered out in custom_R_code, as their values
+    summarise variation across the genus; genus statements that hold for every species are already copied to the species
+    rows. Unmapped columns: the verbatim *_description columns, fact_sheet_url, common_name, wa_conservation_code, and the
+    habitat, distribution, soil and habitat-term columns.'
+identifiers: .na
+locations: .na
+contexts:
+- context_property: population region
+  category: entity_context
+  var_in: population_region
+- context_property: entity measured
+  category: method_context
+  var_in: entity_measured
+- context_property: trait scoring method
+  category: method_context
+  var_in: trait_scoring_method
+traits:
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Months of flowering from the Flowering Months field of the fact sheet (verbatim in
+    flowering_months_description), as a 12-character y/n string starting in January; where a sheet gives separate calendars
+    for northern and southern populations, each is recorded on its own population_region row.'
+- var_in: plant_height_reproductive_min
+  unit_in: mm
+  trait_name: plant_height_reproductive
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Height of the flowering plant from the opening sentence of the fact sheet Description ("A ... species 100--350
+    mm high ..."; verbatim in plant_height_reproductive_description): a range is recorded as minimum and maximum values.'
+- var_in: plant_height_reproductive_max
+  unit_in: mm
+  trait_name: plant_height_reproductive
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Height of the flowering plant from the opening sentence of the fact sheet Description ("A ... species 100--350
+    mm high ..."; verbatim in plant_height_reproductive_description): a range is recorded as minimum and maximum values.'
+- var_in: leaf_shape
+  unit_in: .na
+  trait_name: leaf_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in leaf_description).'
+- var_in: leaf_hairs_adult_leaves
+  unit_in: .na
+  trait_name: leaf_hairs_adult_leaves
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in leaf_description).'
+- var_in: leaf_surface_colour
+  unit_in: .na
+  trait_name: leaf_surface_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in leaf_description).'
+- var_in: leaf_arrangement
+  unit_in: .na
+  trait_name: leaf_arrangement
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in leaf_description).'
+- var_in: leaf_count_min
+  unit_in: '{count}'
+  trait_name: leaf_count
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of leaves from the leaf phrase of the fact sheet Description (verbatim in leaf_description); where basal
+    and cauline leaves are counted separately, each count is recorded on its own entity_measured row.'
+- var_in: leaf_count_max
+  unit_in: '{count}'
+  trait_name: leaf_count
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of leaves from the leaf phrase of the fact sheet Description (verbatim in leaf_description); where basal
+    and cauline leaves are counted separately, each count is recorded on its own entity_measured row.'
+- var_in: plant_width_min
+  unit_in: mm
+  trait_name: plant_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Width of the leaf rosette from the fact sheet Description (verbatim in leaf_description), recorded on rows with
+    entity_measured = rosette: a range is recorded as minimum and maximum values.'
+- var_in: plant_width_max
+  unit_in: mm
+  trait_name: plant_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Width of the leaf rosette from the fact sheet Description (verbatim in leaf_description), recorded on rows with
+    entity_measured = rosette: a range is recorded as minimum and maximum values.'
+- var_in: leaf_length_min
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the fact sheet Description (verbatim in leaf_description): a range is recorded as minimum
+    and maximum values.'
+- var_in: leaf_length_max
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the fact sheet Description (verbatim in leaf_description): a range is recorded as minimum
+    and maximum values.'
+- var_in: leaf_width_min
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the fact sheet Description (verbatim in leaf_description): a range is recorded as minimum
+    and maximum values.'
+- var_in: leaf_width_max
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the fact sheet Description (verbatim in leaf_description): a range is recorded as minimum
+    and maximum values.'
+- var_in: leaf_length_type
+  unit_in: .na
+  trait_name: leaf_length_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in leaf_length_type_description).'
+- var_in: flower_count_maximum
+  unit_in: '{count}'
+  trait_name: flower_count_maximum
+  entity_type: species
+  value_type: mode
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of flowers from the flower phrase of the fact sheet Description ("up to three flowers", "a single
+    flower"; verbatim in flower_count_description).'
+- var_in: flower_colour
+  unit_in: .na
+  trait_name: flower_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in flower_colour_description).'
+- var_in: flower_diameter_min
+  unit_in: mm
+  trait_name: flower_diameter
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Flower size from the flower phrase of the fact sheet Description ("flowers 20--30 mm across"): a range is
+    recorded as minimum and maximum values.'
+- var_in: flower_diameter_max
+  unit_in: mm
+  trait_name: flower_diameter
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Flower size from the flower phrase of the fact sheet Description ("flowers 20--30 mm across"): a range is
+    recorded as minimum and maximum values.'
+- var_in: flower_scent_production
+  unit_in: .na
+  trait_name: flower_scent_production
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in flower_scent_description).'
+- var_in: pollination_syndrome
+  unit_in: .na
+  trait_name: pollination_syndrome
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in pollination_description).'
+- var_in: breeding_system
+  unit_in: .na
+  trait_name: breeding_system
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in pollination_description).'
+- var_in: flower_nectar_production
+  unit_in: .na
+  trait_name: flower_nectar_production
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in flower_nectar_production_description).'
+- var_in: flower_lifespan
+  unit_in: d
+  trait_name: flower_lifespan
+  entity_type: species
+  value_type: mode
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the fact sheet Description (verbatim in flower_lifespan_description): a range is recorded
+    as minimum and maximum values.'
+- var_in: post_fire_flowering
+  unit_in: .na
+  trait_name: post_fire_flowering
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from statements in the fact sheet on flowering after summer fires (verbatim in
+    post_fire_flowering_description).'
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text: epiphyte or lithophyte where the text says so (verbatim in
+    plant_growth_substrate_description), and terrestrial where the Distribution and Habitat text names the soil the plant
+    grows in, or the plant is a geophyte.'
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in plant_growth_form_description).'
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in plant_photosynthetic_organ_description).'
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in storage_organ_description).'
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in vegetative_reproduction_description).'
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in vegetative_reproduction_description).'
+- var_in: leaf_phenology
+  unit_in: .na
+  trait_name: leaf_phenology
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet text (verbatim in leaf_phenology_description).'
+- var_in: storage_organ_length_min
+  unit_in: mm
+  trait_name: storage_organ_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the fact sheet Description (verbatim in storage_organ_description): a range is recorded as
+    minimum and maximum values.'
+- var_in: storage_organ_length_max
+  unit_in: mm
+  trait_name: storage_organ_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the fact sheet Description (verbatim in storage_organ_description): a range is recorded as
+    minimum and maximum values.'
+- var_in: storage_organ_diameter_min
+  unit_in: mm
+  trait_name: storage_organ_diameter
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the fact sheet Description (verbatim in storage_organ_description): a range is recorded as
+    minimum and maximum values.'
+- var_in: storage_organ_diameter_max
+  unit_in: mm
+  trait_name: storage_organ_diameter
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the fact sheet Description (verbatim in storage_organ_description): a range is recorded as
+    minimum and maximum values.'
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions:
+  question1: 'Elizabeth Wenk is listed as the data collector (she ran the extraction). Confirm this is the preferred
+    attribution.'

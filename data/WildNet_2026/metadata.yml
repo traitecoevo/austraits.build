@@ -1,0 +1,835 @@
+source:
+  primary:
+    key: WildNet_2026
+    bibtype: Online
+    author: '{Queensland Government}'
+    year: '2026'
+    title: WildNet species profiles
+    publisher: Queensland Government, Brisbane
+    url: https://wildnet.science-data.qld.gov.au/species-search?kingdom_name=Plantae
+    note: accessed 1 October 2026
+contributors:
+  data_collectors:
+  - last_name: Wenk
+    given_name: Elizabeth
+    ORCID: 0000-0001-5640-5910
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    notes: Extracted the trait data from the WildNet species profiles
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: .na
+  collection_date: '2026'
+  taxon_name: taxon_name
+  description: 'To compile plant trait values from the species profiles in WildNet, the Queensland Government database of
+    Queensland plants and animals; the profiles cover mostly threatened and near-threatened Queensland plant taxa.'
+  basis_of_record: literature
+  life_stage: adult
+  sampling_strategy: 'All plant taxa in WildNet (wildnet.science-data.qld.gov.au) were downloaded through its public API on
+    1 October 2026, and the 302 taxa with species profile text were kept. Trait values were extracted from the Description,
+    Reproduction, Habitat and other profile sections with a scripted parser (raw/build_data_csv.R). Sentences comparing the
+    taxon with another species were dropped, so that characters of other taxa are not attributed to it. Categorical terms
+    are mapped to AusTraits trait values, with the source sentence or phrase kept verbatim in a matching *_description
+    column; several values are listed in the order they appear in the text. Growth forms qualified by a commonness word
+    ("tree or rarely a shrub") are recorded on separate rows with a commonness qualifier. Measurements record the typical
+    range given in the text as minimum and maximum values, converted to a single unit per column (plant heights in m, all
+    other lengths and diameters in mm, lifespan and age at reproductive maturity in years, flower lifespan in days);
+    parenthetical extremes are not recorded. Ecological traits (pollination, dispersal, fire response, seed bank,
+    germination, vegetative reproduction, lifespan) were scored by reading each relevant statement; hedged statements were
+    left unscored. The values were checked against the source text, and source typographical errors were corrected in the
+    script.'
+  original_file: wildnet_plant_profiles_with_text.csv (WildNet species profiles, downloaded 1 October 2026)
+  notes: 'Unmapped columns: the verbatim *_description columns, flower_colour_sentence, WildNet identifiers and links
+    (wildnet_taxon_id, wildnet_url), common_name, family, wildnet_name_superseded (TRUE where WildNet lists the name as
+    superseded), conservation status (nca_status, epbc_status), and the habitat, distribution, soil and elevation columns.
+    Taxa with storage organs measured have a second row with entity_measured naming the organ. No growth form in these
+    profiles is qualified by a commonness word, so the commonness_qualifier column is empty and is not mapped; map it as an
+    entity_context (context_property: commonness qualifier) if a re-extraction fills it.'
+identifiers: .na
+locations: .na
+contexts:
+- context_property: entity measured
+  category: method_context
+  var_in: entity_measured
+traits:
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the "is a ..." growth-form phrase of the species profile (verbatim in
+    plant_growth_form_description); several forms are listed in the order they appear in the text, and a tufted grass, sedge
+    or grass-like plant is scored tussock.'
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in plant_growth_form_description).'
+- var_in: stem_branching_form
+  unit_in: .na
+  trait_name: stem_branching_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in plant_growth_form_description).'
+- var_in: woodiness_detailed
+  unit_in: .na
+  trait_name: woodiness_detailed
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in woodiness_description).'
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in life_history_description).'
+- var_in: leaf_phenology
+  unit_in: .na
+  trait_name: leaf_phenology
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in leaf_phenology_description).'
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in plant_growth_substrate_description).'
+- var_in: plant_alternative_energy_and_nutrient_acquisition_strategy
+  unit_in: .na
+  trait_name: plant_alternative_energy_and_nutrient_acquisition_strategy
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: leaf_length_min
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in leaf_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: leaf_length_max
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in leaf_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: leaf_width_min
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in leaf_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: leaf_width_max
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in leaf_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: leaflet_length_min
+  unit_in: mm
+  trait_name: leaflet_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in leaflet_dimensions_description):
+    a range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: leaflet_length_max
+  unit_in: mm
+  trait_name: leaflet_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in leaflet_dimensions_description):
+    a range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: leaflet_width_min
+  unit_in: mm
+  trait_name: leaflet_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in leaflet_dimensions_description):
+    a range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: leaflet_width_max
+  unit_in: mm
+  trait_name: leaflet_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in leaflet_dimensions_description):
+    a range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: petiole_length_min
+  unit_in: mm
+  trait_name: petiole_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in petiole_length_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: petiole_length_max
+  unit_in: mm
+  trait_name: petiole_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in petiole_length_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: leaf_shape
+  unit_in: .na
+  trait_name: leaf_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: leaf_margin
+  unit_in: .na
+  trait_name: leaf_margin
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: leaf_compoundness
+  unit_in: .na
+  trait_name: leaf_compoundness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in leaf_compoundness_description).'
+- var_in: leaf_phyllotaxis
+  unit_in: .na
+  trait_name: leaf_phyllotaxis
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: leaf_arrangement
+  unit_in: .na
+  trait_name: leaf_arrangement
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: leaf_glaucousness
+  unit_in: .na
+  trait_name: leaf_glaucousness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: leaf_length_type
+  unit_in: .na
+  trait_name: leaf_length_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in leaf_length_type_description).'
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: flower_colour
+  unit_in: .na
+  trait_name: flower_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in flower_colour_description).'
+- var_in: flower_length_min
+  unit_in: mm
+  trait_name: flower_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in flower_dimensions_description):
+    a range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: flower_length_max
+  unit_in: mm
+  trait_name: flower_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in flower_dimensions_description):
+    a range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: flower_diameter_min
+  unit_in: mm
+  trait_name: flower_diameter
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in flower_dimensions_description):
+    a range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: flower_diameter_max
+  unit_in: mm
+  trait_name: flower_diameter
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in flower_dimensions_description):
+    a range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: flower_scent_production
+  unit_in: .na
+  trait_name: flower_scent_production
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in flower_scent_description).'
+- var_in: sex_type
+  unit_in: .na
+  trait_name: sex_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in sex_type_description).'
+- var_in: fruit_length_min
+  unit_in: mm
+  trait_name: fruit_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in fruit_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: fruit_length_max
+  unit_in: mm
+  trait_name: fruit_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in fruit_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: fruit_width_min
+  unit_in: mm
+  trait_name: fruit_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in fruit_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: fruit_width_max
+  unit_in: mm
+  trait_name: fruit_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in fruit_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: fruit_type
+  unit_in: .na
+  trait_name: fruit_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: fruit_fleshiness
+  unit_in: .na
+  trait_name: fruit_fleshiness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: fruit_dehiscence
+  unit_in: .na
+  trait_name: fruit_dehiscence
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text.'
+- var_in: fruit_colour
+  unit_in: .na
+  trait_name: fruit_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in fruit_colour_description).'
+- var_in: seed_length_min
+  unit_in: mm
+  trait_name: seed_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in seed_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: seed_length_max
+  unit_in: mm
+  trait_name: seed_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in seed_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: seed_width_min
+  unit_in: mm
+  trait_name: seed_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in seed_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: seed_width_max
+  unit_in: mm
+  trait_name: seed_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in seed_dimensions_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: seed_colour
+  unit_in: .na
+  trait_name: seed_colour
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in seed_colour_description).'
+- var_in: dispersal_appendage
+  unit_in: .na
+  trait_name: dispersal_appendage
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in dispersal_appendage_description).'
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in storage_organ_description).'
+- var_in: root_system_type
+  unit_in: .na
+  trait_name: root_system_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in root_system_type_description).'
+- var_in: plant_climbing_mechanism
+  unit_in: .na
+  trait_name: plant_climbing_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species profile text (verbatim in plant_climbing_mechanism_description).'
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Months of flowering from the Reproduction text of the species profile (verbatim in flowering_time_description),
+    as a 12-character y/n string starting in January; hedged statements were left unscored.'
+- var_in: fruiting_time
+  unit_in: .na
+  trait_name: fruiting_time
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Months of fruiting from the Reproduction text of the species profile (verbatim in fruiting_time_description), as
+    a 12-character y/n string starting in January; hedged statements were left unscored.'
+- var_in: pollination_vector_possible
+  unit_in: .na
+  trait_name: pollination_vector_possible
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in pollination_description); hedged
+    statements were left unscored.'
+- var_in: pollination_vector_known
+  unit_in: .na
+  trait_name: pollination_vector_known
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in pollination_description); hedged
+    statements were left unscored.'
+- var_in: pollination_syndrome
+  unit_in: .na
+  trait_name: pollination_syndrome
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in pollination_description); hedged
+    statements were left unscored.'
+- var_in: flower_visitor
+  unit_in: .na
+  trait_name: flower_visitor
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in pollination_description); hedged
+    statements were left unscored.'
+- var_in: dispersal_syndrome
+  unit_in: .na
+  trait_name: dispersal_syndrome
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in dispersal_description); hedged
+    statements were left unscored.'
+- var_in: resprouting_capacity
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in fire_response_description); hedged
+    statements were left unscored.'
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in fire_response_description); hedged
+    statements were left unscored.'
+- var_in: seedbank_location
+  unit_in: .na
+  trait_name: seedbank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in seedbank_description); hedged
+    statements were left unscored.'
+- var_in: resprouting_capacity_juvenile
+  unit_in: .na
+  trait_name: resprouting_capacity_juvenile
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in fire_response_description); hedged
+    statements were left unscored.'
+- var_in: resprouting_capacity_non_fire_disturbance
+  unit_in: .na
+  trait_name: resprouting_capacity_non_fire_disturbance
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in
+    vegetative_reproduction_description); hedged statements were left unscored.'
+- var_in: serotiny
+  unit_in: .na
+  trait_name: serotiny
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in fire_response_description); hedged
+    statements were left unscored.'
+- var_in: seed_germination_treatment
+  unit_in: .na
+  trait_name: seed_germination_treatment
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in germination_description); hedged
+    statements were left unscored.'
+- var_in: seed_dormancy_class
+  unit_in: .na
+  trait_name: seed_dormancy_class
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in germination_description); hedged
+    statements were left unscored.'
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in
+    vegetative_reproduction_description); hedged statements were left unscored.'
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in
+    vegetative_reproduction_description); hedged statements were left unscored.'
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in parasitic_description); hedged
+    statements were left unscored.'
+- var_in: plant_physical_defence_structures
+  unit_in: .na
+  trait_name: plant_physical_defence_structures
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in physical_defence_description);
+    hedged statements were left unscored.'
+- var_in: lifespan_min
+  unit_in: a
+  trait_name: lifespan
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in lifespan_description); hedged
+    statements were left unscored.'
+- var_in: lifespan_max
+  unit_in: a
+  trait_name: lifespan
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in lifespan_description); hedged
+    statements were left unscored.'
+- var_in: reproductive_maturity_min
+  unit_in: a
+  trait_name: reproductive_maturity
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in lifespan_description); hedged
+    statements were left unscored.'
+- var_in: reproductive_maturity_max
+  unit_in: a
+  trait_name: reproductive_maturity
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in lifespan_description); hedged
+    statements were left unscored.'
+- var_in: flower_lifespan_min
+  unit_in: d
+  trait_name: flower_lifespan
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in flower_lifespan_description);
+    hedged statements were left unscored.'
+- var_in: flower_lifespan_max
+  unit_in: d
+  trait_name: flower_lifespan
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored by reading each relevant statement in the species profile (verbatim in flower_lifespan_description);
+    hedged statements were left unscored.'
+- var_in: plant_height_reproductive_min
+  unit_in: m
+  trait_name: plant_height_reproductive
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in
+    plant_height_reproductive_description): a range is recorded as minimum and maximum values and "to X" as a maximum;
+    parenthetical extremes are not recorded.'
+- var_in: plant_height_reproductive_max
+  unit_in: m
+  trait_name: plant_height_reproductive
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in
+    plant_height_reproductive_description): a range is recorded as minimum and maximum values and "to X" as a maximum;
+    parenthetical extremes are not recorded.'
+- var_in: plant_height_climbing_plant_max
+  unit_in: m
+  trait_name: plant_height_climbing_plant
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in plant_height_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: plant_height_min
+  unit_in: m
+  trait_name: plant_height
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in plant_height_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: plant_height_max
+  unit_in: m
+  trait_name: plant_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in plant_height_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: plant_diameter_breast_height_min
+  unit_in: mm
+  trait_name: plant_diameter_breast_height
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in stem_diameter_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: plant_diameter_breast_height_max
+  unit_in: mm
+  trait_name: plant_diameter_breast_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in stem_diameter_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: stem_diameter_min
+  unit_in: mm
+  trait_name: stem_diameter
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in stem_diameter_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: stem_diameter_max
+  unit_in: mm
+  trait_name: stem_diameter
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in stem_diameter_description): a
+    range is recorded as minimum and maximum values and "to X" as a maximum; parenthetical extremes are not recorded.'
+- var_in: storage_organ_length_min
+  unit_in: mm
+  trait_name: storage_organ_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in
+    storage_organ_dimensions_description): a range is recorded as minimum and maximum values and "to X" as a maximum;
+    parenthetical extremes are not recorded.'
+- var_in: storage_organ_length_max
+  unit_in: mm
+  trait_name: storage_organ_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in
+    storage_organ_dimensions_description): a range is recorded as minimum and maximum values and "to X" as a maximum;
+    parenthetical extremes are not recorded.'
+- var_in: storage_organ_diameter_min
+  unit_in: mm
+  trait_name: storage_organ_diameter
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in
+    storage_organ_dimensions_description): a range is recorded as minimum and maximum values and "to X" as a maximum;
+    parenthetical extremes are not recorded.'
+- var_in: storage_organ_diameter_max
+  unit_in: mm
+  trait_name: storage_organ_diameter
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the species profile (verbatim, with its original units, in
+    storage_organ_dimensions_description): a range is recorded as minimum and maximum values and "to X" as a maximum;
+    parenthetical extremes are not recorded.'
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions:
+  question1: 'The source is cited as an Online reference with the Queensland Government as author; confirm the preferred
+    attribution (e.g. the department that maintains WildNet).'
+  question2: 'Elizabeth Wenk is listed as the data collector (she ran the extraction); the profiles cite their own
+    references in the WildNet References section. Confirm this is the preferred attribution.'
