@@ -41,19 +41,49 @@ dataset:
           "leaf_shape", "leaf_surface_colour", "leaf_surface_reflectivity", "leaf_type",
           "leaf_width", "leaflet_count", "leaflet_length", "leaflet_width",
           "life_history", "mycorrhizal_association_type", "parasitic", "pedicel_length",
-          "peduncle_length", "petiole_length", "plant_climbing_mechanism", "plant_growth_form",
-          "plant_growth_substrate", "plant_height", "plant_height_reproductive", "plant_photosynthetic_organ",
-          "plant_physical_defence_structures", "plant_width", "pollination_syndrome", "post_fire_flowering",
-          "post_fire_recruitment", "resprouting_capacity", "resprouting_capacity_non_fire_disturbance", "seed_colour",
-          "seed_height", "seed_length", "seed_shape", "seed_surface_texture",
-          "seed_width", "seedbank_location", "seeds_per_fruit", "serotiny",
-          "sex_type", "stem_branching_form", "stem_diameter", "stem_growth_habit",
-          "stem_hairs", "stem_length", "storage_organ", "vegetative_reproduction_ability",
-          "woodiness_detailed"
+          "peduncle_length", "petiole_length", "plant_canopy_form", "plant_climbing_mechanism",
+          "plant_diameter_breast_height", "plant_growth_form", "plant_growth_substrate", "plant_height",
+          "plant_height_reproductive", "plant_photosynthetic_organ", "plant_physical_defence_structures", "plant_width",
+          "pollination_syndrome", "post_fire_flowering", "post_fire_recruitment", "resprouting_capacity",
+          "resprouting_capacity_non_fire_disturbance", "seed_colour", "seed_height", "seed_length",
+          "seed_shape", "seed_surface_texture", "seed_width", "seedbank_location",
+          "seeds_per_fruit", "serotiny", "sex_type", "stem_base_form",
+          "stem_branching_form", "stem_constitution", "stem_count", "stem_diameter",
+          "stem_growth_habit", "stem_hairs", "stem_length", "storage_organ",
+          "vegetative_reproduction_ability", "woodiness_detailed"
         ),
         is.na(measurement_range) | measurement_range != "extreme"
       )
     '
+  collection_date: '2026'
+  taxon_name: taxon_name
+  trait_name: trait_name
+  value: value
+  description: To compile plant trait values from the taxon descriptions in the Flora of Australia online, the national
+    flora of Australia published by the Australian Biological Resources Study; family Proteaceae.
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  sampling_strategy: 'Species, subspecies, variety and form profiles of the Flora of Australia online
+    (profiles.ala.org.au/opus/foa) were downloaded, together with genus and family profiles. Trait values were extracted
+    from the Description, Phenology, Ecology, Notes and Habitat text with a scripted parser
+    (ABRS_AtoM_2026/raw/build_data_csv.R): each description is split into sentences, clauses and comma-separated segments,
+    each segment is assigned to the organ it describes (habit, stem, leaf, leaflet, inflorescence, flower, fruit, seed,
+    ...), and categorical terms and measurements are read from the segments of the relevant organ. Categorical terms are
+    mapped to AusTraits trait values, with the source terms kept verbatim in value_description; several values are listed in
+    the order they appear in the text, and alternatives qualified by a commonness word (usually, rarely, sometimes ...) or a
+    region are recorded on separate rows. A measured range is recorded as minimum and maximum values, a single measurement
+    as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are kept
+    on separate rows (measurement_range = extreme). Where a profile describes several earlier treatments, the most recent is
+    used. Ecological traits (fire response, bud bank, clonality, dispersal, pollination, tolerances, lifespan) were scored
+    by reading each Ecology, Notes and Habitat statement; hedged statements were left unscored. Categorical values stated as
+    a single, unqualified value in a genus (or family) description, and not contradicted by any member taxon that describes
+    the trait, are copied to member taxa whose own description is silent on that trait. Subspecies, varieties and forms
+    whose own description is silent on a trait take the values (categorical and numeric) from the description of their
+    species. Values that descriptions state only when atypical (terrestrial substrate, leaf as photosynthetic organ, not
+    parasitic, broadleaf) are recorded on trait_scoring_method = inferred rows when nothing in the profile suggests
+    otherwise. The taxa were checked against the source text after extraction, and source typographical errors were
+    corrected in the script.'
+  original_file: foa_profiles.csv (Flora of Australia online profiles, downloaded 30 September 2026)
   notes: 'The Flora of Australia extraction is split across datasets by family, to keep each data.csv within GitHub
     file-size limits: ABRS_AtoM_2026 (families A to M), ABRS_NtoZ_2026 (families N to Z), and ABRS_Asteraceae_2026,
     ABRS_Fabaceae_2026, ABRS_Myrtaceae_2026 and ABRS_Proteaceae_2026. One parser, ABRS_AtoM_2026/raw/build_data_csv.R,
@@ -709,6 +739,14 @@ traits:
   methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
     maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
     parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: plant_canopy_form
+  unit_in: .na
+  trait_name: plant_canopy_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the habit sentence of the taxon description (verbatim source terms in value_description).
 - var_in: plant_climbing_mechanism
   unit_in: .na
   trait_name: plant_climbing_mechanism
@@ -717,6 +755,15 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Scored from the taxon description (verbatim source terms in value_description).
+- var_in: plant_diameter_breast_height
+  unit_in: mm
+  trait_name: plant_diameter_breast_height
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
+    maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum.'
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
@@ -920,6 +967,15 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Scored from the taxon description (verbatim source terms in value_description).
+- var_in: stem_base_form
+  unit_in: .na
+  trait_name: stem_base_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from sentences about the trunk, bole or tree (buttressed, plank buttresses -> buttressed; fluted; verbatim
+    source terms in value_description).
 - var_in: stem_branching_form
   unit_in: .na
   trait_name: stem_branching_form
@@ -928,6 +984,25 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Scored from the taxon description (verbatim source terms in value_description).
+- var_in: stem_constitution
+  unit_in: .na
+  trait_name: stem_constitution
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the habit and main stem / branch / culm text (rigid, stiff -> rigid; robust, stout -> robust; wiry;
+    slender; straggly; flexible; wispy; spindly; verbatim source terms in value_description).
+- var_in: stem_count
+  unit_in:
+    count: null
+  trait_name: stem_count
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of stems or trunks stated in the habit text ("with 1-3 main trunks", "with 5-12 trunks"; verbatim in value_description):
+    a range is recorded as minimum and maximum values, a single count as a mode.'
 - var_in: stem_diameter
   unit_in: mm
   trait_name: stem_diameter
@@ -994,3 +1069,9 @@ traits:
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
+questions:
+  question1: Parenthetical extremes (measurement_range = extreme) are filtered out in custom_R_code. Should they be mapped,
+    e.g. as separate minimum / maximum records with a context?
+  question2: petiole_shape (13 rows; mostly terete, quadrangular, flattened) is not mapped because these cross-section and
+    outline shapes are not allowed values of petiole_shape (decurrent, not_decurrent, slender). Add the values, or a
+    separate trait?

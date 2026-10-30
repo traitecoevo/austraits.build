@@ -980,14 +980,35 @@ stem_habit_dict <- c(
 # woodiness_detailed from the habit text (the ABRS_2022 terms, user 2026-10-30); plain woody / herbaceous come from the growth form
 woodiness_dict <- c("woody[- ]based|(?:with |having )?(?:a )?woody base|woody at (?:the )?base|base woody|suffruticose|woody below" = "woody_base",
                     "woody (?:rootstock|root-stock|taproot|tap-root|tap root|roots?|caudex|stock)" = "woody_root", "soft[- ]wooded|softwooded" = "semi_woody")
+# (all APD stem_branching_form levels; basal branching and stem number from the habit and the main stem / branch / culm
+# clauses, user 2026-10-30: "Shrub branched at base" multiple_basal_stems, "with a single trunk" / "straight bole"
+# single_basal_stem, "many-branched" much-branched)
 branching_dict <- c(
-  "multi-?stemmed" = "multi-stemmed", "many-stemmed" = "many-stemmed", "few-stemmed" = "few-stemmed",
-  "single-stemmed|single stemmed|with a single stem" = "single_basal_stem", "unbranched" = "unbranched",
-  "much[- ]branched|richly branched|profusely branched" = "much-branched",
-  "sparsely[- ]branched|sparingly[- ]branched|few-branched" = "sparsely-branched", "densely[- ]branched" = "densely-branched",
-  "openly[- ]branched" = "openly-branched", "intricately[- ]branched" = "intricately-branched",
-  "divaricate(?:ly[- ]branched)?|divaricately[- ]branched|divaricating" = "divaricately-branched", "virgate" = "virgate",
+  "(?:sparsely|sparingly|few)[- ]branched (?:from|at|near) (?:the )?base" = "sparsely-branched multiple_basal_stems",
+  "(?:much|many|freely|profusely|richly|well)[- ]branched (?:from|at|near) (?:the )?base" = "much-branched multiple_basal_stems",
+  "branch(?:ed|ing) (?:from|at|near|close to) (?:the |or near the )?(?:base|ground(?: level)?)|basally branched|branched basally|branching basally" = "multiple_basal_stems",
+  "branch(?:ed|ing) (?:just|shortly|a little|slightly|low) above (?:the )?(?:base|ground)|branch(?:ed|ing) low down" = "multiple_near_basal_stems",
+  "(?:several|many|numerous|multiple|few|2 or more) (?:main |basal |erect |slender |woody )?stems (?:arising |emerging |developing |produced |sprouting )?(?:from|at) (?:the )?(?:base|ground(?: level)?|a lignotuber|lignotubers?|(?:a )?(?:woody )?rootstock|rhizomes?|caudex)" = "multiple_basal_stems",
+  "(?:1|one|a single) (?:to|or) (?:several|many|more|few|numerous) (?:main |basal )?(?:stems|trunks)" = "single_basal_stem multi-stemmed",
+  "unbranched (?:at|near|from) (?:the )?base" = "single_basal_stem",
+  "multi-?stemmed|multi-?trunked|with (?:several|multiple) (?:main |basal |erect |slender )?(?:stems|trunks)|(?:several|multiple) (?:main |basal )?(?:stems|trunks) from|stems several" = "multi-stemmed",
+  "many-stemmed|with (?:many|numerous) (?:main |basal |erect |slender )?stems|stems (?:many|numerous)" = "many-stemmed",
+  "few-stemmed|with (?:a )?few (?:main |basal )?stems|stems few" = "few-stemmed",
+  "single-stemmed|single stemmed|single-trunked|with a single (?:main )?(?:stem|trunk)|(?:a |one )?single (?:main )?trunk|trunk single|(?:clear|clean|straight|long|tall|single) bole|bole (?:straight|clear|clean|long|tall)" = "single_basal_stem",
+  "unbranched|simple(?=,? (?:or|to) (?:[a-z]+ly )?branched)|stems? simple\\b" = "unbranched",
+  "much[- ]branched|many[- ]branched|well[- ]branched|richly branched|profusely branched|freely branched|twiggy" = "much-branched",
+  "sparsely[- ]branched|sparingly[- ]branched|few[- ]branched|little[- ]branched|scarcely branched" = "sparsely-branched",
+  "moderately[- ]branched" = "moderately-branched", "compactly[- ]branched|closely[- ]branched" = "compactly-branched",
+  "densely[- ]branched" = "densely-branched",
+  "openly[- ]branched|widely[- ]branched|loosely[- ]branched" = "openly-branched", "intricately[- ]branched|intricate" = "intricately-branched",
+  "divaricate(?:ly[- ]branched)?|divaricately[- ]branched|divaricating" = "divaricately-branched", "virgate|wand-like" = "virgate",
+  "monopodial" = "monopodial", "horizontally[- ]branched|branches (?:spreading )?horizontal(?:ly)?|tiered" = "horizontally-branched",
+  "tangled|interlacing|interlaced|entangled" = "tangled", "gnarled|gnarly" = "gnarled", "dichasial(?:ly)?(?:[- ]branched)?|corymbose-branched" = "dichasially-branched",
   "branched|branching" = "branched")
+branching_neg <- c("not or (?:sparingly|sparsely|little|rarely) branched" = "unbranched sparsely-branched", "not branched (?:at|near) (?:the )?base" = "single_basal_stem")
+# stem_constitution (user 2026-10-30): the mechanical make-up of the stems ("Slender wiry herb", "Straggly shrub", "stems rigid")
+stem_constitution_dict <- c("rigid|stiff|stiffly" = "rigid", "robust|stout|sturdy" = "robust", "wiry" = "wiry", "slender" = "slender",
+                            "straggly|straggling" = "straggly", "flexible|flexuous|pliable|whip-like" = "flexible", "wispy" = "wispy", "spindly" = "spindly")
 defence_dict <- c(
   "spiny|spinose|spinescent|armed|axillary spines|spines|stipular spines|thorny|thorns" = "spine",
   "prickly|prickles" = "prickle", "stinging(?: hairs)?|urticating" = "stinging_or_irritant_hairs")
@@ -1938,16 +1959,32 @@ extract_one <- function(r, group_filter = TRUE) {
   # (orchid stems given as length x diameter: Cadetia "Stems slender, 40-70 x 1-1.5 mm, widening from base to apex")
   orch_sd <- if (orchid_mode && is.null(sl)) d_first(stem_lead, excl("stems?")) else list(L = NULL, W = NULL)
   if (!is.null(orch_sd$L)) addn("stem_length", orch_sd$L$v, orch_sd$L$txt)
-  addc("stem_branching_form", habit_txt, branching_dict)
-  if (legume_mode) {
-    # crown shape (plant_canopy_form): "Obconic shrub", "Rounded shrub", "flat-topped tree", "obconic with spreading, open crowns"
+  # (the habit and the main stem / branch / culm clauses: "Stems to 20 cm long, simple or sparsely branched", "Culms ... unbranched",
+  # "branches divaricate"; branched hairs, inflorescences, roots and rhizomes are not the stem's branching)
+  br_txt <- collapse_text(c(habit_txt, stem_lead), " | ")
+  br_prep <- function(x) str_remove_all(x, "[^,;|]*\\b(?:hairs?|trichomes|scales|bristles|glands?|inflorescences?|panicles?|racemes?|spikes?|cymes?|roots?|rhizomes?|stolons?|tendrils?|spines?|thorns?|rachis|veins?)\\b[^,;|]*")
+  addc("stem_branching_form", br_txt, branching_dict, branching_neg, prep_fun = br_prep)
+  addc("stem_constitution", br_txt, stem_constitution_dict,
+       prep_fun = function(x) str_remove_all(br_prep(x), "[^,;|]*\\b(?:leaves|leaf|phyllodes?|flowers?|fruits?|pods?|branchlets?|twigs?|petioles?|peduncles?|pedicels?|scapes?)\\b[^,;|]*"))
+  # buttressed or fluted trunk bases (stem_base_form): "trunk buttressed", "with plank buttresses", "bole fluted"
+  sbf_txt <- collapse_text(keep(sentences(desc %||% ""), ~ str_detect(.x, rx("\\b(?:trunks?|boles?|butts?|trees?|stems? base|base of (?:the )?(?:trunk|stem))\\b"))), " | ")
+  addc("stem_base_form", sbf_txt, c("buttress(?:ed|es|ing)?|plank[- ]buttresses|spur roots" = "buttressed", "fluted" = "fluted"),
+       prep_fun = function(x) str_remove_all(x, "[^,;|]*\\b(?:fruits?|capsules?|pods?|seeds?|calyx|corolla|petals?|sepals?|hypanthium|columns?)\\b[^,;|]*"))
+  # stem number (stem_count): "multi-stemmed with 3-8 stems", "with 2-5 main stems", "mallee with 5 or more stems"
+  scn <- count_after(habit, paste0("\\b(?:with |of |producing |forming )?", cnt, "(?:\\s+or more)? (?:main |basal |erect |woody |separate )?(?:stems|trunks)\\b"))
+  if (!is.null(scn)) addn("stem_count", parse_count(scn$raw), scn$txt)
+  {
+    # crown shape (plant_canopy_form, all families from 2026-10-30): "Obconic shrub", "Rounded shrub", "flat-topped tree",
+    # "obconic with spreading, open crowns"
     addc("plant_canopy_form", habit_txt, c("obconic(?:al)?|turbinate|top-shaped" = "obconical", "round(?:ed)?(?:-topped)?|sub-rounded" = "rounded",
                                            "flat-topped|flat-crowned|umbrella-like|umbrella-shaped|umbrageous" = "flat-topped",
                                            "(?:low-)?domed|dome-shaped|hemispherical" = "hemispherical", "pyramidal" = "pyramidal", "globose|globular" = "globose",
                                            "columnar|fastigiate" = "columnar", "broom-like" = "broom-like", "(?:pseudo-?)?conifer(?:-like)?|pine-like" = "pine-like",
                                            "diffuse" = "diffuse", "(?:dense|compact)(?=,? (?:[a-z-]+ )?crowns?\\b)|crowns? (?:dense|compact)" = "dense-crowned",
                                            "open(?=,? (?:[a-z-]+ )?crowns?\\b)|crowns? open" = "open-crowned", "mounded|mound-like|mound-forming" = "mounded"),
-         prep_fun = function(x) str_remove_all(x, "\\b(?:with|and) (?:[a-z-]+ ){0,3}(?:branchlets?|branches|phyllodes?|leaves|foliage|stems?)\\b|\\brounded (?:at|towards) (?:the )?[a-z]+"))
+         prep_fun = function(x) str_remove_all(x, "\\b(?:with|and) (?:[a-z-]+ ){0,3}(?:branchlets?|branches|phyllodes?|leaves|foliage|stems?)\\b|\\brounded (?:at|towards) (?:the )?[a-z]+|\\brounded in (?:cross[- ])?section\\b|[^,;|]*\\b(?:leaves|leaf|tubers?|corms?|bulbs?|seeds?|fruits?|hairs?)\\b[^,;|]*"))
+  }
+  if (legume_mode) {
     # clonal spread stated in the habit ("may spread by root suckers", "root-suckering shrub", "forming clonal thickets", "spreading by runners")
     # ("sometimes clonal due to root suckering" is one statement: the mechanism takes the qualifier; "often spreading by runners")
     veg_txt <- if (is.na(habit_txt)) habit_txt else str_replace_all(habit_txt, rx("\\bclonal (?:due to|by|through|from|via) (?:a |its |the )?((?:root[- ])?suckering|(?:root[- ])?suckers?)(?: habit)?\\b"), "\\1") %>%
@@ -2116,8 +2153,8 @@ extract_one <- function(r, group_filter = TRUE) {
       for (k in seq_along(recs)) if (all(recs[[k]]$trait == "plant_height") && all(is.na(recs[[k]]$qualifier))) recs[[k]]$qualifier <- "usually"
     }
   }
-  # Fabaceae: "Tree to 25 m high; d.b.h. to 36 cm": trunk diameter at breast height
-  if (legume_mode) {
+  # "Tree to 25 m high; d.b.h. to 36 cm": trunk diameter at breast height (Fabaceae first; all families from 2026-10-30)
+  {
     dbh <- str_match(mark_extremes(desc %||% ""), rx(paste0("\\bd\\.?\\s?b\\.?\\s?h\\.?\\s*(?:of\\s+)?(", meas, ")")))
     # ("Tree to 40 m high, to 0.9 m d.b.h.", "mature trunks to 12 cm d.b.h.")
     if (is.na(dbh[1])) { dbh <- str_match(mark_extremes(desc %||% ""), rx(paste0("(", meas, ")\\s*d\\.?\\s?b\\.?\\s?h\\b"))); if (!is.na(dbh[1])) dbh[2] <- dbh[2] }
@@ -2197,9 +2234,10 @@ extract_one <- function(r, group_filter = TRUE) {
   if (fam %in% graminoid_rule_families && !word(taxon, 1) %in% bamboo_genera)
     for (k in seq_along(recs)) if (all(recs[[k]]$trait == "plant_height")) add(recs[[k]] %>% mutate(trait = "plant_height_reproductive"))
   # trunk / main stem diameter ("trunk to 2 m diam.", "stems to 3 cm diam.") from the opening sentences
-  sdm <- m_first(unit_text(u %>% filter(si <= 2), "stem", subj_re = "^(?:the )?(?:trunks?|stems?|main stems?|culms?)$"), "diam|diameter|in diameter|across|wide", excl("trunks?", "stems?", "culms?"))
+  # (and the bole: Meliaceae "Tree to 30 m high; bole to 65 cm diam.")
+  sdm <- m_first(unit_text(u %>% filter(si <= 2), "stem", subj_re = "^(?:the )?(?:trunks?|boles?|stems?|main stems?|culms?)$"), "diam|diameter|in diameter|across|wide", excl("trunks?", "boles?", "stems?", "culms?"))
   if (is.null(sdm)) {
-    sm2 <- str_match(mark_extremes(join_units(habit) %||% ""), rx(paste0("\\b(?:with (?:a )?)?(?:trunks?|stems?)\\b[^,;|]{0,20}?(", meas, ")\\s*(?:diam|diameter|in diameter)")))
+    sm2 <- str_match(mark_extremes(join_units(habit) %||% ""), rx(paste0("\\b(?:with (?:a )?)?(?:(?:fluted |straight |clear )?boles?|trunks?|stems?)\\b[^,;|]{0,20}?(", meas, ")\\s*(?:diam|diameter|in diameter)")))
     if (!is.na(sm2[1])) sdm <- list(v = meas_of(sm2[2]), txt = unmark(sm2[1]))
   }
   if (is.null(sdm) && !is.null(orch_sd$W)) sdm <- orch_sd$W
