@@ -24,6 +24,18 @@ dataset:
     data |>
       dplyr::filter(
         trait_name %in% c(
+          "flower_stamen_length",
+          "flower_colour_detailed", "fruit_surface_reflectivity", "leaf_secondary_vein_angle",
+          "extrafloral_nectaries", "leaf_length_to_width_ratio",
+          "branchlet_hairs", "corolla_lobe_length", "filament_fusion", "fruit_texture", "hypanthium_length", "leaf_discolority", "leaf_main_vein_count", "leaf_secondary_vein_angle_categorical", "sepal_fusion", "stem_shape", "style_shape",
+          "petal_shape",
+          "anther_attachment", "fruit_shape", "fruit_surface", "juvenile_leaf_width", "leaf_attachment", "leaf_intramarginal_vein", "leaf_texture", "petal_fusion", "stipule_presence",
+          "leaf_adaxial_colour",
+          "anther_colour", "inflorescence_colour", "juvenile_leaf_colour", "leaf_abaxial_colour", "leaflet_colour", "ovary_colour", "style_colour",
+          "bracteole_width", "flower_bract_width", "flower_petal_width", "flower_sepal_width", "glume_width", "hypanthium_width", "involucral_bract_width", "labellum_width", "lemma_width", "ovary_width", "palea_width", "spathe_width", "stipule_width", "tepal_width",
+          "juvenile_leaf_length", "spikelet_length",
+          "stipule_length", "tepal_length", "bracteole_length", "pistil_length", "ovary_length", "glume_length", "lemma_length", "palea_length", "involucral_bract_length", "spathe_length", "labellum_length", "floret_length",
+          "flower_opening_time", "flowering_predictability", "fruiting_cues",
           "plant_diameter_breast_height",
           "plant_canopy_form",
           "stem_count",
@@ -138,6 +150,35 @@ contexts:
 - context_property: plant organ measured
   category: entity_context
   var_in: plant_organ_measured
+  values:
+  - value: fronds
+    description: Plant height measured to the top of the fronds.
+  - value: trunk
+    description: Height of the trunk.
+  - value: spikelet
+    description: Measurement of a spikelet, the small inflorescence unit of grasses and sedges.
+  - value: floret
+    description: Measurement of a floret, a small flower of a grass spikelet or Asteraceae head.
+  - value: glume
+    description: Measurement of a glume, one of the bracts at the base of a grass spikelet.
+  - value: involucral bract
+    description: Measurement of an involucral bract, a bract of the involucre surrounding an inflorescence.
+  - value: labellum
+    description: Measurement of the labellum, the modified median petal of an orchid flower.
+  - value: lemma
+    description: Measurement of a lemma, the lower bract enclosing a grass floret.
+  - value: palea
+    description: Measurement of a palea, the upper bract enclosing a grass floret.
+  - value: spathe
+    description: Measurement of a spathe, a large bract enclosing an inflorescence.
+  - value: leaf abaxial surface
+    description: Measurement of the lower (abaxial) surface of the leaf lamina.
+  - value: leaflet
+    description: Measurement of a leaflet of a compound leaf.
+  - value: leaf adaxial surface
+    description: Measurement of the upper (adaxial) surface of the leaf lamina.
+  - value: branchlet
+    description: Measurement of the branchlets (the youngest woody or leafy stems).
 - context_property: phenological stage
   category: entity_context
   var_in: phenological_stage
@@ -147,7 +188,392 @@ contexts:
 - context_property: scoring certainty
   category: method_context
   var_in: scoring_certainty
+- context_property: cue scored from
+  category: method_context
+  var_in: cue_scored_from
+  values:
+  - find: flowering
+    value: flowering
+    description: Cue scored from a statement about the taxon's flowering.
+  - find: fruiting
+    value: fruiting
+    description: Cue scored from a statement about the taxon's fruiting.
 traits:
+- var_in: anther_attachment
+  unit_in: .na
+  trait_name: flower_anther_attachment
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: anther_colour
+  unit_in: .na
+  trait_name: flower_anther_colour
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: bracteole_length
+  unit_in: mm
+  trait_name: bracteole_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: bracteole_width
+  unit_in: mm
+  trait_name: flower_bracteole_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: branchlet_hairs
+  unit_in: .na
+  trait_name: stem_hairs
+  plant_organ_measured: branchlet
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description). Recorded with plant_organ_measured = branchlet.'
+- var_in: corolla_lobe_length
+  unit_in: mm
+  trait_name: flower_corolla_lobe_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: filament_fusion
+  unit_in: .na
+  trait_name: flower_filament_fusion_categorical
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: floret_length
+  unit_in: mm
+  trait_name: flower_length
+  plant_organ_measured: floret
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = floret: a floret is a small flower of a grass spikelet or Asteraceae head.'
+- var_in: flower_bract_width
+  unit_in: mm
+  trait_name: flower_bract_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: flower_petal_width
+  unit_in: mm
+  trait_name: flower_petal_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: flower_sepal_width
+  unit_in: mm
+  trait_name: flower_sepal_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: fruit_shape
+  unit_in: .na
+  trait_name: fruit_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: fruit_surface
+  unit_in: .na
+  trait_name: fruit_surface_texture
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: fruit_texture
+  unit_in: .na
+  trait_name: fruit_constitution
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: glume_length
+  unit_in: mm
+  trait_name: flower_bract_length
+  plant_organ_measured: glume
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = glume: the glumes are the bracts at the base of a grass spikelet.'
+- var_in: glume_width
+  unit_in: mm
+  trait_name: flower_bract_width
+  plant_organ_measured: glume
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = glume: the glumes are the bracts at the base of a grass spikelet.'
+- var_in: hypanthium_length
+  unit_in: mm
+  trait_name: flower_hypanthium_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: hypanthium_width
+  unit_in: mm
+  trait_name: flower_hypanthium_diameter
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: inflorescence_colour
+  unit_in: .na
+  trait_name: inflorescence_colour
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: involucral_bract_length
+  unit_in: mm
+  trait_name: flower_bract_length
+  plant_organ_measured: involucral bract
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = involucral bract: a bract of the involucre surrounding an inflorescence.'
+- var_in: involucral_bract_width
+  unit_in: mm
+  trait_name: flower_bract_width
+  plant_organ_measured: involucral bract
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = involucral bract: a bract of the involucre surrounding an inflorescence.'
+- var_in: juvenile_leaf_colour
+  unit_in: .na
+  trait_name: leaf_surface_colour_juvenile_leaves
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: juvenile_leaf_length
+  unit_in: mm
+  trait_name: leaf_length_juvenile_leaves
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Lengths of juvenile phase leaves, given in the description of the juvenile leaves.'
+- var_in: juvenile_leaf_width
+  unit_in: mm
+  trait_name: leaf_width_juvenile_leaves
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Widths of juvenile phase leaves, given in the description of the juvenile leaves.'
+- var_in: labellum_length
+  unit_in: mm
+  trait_name: flower_petal_length
+  plant_organ_measured: labellum
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = labellum: the labellum is the modified median petal of an orchid flower.'
+- var_in: labellum_width
+  unit_in: mm
+  trait_name: flower_petal_width
+  plant_organ_measured: labellum
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = labellum: the labellum is the modified median petal of an orchid flower.'
+- var_in: leaf_abaxial_colour
+  unit_in: .na
+  trait_name: leaf_surface_colour
+  plant_organ_measured: leaf abaxial surface
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description). Recorded with plant_organ_measured = leaf abaxial surface: the colour of the lower (abaxial) surface of the leaf lamina.'
+- var_in: leaf_adaxial_colour
+  unit_in: .na
+  trait_name: leaf_surface_colour
+  plant_organ_measured: leaf adaxial surface
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description). Recorded with plant_organ_measured = leaf adaxial surface: the colour of the upper (adaxial) surface of the leaf lamina.'
+- var_in: leaf_attachment
+  unit_in: .na
+  trait_name: petiole_presence
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: leaf_discolority
+  unit_in: .na
+  trait_name: leaf_discolority
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: leaf_intramarginal_vein
+  unit_in: .na
+  trait_name: leaf_intramarginal_vein
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: leaf_main_vein_count
+  unit_in: '{count}'
+  trait_name: leaf_main_vein_count
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: leaf_secondary_vein_angle_categorical
+  unit_in: .na
+  trait_name: leaf_secondary_vein_angle_categorical
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: leaf_texture
+  unit_in: .na
+  trait_name: leaf_constitution
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: leaflet_colour
+  unit_in: .na
+  trait_name: leaf_surface_colour
+  plant_organ_measured: leaflet
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description). Recorded with plant_organ_measured = leaflet: the colour of the leaflets of a compound leaf.'
+- var_in: lemma_length
+  unit_in: mm
+  trait_name: flower_bract_length
+  plant_organ_measured: lemma
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = lemma: the lemma is the lower bract enclosing a grass floret.'
+- var_in: lemma_width
+  unit_in: mm
+  trait_name: flower_bract_width
+  plant_organ_measured: lemma
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = lemma: the lemma is the lower bract enclosing a grass floret.'
+- var_in: ovary_colour
+  unit_in: .na
+  trait_name: flower_ovary_colour
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: ovary_length
+  unit_in: mm
+  trait_name: flower_ovary_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: ovary_width
+  unit_in: mm
+  trait_name: flower_ovary_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: palea_length
+  unit_in: mm
+  trait_name: flower_bract_length
+  plant_organ_measured: palea
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = palea: the palea is the upper bract enclosing a grass floret.'
+- var_in: palea_width
+  unit_in: mm
+  trait_name: flower_bract_width
+  plant_organ_measured: palea
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = palea: the palea is the upper bract enclosing a grass floret.'
+- var_in: petal_fusion
+  unit_in: .na
+  trait_name: flower_petal_fusion
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: petal_shape
+  unit_in: .na
+  trait_name: flower_petal_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: pistil_length
+  unit_in: mm
+  trait_name: flower_pistil_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
 - var_in: plant_growth_form
   unit_in: .na
   trait_name: plant_growth_form
@@ -164,6 +590,41 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: 'Scored from the taxon description (verbatim source terms in value_description). Where the profile gives no life history, perennial is recorded on a trait_scoring_method = inferred_from_growth_form row for trees, shrubs, mallees, palmoids, woody climbers and geophytes (the ABRS_2022 rule).'
+- var_in: sepal_fusion
+  unit_in: .na
+  trait_name: flower_sepal_fusion
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: spathe_length
+  unit_in: mm
+  trait_name: flower_bract_length
+  plant_organ_measured: spathe
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = spathe: the spathe is a large bract enclosing an inflorescence.'
+- var_in: spathe_width
+  unit_in: mm
+  trait_name: flower_bract_width
+  plant_organ_measured: spathe
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = spathe: the spathe is a large bract enclosing an inflorescence.'
+- var_in: spikelet_length
+  unit_in: mm
+  trait_name: inflorescence_length
+  plant_organ_measured: spikelet
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = spikelet: a spikelet is the small inflorescence unit of grasses and sedges.'
 - var_in: stem_growth_habit
   unit_in: .na
   trait_name: stem_growth_habit
@@ -228,6 +689,38 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: stem_shape
+  unit_in: .na
+  trait_name: stem_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: stipule_length
+  unit_in: mm
+  trait_name: stipule_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: stipule_presence
+  unit_in: .na
+  trait_name: stipule_presence
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: stipule_width
+  unit_in: mm
+  trait_name: stipule_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
 - var_in: storage_organ
   unit_in: .na
   trait_name: storage_organ
@@ -500,6 +993,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: flower_opening_time
+  unit_in: .na
+  trait_name: flower_opening_time
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from Description, Phenology, Ecology or Notes statements of the time of day the flowers open (verbatim in value_description); closing times are not scored and hedged statements are recorded in the description only.'
 - var_in: flower_ovary_position
   unit_in: .na
   trait_name: flower_ovary_position
@@ -620,6 +1121,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: 'Scored from Phenology, Ecology, Notes or Habitat statements that flowering, fruiting or germination follows rainfall, fire, floods or similar (verbatim in value_description); hedged statements are recorded in the description only.'
+- var_in: flowering_predictability
+  unit_in: .na
+  trait_name: flowering_predictability
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from Phenology, Ecology or Notes statements that flowering is sporadic, erratic between years or synchronous among plants (verbatim in value_description); hedged statements are recorded in the description only.'
 - var_in: post_fire_flowering
   unit_in: .na
   trait_name: post_fire_flowering
@@ -670,6 +1179,14 @@ traits:
   methods: 'Measurement given in the taxon description (verbatim in value_description): a
     range is recorded as minimum and maximum values, a single measurement as a mean, a
     single count as a mode, "to X" as a maximum and "X or more" as a minimum.'
+- var_in: fruiting_cues
+  unit_in: .na
+  trait_name: flowering_cues
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from Phenology, Ecology, Notes or Habitat statements that fruiting follows rainfall, fire, floods or similar (verbatim in value_description), recorded as flowering cues; hedged statements are recorded in the description only.'
 - var_in: germination_cues
   unit_in: .na
   trait_name: germination_cues
@@ -732,6 +1249,38 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: 'Scored from Ecology or Notes statements that the plant tolerates or is killed by frost (verbatim in value_description).'
+- var_in: style_colour
+  unit_in: .na
+  trait_name: flower_style_colour
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: style_shape
+  unit_in: .na
+  trait_name: flower_style_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the taxon description (verbatim source terms in value_description).'
+- var_in: tepal_length
+  unit_in: mm
+  trait_name: flower_tepal_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: tepal_width
+  unit_in: mm
+  trait_name: flower_tepal_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum; parenthetical extremes are on measurement_range = extreme rows (not mapped).'
 - var_in: vegetative_reproduction_ability
   unit_in: .na
   trait_name: vegetative_reproduction_ability
@@ -1183,7 +1732,7 @@ traits:
   replicates: .na
   methods: 'Scored from sentences about the trunk, bole or tree (buttressed, plank buttresses -> buttressed; fluted; verbatim source terms in value_description).'
 - var_in: stem_count
-  unit_in: {count}
+  unit_in: '{count}'
   trait_name: stem_count
   entity_type: species
   value_type: value_type
@@ -1206,7 +1755,158 @@ traits:
   basis_of_value: measurement
   replicates: .na
   methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum.'
-substitutions: .na
+- var_in: extrafloral_nectaries
+  unit_in: .na
+  trait_name: extrafloral_nectaries
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the gland statements of the taxon description (verbatim source terms in value_description); the foliar
+    glands of Acacia and other legumes (on the phyllode margin, petiole or rachis) are extrafloral nectaries.
+- var_in: leaf_length_to_width_ratio
+  unit_in: '{dimensionless}'
+  trait_name: leaf_length_to_width_ratio
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
+    maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum.'
+- var_in: flower_colour_detailed
+  unit_in: .na
+  trait_name: flower_colour_detailed
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the flower, corolla and perianth colour words of the taxon description (verbatim in value_description):
+    the same words as flower_colour, mapped to the detailed colour levels, with the head colour of a compound (greenish yellow
+    -> yellow).'
+- var_in: fruit_surface_reflectivity
+  unit_in: .na
+  trait_name: fruit_surface_reflectivity
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the fruit surface words of the taxon description (shiny, dull, glaucous; verbatim in value_description).
+- var_in: leaf_secondary_vein_angle
+  unit_in: deg
+  trait_name: leaf_secondary_vein_angle
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Stated angle of the side (secondary, lateral) veins to the midrib in the taxon description ("lateral veins at 30-45
+    deg to the midrib", "side-veins about 45 deg to midrib"; verbatim in value_description); thresholds ("greater than 45
+    deg") are in the candidate leaf_secondary_vein_angle_categorical.
+- var_in: flower_stamen_length
+  unit_in: mm
+  trait_name: flower_stamen_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
+    maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum.'
+substitutions:
+- trait_name: leaf_secondary_vein_angle_categorical
+  find: acute
+  replace: less_than_45_degrees
+  match: word
+- trait_name: leaf_secondary_vein_angle_categorical
+  find: wide_angle
+  replace: greater_than_45_degrees
+  match: word
+- trait_name: flower_style_shape
+  find: hemispherical
+  replace: hemispheric
+  match: word
+- trait_name: flower_style_shape
+  find: cylindrical
+  replace: terete
+  match: word
+- trait_name: flower_petal_shape
+  find: elliptic
+  replace: elliptical
+  match: word
+- trait_name: flower_petal_shape
+  find: rhomboid
+  replace: rhomboidal
+  match: word
+- trait_name: flower_petal_shape
+  find: clavate
+  replace: spathulate
+  match: word
+- trait_name: fruit_shape
+  find: globose
+  replace: globoid
+  match: word
+- trait_name: fruit_shape
+  find: hemispherical
+  replace: hemispheric
+  match: word
+- trait_name: fruit_shape
+  find: turbinate
+  replace: obconical
+  match: word
+- trait_name: fruit_surface_texture
+  find: rugose
+  replace: wrinkled
+  match: word
+- trait_name: fruit_surface_texture
+  find: papillose
+  replace: bumpy
+  match: word
+- trait_name: fruit_surface_texture
+  find: tuberculate
+  replace: bumpy
+  match: word
+- trait_name: fruit_surface_texture
+  find: verrucose
+  replace: bumpy
+  match: word
+- trait_name: fruit_surface_texture
+  find: striate
+  replace: ribbed
+  match: word
+- trait_name: fruit_surface_texture
+  find: reticulate
+  replace: netted
+  match: word
+- trait_name: fruit_surface_texture
+  find: muricate
+  replace: spiny
+  match: word
+- trait_name: fruit_surface_texture
+  find: echinate
+  replace: spiny
+  match: word
+- trait_name: petiole_presence
+  find: sessile
+  replace: petiole_absent
+  match: word
+- trait_name: petiole_presence
+  find: petiolate
+  replace: petiole_present
+  match: word
+- trait_name: leaf_intramarginal_vein
+  find: present
+  replace: intramarginal_vein_present
+  match: word
+- trait_name: leaf_intramarginal_vein
+  find: absent
+  replace: intramarginal_vein_absent
+  match: word
+- trait_name: stipule_presence
+  find: present
+  replace: stipule_present
+  match: word
+- trait_name: stipule_presence
+  find: absent
+  replace: stipule_absent
+  match: word
 taxonomic_updates: .na
 exclude_observations: .na
 questions:
