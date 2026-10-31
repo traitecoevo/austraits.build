@@ -32,18 +32,24 @@ src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.c
 # (no copy-down), and its override / vetted CSVs live in CPBR_2026/raw.
 euclid_mode <- Sys.getenv("FOA_SOURCE") == "euclid"
 if (euclid_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/euclid_species_profiles.csv"
+# PlantNET mode (env FOA_SOURCE=plantnet; user 2026-10-31): the Flora of NSW profiles on PlantNET (plantnet_nsw_flora.csv: family,
+# genus, species and infraspecific profiles of every NSW family) into the long-format dataset NHNSW_2026. Same organ-led prose as FoA,
+# so the same family modes and genus / family copy-down apply; override / vetted CSVs live in NHNSW_2026/raw.
+plantnet_mode <- Sys.getenv("FOA_SOURCE") == "plantnet"
+if (plantnet_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/plantnet_nsw_flora.csv"
+own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
-raw_dir <- if (euclid_mode) "data/CPBR_2026/raw" else "data/ABRS_AtoM_2026/raw"
+raw_dir <- if (!is.na(own_id)) file.path("data", own_id, "raw") else "data/ABRS_AtoM_2026/raw"
 own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_2026", Myrtaceae = "ABRS_Myrtaceae_2026",
                  Proteaceae = "ABRS_Proteaceae_2026")
 # datasets written in long format (see "long format" below); ABRS_NtoZ_2026 since the second Orchidaceae batch (user's request,
 # 2026-10-22); ABRS_Proteaceae_2026 and ABRS_Asteraceae_2026 from the start (user, 2026-10-29)
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
-              "CPBR_2026")
-dataset_of <- function(fam) if (euclid_mode) rep("CPBR_2026", length(fam)) else
+              "CPBR_2026", "NHNSW_2026")
+dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
 families_done <- c("Acanthaceae", "Achariaceae", "Actinidiaceae", "Agapanthaceae", "Aizoaceae", "Akaniaceae", "Alismataceae",
@@ -154,6 +160,47 @@ fams <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_FAMILIES
 gens <- if (Sys.getenv("FOA_FAMILIES") != "") str_split(Sys.getenv("FOA_GENERA"), ",")[[1]] %>% .[. != ""] else genera_done
 
 d_all <- read_csv(src, show_col_types = FALSE, col_types = cols(.default = "c"), guess_max = 1e5)
+if (plantnet_mode) {
+  # names without authorities: "Correa baeuerlenii F.Muell." -> "Correa baeuerlenii", "Pimelea axiflora F.Muell. ex Meisn. subsp.
+  # axiflora" -> "Pimelea axiflora subsp. axiflora", "Abelia x grandiflora (Rovelli ex André) Rehder" -> "Abelia x grandiflora";
+  # hybrid formulae ("Banksia robur x oblongifolia") and phrase names ("Acacia sp. NSW Northern Tablelands (R.Coveny 2257) NSW
+  # Herbarium", the APC form) are kept as written
+  pn_name <- function(x) map_chr(x, function(n) {
+    if (str_detect(n, " sp\\. ") || str_detect(n, " group$")) return(n)
+    hf <- str_match(n, "^([A-Z][a-z-]+ [a-z][a-z-]+ x [a-z][a-z-]+)")
+    if (!is.na(hf[1])) return(hf[2])
+    m <- str_match(n, "^((?:x )?[A-Z][a-z-]+)(?: (x))? ([a-z][a-z-]+)")
+    if (is.na(m[1])) return(word(n, 1))
+    out <- paste(c(m[2], if (!is.na(m[3])) "x", m[4]), collapse = " ")
+    # informal variants in quotes ('Alstonia constricta "Pubescent form" F.Muell.', "Bertya tasmanica variant 'Fine-haired'",
+    # "Pomaderris andromedifolia A.Cunn. f. 'andromedifolia'") and phrase-name infraspecific taxa ("Acacia terminalis subsp. Glabrous
+    # form (M.Hancock 94) NSW Herbarium") are kept as written, without the authority (they were merged into the species before)
+    qv <- str_match(n, " (?:(subsp\\.|var\\.|f\\.|variant) )?(['\"][^'\"]+['\"])")
+    if (!is.na(qv[1])) return(paste(c(out, if (!is.na(qv[2])) qv[2], qv[3]), collapse = " "))
+    ph <- str_match(n, " (subsp\\.|var\\.|f\\.) ([A-Z].*)$")
+    if (!is.na(ph[1])) return(paste(out, ph[2], ph[3]))
+    # (hybrid subspecies: "Senna artemisioides subsp. x coriacea")
+    ir <- str_match(n, " (subsp\\.|var\\.|f\\.|nothosubsp\\.) ((?:x )?[a-z][a-z-]+)")
+    if (!is.na(ir[1])) out <- paste(out, ir[2], ir[3])
+    out
+  })
+  d_all <- d_all %>% rename(rank_pn = 1) %>%
+    transmute(scientific_name = ifelse(rank_pn %in% c("family", "genus"), word(taxon_name, 1), pn_name(taxon_name)),
+              rank = case_when(rank_pn %in% c("family", "genus", "species") ~ rank_pn, str_detect(scientific_name, " subsp\\. ") ~ "subspecies",
+                               str_detect(scientific_name, " var\\. ") ~ "variety", str_detect(scientific_name, " f\\. ") ~ "form",
+                               rank_pn == "infraspecific" ~ "variety", TRUE ~ "species"),   # (informal variants: "Bertya tasmanica variant 'Typical'")
+              family, url, Description,
+              # ("Flowering: spring and sporadically at other times", "July to December")
+              Phenology = ifelse(is.na(Flowering), NA, paste("Flowering", str_remove(Flowering, "^\\s*(?:[Ff]lowering:?|[Ff]lowers?(?: in)?)\\s+"))),
+              # "Distribution and occurrence" holds the habitat ("Grows in sclerophyll forest, from the Clyde R. district to Bega")
+              Habitat = `Distribution and occurrence`, Notes, `Common Name` = `Common name`, Author = `Text by`,
+              Biostatus = ifelse(coalesce(introduced, "") == "introduced", "Introduced", NA_character_),
+              Distribution = na_if(str_squish(paste0(ifelse(is.na(`NSW subdivisions`), "", paste0("NSW: ", `NSW subdivisions`)),
+                                                     ifelse(is.na(`Other Australian states`), "", paste0("; other states: ", `Other Australian states`)))), ""))
+  fams <- unique(na.omit(d_all$family)); gens <- character(0)
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
 if (euclid_mode) {
   fams <- "Myrtaceae"; gens <- character(0)
   # EUCLID columns in FoA form: the "Cultivated seedlings (measured at ca node 10): ..." text closing each description is the
@@ -209,6 +256,8 @@ d <- d_all %>%
   # (informal infrageneric groups filed as species: Grevillea "Acacioides Group", "Banksii Subgroup")
   # (not "Iris Louisiana Hybrid Group", a naturalised hybrid swarm)
   filter(!str_detect(scientific_name, "^[A-Z][a-z]+(?:-[A-Z][a-z]+)? (?:Group|Subgroup)$")) %>%
+  # (PlantNET: "Senna artemisioides group", an informal aggregate, likewise)
+  filter(!str_detect(scientific_name, "^[A-Z][a-z-]+ [a-z-]+ group$")) %>%
   mutate(Description = ifelse(str_detect(coalesce(Description, ""), "^\\s*Pending\\b"), NA, Description)) %>%
   filter(!is.na(Description) | !is.na(Phenology)) %>%
   arrange(family, scientific_name)
@@ -1572,7 +1621,7 @@ season_re <- "\\b((?:early|mid|mid-|late)[ -]?)?(spring|summer|autumn|winter)\\b
 season_months <- list(spring = 9:11, summer = c(12, 1, 2), autumn = 3:5, winter = 6:8)
 month_index <- function(m) match(str_sub(str_to_lower(m), 1, 3), str_to_lower(month.abb))
 cyc <- function(a, b) if (a <= b) a:b else c(a:12, 1:b)
-year_round <- "throughout the year|through the year|all year|year[- ]round|any time of (?:the )?year|all months|all seasons|every month"
+year_round <- "throughout (?:the )?year|through the year|all year|year[- ]round|any time of (?:the )?year|all months|all seasons|every month"
 months_from_text <- function(x) {
   if (is.na(x) || x == "") return(integer(0))
   if (str_detect(x, regex(year_round, ignore_case = TRUE))) return(1:12)
@@ -1680,7 +1729,7 @@ phenology_parse <- function(txt) {
     # "occasionally" row (user's choice)
     # (also "all year round, but mainly in spring", "all year, but predominantly July-December")
     # (and "throughout the year with peak in November-December", "year round, prolifically from c. November-March")
-    am <- str_match(s2, regex("\\b(?:(?:at )?any time(?: of (?:the )?year)?|all year(?: round| around)?|all months|year[- ]round|throughout the year),?\\s*(?:but\\s+)?(?:with (?:an? )?(?:slight |distinct |marked |strong )?)?(mainly|mostly|chiefly|usually|especially|particularly|primarily|predominantly|peak(?:s|ing)?|prolifically|most frequently|most commonly)\\s+(?:(?:in|from|during)\\s+)?(?:c\\.\\s*)?", ignore_case = TRUE))
+    am <- str_match(s2, regex("\\b(?:(?:at )?any time(?: of (?:the )?year)?|all year(?: round| around)?|all months|year[- ]round|throughout (?:the )?year),?\\s*(?:but\\s+)?(?:with (?:an? )?(?:slight |distinct |marked |strong )?)?(mainly|mostly|chiefly|usually|especially|particularly|primarily|predominantly|peak(?:s|ing)?|prolifically|most frequently|most commonly)\\s+(?:(?:in|from|during)\\s+)?(?:c\\.\\s*)?", ignore_case = TRUE))
     # (only when months or seasons follow: "all year round, most commonly in association with seasonal rainfall" is all year)
     if (!is.na(am[1]) && !str_detect(str_sub(s2, str_locate(s2, fixed(am[1]))[1, 2] + 1), regex(paste0(mon_pat, "|spring|summer|autumn|winter|wet season|dry season"), ignore_case = TRUE))) am[1] <- NA
     if (!is.na(am[1])) {
@@ -2210,7 +2259,8 @@ extract_one <- function(r, group_filter = TRUE) {
   addc("parasitic", habit_txt, parasitic_dict)
 
   # heights / widths (habit units)
-  h_other <- "articles?|pseudostems?|trunks?|stems?|branches|branchlets|pneumatophores?|leaves|scapes?|inflorescences?|flowering stems?|culms?|roots?|spines?|flowers?|rhizomes?|fronds?|lignotubers?|tubers?"
+  # ("Root-suckering shrub to small tree to 8 m high": "root-" is no root organ)
+  h_other <- "articles?|pseudostems?|trunks?|stems?|branches|branchlets|pneumatophores?|leaves|scapes?|inflorescences?|flowering stems?|culms?|roots?(?!-)|spines?|flowers?|rhizomes?|fronds?|lignotubers?|tubers?"
   ht <- m_first(habit, "high|tall|in height", h_other)
   # "Shrub to 40 cm", "Tree to 15 m, glabrous", "Solitary palm to 20 m": a bare size right after the growth-form noun is the height
   if (is.null(ht) && length(habit)) {
@@ -3889,6 +3939,28 @@ extract_one <- function(r, group_filter = TRUE) {
       if (!is.na(gm[1])) addn(paste0(gp, "_length"), meas_of(gm[2]), unmark(gm[1]))
     }
   }
+  # ---- a height given for the scapes, inflorescences, trunk, culms, branches or branchlets in the first sentence (2026-10-31, PlantNET),
+  # only when no other rule recorded any height (so it runs last): Craspedia "Herb with a single scape 9-15 cm high" and Cuphonotus "Annual herb with branched
+  # inflorescences to 25 cm high" are the height when flowering; palms / cycads "Short palm, with sturdy trunk to 2 m tall" the height on a
+  # trunk row; Epacris "Slender procumbent to ascending shrub with branches to 100 cm high", Arundinella "Tufted perennial with erect,
+  # cane-like culms to 3 m high" the plant's height (also when flowering, for grasses); not Bruguiera "pneumatophores ... to 45 cm high",
+  # nor leaf or flower sizes between the noun and the number
+  # (not orchids: their flower-stem heights are assigned after this step, from the terrestrial orchids' inflorescence lengths)
+  if (!orchid_mode && !any(map_lgl(recs, ~ any(.x$trait %in% c("plant_height", "plant_height_reproductive", "plant_height_climbing_plant")))) && !is.na(desc)) {
+    s1h <- mark_extremes(str_extract(desc, "^[^.]*") %||% "")
+    hm <- str_match(s1h, rx(paste0("\\b(scapes?|inflorescences?|flowering stems?|trunks?|culms?|stems?|branches|branchlets)\\b",
+                                   "(?:(?!\\b(?:leaves|leaf|roots?|pneumatophores?|flowers?|fruits?|spines?|hairs?|rhizomes?|tubers?)\\b)[^;|0-9]){0,30}?(", meas, ")\\s*(?:high|tall)\\b")))
+    if (!is.na(hm[1])) {
+      ho <- str_to_lower(hm[2]); htx <- paste0("[", ho, "] ", unmark(hm[1]))
+      if (str_detect(ho, "scape|inflorescence|flowering")) addn("plant_height_reproductive", meas_of(hm[3]), htx, scale = 1 / 1000)
+      else if (str_detect(ho, "trunk")) addn("plant_height", meas_of(hm[3]), htx, "plant_organ_measured", "trunk", scale = 1 / 1000)
+      else {
+        addn(if (is_climber) "plant_height_climbing_plant" else "plant_height", meas_of(hm[3]), htx, scale = 1 / 1000)
+        if (grass_mode && str_detect(ho, "culm")) addn("plant_height_reproductive", meas_of(hm[3]), htx, scale = 1 / 1000)
+      }
+    }
+  }
+
   # Asteraceae: the bracts of the head are its involucral bracts ("involucre c. 3 mm long; bracts 8-12")
   if (asteraceae_mode && !any(map_lgl(recs, ~ any(.x$trait %in% "involucral_bract_count"))))
     recs <- map(recs, ~ .x %>% mutate(trait = str_replace(trait, "^bract_count$", "involucral_bract_count")))
@@ -4640,8 +4712,15 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
   for (id in sort(unique(dataset_of(out_df$family)))) {
     if (id %in% long_ids) {
       df <- long_of(main$taxon_name[dataset_of(main$family) == id])
-      # (CPBR_2026: the profile links are EUCLID's, and context columns with no values are left out)
-      if (euclid_mode) df <- df %>% rename(euclid_url = foa_url) %>% select(!any_of(ctx[map_lgl(ctx, ~ all(is.na(df[[.x]]) | df[[.x]] == ""))]))
+      # (CPBR_2026, NHNSW_2026: the profile links are EUCLID's / PlantNET's, and context columns with no values are left out)
+      if (euclid_mode) df <- df %>% rename(euclid_url = foa_url)
+      # (NHNSW_2026: the profile link, repeated on every row, was 44% of the file and took it to the 100 MB GitHub limit: it is written
+      # once per taxon to raw/taxon_urls.csv instead)
+      if (plantnet_mode) {
+        write_csv(df %>% distinct(taxon_name, plantnet_url = foa_url), file.path("data", id, "raw", "taxon_urls.csv"), na = "")
+        df <- df %>% select(-foa_url)
+      }
+      if (!is.na(own_id)) df <- df %>% select(!any_of(ctx[map_lgl(ctx, ~ all(is.na(df[[.x]]) | df[[.x]] == ""))]))
       dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
       write_csv(df, file.path("data", id, "data.csv"), na = "")
       write_candidates_long(df, file.path("data", id, "raw", "candidate_traits.csv"), id)

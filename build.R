@@ -1189,6 +1189,10 @@ NHNSW_2024_config <- dataset_configure("data/NHNSW_2024/metadata.yml", definitio
 NHNSW_2024_raw <- dataset_process("data/NHNSW_2024/data.csv", NHNSW_2024_config, schema, resource_metadata, unit_conversions)
 NHNSW_2024 <- dataset_update_taxonomy(NHNSW_2024_raw, taxon_list)
 
+NHNSW_2026_config <- dataset_configure("data/NHNSW_2026/metadata.yml", definitions)
+NHNSW_2026_raw <- dataset_process("data/NHNSW_2026/data.csv", NHNSW_2026_config, schema, resource_metadata, unit_conversions)
+NHNSW_2026 <- dataset_update_taxonomy(NHNSW_2026_raw, taxon_list)
+
 Nicholson_2017_config <- dataset_configure("data/Nicholson_2017/metadata.yml", definitions)
 Nicholson_2017_raw <- dataset_process("data/Nicholson_2017/data.csv", Nicholson_2017_config, schema, resource_metadata, unit_conversions)
 Nicholson_2017 <- dataset_update_taxonomy(Nicholson_2017_raw, taxon_list)
@@ -2229,6 +2233,7 @@ austraits_raw <- austraits::bind_databases(
   NHNSW_2022,
   NHNSW_2023,
   NHNSW_2024,
+  NHNSW_2026,
   Nicholson_2017,
   Nicolle_2006,
   Niinemets_2009,

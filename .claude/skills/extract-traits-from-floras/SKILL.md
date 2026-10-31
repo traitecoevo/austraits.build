@@ -480,6 +480,31 @@ Edit THIS copy, in the flora worktree (`~/GitHub/austraits.build-flora-extractio
 not the main checkout's: the user switches branches in the main checkout, and its uncommitted skill edits get stashed
 (user 2026-10-30).
 
+## PlantNET Flora of NSW (NHNSW_2026, user 2026-10-31)
+
+- **Whole file at once** (user's choice), dataset id NHNSW_2026, long format. Do NOT look at NHNSW_2022 / NHNSW_2023 while
+  extracting: they are the comparison case afterwards (user).
+- **Same parser, PlantNET mode:** `FOA_SOURCE=plantnet FOA_CORES=12 Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R` (~14 min)
+  reads `data_extra/plantnet_nsw_flora.csv` (family, genus, species and infraspecific profiles of all NSW families; Flora of NSW
+  prose, like FoA), so the family modes and genus / family copy-down apply. Fields: Description; Flowering → Phenology
+  ("Flowering spring to summer"); "Distribution and occurrence" → Habitat; Notes; Text by → profile author; introduced → biostatus.
+  Overrides and vetted ecology in `NHNSW_2026/raw`. Metadata first created by `ignore/jobs/pn1/make_meta.py`, then add-only.
+- **Names** lose their authorities ("Correa baeuerlenii F.Muell." → Correa baeuerlenii); hybrid formulae, hybrid subspecies
+  ("subsp. x coriacea"), phrase names (APC form with voucher and herbarium) and informal variants in quotes ('Alstonia constricta
+  "Pubescent form"', "Bertya tasmanica variant 'Typical'") are kept as written; "Senna artemisioides group" (an informal aggregate)
+  is left out, as FoA's informal groups.
+- **File size:** the profile URL repeated on every row was 44% of data.csv and took it to the 100 MB limit; it is written once per
+  taxon to `raw/taxon_urls.csv` instead.
+- **Heights (all sources, 2026-10-31):** when no plant height is found, a height on the scapes or inflorescences in the first
+  sentence ("Herb with a single scape 9-15 cm high") is plant_height_reproductive; on a palm / cycad trunk ("sturdy trunk to 2 m
+  tall") plant_height on a trunk row; on culms, stems, branches or branchlets ("with branches ascending to 50 cm high") the plant
+  height. This runs last, only when no other height rule recorded anything, and not for orchids (their flower-stem heights are
+  assigned later, from the inflorescence length): run earlier, it pre-empted the scape, palm-trunk, fern-frond and orchid rules.
+  "Root-suckering" is no root organ.
+- **Ecology vetted** from "Distribution and occurrence": suckering / stolons / rhizomes → clonal; "forms colonies" for perennial ferns,
+  orchids and herbs only (not annuals, biennials or palms); fire, dispersal (seeds spread by birds → dispersers birds + endozoochory;
+  tumbleweed), pollination and cleistogamy; hedged with the hedge word. dispersers levels are plural (birds, mammals).
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`
