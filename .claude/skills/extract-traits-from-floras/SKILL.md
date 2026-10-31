@@ -504,6 +504,12 @@ not the main checkout's: the user switches branches in the main checkout, and it
   axil" is per axil); from Poaceae, stem / culm `internode_length`. Kept in their mode: Acacia raceme axes and spike widths, the
   papilionaceous standard / wing / keel rows, pleurogram, standard flare, pappus counts, habit-sentence suckering (vetted elsewhere).
   Sepal and petal widths were already general (the organ-size table); the orchid / legume rules only add entity rows.
+- **Organs opened to other groups (batch 3):** sedges, restiads and other graminoids (`gram_families`: Cyperaceae, Restionaceae,
+  Centrolepidaceae, Anarthriaceae, Ecdeiocoleaceae, Juncaceae ...) have glumes, awns, rachilla, sheaths, ligules and auricles as
+  organs, as Poaceae (glume_*, leaf_sheath_*, ligule_*, awn_length, glume vein count and awn presence, inflorescence branches);
+  restiad male / female spikelets keep their entity_measured rows. Gingers (`ginger_families`) have the leaf sheath, ligule and
+  auricles. Lemma, palea, lodicule and callus stay grass-only words. Involucral bracts of heads in any family are counted as
+  `involucral_bract_count` (Pimelea "involucral bracts 4-6"), separate from `bract_count`.
 - **`flower_colour_detailed`** (traits.yml): the same flower colour words as `flower_colour`, mapped to the detailed levels
   (white, cream, yellow, gold, orange, red, maroon, reddish_brown, brown, pink, magenta, purple, mauve, lilac, violet, indigo,
   blue, turquoise, green, black, grey), keeping the head colour of a compound.

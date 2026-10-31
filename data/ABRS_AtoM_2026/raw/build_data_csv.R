@@ -226,6 +226,8 @@ if (Sys.getenv("FOA_FAMILIES") == "") d <- d %>% group_by(family) %>% filter(!(f
 # ---------------------------------------------------------------- source typos / fixes
 fix_text <- tribble(
   ~taxon, ~find, ~replace,
+  # "fertile glumes 11–20 m long" in spikelets 12–22 mm long (mm intended; flagged 2026-10-31)
+  "Ammothryon grandiflorum", "fertile glumes 11–20 m long", "fertile glumes 11–20 mm long",
   # "Tree or shrub to 2-7 mm high" (2-7 m intended; a mangrove tree)
   "Avicennia integra", "2–7 mm high", "2–7 m high",
   # "Prostate" for prostrate (family description; kept for completeness)
@@ -811,6 +813,13 @@ casuarina_mode <- FALSE
 orchid_mode <- FALSE
 legume_mode <- FALSE
 grass_mode <- FALSE
+# sedges, restiads and other graminoids: glumes, awns, rachilla, sheaths and ligules are organs as in Poaceae (user 2026-10-30: a trait
+# proposed in any group is checked for all other taxa); gingers and allies: the leaf sheath, ligule and auricles
+gram_families <- c("Cyperaceae", "Restionaceae", "Centrolepidaceae", "Anarthriaceae", "Ecdeiocoleaceae", "Juncaceae", "Flagellariaceae",
+                   "Joinvilleaceae", "Hydatellaceae", "Typhaceae", "Xyridaceae")
+ginger_families <- c("Zingiberaceae", "Costaceae", "Marantaceae", "Musaceae", "Cannaceae", "Heliconiaceae", "Strelitziaceae")
+gram_mode <- FALSE
+ginger_mode <- FALSE
 # Asteraceae (user 2026-10-29): the capitulum (head) is the inflorescence; floret counts are flowers_per_inflorescence on
 # entity_measured rows naming the floret type (ray / disc / female / male ... florets)
 asteraceae_mode <- FALSE
@@ -877,6 +886,16 @@ classify_token <- function(tok) {
                                   "rachillas?(?: extensions?)?|coma|(?:basal |leaf |upper |lower )?sheaths?|ligules?|auricles?)\\b")))
     if (!is.na(m[1])) {
       # ("lemma lobes 0-0.2 mm long", "glume apex acute": a part of the organ, not the organ's own size)
+      pm <- str_match(str_sub(tok, nchar(m[1]) + 1), rx("^\\s+(lobes?|teeth|apex|apices|tips?|margins?|keels?|bases?|surfaces?|veins?|nerves|hairs|indumentum)\\b"))
+      if (!is.na(pm[1])) return(list(kind = "part", sec = "grass_part", part = str_to_lower(pm[2]), subj = str_to_lower(m[2])))
+      return(list(kind = "organ", sec = "grass_part", part = NA_character_, subj = str_to_lower(m[2])))
+    }
+  }
+  if (gram_mode || ginger_mode) {
+    gq <- "(?:(?:male|female|lower|upper|first|second|fertile|sterile|lowest|basal|terminal|lateral|central|median|outer|inner) )?"
+    m <- str_match(tok, rx(paste0("^(?:the )?(", if (gram_mode) paste0(gq, "(?:glumes?|awns?)|rachillas?|") else "",
+                                  "(?:basal |leaf |culm |upper |lower )?sheaths?|ligules?|auricles?)\\b")))
+    if (!is.na(m[1])) {
       pm <- str_match(str_sub(tok, nchar(m[1]) + 1), rx("^\\s+(lobes?|teeth|apex|apices|tips?|margins?|keels?|bases?|surfaces?|veins?|nerves|hairs|indumentum)\\b"))
       if (!is.na(pm[1])) return(list(kind = "part", sec = "grass_part", part = str_to_lower(pm[2]), subj = str_to_lower(m[2])))
       return(list(kind = "organ", sec = "grass_part", part = NA_character_, subj = str_to_lower(m[2])))
@@ -999,7 +1018,7 @@ units_of <- function(desc) {
           sec <- cur$sec; part <- cur$part; subj <- cur$subj
         }
         # (Poaceae: "Spikelets bisexual" says nothing about the glumes / lemma that follow; male / female spikelet parts keep their entity)
-        ent <- if (grass_mode && identical(sec, "grass_part") && str_detect(coalesce(subj, ""), rx(paste0("^", grass_qual, " ")))) str_remove(subj, "s$") else
+        ent <- if ((grass_mode || gram_mode) && identical(sec, "grass_part") && str_detect(coalesce(subj, ""), rx(paste0("^(?:", grass_qual, "|male|female|outer|inner) ")))) str_remove(subj, "s$") else
           if (grass_mode && identical(sec, "grass_part") && str_detect(coalesce(entity, ""), "^(?:bisexual|hermaphrodite)")) NA_character_ else entity
         rows[[length(rows) + 1]] <- tibble(si = si, ci = ci, ti = ti, sec = sec, part = part, subj = subj, entity = ent, text = tk)
       }
@@ -1021,6 +1040,12 @@ unit_text <- function(u, secs, parts = NA, subj_re = NULL, entity = "any") {
   x %>% group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
 }
 join_units <- function(x) if (!length(x)) NA_character_ else paste(x, collapse = " | ")
+# all clauses of these sections plus the grass-type organ clauses (sec grass_part) whose organ matches gp_re, in text order
+unit_text_gp <- function(u, secs, gp_re) {
+  x <- u %>% filter(sec %in% secs | (sec %in% "grass_part" & str_detect(coalesce(subj, ""), rx(gp_re))))
+  if (!nrow(x)) return(character(0))
+  x %>% group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
+}
 
 # ---------------------------------------------------------------- vocabularies
 growth_form_dict <- c(
@@ -1416,7 +1441,7 @@ grass_other <- c("glumes?", "lemmas?", "paleas?", "paleae", "ligules?", "lodicul
                  "spikelets?", "caryops[ie]s", "grains?", "auricles?", "bristles?")
 gen_strip_other <- function(ok) {
   own <- str_split(gen_own[[ok]] %||% "", "\\|")[[1]]
-  oth <- setdiff(c(gen_other, if (grass_mode) grass_other), own)
+  oth <- setdiff(c(gen_other, if (grass_mode || gram_mode || ginger_mode) grass_other), own)
   re <- paste0("\\b(?:(?:in|by|within|with|on|from|than|to|as|of|and|exceeding|enclosing|enclosed) )?(?:(?:the|a|an) )?(?:[a-z-]+ ){0,2}(?:", paste(oth, collapse = "|"), ")\\b[^,;|]*")
   function(x) str_remove_all(x, re)
 }
@@ -1493,7 +1518,9 @@ gen_counts <- tribble(
   "style_count", "style|ovary", "styles?",
   "stigma_count", "stigma|style|ovary", "stigmas?|stigmatic lobes|style branches|style-branches",
   "ovule_count", "ovary|carpel", "ovules?",
-  "bract_count", "bract|involucral_bract", "bracts?",
+  "bract_count", "bract", "bracts?",
+  # (involucral bracts of heads in any family, Pimelea, Isopogon: "involucral bracts 4-6"; all taxa since 2026-10-30)
+  "involucral_bract_count", "involucral_bract", "(?:involucral )?bracts?",
   "bracteole_count", "bracteole", "bracteoles?|prophylls?")
 # sizes for organs with no existing length / width trait: <trait prefix> = organ, nouns excluded from "other organ" checks
 gen_sizes <- tribble(
@@ -1801,6 +1828,8 @@ extract_one <- function(r, group_filter = TRUE) {
   orchid_mode <<- fam == "Orchidaceae"
   legume_mode <<- fam == "Fabaceae"
   grass_mode <<- fam == "Poaceae"
+  gram_mode <<- fam %in% gram_families
+  ginger_mode <<- fam %in% ginger_families
   asteraceae_mode <<- fam == "Asteraceae"
   trt <- pick_treatment(r[["Description"]])
   desc <- dehedge(prep(trt$text))
@@ -2975,6 +3004,8 @@ extract_one <- function(r, group_filter = TRUE) {
   # ---- flowers (sizes per entity: male / female flowers on their own rows)
   ents <- unique(u$entity[!is.na(u$entity)])
   if (grass_mode) ents <- ents[!str_detect(ents, rx(paste0("^", grass_qual, " ")))]
+  # (sedges, restiads: "male glume", "lower glume" are glume entities, measured in the organ loop, not flowers)
+  if (gram_mode) ents <- ents[!str_detect(ents, rx("\\b(?:glume|awn)$"))]
   for (en in c(NA, ents)) {
     uu <- if (is.na(en)) u %>% filter(is.na(entity)) else u %>% filter(entity == en)
     ct <- if (is.na(en)) c(NA, NA) else c("entity_measured", paste(str_replace(en, "staminate", "male") %>% str_replace("pistillate", "female"), if (asteraceae_mode) "florets" else "flowers"))
@@ -3432,7 +3463,7 @@ extract_one <- function(r, group_filter = TRUE) {
   if (fern_mode) u_g <- u_g %>% mutate(okey = if_else(okey == "indusium", "sorus_indusium", okey))
   for (en in c(NA, unique(u_g$entity[!is.na(u_g$entity)]))) {
     ug <- if (is.na(en)) u_g %>% filter(is.na(entity)) else u_g %>% filter(entity == en)
-    ct <- if (is.na(en)) c(NA, NA) else if (grass_mode && str_detect(en, rx(paste0("^", grass_qual, " ")))) c("entity_measured", en) else
+    ct <- if (is.na(en)) c(NA, NA) else if ((grass_mode && str_detect(en, rx(paste0("^", grass_qual, " ")))) || (gram_mode && str_detect(en, rx("\\b(?:glume|awn)$")))) c("entity_measured", en) else
       if (asteraceae_mode && str_detect(en, "bracts$")) c("entity_measured", en) else
       c("entity_measured", paste(str_replace(en, "staminate", "male") %>% str_replace("pistillate", "female"), if (asteraceae_mode) "florets" else "flowers"))
     if (!nrow(ug)) next
@@ -3516,7 +3547,7 @@ extract_one <- function(r, group_filter = TRUE) {
     }
     # Poaceae: vein counts of glumes, lemma and palea ("1-veined", "3-5-nerved"); awns per lemma ("3-awned"); awned or awnless
     # (lemma, glumes); the awn column / bristle measured inside the awn clause ("awn 30-70 mm long, with column 8-15 mm long")
-    if (grass_mode) {
+    if (grass_mode || gram_mode) {
       gtx <- function(oks) ug %>% filter(okey %in% oks) %>% group_by(unit) %>% summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% pull(t)
       # (the rachilla extension beyond the floret, Lachnagrostis "rachilla extension c. 1 mm long": candidate rachilla_extension_length)
       rx_m <- str_match(mark_extremes(join_units(gtx("rachilla")) %||% ""), rx(paste0("\\bextensions?\\b[^,;|]{0,20}?(", meas, ")\\s*long")))
@@ -3859,7 +3890,8 @@ extract_one <- function(r, group_filter = TRUE) {
     }
   }
   # Asteraceae: the bracts of the head are its involucral bracts ("involucre c. 3 mm long; bracts 8-12")
-  if (asteraceae_mode) recs <- map(recs, ~ .x %>% mutate(trait = str_replace(trait, "^bract_count$", "involucral_bract_count")))
+  if (asteraceae_mode && !any(map_lgl(recs, ~ any(.x$trait %in% "involucral_bract_count"))))
+    recs <- map(recs, ~ .x %>% mutate(trait = str_replace(trait, "^bract_count$", "involucral_bract_count")))
 
   recs <- bind_rows(recs)
   # ---- verbatim text columns for the main row
@@ -3870,9 +3902,11 @@ extract_one <- function(r, group_filter = TRUE) {
     common_name = na_if_empty(r[["Common Name"]]), biostatus = na_if_empty(r[["Biostatus"]]),
     profile_author = na_if_empty(r[["Author"]]), description_treatment_used = trt$used,
     habit_description = habit_txt, bark_description = bark_txt, stem_description = stem_txt, underground_organ_description = under_txt,
-    leaf_description = collapse_text(c(join_units(unit_text(u, c("leaf", "lamina", "petiole", "leaflet", "stipule"), parts = "any"))), " | "),
+    # (the grass-type organs keep their verbatim text: leaf sheath, ligule and auricles with the leaf; glumes, lemma, palea, awns ...
+    # with the flower; 2026-10-31, they were in no text column)
+    leaf_description = collapse_text(c(join_units(unit_text_gp(u, c("leaf", "lamina", "petiole", "leaflet", "stipule"), "sheath|ligule|auricle"))), " | "),
     inflorescence_description = join_units(unit_text(u, c("inflorescence", "spadix_part", "peduncle", "bract", "pedicel"), parts = "any")),
-    flower_description = join_units(unit_text(u, c("flower", "bud", "calyx", "corolla", "androecium", "gynoecium"), parts = "any")),
+    flower_description = join_units(unit_text_gp(u, c("flower", "bud", "calyx", "corolla", "androecium", "gynoecium"), "^(?!.*(?:sheath|ligule|auricle))")),
     fruit_description = join_units(unit_text(u, c("diaspore", "fruit"), parts = "any")), seed_description = join_units(unit_text(u, "seed", parts = "any")),
     cone_description = join_units(unit_text(u, "cone", parts = "any")),
     phenology_text = ph_txt,
