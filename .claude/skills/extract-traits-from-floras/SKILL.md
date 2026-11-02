@@ -54,14 +54,34 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   numeric traits one `<trait>_description` per trait with the verbatim measurement.
 - **Never drop parenthetical extremes.** "(3.7–) 10 (–30) m", "2–4 (rarely 6) mm": typical
   range in `_min`/`_max`, extremes in `_extreme_min`/`_extreme_max` (unmapped for now).
-- **Genus and family copy-down (FoA-style treatments)**: a categorical value stated singly and
-  unqualified in the genus (else family) description is copied to member taxa silent on that
-  trait (`trait_scoring_method` = `inferred_from_genus` / `inferred_from_family`). Drop
-  sentences scoped to some species ("most species", "or introduced … species") and segments
-  with commonness words first, and segments naming a genus in brackets ("(Hydrocleys)"). A
-  statement counts only if it names exactly one term, counting terms with no level ("flat,
-  terete or triquetrous" is not "all terete"). Copy only if every member taxon that describes
-  the trait itself includes the value. Never copy numbers.
+- **Genus and family copy-down (FoA-style treatments)**: a categorical value stated singly in
+  the genus (else family) description is the group's default and is copied to member taxa silent
+  on that trait (`trait_scoring_method` = `inferred_from_genus` / `inferred_from_family`). Drop
+  sentences scoped to some species ("most species", "or introduced … species") first, and
+  segments naming a genus in brackets ("(Hydrocleys)"). A statement counts only if it names
+  exactly one term, counting terms with no level ("flat, terete or triquetrous" is not "all
+  terete"). Never copy numbers.
+  - **Species descriptions name only the exceptions (user 2026-10-31)**, as for terrestrial vs
+    aquatic: a member taxon that scores the trait itself keeps its own value, and a single
+    contradicting member does not stop the copy to the silent members (Hibbertia "Fruit a
+    follicle" is copied although H. spanantha says "capsule"). **Majority veto (user's choice):**
+    the copy is blocked only when at least 2 reporting members contradict the group value and
+    they outnumber those that agree: that is usually a misread of the group description
+    (Dampiera "usually blue …, rarely red, pink …" → pink; Ficus "woody endosperm"). Lists whose
+    alternatives belong to other traits ("creeping rhizome, annually renewed tuber or thickened
+    rootstocks"; "simple, pinnatifid, pinnate or bipinnate") are not caught by the veto: add them to
+    `copydown_exclude`, and read every new copy-down reaching ≥40 taxa after a build.
+  - **Hedged group statements are copied** as a plain value (no commonness_qualifier; the
+    `inferred_from_*` method and the "[family description] …" text carry the source):
+    "Fruit usually a capsule" (Orchidaceae), "Fruit mostly a caryopsis …, rarely a nut, berry,
+    or an utricle" (Poaceae) → capsule / caryopsis. Copied hedges: usually, mostly, mainly,
+    generally, commonly, typically, predominantly, normally, chiefly. Not "often" /
+    "frequently" (= many members), and the rare alternatives ("rarely a nut") are not copied
+    and do not make the trait variable. In the script these hedge words are removed from the
+    group text before its segment filter ("Fruit usually a capsule" → "Fruit a capsule"), and a
+    rare word carries across a fruit-type list as across a colour list ("rarely a nut, berry, or
+    an utricle"). A hedged word often belongs to another organ ("mesocarp usually fleshy", "keel
+    usually green", "hermaphroditic (functionally unisexual)"): read the new large copy-downs.
 - **Terms with no AusTraits level are still recorded** (e.g. sagittate, emarginate, connate)
   in `_description`, with the mapped column left blank, so they can be mapped later.
 - Corolla length → `flower_length` when the flower itself isn't measured (user's choice).
@@ -205,7 +225,8 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
     wasp, or Pterostylis → fungus gnat. Leave them blank.
   - Don't fill "nearly universal" genus traits across species (tuberous geophyte, perennial,
     orchid mycorrhiza) unless the text says so for that taxon.
-- **Genus → species copy-down only for unhedged universal statements.** A genus sheet sentence
+- **Genus → species copy-down only for unhedged universal statements** (genus *web fact sheets*, e.g. WA Orchids; FoA /
+  PlantNET genus and family descriptions follow the copy-down rule under Principles instead). A genus sheet sentence
   like "Didymoplexis are leafless, non-green and saprophytic" or "Habenaria species have an
   ovoid tuber" may be copied to the genus's species, and only where the species sheet is
   silent. Never copy hedged statements:
@@ -568,6 +589,97 @@ not the main checkout's: the user switches branches in the main checkout, and it
 - The FoA scrape loses text after a "<" ("branches <8 cm diameter smooth" → "branches Juvenile growth …"; ~17–29 profiles,
   mostly eucalypts): a scraper issue, reported to the user.
 
+## Fixes from the NHNSW_2022 / 2023 comparison (all sources, 2026-10-31)
+
+Compared NHNSW_2026 with the hand-curated NHNSW_2022 / 2023 after scraping (not before). Where they differ, the 2026 value was
+usually right (the old datasets read "c. 10 cm" fruit as the stalk / style / beak beside it). Real 2026 gaps, now fixed:
+- Leaf types "uppermost / lowermost / lowest / middle / median leaves" get their own entity_measured rows (upper_leaf,
+  lower_leaf, middle_leaf), like basal / cauline.
+- Lobation: lobes described in their own clause ("with 2-9 acute lobes") → lobed; lyrate → lobed; "deeply divided / parted /
+  partite / pinnatifid / bipinnatifid / pinnatisect" → lobed_deep. Not a notched apex ("bilobed at apex"), not ferns.
+- 1-foliolate (compound) leaves: margin terms of the lamina are scored.
+- Lamina posture from "upper / adaxial surface flat / concave / convex".
+- Herbs (from the life-history words) are woodiness herbaceous (trait_scoring_method inferred_from_life_history).
+- Outside ferns, a rhizome clause or "rhizomatous" habit → stem_growth_habit rhizomatous.
+- Height: "Shrub, 20-100 cm, occasionally to 180 cm high" (no dimension word on the typical range) → 0.2-1 m typical + 1.8 m
+  occasionally; "to 0.5 m high, occasionally erect and to 2 m high" → a second, occasional height.
+- Leaf width: "6-50 mm wide, lamina pinnatisect with the undivided part of lamina 1-2 mm wide" → 6-50 mm (the undivided part /
+  central part is not the leaf); a leaf-unit width is used when the lamina unit gives only a length.
+- "up to 5 or more cm wide" is read as "5 cm or more".
+- New traits for every taxon: `petiole_width` ("petiole 2-6 mm long, 1-2 mm wide") and `leaf_pendulousness` (only from the
+  leaf clause naming hanging leaves; an erect / spreading alternative in that clause → not_pendulous; unscored otherwise).
+Differences that are 2026 conventions, not gaps: leaflet / pinna sizes go to leaflet_* traits (the old datasets put them under
+leaf_* with an entity). (Fern rhizomes as storage organs: reinstated 2026-11-01, see below.) The old datasets' extra fruit types (Pterostylis capsule, Poa
+caryopsis, Hibbertia follicle) led to the copy-down change under Principles (hedged group statements copied; members' own
+values no longer block the copy).
+
+## Rules from the NHNSW taxon-by-taxon review (user 2026-11-01)
+
+- **Not copied down from genus / family** (they vary between species): leaf_lobation, leaf_margin, leaf_margin_posture,
+  leaf_lamina_posture, stem_growth_habit.
+- **Fern rhizome and caudex are storage organs** (storage_organ rhizome / caudex), as in NHNSW_2023 (reinstated).
+- Storage organs: "tuberous corm" = corm; "fleshy tuberous rhizome", "rhizome ..., tuberous" = rhizome_fleshy; tubers on the
+  roots ("roots ... tuberous", "roots ending in tubers", "taproot ... tuberous", "tubers on roots") = root_tuber; tubers on
+  rhizomes = stem_tuber; a bulbous culm / stem base is not a bulb; "bulbs and bulbils absent" is no bulb; "rhizomed" = rhizome;
+  "Rhizome 7-18 mm thick, woody" = rhizome_woody.
+- plant_photosynthetic_organ leaf: a taxon is leafy if any own leaf character is scored (count, lobation, posture, margin,
+  arrangement), not only a size or shape; the leafless / scale-leaf test reads the habit, stem and leaf text only (not
+  "leafless racemes", "flowers subtended by scale leaves") and ignores partial leaflessness ("basal leaves absent", "leafless
+  in the lower half", "sometimes ± leafless", "leafless in drought").
+- Leaf types with two modifiers: "Upper stem leaves", "Lower stem leaves", "Mid-stem and upper-stem leaves", "Mid-stem leaves"
+  are leaf units (upper_leaf / lower_leaf / middle_leaf).
+- Margin posture: a posture word in the unit after the margin unit is the margin's ("margins entire, revolute"); compound-leaf
+  margins in the leaf's own unit count ("Leaves 1-foliolate ...; margins often crenate"); "plane" = flat, "crinkled" = undulate.
+- Lobation also from margin clauses ("margins entire or shallowly lobed"); "entire or with ... lobes", "entire to
+  pinnatisect" add unlobed.
+- Stem habit: postures of hairs are not stem habits ("stems with spreading ... hairs"); "tussock-forming" = caespitose;
+  "with loose tufts" = tufted. "stem-clasping" does not start a stem clause.
+- Seed texture also from a separate "surface ..." / "testa ..." clause; nouns count (ribs, ridges, pits, tubercles, papillae).
+- Sizes: "A-B cm, rarely to C cm long/wide/high" keeps the typical range; "A-B (rarely to C m) tall" (unit in the bracket);
+  "to 20 cm long and wide" gives the width too; "10-45 X 1-4 cm"; "c.2mm"; "3.5-6.5 cm in diam."; "2-7 cm long on stalks
+  2-5 cm long" is the fruit's (a preposition before the next organ); "skin / rind / valves ... thick" is not the fruit's
+  height; "Multiple / Individual fruit", "Outer / Ray / Disc achenes", "Female cones", "winged seeds" are fruit / seed
+  clauses; a globose fruit "3-4 mm wide / across" is its diameter (length when no length is given).
+- An infraspecific description that opens with diagnostic organs ("Peduncles glabrous ... Shrub to 2 m high") takes its
+  habit from the later sentence that opens with a growth form.
+- Fruit type: "cocci" = mericarp; the seed cones of cycads and conifers = strobilus (not Casuarina "cones"). In a group
+  description a rare alternative takes its list with it ("Fruit a caryopsis ..., rarely a nut, berry, or an utricle" copies
+  caryopsis only).
+- **Decided 2026-11-02 (user):**
+  - **Cladode** for the green stems of leafless or scale-leaved plants (Casuarinaceae, Cactaceae, Restionaceae, Psilotaceae,
+    Equisetaceae, Tecticornia / Salicornia, Exocarpos, Cassytha, Ephedra, scale-leaved legumes; traits.yml: "a photosynthetic
+    shoot, regardless of form"), as in NHNSW_2023; achlorophyllous plants (mycoheterotrophs, holoparasites; Thismia,
+    Rhizanthella) are non-photosynthetic_plant. Inferred rows (trait_scoring_method inferred).
+  - **Globose fruits and seeds given only a length** also get that width and height ("Capsule globose, 9-12 mm long"; the
+    description says "[globose fruit, from the length]"), as a diameter gives length, width and height.
+  - **Carex utricle (perigynium):** sizes go to fruit_length / fruit_width (+ height from a diameter) with
+    plant_organ_measured = utricle; when the nut is measured too, the nut's sizes carry plant_organ_measured = nut. The fruit
+    type stays nut. ("Utricle" in Cyperaceae is the perigynium, never a fruit type.)
+  - **Leaflet, pinna and pinnule characters are scored in the leaf traits** (shape, base, apex, margin, margin / lamina posture,
+    lobation, surface colour, discolority, reflectivity, glaucousness, texture, hairs, venation) with the `leaf_division`
+    context (leaflets / pinnae / pinnules): "from the perspective of those traits they are better all scored in one trait".
+    Not leaf_phyllotaxis, which is about leaves only. Leaflet sizes and counts stay in the leaflet_* traits.
+
+## Post-scraping step: plant_height_type (user 2026-11-02)
+
+For every taxon with a profile but **no `plant_height`** in that dataset, `plant_height_type` records why, from the taxon's own
+scored traits, so it is clear which other trait holds its length (`plant_height_reproductive`, `plant_height_climbing_plant`,
+`stem_length`). Never scored when `plant_height` is. Only where a reason applies (user: nothing otherwise; `plant_height_missing`
+is not used). Several reasons are space-separated; trait_scoring_method inferred; the description gives the evidence and the
+trait holding the length ("[inferred: no plant_height in the profile; growth form climber_woody; length recorded as
+plant_height_climbing_plant]").
+- marine; aquatic / aquatic_floating / aquatic_submerged (aquatic substrate, floating or submerged habit);
+- epiphyte, lithophyte (that substrate, not only as a rare alternative);
+- climbing (climber growth form, or a climbing-plant height);
+- geophyte (a herb with a bulb, corm or tuber, or a terrestrial orchid; with or without a recorded flowering height);
+- rosette (a reproductive height and a rosette or basal leaves); leaf_tuft (a reproductive height and a tufted / caespitose
+  habit or graminoid);
+- prostrate (prostrate or creeping, not also erect); mat-forming (mat- or cushion-forming);
+- rhizome (ferns with a rhizome).
+Heights feeding this step: an orchid "Flowering plants 20-60 cm tall" is plant_height_reproductive; an orchid "Inflorescence / Raceme
+/ Scape ... high" is a flower-stem length (terrestrial: also plant_height_reproductive); a scape or inflorescence height later in
+any description ("... Inflorescence to 70 cm high") is plant_height_reproductive when no height was found.
+
 ## Workflow
 
 1. **Inspect the source.**
@@ -845,7 +957,8 @@ leaflets**; record which division each size/count belongs to (Wenk_2025 contexts
   choice, following Wenk_2025).
 - **Rhizome**: `rhizome_form` (short_creeping, long_creeping, slender, stout, branched, woody;
   "short, erect" is *not* short_creeping) plus `stem_growth_habit` = `rhizomatous` + erect /
-  creeping / climbing / decumbent / stoloniferous, as Wenk_2025 did.
+  creeping / climbing / decumbent / stoloniferous, as Wenk_2025 did; and `storage_organ` = rhizome (caudex for a trunk-like
+  caudex), as NHNSW_2023 did (user 2026-11-01).
 - **Substrate** from the opening of "Habit and habitat", in text order, with qualifier rows.
   Catch source typos ("Litophytic", "Lithophyhytic", "somtimes"); "semi-aquatic" →
   `semiaquatic`; "grows on boulders", "mats on rocks", "damp crevices" → lithophyte; "on rocks

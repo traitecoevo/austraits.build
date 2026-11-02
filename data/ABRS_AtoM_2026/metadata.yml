@@ -24,6 +24,8 @@ dataset:
     data |>
       dplyr::filter(
         trait_name %in% c(
+          "plant_height_type",
+          "leaf_pendulousness", "petiole_width",
           "glume_length", "glume_width",
           "flower_stamen_length",
           "flower_colour_detailed", "fruit_surface_reflectivity", "leaf_secondary_vein_angle",
@@ -173,6 +175,10 @@ contexts:
     description: Measurement of the upper (adaxial) surface of the leaf lamina.
   - value: branchlet
     description: Measurement of the branchlets (the youngest woody or leafy stems).
+  - value: utricle
+    description: Measurement of the utricle (perigynium), the sac enclosing the nut of Carex and allied sedges.
+  - value: nut
+    description: Measurement of the nut, when the utricle (perigynium) enclosing it is also measured.
 - context_property: phenological stage
   category: entity_context
   var_in: phenological_stage
@@ -1837,6 +1843,39 @@ traits:
     maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
     parenthetical extremes are on measurement_range = extreme rows (not mapped). Recorded with plant_organ_measured = glume:
     the glumes are the bracts at the base of a grass spikelet.'
+- var_in: leaf_pendulousness
+  unit_in: .na
+  trait_name: leaf_pendulousness
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the leaf clause of the taxon description that names hanging leaves (pendulous, pendent, drooping, weeping;
+    verbatim in value_description); an erect or spreading alternative in the same clause ("Leaves spreading to pendent") is
+    recorded as not_pendulous. Taxa whose leaves are not described as hanging are not scored.
+- var_in: petiole_width
+  unit_in: mm
+  trait_name: petiole_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
+    maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
+    parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: plant_height_type
+  unit_in: .na
+  trait_name: plant_height_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Inferred for taxa whose profile gives no plant height, from the taxon''s own scored traits (evidence in value_description):
+    marine or aquatic (floating, submerged) substrate; epiphyte or lithophyte substrate; climbing (climber growth form or
+    a climbing-plant height); geophyte (a reproductive height and a bulb, corm or tuber, or a terrestrial orchid); rosette
+    or leaf_tuft (a reproductive height and a rosette, or a tufted habit or graminoid); prostrate (prostrate or creeping,
+    not also erect); mat-forming; rhizome (ferns with a rhizome). The description names the trait that holds the plant''s
+    length instead (plant_height_reproductive, plant_height_climbing_plant, stem_length). Not scored when no reason applies.'
 substitutions:
 - trait_name: leaf_secondary_vein_angle_categorical
   find: acute
