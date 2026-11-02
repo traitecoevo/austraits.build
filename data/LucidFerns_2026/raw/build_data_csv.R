@@ -11,7 +11,9 @@
 # `plant_organ_measured` (stipe, rhizome, trunk, branches, fronds).
 # Categorical traits are written as `<trait>_description` (verbatim) + `<trait>` (mapped to traits.yml).
 # Numeric columns: plant height in m, all other lengths/diameters in mm (source mixes mm, cm and m);
-# pinna counts given as pairs are kept as pairs in `leaflet_count_pairs` (unit "pairs", converted x2 by
+# a range is written to `_min` / `_max`, "to X" / "up to X" to `_max`, "X or more" / "more than X" to `_min`,
+# and any other single value ("c. 35 cm", "3 pairs") to `_mean`.
+# Pinna counts given as pairs are kept as pairs in `leaflet_count_pairs_*` (unit "pairs", converted x2 by
 # traits.build), counts of individual pinnae in `leaflet_count_*`.
 
 library(dplyr)
@@ -72,11 +74,19 @@ to_mm <- function(v, u) ifelse(is.na(v), NA_real_, as.numeric(v) * unname(unit_m
 # unit on the lower bound only when a range follows, otherwise "0.8 mm" is read as 0.8 "m" + "m"
 lo_unit <- "(?:\\s?(mm|cm|m)(?=\\s*(?:-|to)\\s*[0-9]))?"
 meas <- paste0("(?:(?:up to|to|about|approximately|c\\.|ca\\.|less than|more than|commonly|usually|mostly)\\s+)?(", num, ")", lo_unit, "(?:", dash, "(", num, "))?\\s?(mm|cm|m)\\b")
-parse_meas <- function(m) {
-  u <- m[5]; u1 <- ifelse(is.na(m[3]), u, m[3])
-  lo <- to_mm(m[2], u1); hi <- to_mm(m[4], u)
-  c(min = ifelse(is.na(hi), NA, lo), max = ifelse(is.na(hi), lo, hi))
+# a range -> min / max; a single value -> max ("to X", "up to X", "less than X"), min ("X or more",
+# "more than X") or mean (any other single value); `txt` is the matched text, qualifiers included
+range_val <- function(lo, hi, txt) {
+  if (!is.na(hi)) return(c(min = lo, max = hi, mean = NA))
+  if (str_detect(txt, regex("\\bor more\\b|^more than\\b", ignore_case = TRUE))) return(c(min = lo, max = NA, mean = NA))
+  if (str_detect(txt, regex("^(?:(?:in|with|of|bearing|into)\\s+)?(?:up to|to|less than)\\b", ignore_case = TRUE))) return(c(min = NA, max = lo, mean = NA))
+  c(min = NA, max = NA, mean = lo)
 }
+parse_meas <- function(m, txt = m[1]) {
+  u <- m[5]; u1 <- ifelse(is.na(m[3]), u, m[3])
+  range_val(to_mm(m[2], u1), to_mm(m[4], u), str_squish(txt))
+}
+count_val <- function(lo, hi, txt) range_val(as.numeric(lo), as.numeric(hi), str_squish(txt))
 # drop parenthetical extremes "(1.5-) 2-3 (-3.5) cm" and "(rarely ...)" so the typical range is parsed
 strip_extremes <- function(x) {
   x <- str_replace_all(x, paste0("\\(\\s*", num, "\\s*-?\\s*\\)\\s*"), "")
@@ -90,16 +100,26 @@ first_meas <- function(x, words, other = NULL) {
     gap <- str_sub(x, 1, m[i, 1] - 1)
     if (!is.null(other) && str_detect(gap, regex(paste0("\\b(?:", other, ")\\b[^,;]{0,25}$"), ignore_case = TRUE))) next
     txt <- str_sub(x, m[i, 1], m[i, 2])
-    return(list(v = parse_meas(str_match(txt, meas)[1:5]), txt = txt))
+    return(list(v = parse_meas(str_match(txt, meas)[1:5], txt), txt = txt))
   }
   NULL
+}
+# "to 33 cm long, 3 cm wide": the "to" of the first dimension also bounds an unqualified second one
+carry_to <- function(first, second, cl) {
+  if (is.null(first) || is.null(second)) return(second)
+  if (is.na(first$v[["min"]]) && !is.na(first$v[["max"]]) && !is.na(second$v[["mean"]]) &&
+      str_detect(first$txt, regex("^(?:up to|to)\\b", ignore_case = TRUE))) {
+    gap <- str_sub(cl, str_locate(cl, fixed(first$txt))[2] + 1, str_locate(cl, fixed(second$txt))[1] - 1)
+    if (!is.na(gap) && str_detect(gap, "^\\s*(?:,|and|,\\s*and)?\\s*$")) second$v <- c(min = NA, max = second$v[["mean"]], mean = NA)
+  }
+  second
 }
 # "6 by 1.4 cm" / "4-5 x 2-3 mm"
 by_meas <- function(x) {
   m <- str_match(x, paste0("(", num, ")(?:", dash, "(", num, "))?\\s?(mm|cm|m)?\\s*(?:by|x|\u00d7)\\s*", meas))
   if (is.na(m[1])) return(NULL)
   u <- m[8]; u1 <- coalesce(m[4], u)
-  L <- c(min = ifelse(is.na(m[3]), NA, to_mm(m[2], u1)), max = to_mm(coalesce(m[3], m[2]), u1))
+  L <- range_val(to_mm(m[2], u1), to_mm(m[3], u1), m[1])
   W <- parse_meas(c(m[1], m[5:8]))
   list(L = L, W = W, txt = m[1])
 }
@@ -108,11 +128,12 @@ by_meas <- function(x) {
 lvl_mod <- "(?:primary|secondary|tertiary|quaternary|basal|lower|lowest|middle|median|mid|upper|longest|largest|larger|smaller|fertile|sterile|lateral|terminal|apical|ultimate|reduced basal|reduced|central|main|higher order|accessory|sterile and fertile)"
 leaflet_noun <- "(?:pinnae|pinna|pinnules?|segments?|lobes?|leaflets?|divisions?)"
 leaflet_subject <- regex(paste0("^(?:the |next few pairs of |each )?((?:", lvl_mod, "[ ,]+(?:and |or )?){0,3})", leaflet_noun, "\\b"), ignore_case = TRUE)
-frond_subject <- regex("^((?:sterile|fertile|nest|foliage|base|basal|mature|juvenile|simple|dissected)\\s+)?(fronds?)\\b(?!\\s+laminae?)", ignore_case = TRUE)
+frond_subject <- regex("^((?:sterile and fertile|sterile|fertile|nest|foliage|base|basal|mature|juvenile|simple|dissected)\\s+)?(fronds?)\\b(?!\\s+laminae?)", ignore_case = TRUE)
 lamina_subject <- regex("^((?:sterile|fertile)\\s+)?(?:fronds?\\s+)?(laminae?)\\b(?:\\s+of\\s+(sterile|fertile)\\s+fronds?)?", ignore_case = TRUE)
 leaves_subject <- regex("^((?:lateral|median|dorsal|ventral|axillary|sterile|fertile|vegetative|mature|juvenile|ordinary)\\s+)?leaves\\b", ignore_case = TRUE)
 stipe_subject <- regex("^(?:common\\s+)?stipes?\\b", ignore_case = TRUE)
 rhizome_subject <- regex("^rhizomes?\\b(?!\\s+scales)", ignore_case = TRUE)
+plant_subject <- regex("^plants?\\b", ignore_case = TRUE)
 branch_subject <- regex("^((?:main|aerial|erect|lateral|fertile|sterile)\\s+)?(branches|branchlets?(?: systems?)?|stems?|shoots)\\b", ignore_case = TRUE)
 # clauses about parts of the current organ (inherit it)
 part_subject <- regex("^(?:margins?|apex|apices|bases?|upper surface|lower surface|surfaces|both surfaces|texture|midribs?|costae?|veins?)\\b", ignore_case = TRUE)
@@ -129,6 +150,7 @@ normalise_level <- function(mod, noun) {
 classify_clause <- function(cl, current) {
   if (str_detect(cl, rhizome_subject)) return(list(kind = "organ", level = "rhizome"))
   if (str_detect(cl, stipe_subject)) return(list(kind = "organ", level = "stipe"))
+  if (str_detect(cl, plant_subject)) return(list(kind = "organ", level = "plants"))
   m <- str_match(cl, lamina_subject)
   if (!is.na(m[1])) return(list(kind = "leaf", level = str_squish(paste(str_to_lower(coalesce(m[2], m[4], "")), "lamina"))))
   m <- str_match(cl, frond_subject)
@@ -213,7 +235,7 @@ extract_one <- function(r) {
   rows <- list()   # context rows: one per (context, level)
   add_val <- function(ctx, level, trait, v, txt) {
     rows[[length(rows) + 1]] <<- tibble(context = ctx, level = level, trait = trait,
-                                       min = unname(v[["min"]]), max = unname(v[["max"]]), txt = txt)
+                                       min = unname(v[["min"]]), max = unname(v[["max"]]), mean = unname(v[["mean"]]), txt = txt)
   }
   cat_vals <- list()
   add_cat <- function(ctx, level, trait, value, txt) {
@@ -234,21 +256,26 @@ extract_one <- function(r) {
           if (trunk) add_val("plant_organ_measured", "trunk", "plant_height", h$v / 1000, h$txt)
           else add_val("plant_organ_measured", "rhizome", "stem_length", h$v, h$txt)
         }
-        dm <- first_meas(cl, "diam\\.?|diameter|thick|wide", other = "scales?|hairs?|phyllopodia|roots|stipes?|bristles|base")
+        dm <- carry_to(h, first_meas(cl, "diam\\.?|diameter|thick|wide", other = "scales?|hairs?|phyllopodia|roots|stipes?|bristles|base"), cl)
         if (!is.null(dm)) add_val("plant_organ_measured", if (trunk) "trunk" else "rhizome", "stem_diameter", dm$v, dm$txt)
       }
       if (k == "organ" && lv == "stipe") {
         L <- first_meas(cl, "long", other = "scales?|hairs?|wings?|grooves?|tubercles|spines")
         if (!is.null(L)) add_val("plant_organ_measured", "stipe", "petiole_length", L$v, L$txt)
-        W <- first_meas(cl, "diam\\.?|diameter|thick|wide", other = "scales?|hairs?|wings?|grooves?|tubercles|spines")
+        W <- carry_to(L, first_meas(cl, "diam\\.?|diameter|thick|wide", other = "scales?|hairs?|wings?|grooves?|tubercles|spines"), cl)
         if (!is.null(W)) add_val("plant_organ_measured", "stipe", "petiole_width", W$v, W$txt)
+      }
+      # "Plants ascending or erect, to 12 cm tall": a plant height with no organ context
+      if (k == "organ" && lv == "plants") {
+        tall <- first_meas(cl, "tall|high")
+        if (!is.null(tall)) add_val("whole_plant", NA_character_, "plant_height", tall$v / 1000, tall$txt)
       }
       if (k == "organ" && lv %in% c("branches", "branchlet systems", "branchlets", "stems", "shoots")) {
         tall <- first_meas(cl, "tall|high")
         if (!is.null(tall)) add_val("plant_organ_measured", lv, "plant_height", tall$v / 1000, tall$txt)
         L <- first_meas(cl, "long", other = "leaves|hairs?|scales?|spikes?|strobil[iu]s?|sporophylls?|zones?")
         if (!is.null(L)) add_val("plant_organ_measured", lv, "stem_length", L$v, L$txt)
-        dm <- first_meas(cl, "diam\\.?|diameter|thick|wide", other = "leaves|hairs?|scales?|spikes?|strobil[iu]s?|sporophylls?")
+        dm <- carry_to(L, first_meas(cl, "diam\\.?|diameter|thick|wide", other = "leaves|hairs?|scales?|spikes?|strobil[iu]s?|sporophylls?"), cl)
         if (!is.null(dm)) add_val("plant_organ_measured", lv, "stem_diameter", dm$v, dm$txt)
       }
       if (k %in% c("leaf", "leaflet")) {
@@ -257,7 +284,7 @@ extract_one <- function(r) {
         pre <- if (k == "leaf") "leaf" else "leaflet"
         b <- by_meas(cl)
         L <- first_meas(cl, "long|tall|in length", other = other)
-        W <- first_meas(cl, "wide|broad|across|diam\\.?|in width", other = other)
+        W <- carry_to(L, first_meas(cl, "wide|broad|across|diam\\.?|in width", other = other), cl)
         if (!is.null(b) && (is.null(L) || str_locate(cl, fixed(b$txt))[1] < str_locate(cl, fixed(L$txt))[1])) {
           add_val("leaf_type", lv, paste0(pre, "_length"), b$L, b$txt); add_val("leaf_type", lv, paste0(pre, "_width"), b$W, b$txt)
         } else {
@@ -275,21 +302,21 @@ extract_one <- function(r) {
         # counts: fronds per plant; pinnae (individual or in pairs), lobes
         if (k == "leaf" && str_detect(lv, "fronds")) {
           fc <- str_match(cl, regex("^(?:sterile |fertile )?fronds?\\s+(?:usually\\s+|commonly\\s+)?([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?(?=,|\\s|$)(?!\\s*(?:mm|cm|m|by|x)\\b)(?!\\s*-?\\s*pinnate)", ignore_case = TRUE))
-          if (!is.na(fc[1])) add_val("leaf_type", lv, "leaf_count", c(min = if (is.na(fc[3])) NA else as.numeric(fc[2]), max = as.numeric(coalesce(fc[3], fc[2]))), fc[1])
+          if (!is.na(fc[1])) add_val("leaf_type", lv, "leaf_count", count_val(fc[2], fc[3], fc[1]), fc[1])
         }
         pr <- str_match(cl, regex(paste0("(?:in|with|of|bearing)?\\s*(?:up to |c\\. |about )?([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?\\s+pairs(?: of ((?:", lvl_mod, " )?", leaflet_noun, "))?"), ignore_case = TRUE))
         if (!is.na(pr[1])) {
           tgt <- if (!is.na(pr[4])) normalise_level(str_match(pr[4], paste0("^(", lvl_mod, ")\\s"))[2], str_extract(pr[4], paste0(leaflet_noun, "$"))) else if (k == "leaflet") lv else "pinnae"
-          add_val("leaf_type", tgt, "leaflet_count_pairs", c(min = if (is.na(pr[3])) NA else as.numeric(pr[2]), max = as.numeric(coalesce(pr[3], pr[2]))), pr[1])
+          add_val("leaf_type", tgt, "leaflet_count_pairs", count_val(pr[2], pr[3], pr[1]), pr[1])
         } else {
           pc <- str_match(cl, regex(paste0("(?:with|of|bearing|into)\\s+(?:up to |c\\. |about )?([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?\\s+(?:[a-z-]+,?\\s+){0,6}?((?:", lvl_mod, " )?", leaflet_noun, ")\\b"), ignore_case = TRUE))
           if (!is.na(pc[1]) && !str_detect(pc[1], "rows?|veins")) {
             tgt <- normalise_level(str_match(pc[4], paste0("^(", lvl_mod, ")\\s"))[2], str_extract(pc[4], paste0(leaflet_noun, "$")))
-            add_val("leaf_type", tgt, "leaflet_count", c(min = if (is.na(pc[3])) NA else as.numeric(pc[2]), max = as.numeric(coalesce(pc[3], pc[2]))), pc[1])
+            add_val("leaf_type", tgt, "leaflet_count", count_val(pc[2], pc[3], pc[1]), pc[1])
           }
           if (k == "leaflet") {
             pc2 <- str_match(cl, regex(paste0("^(?:[a-z ,]+?)?", leaflet_noun, "\\s+([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?(?=[, ]|$)(?!\\s*(?:mm|cm|m|pairs)\\b)"), ignore_case = TRUE))
-            if (!is.na(pc2[1])) add_val("leaf_type", lv, "leaflet_count", c(min = if (is.na(pc2[3])) NA else as.numeric(pc2[2]), max = as.numeric(coalesce(pc2[3], pc2[2]))), pc2[1])
+            if (!is.na(pc2[1])) add_val("leaf_type", lv, "leaflet_count", count_val(pc2[2], pc2[3], pc2[1]), pc2[1])
           }
         }
       }
@@ -374,6 +401,8 @@ extract_one <- function(r) {
     "free-floating|floating aquatic",                                   "aquatic_floating",
     "semi-?aquatic",                                                    "semiaquatic",
     "(?<!semi-|semi)\\baquatic\\b",                                     "aquatic",
+    # growing in tarns (deeper standing water) is aquatic; swamps, marshes, rockpools and "tarn situations" are not
+    "\\b(?:in|from) (?:[a-z]+ ){0,2}tarns?\\b",                         "aquatic",
     "amphibious",                                                       "semiaquatic")
   qualifier_re <- "(?:\\bor|,|\\band|^)\\s*(rarely|occasionally|sometimes|usually|often|commonly|mostly|mainly)\\s+(?:as an? )?$"
   gm <- sub_txt; sh <- tibble(pos = integer(0), value = character(0), qualifier = character(0))
@@ -404,6 +433,29 @@ extract_one <- function(r) {
     if (climbing) "climber_herbaceous"))
   gf_desc <- collapse_unique(c(grab_sentences(paste(hab, desc), "climbing|climber|scandent|twining"), if (is_treefern) grab_sentences(desc, "trunk|rhizome erect|rhizome to")), " ")
   if (climbing) rh_habit <- collapse_unique(c(str_split(coalesce(rh_habit, ""), " ")[[1]], "climbing"))
+
+  # ---- plant_height_type: why the plant's length is not a plant height (a self-supporting, ground-rooted plant with
+  # upright fronds or shoots). Frond length is never used as plant height for these taxa, and plant_height_type is
+  # written for those left with no plant height. Evidence (verbatim) in plant_height_type_description.
+  #   climbing: climbers and scramblers (Gleicheniaceae: indeterminate fronds in tiers, scrambling over vegetation)
+  #   epiphyte: epiphytic or hemiepiphytic, terrestrial absent or only occasional
+  #   aquatic / aquatic_floating: frond length follows water depth
+  #   leaf_tuft: pendulous fronds, lamina or shoots
+  #   prostrate: lycophytes whose main stems are creeping / appressed to the substrate (and not also erect)
+  terr_ok <- "terrestrial" %in% sh$value[is.na(sh$qualifier) | !sh$qualifier %in% c("rarely", "occasionally", "sometimes")]
+  sub_ev <- coalesce(substrate_desc, paste("substrate:", substrate))
+  ht <- list(
+    climbing = if (climbing || str_detect(str_to_lower(paste(hab, desc)), "scrambl") || fam == "Gleicheniaceae")
+      coalesce(grab_sentences(paste(hab, desc), "climb|scandent|scrambl|twining"), "Gleicheniaceae: fronds of indeterminate growth, in tiers"),
+    epiphyte = if (any(sh$value %in% c("epiphyte", "hemiepiphyte")) && !terr_ok) sub_ev,
+    aquatic_floating = if ("aquatic_floating" %in% sh$value) sub_ev,
+    aquatic = if (!"aquatic_floating" %in% sh$value && any(sh$value %in% c("aquatic", "semiaquatic"))) sub_ev,
+    leaf_tuft = grab_sentences(desc, "\\b(?:fronds?|laminae?|shoots?|branches|stems?|plants?)\\b[^.;]{0,60}\\b(?:pendulous|pendent|hanging)\\b"),
+    prostrate = if (fam %in% c("Lycopodiaceae", "Selaginellaceae"))
+      grab_sentences(desc, "^(?:main |primary )?stems?\\b[^.]*\\b(?:creeping|prostrate|trailing|appressed to (?:the )?substrat)", exclude = "\\berect\\b"))
+  ht <- discard(ht, ~ is.null(.x) || is.na(.x))
+  height_type <- if (length(ht)) paste(names(ht), collapse = " ") else NA_character_
+  height_type_desc <- if (length(ht)) paste(unique(unlist(ht)), collapse = " | ") else NA_character_
 
   # ---- vegetative reproduction (explicit only)
   veg_txt <- str_to_lower(desc)
@@ -438,7 +490,8 @@ extract_one <- function(r) {
     vegetative_reproduction_description = veg_desc, vegetative_reproduction_ability = veg, clonal_spread_mechanism = clonal,
     sori_description = sori_desc, spore_description = spore_desc,
     habitat_description = na_if_empty(hab), distribution_description = na_if_empty(r[["Distribution"]]),
-    natural_history = na_if_empty(r[["Natural history"]]), similar_species = na_if_empty(r[["Similar species"]])
+    natural_history = na_if_empty(r[["Natural history"]]), similar_species = na_if_empty(r[["Similar species"]]),
+    plant_height_type_description = height_type_desc, plant_height_type = height_type
   )
   list(main = main, rows = rows, cats = cat_vals)
 }
@@ -459,28 +512,57 @@ num_rows <- num_rows %>% filter(!(taxon_name == "Ophioderma pendulum" & level ==
 num_rows <- num_rows %>% group_by(taxon_name, context, level, trait) %>% slice(1) %>% ungroup()
 cat_rows <- cat_rows %>% group_by(taxon_name, context, level, trait) %>% slice(1) %>% ungroup()
 
-# frond length as plant_height (plant_organ_measured = fronds) when the sheet gives no explicit height (as Wenk_2025)
-has_height <- unique(num_rows$taxon_name[num_rows$trait == "plant_height"])
-frond_h <- num_rows %>% filter(context == "leaf_type", level == "fronds", trait == "leaf_length", !taxon_name %in% has_height) %>%
-  mutate(context = "plant_organ_measured", trait = "plant_height", min = min / 1000, max = max / 1000,
-         txt = paste0("[frond length] ", txt))
-num_rows <- bind_rows(num_rows, frond_h)
+# rows flagged as wrong (exclude_row_reason; filtered out by custom_R_code in metadata.yml). The flag is per context
+# row, so only rows holding nothing but the wrong value are flagged; flagged rows are not used for derived heights
+flag_rows <- tribble(
+  ~taxon_name, ~context, ~level, ~exclude_row_reason,
+  # "small aborted fronds <12 cm long and large fully developed fronds 30-85 cm long": "<12 cm" read as the frond length
+  "Crepidomanes aphlebioides", "leaf_type", "fronds", "frond length read from the small aborted fronds (<12 cm long)")
+num_rows <- num_rows %>% left_join(flag_rows, by = c("taxon_name", "context", "level"))
 
-fmt_range <- function(lo, hi) ifelse(is.na(hi), NA_character_, ifelse(is.na(lo), as.character(hi), paste0(lo, "--", hi)))
+# plant_height (plant_organ_measured = fronds) when the sheet gives no explicit height (as Wenk_2025): the longest frond
+# length given (fronds, sterile / fertile fronds, ...), else stipe + the longest lamina length. Not for taxa with a
+# plant_height_type (epiphytes, climbers, aquatics, pendulous fronds), whose fronds do not give a height.
+has_height <- unique(num_rows$taxon_name[num_rows$trait == "plant_height"])
+no_frond_height <- main$taxon_name[!is.na(main$plant_height_type)]
+usable <- num_rows %>% filter(is.na(exclude_row_reason), !taxon_name %in% c(has_height, no_frond_height))
+longest <- function(df) df %>% mutate(top = coalesce(max, mean, min)) %>% group_by(taxon_name) %>%
+  slice_max(top, n = 1, with_ties = FALSE) %>% ungroup() %>% select(-top)
+frond_h <- usable %>% filter(context == "leaf_type", str_detect(level, "fronds$"), trait == "leaf_length") %>% longest() %>%
+  mutate(txt = paste0("[", level, " length] ", txt), context = "plant_organ_measured", level = "fronds", trait = "plant_height",
+         across(c(min, max, mean), ~ .x / 1000))
+# stipe + lamina: lower bounds (min or mean) and upper bounds (max or mean) are summed; equal sums are a mean,
+# a missing lower or upper bound leaves a maximum or a minimum
+stipe_lamina_h <- inner_join(
+  usable %>% filter(level == "stipe", trait == "petiole_length"),
+  usable %>% filter(context == "leaf_type", str_detect(level, "lamina$"), trait == "leaf_length") %>% longest(),
+  by = "taxon_name", suffix = c("_s", "_l")) %>%
+  filter(!taxon_name %in% frond_h$taxon_name) %>%
+  mutate(lo = coalesce(min_s, mean_s) + coalesce(min_l, mean_l), hi = coalesce(max_s, mean_s) + coalesce(max_l, mean_l)) %>%
+  transmute(taxon_name, context = "plant_organ_measured", level = "fronds", trait = "plant_height",
+            min = ifelse(is.na(hi) | (!is.na(lo) & lo < hi), lo, NA) / 1000,
+            max = ifelse(is.na(lo) | (!is.na(hi) & lo < hi), hi, NA) / 1000,
+            mean = ifelse(!is.na(lo) & !is.na(hi) & lo == hi, lo, NA) / 1000,
+            txt = paste0("[stipe + ", level_l, " length] ", txt_s, " + ", txt_l))
+num_rows <- bind_rows(num_rows, frond_h, stipe_lamina_h)
+
+# plant_height_type only where no plant height is recorded
+height_taxa <- unique(num_rows$taxon_name[num_rows$trait == "plant_height" & is.na(num_rows$exclude_row_reason)])
+main <- main %>% mutate(plant_height_type = ifelse(taxon_name %in% height_taxa, NA, plant_height_type),
+                        plant_height_type_description = ifelse(is.na(plant_height_type), NA, plant_height_type_description))
+
 num_wide <- num_rows %>%
-  mutate(across(c(min, max), ~ round(.x, 4))) %>%
+  mutate(across(c(min, max, mean), ~ round(.x, 4))) %>%
   group_by(taxon_name, context, level) %>%
   mutate(measurement_description = paste(unique(txt), collapse = "; ")) %>% ungroup() %>%
   select(-txt) %>%
-  pivot_wider(names_from = trait, values_from = c(min, max), names_glue = "{trait}_{.value}")
-# keep each trait's _min next to its _max
-num_wide <- num_wide %>% select(taxon_name, context, level, measurement_description,
-                                all_of(as.vector(rbind(sort(grep("_min$", names(num_wide), value = TRUE)), sub("_min$", "_max", sort(grep("_min$", names(num_wide), value = TRUE)))))))
-# pinna counts in pairs: one range value in source units ("15--25"), unit_in = pairs
-if ("leaflet_count_pairs_max" %in% names(num_wide)) {
-  num_wide <- num_wide %>% mutate(leaflet_count_pairs = fmt_range(leaflet_count_pairs_min, leaflet_count_pairs_max)) %>%
-    select(-leaflet_count_pairs_min, -leaflet_count_pairs_max)
-}
+  pivot_wider(names_from = trait, values_from = c(min, max, mean), names_glue = "{trait}_{.value}")
+# keep each trait's _min, _max and _mean together; drop value columns no taxon fills
+num_cols <- names(num_wide)[str_detect(names(num_wide), "_(min|max|mean)$")]
+num_cols <- num_cols[map_lgl(num_cols, ~ any(!is.na(num_wide[[.x]])))]
+num_traits <- sort(unique(str_remove(num_cols, "_(min|max|mean)$")))
+num_wide <- num_wide %>% select(taxon_name, context, level, exclude_row_reason, measurement_description,
+                                all_of(intersect(as.vector(t(outer(num_traits, c("_min", "_max", "_mean"), paste0))), num_cols)))
 cat_wide <- cat_rows %>% select(taxon_name, context, level, trait, value, txt) %>%
   pivot_wider(names_from = trait, values_from = c(value, txt), names_glue = "{trait}{ifelse(.value == 'txt', '_description', '')}")
 ctx_rows <- full_join(num_wide, cat_wide, by = c("taxon_name", "context", "level")) %>%
@@ -498,7 +580,7 @@ main <- main %>% mutate(plant_growth_substrate = ifelse(is.na(substrate_qualifie
 id_cols <- c("taxon_name", "family", "common_name", "lucid_url")
 ids <- main %>% select(all_of(id_cols))
 out_df <- bind_rows(main, inner_join(ids, ctx_rows, by = "taxon_name"), inner_join(ids, sub_rows, by = "taxon_name")) %>%
-  relocate(leaf_type, plant_organ_measured, commonness_qualifier, .after = lucid_url) %>%
+  relocate(leaf_type, plant_organ_measured, commonness_qualifier, exclude_row_reason, .after = lucid_url) %>%
   mutate(row_order = case_when(!is.na(commonness_qualifier) ~ 1, !is.na(plant_organ_measured) ~ 2, !is.na(leaf_type) ~ 3, TRUE ~ 0)) %>%
   arrange(taxon_name, row_order, plant_organ_measured, leaf_type) %>% select(-row_order)
 

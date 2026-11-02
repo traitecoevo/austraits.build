@@ -1,0 +1,651 @@
+source:
+  primary:
+    key: LucidFerns_2026
+    bibtype: Online
+    author: Field, A.R. and Quinn, C.J. and Zich, F.A.
+    year: '2022'
+    title: Australian Tropical Ferns and Lycophytes
+    publisher: Australian Tropical Herbarium, Cairns
+    url: https://apps.lucidcentral.org/ferns/text/intro/index.htm
+    note: accessed 1 October 2026
+contributors:
+  data_collectors:
+  - last_name: Field
+    given_name: A.R.
+    ORCID: unknown
+    affiliation: Australian Tropical Herbarium, James Cook University, Cairns, Australia
+    notes: Author of the Australian Tropical Ferns and Lycophytes fact sheets
+  - last_name: Quinn
+    given_name: C.J.
+    ORCID: unknown
+    affiliation: Australian Tropical Herbarium, James Cook University, Cairns, Australia
+    notes: Author of the Australian Tropical Ferns and Lycophytes fact sheets
+  - last_name: Zich
+    given_name: F.A.
+    ORCID: unknown
+    affiliation: Australian Tropical Herbarium, James Cook University, Cairns, Australia
+    notes: Author of the Australian Tropical Ferns and Lycophytes fact sheets
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data |>
+      dplyr::filter(is.na(exclude_row_reason))
+    '
+  collection_date: '2026'
+  taxon_name: taxon_name
+  description: To compile plant trait values from the fact sheets of Australian Tropical Ferns and Lycophytes, the Lucid
+    identification key to the ferns and lycophytes of tropical Australia published by the Australian Tropical Herbarium.
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  sampling_strategy: 'The 339 taxon fact sheets of Australian Tropical Ferns and Lycophytes
+    (apps.lucidcentral.org/ferns) were downloaded on 1 October 2026. Trait values were extracted from the Description and
+    Habit and habitat text with a scripted parser (raw/build_data_csv.R). Each description, written in Flora of Australia
+    style, is split into sentences and clauses, and each clause is assigned to the organ that leads it (rhizome, stipe,
+    fronds, lamina, pinnae, pinnules, segments, lobes, leaves, branches); clauses about margins, apices or surfaces inherit
+    the preceding organ. Fern organs are mapped to AusTraits traits as stipe = petiole, frond or lamina = leaf, and pinnae,
+    pinnules, segments and lobes = leaflets, with the division measured kept in the leaf_type context (fronds, lamina,
+    pinnae, primary pinnae, ultimate segments, ...) and the organ measured for stems, stipes and plant height in the
+    plant_organ_measured context. Categorical terms are mapped to AusTraits trait values, with the source clause kept
+    verbatim in a matching *_description column; several values are listed in the order they appear in the text. Growth
+    substrates qualified by a commonness word ("terrestrial or rarely lithophytic") are recorded on separate rows with a
+    commonness qualifier. Measurements are converted to a single unit per column (plant heights in m, all other lengths and
+    diameters in mm); a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also bounding a
+    second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a minimum,
+    and any other single value as a mean; parenthetical extremes are not recorded. Where a fact sheet gives no explicit
+    plant height, the longest frond length (fronds, sterile or fertile fronds) is recorded as plant height, or else the
+    stipe length plus the longest lamina length (plant_organ_measured = fronds), except where frond length is not a
+    height. For taxa left with no plant height, plant_height_type records why: epiphytes (terrestrial absent or only
+    occasional), climbers and scramblers (including Gleicheniaceae, with indeterminate tiered fronds), aquatics (frond
+    length follows water depth), pendulous fronds or shoots (leaf_tuft) and lycophytes with creeping main stems
+    (prostrate). Plant growth form is scored
+    from the family (lycophyte for Lycopodiaceae, Selaginellaceae and Isoetaceae, fern otherwise; tree ferns of Cyatheaceae
+    and Dicksoniaceae also palmoid) and from climbing wording. Source typographical errors were corrected in the script.'
+  original_file: lucid_tropical_ferns_fact_sheets.csv (Australian Tropical Ferns and Lycophytes fact sheets, downloaded
+    1 October 2026; austraits.build-data.scraping.scripts/data_extra)
+  notes: 'Unmapped columns: the verbatim *_description columns, measurement_description (the source wording, with original
+    units, of the measurements on each context row), family, common_name, lucid_url, apni_url, frond_description,
+    lamina_description, sori_description, spore_description (no AusTraits traits yet for sori, indusia or spores),
+    habitat_description, distribution_description, natural_history and similar_species. Each taxon has one main row
+    (whole-plant and whole-frond traits) plus one row per division (leaf_type) or organ (plant_organ_measured) measured,
+    and one row per qualified growth substrate. Rows with a value read wrongly from the source carry the reason in
+    exclude_row_reason and are removed by custom_R_code (Crepidomanes aphlebioides: frond length read from the small
+    aborted fronds).'
+identifiers: .na
+locations: .na
+contexts:
+- context_property: leaf type
+  category: entity_context
+  var_in: leaf_type
+- context_property: plant organ measured
+  category: entity_context
+  var_in: plant_organ_measured
+  values:
+  - value: stipe
+    description: Measurement of the stipe, the stalk of the frond (mapped to petiole traits).
+  - value: fronds
+    description: Plant height taken as the height or length of the fronds (or stipe plus lamina length), for taxa whose
+      fact sheet gives no explicit plant height.
+  - value: rhizome
+    description: Length and diameter of the rhizome.
+  - value: trunk
+    description: Height and diameter of the trunk of a tree fern, or of an erect rhizome forming a trunk.
+  - value: branches
+    description: Measurement of the aerial branches of a lycophyte or Psilotum.
+  - value: stems
+    description: Measurement of the aerial stems of a lycophyte.
+  - value: shoots
+    description: Measurement of the aerial shoots of a lycophyte or Psilotum.
+  - value: branchlet systems
+    description: Measurement of the branchlet systems of a lycophyte.
+- context_property: commonness qualifier
+  category: entity_context
+  var_in: commonness_qualifier
+traits:
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the family (lycophyte for Lycopodiaceae, Selaginellaceae and Isoetaceae, fern otherwise; tree ferns
+    of Cyatheaceae and Dicksoniaceae also palmoid) and from climbing wording in the fact sheet (verbatim in plant_growth_form_description).'
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the opening sentence of the Habit and habitat text and of the Description (verbatim in plant_growth_substrate_description);
+    substrates qualified by a commonness word are recorded on separate rows.'
+- var_in: plant_height_type
+  unit_in: .na
+  trait_name: plant_height_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored for taxa with no plant height, giving why the plant''s length is not a plant height (evidence verbatim
+    in plant_height_type_description): epiphyte (epiphytic or hemiepiphytic, terrestrial absent or only occasional); climbing
+    (climbers and scramblers, including Gleicheniaceae with indeterminate fronds in tiers); aquatic or aquatic_floating (frond
+    length follows water depth); leaf_tuft (pendulous fronds, lamina or shoots); prostrate (lycophytes with creeping main
+    stems, not also erect). Not scored when no reason applies.'
+- var_in: rhizome_form
+  unit_in: .na
+  trait_name: rhizome_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the rhizome clauses of the fact sheet description (verbatim in rhizome_description).'
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the rhizome clauses of the fact sheet description (verbatim in rhizome_description); taxa with a described
+    rhizome are scored rhizomatous, and climbing taxa climbing.'
+- var_in: leaf_heterogeneity
+  unit_in: .na
+  trait_name: leaf_heterogeneity
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the frond clauses of the fact sheet description (verbatim in leaf_heterogeneity_description): dimorphic
+    fronds are scored anisophyllous, monomorphic fronds isophyllous.'
+- var_in: leaf_arrangement
+  unit_in: .na
+  trait_name: leaf_arrangement
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the frond and stipe clauses of the fact sheet description (verbatim in leaf_arrangement_description):
+    tufted or clustered fronds are scored clustered, spaced or distant fronds scattered.'
+- var_in: leaf_lamina_division
+  unit_in: .na
+  trait_name: leaf_lamina_division
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the frond and lamina clauses of the fact sheet description (verbatim in leaf_lamina_division_description);
+    a range of degrees ("2-3-pinnate") is recorded as each degree in the range.'
+- var_in: leaf_compoundness
+  unit_in: .na
+  trait_name: leaf_compoundness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the frond and lamina clauses of the fact sheet description (verbatim in leaf_lamina_division_description):
+    simple, undivided, pinnatifid or lobed laminae are scored simple, pinnate to tripinnate laminae compound.'
+- var_in: leaf_shape
+  unit_in: .na
+  trait_name: leaf_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the shape of the lamina in the fact sheet description (verbatim in lamina_description); shapes of
+    pinnae, pinnules, segments, lobes, bases and apices are not scored.'
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored vegetative where the fact sheet description names a means of vegetative reproduction (verbatim in vegetative_reproduction_description).'
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet description (verbatim in vegetative_reproduction_description): stolons are scored stolon,
+    bulbils, proliferous buds, plantlets, gemmae and rooting frond tips aboveground_clonal, proliferous roots root_buds, and
+    suckers rhizome.'
+- var_in: leaf_margin
+  unit_in: .na
+  trait_name: leaf_margin
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet description for each frond division described (verbatim in leaf_margin_description;
+    division in leaf_type).'
+- var_in: leaf_apex_shape
+  unit_in: .na
+  trait_name: leaf_apex_shape
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the apex phrase of the fact sheet description for each frond division described (verbatim in leaf_apex_shape_description;
+    division in leaf_type); attenuate and caudate apices are scored acuminate, mucronate apices apiculate.'
+- var_in: leaf_hairs_adult_leaves
+  unit_in: .na
+  trait_name: leaf_hairs_adult_leaves
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet description for each frond division described (verbatim in leaf_hairs_adult_leaves_description;
+    division in leaf_type).'
+- var_in: leaf_glaucousness
+  unit_in: .na
+  trait_name: leaf_glaucousness
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the fact sheet description for each frond division described (verbatim in leaf_glaucousness_description;
+    division in leaf_type).'
+- var_in: leaf_count_min
+  unit_in: '{count}'
+  trait_name: leaf_count
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of fronds per plant given in the fact sheet description (verbatim in measurement_description): a range
+    is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also bounding a second dimension given right
+    after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a minimum, and any other single value as
+    a mean; parenthetical extremes are not recorded.'
+- var_in: leaf_count_max
+  unit_in: '{count}'
+  trait_name: leaf_count
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of fronds per plant given in the fact sheet description (verbatim in measurement_description): a range
+    is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also bounding a second dimension given right
+    after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a minimum, and any other single value as
+    a mean; parenthetical extremes are not recorded.'
+- var_in: leaf_length_min
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the frond, lamina or lycophyte leaf given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaf_length_max
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the frond, lamina or lycophyte leaf given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaf_length_mean
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the frond, lamina or lycophyte leaf given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaf_width_min
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Width of the frond, lamina or lycophyte leaf given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaf_width_max
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Width of the frond, lamina or lycophyte leaf given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaf_width_mean
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Width of the frond, lamina or lycophyte leaf given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_count_min
+  unit_in: '{count}'
+  trait_name: leaflet_count
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of pinnae, pinnules, segments or lobes given in the fact sheet description (verbatim in measurement_description;
+    division in leaf_type): a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also bounding
+    a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a minimum,
+    and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_count_max
+  unit_in: '{count}'
+  trait_name: leaflet_count
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of pinnae, pinnules, segments or lobes given in the fact sheet description (verbatim in measurement_description;
+    division in leaf_type): a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also bounding
+    a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a minimum,
+    and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_count_mean
+  unit_in: '{count}'
+  trait_name: leaflet_count
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of pinnae, pinnules, segments or lobes given in the fact sheet description (verbatim in measurement_description;
+    division in leaf_type): a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also bounding
+    a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a minimum,
+    and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_count_pairs_min
+  unit_in: pairs
+  trait_name: leaflet_count
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of pairs of pinnae or pinnules given in the fact sheet description (verbatim in measurement_description;
+    division in leaf_type), converted to a count of leaflets: a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_count_pairs_max
+  unit_in: pairs
+  trait_name: leaflet_count
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of pairs of pinnae or pinnules given in the fact sheet description (verbatim in measurement_description;
+    division in leaf_type), converted to a count of leaflets: a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_count_pairs_mean
+  unit_in: pairs
+  trait_name: leaflet_count
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Number of pairs of pinnae or pinnules given in the fact sheet description (verbatim in measurement_description;
+    division in leaf_type), converted to a count of leaflets: a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_length_min
+  unit_in: mm
+  trait_name: leaflet_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the pinnae, pinnules, segments or lobes given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_length_max
+  unit_in: mm
+  trait_name: leaflet_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the pinnae, pinnules, segments or lobes given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_length_mean
+  unit_in: mm
+  trait_name: leaflet_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the pinnae, pinnules, segments or lobes given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_width_min
+  unit_in: mm
+  trait_name: leaflet_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Width of the pinnae, pinnules, segments or lobes given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_width_max
+  unit_in: mm
+  trait_name: leaflet_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Width of the pinnae, pinnules, segments or lobes given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: leaflet_width_mean
+  unit_in: mm
+  trait_name: leaflet_width
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Width of the pinnae, pinnules, segments or lobes given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; division in leaf_type): a range is recorded as minimum and maximum values, "to X" or
+    "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or
+    more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: petiole_length_min
+  unit_in: mm
+  trait_name: petiole_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the stipe given in the fact sheet description (verbatim, with its original units, in measurement_description;
+    plant_organ_measured = stipe): a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also
+    bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a
+    minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: petiole_length_max
+  unit_in: mm
+  trait_name: petiole_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the stipe given in the fact sheet description (verbatim, with its original units, in measurement_description;
+    plant_organ_measured = stipe): a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also
+    bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a
+    minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: petiole_length_mean
+  unit_in: mm
+  trait_name: petiole_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the stipe given in the fact sheet description (verbatim, with its original units, in measurement_description;
+    plant_organ_measured = stipe): a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also
+    bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a
+    minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: petiole_width_min
+  unit_in: mm
+  trait_name: petiole_width
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Diameter of the stipe given in the fact sheet description (verbatim, with its original units, in measurement_description;
+    plant_organ_measured = stipe): a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also
+    bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a
+    minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: petiole_width_max
+  unit_in: mm
+  trait_name: petiole_width
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Diameter of the stipe given in the fact sheet description (verbatim, with its original units, in measurement_description;
+    plant_organ_measured = stipe): a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also
+    bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a
+    minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: petiole_width_mean
+  unit_in: mm
+  trait_name: petiole_width
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Diameter of the stipe given in the fact sheet description (verbatim, with its original units, in measurement_description;
+    plant_organ_measured = stipe): a range is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also
+    bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a
+    minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: plant_height_min
+  unit_in: m
+  trait_name: plant_height
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Height of the plant, trunk, aerial stems or fronds given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; organ in plant_organ_measured). Where no height is given, the longest frond length
+    (fronds, sterile or fertile fronds) is recorded as plant height, or else the stipe length plus the longest lamina length,
+    summing lower and upper bounds (plant_organ_measured = fronds; source in measurement_description); not for taxa with a
+    plant_height_type (epiphytes, climbers and scramblers, aquatics, pendulous fronds or shoots). For measurements, a range
+    is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also bounding a second dimension given right
+    after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a minimum, and any other single value as
+    a mean; parenthetical extremes are not recorded.'
+- var_in: plant_height_max
+  unit_in: m
+  trait_name: plant_height
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Height of the plant, trunk, aerial stems or fronds given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; organ in plant_organ_measured). Where no height is given, the longest frond length
+    (fronds, sterile or fertile fronds) is recorded as plant height, or else the stipe length plus the longest lamina length,
+    summing lower and upper bounds (plant_organ_measured = fronds; source in measurement_description); not for taxa with a
+    plant_height_type (epiphytes, climbers and scramblers, aquatics, pendulous fronds or shoots). For measurements, a range
+    is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also bounding a second dimension given right
+    after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a minimum, and any other single value as
+    a mean; parenthetical extremes are not recorded.'
+- var_in: plant_height_mean
+  unit_in: m
+  trait_name: plant_height
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Height of the plant, trunk, aerial stems or fronds given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; organ in plant_organ_measured). Where no height is given, the longest frond length
+    (fronds, sterile or fertile fronds) is recorded as plant height, or else the stipe length plus the longest lamina length,
+    summing lower and upper bounds (plant_organ_measured = fronds; source in measurement_description); not for taxa with a
+    plant_height_type (epiphytes, climbers and scramblers, aquatics, pendulous fronds or shoots). For measurements, a range
+    is recorded as minimum and maximum values, "to X" or "up to X" as a maximum (also bounding a second dimension given right
+    after it, as in "to 33 cm long, 3 cm wide"), "X or more" or "more than X" as a minimum, and any other single value as
+    a mean; parenthetical extremes are not recorded.'
+- var_in: stem_diameter_min
+  unit_in: mm
+  trait_name: stem_diameter
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Diameter of the rhizome, trunk or aerial stems given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; organ in plant_organ_measured): a range is recorded as minimum and maximum values,
+    "to X" or "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"),
+    "X or more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: stem_diameter_max
+  unit_in: mm
+  trait_name: stem_diameter
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Diameter of the rhizome, trunk or aerial stems given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; organ in plant_organ_measured): a range is recorded as minimum and maximum values,
+    "to X" or "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"),
+    "X or more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: stem_diameter_mean
+  unit_in: mm
+  trait_name: stem_diameter
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Diameter of the rhizome, trunk or aerial stems given in the fact sheet description (verbatim, with its original
+    units, in measurement_description; organ in plant_organ_measured): a range is recorded as minimum and maximum values,
+    "to X" or "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"),
+    "X or more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: stem_length_min
+  unit_in: mm
+  trait_name: stem_length
+  entity_type: species
+  value_type: minimum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the rhizome or aerial stems given in the fact sheet description (verbatim, with its original units,
+    in measurement_description; organ in plant_organ_measured): a range is recorded as minimum and maximum values, "to X"
+    or "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X
+    or more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: stem_length_max
+  unit_in: mm
+  trait_name: stem_length
+  entity_type: species
+  value_type: maximum
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the rhizome or aerial stems given in the fact sheet description (verbatim, with its original units,
+    in measurement_description; organ in plant_organ_measured): a range is recorded as minimum and maximum values, "to X"
+    or "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X
+    or more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+- var_in: stem_length_mean
+  unit_in: mm
+  trait_name: stem_length
+  entity_type: species
+  value_type: mean
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Length of the rhizome or aerial stems given in the fact sheet description (verbatim, with its original units,
+    in measurement_description; organ in plant_organ_measured): a range is recorded as minimum and maximum values, "to X"
+    or "up to X" as a maximum (also bounding a second dimension given right after it, as in "to 33 cm long, 3 cm wide"), "X
+    or more" or "more than X" as a minimum, and any other single value as a mean; parenthetical extremes are not recorded.'
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions: .na
