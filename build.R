@@ -105,6 +105,10 @@ Auld_2000_config <- dataset_configure("data/Auld_2000/metadata.yml", definitions
 Auld_2000_raw <- dataset_process("data/Auld_2000/data.csv", Auld_2000_config, schema, resource_metadata, unit_conversions)
 Auld_2000 <- dataset_update_taxonomy(Auld_2000_raw, taxon_list)
 
+AusGrass3_2026_config <- dataset_configure("data/AusGrass3_2026/metadata.yml", definitions)
+AusGrass3_2026_raw <- dataset_process("data/AusGrass3_2026/data.csv", AusGrass3_2026_config, schema, resource_metadata, unit_conversions)
+AusGrass3_2026 <- dataset_update_taxonomy(AusGrass3_2026_raw, taxon_list)
+
 AVH_2026_config <- dataset_configure("data/AVH_2026/metadata.yml", definitions)
 AVH_2026_raw <- dataset_process("data/AVH_2026/data.csv", AVH_2026_config, schema, resource_metadata, unit_conversions)
 AVH_2026 <- dataset_update_taxonomy(AVH_2026_raw, taxon_list)
@@ -1970,6 +1974,7 @@ austraits_raw <- austraits::bind_databases(
   Baker_2019,
   Barrett_2009,
   Bean_1997,
+  AusGrass3_2026,
   Bebawi_2015,
   Bell_1995,
   Benwell_2024,

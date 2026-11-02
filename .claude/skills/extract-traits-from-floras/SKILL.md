@@ -549,6 +549,35 @@ not the main checkout's: the user switches branches in the main checkout, and it
 - **Phyllodinous taxa (all sources, user 2026-11-02):** leaf_compoundness simple and leaf_phenology evergreen are inferred
   (trait_scoring_method inferred) when the profile scores neither, as in Maslin_2012.
 
+## AusGrass3: Grasses of Australia (AusGrass3_2026, user 2026-11-02)
+
+- **Scope:** all AusGrass3 profiles (`data_extra/AusGrass3_fact_sheets.csv`: 247 genera, 1555 species and infraspecific taxa;
+  1354 taxa have a description), dataset id AusGrass3_2026, long format. Do not look at GrassBase_2014 or the ABRS Poaceae while
+  extracting: they are the comparison case.
+- **Same parser, AusGrass mode:** `FOA_SOURCE=ausgrass FOA_CORES=12 Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R` (~3 min).
+  The DELTA fields Habit, Inflorescence, Spikelets, Glumes and Florets, in that order, are the description (grass mode). Names
+  lose the naturalised marker ("Cynodon dactylon*"); naturalised = biostatus Introduced. Flowering times come from the Notes'
+  "Flowers ..." sentence (months abbreviated, expanded). A genus profile whose fields hold several descriptions joined by " | "
+  (a species-style description appended, or stitched genera such as Cenchrus) is split into parts, so only what every part
+  states is copied down; in species profiles " | " only starts another floret type.
+- **Rhizomes, stolons, spread (user 2026-11-02), read exactly from the DELTA statements:** "Rhizomes present, short" /
+  "elongated" / "short or elongated" → storage_organ rhizome, stem_growth_habit rhizomatous, rhizome_form short_creeping /
+  long_creeping; only elongated rhizomes (and stolons) are clonal spread (clonal_spread_mechanism rhizome / stolon,
+  vegetative_reproduction_ability vegetative). "absent or present" → the same on a commonness_qualifier = sometimes row.
+  "Stolons present" → stoloniferous + stolon + vegetative; "Stolons absent" → clonal_spread_mechanism stolon_absent; "Rhizomes
+  absent" → no row. Rhizome, stolon and spread traits are not copied down from grass genera (they vary between species).
+- **Other:** culm orientation → stem_growth_habit ("geniculately ascending" = decumbent); "Anthers 3." → flower_fertile_stamens_count
+  (one stamen per anther, all grasses); photosynthetic_pathway from the genus Kranz anatomy statement, copied to its species
+  (inferred_from_genus) only when it names a single pathway. In group descriptions a segment followed by an "or ..." segment is an
+  alternative ("Culms woody and persistent, or herbaceous"); not a rare alternative ("usually bisexual, or rarely unisexual" keeps
+  bisexual), nor the "or" left when a range is removed (Restionaceae "Stems green and photosynthetic, terete to angular or
+  flattened" keeps green). Genus-level exclusions that apply only to one source's wording (AusGrass Triodia "Prickly perennial")
+  are limited to that source mode.
+- **Ecology vetted** (`ignore/jobs/ag1/vet.py`): Notes / Habitat sentences on stolons, rhizomes, mats, bulbs, cleistogamy,
+  apomixis, salt / frost tolerance, fire (candidates from `eco_cand.py`).
+- **Comparison (2026-11-02):** GrassBase_2014 (4 traits) agrees on leaf and culm sizes; its seed_length is the grain, which
+  2026 records as fruit_length. ABRS Poaceae: FoA's "Tufted perennial" (caespitose) has no AusGrass species-level equivalent.
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`

@@ -43,7 +43,12 @@ if (plantnet_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_e
 # family profiles (no copy-down); override / vetted CSVs live in WATTLE_2026/raw.
 wattle_mode <- Sys.getenv("FOA_SOURCE") == "wattle"
 if (wattle_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/wattle_fact_sheets.csv"
-own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else NA_character_
+# AusGrass mode (env FOA_SOURCE=ausgrass; user 2026-11-02): the AusGrass 3 (Grasses of Australia) DELTA profiles
+# (AusGrass3_fact_sheets.csv: 247 genera, 1555 species and infraspecific taxa) into the long-format dataset AusGrass3_2026. The DELTA
+# fields Habit, Inflorescence, Spikelets, Glumes and Florets are the description; genus profiles allow copy-down.
+ausgrass_mode <- Sys.getenv("FOA_SOURCE") == "ausgrass"
+if (ausgrass_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/AusGrass3_fact_sheets.csv"
+own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else if (ausgrass_mode) "AusGrass3_2026" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
@@ -54,7 +59,7 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
 # 2026-10-22); ABRS_Proteaceae_2026 and ABRS_Asteraceae_2026 from the start (user, 2026-10-29)
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
-              "CPBR_2026", "NHNSW_2026", "WATTLE_2026")
+              "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026")
 dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -204,6 +209,41 @@ if (plantnet_mode) {
               Distribution = na_if(str_squish(paste0(ifelse(is.na(`NSW subdivisions`), "", paste0("NSW: ", `NSW subdivisions`)),
                                                      ifelse(is.na(`Other Australian states`), "", paste0("; other states: ", `Other Australian states`)))), ""))
   fams <- unique(na.omit(d_all$family)); gens <- character(0)
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
+if (ausgrass_mode) {
+  fams <- "Poaceae"; gens <- character(0)
+  # DELTA fields in FoA form: the description is Habit, Inflorescence, Spikelets, Glumes and Florets in that order (" | " joins the
+  # descriptions of different floret types); names lose the naturalised marker ("Cynodon dactylon*"); flowering times are the
+  # "Flowers ..." sentence of the Notes (months abbreviated: "Flowers Feb-May"); "naturalised" is the biostatus
+  dot <- function(x) ifelse(is.na(x) | str_squish(x) == "", "", ifelse(str_detect(x, "[.]\\s*$"), x, paste0(x, ".")))
+  mon <- c("\\bJan\\b\\.?" = "January", "\\bFeb\\b\\.?" = "February", "\\bMar\\b\\.?" = "March", "\\bApr\\b\\.?" = "April", "\\bJun\\b\\.?" = "June",
+           "\\bJul\\b\\.?" = "July", "\\bAug\\b\\.?" = "August", "\\bSept?\\b\\.?" = "September", "\\bOct\\b\\.?" = "October", "\\bNov\\b\\.?" = "November", "\\bDec\\b\\.?" = "December")
+  d_all <- d_all %>%
+    transmute(scientific_name = str_squish(str_remove(taxon_name, "\\*+\\s*$")),
+              rank = case_when(taxon_rank == "genus" ~ "genus", str_detect(scientific_name, " subsp\\. ") ~ "subspecies",
+                               str_detect(scientific_name, " var\\. ") ~ "variety", str_detect(scientific_name, " f\\. ") ~ "form", TRUE ~ "species"),
+              family = "Poaceae", url,
+              # (a genus profile with " | " in its fields holds several descriptions, the genus's and a species-style one, or
+              # several stitched genera (Cenchrus): they become separate parts, part i of every field together, so that a value is
+              # copied down only when every part states it; extra floret pieces stay in the last part; a field given once applies
+              # to every part. In species profiles " | " only starts another floret type: Themeda "... Palea absent. | Fertile lemma")
+              Description = na_if(pmap_chr(list(Habit, Inflorescence, Spikelets, Glumes, Florets, taxon_rank), function(...) {
+                a <- list(...); rk <- a[[6]]; f <- map(a[1:5], ~ str_trim(str_split(coalesce(.x, ""), "\\s*\\|\\s*")[[1]]))
+                if (rk != "genus" || all(lengths(f) == 1)) return(str_squish(paste(map_chr(f, ~ dot(paste(.x, collapse = " "))), collapse = " ")))
+                n <- as.integer(names(sort(-table(lengths(f[lengths(f) > 1])))[1]))
+                f <- map(f, ~ if (length(.x) == 1) rep(.x, n) else if (length(.x) > n) c(.x[seq_len(n - 1)], paste(.x[n:length(.x)], collapse = " ")) else c(.x, rep("", n - length(.x))))
+                parts <- map_chr(seq_len(n), function(i) str_squish(paste(map_chr(f, ~ dot(.x[i])), collapse = " ")))
+                paste(parts, collapse = " Now includes Delta: ")
+              }), ""),
+              Phenology = coalesce(na_if(str_squish(Phenology), ""),
+                                   str_extract(Notes, "\\bFlower(?:s|ing)\\b(?:[^.|]|\\.(?=\\S))*?\\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|spring|summer|autumn|winter|all year|throughout)(?:[^.|]|\\.(?=\\S))*")) %>%
+                str_replace_all(mon),
+              Habitat = na_if(str_squish(paste(coalesce(Habitat, ""), coalesce(`Distribution and habitat`, ""))), ""),
+              Notes, `Common Name` = `Common name`, Biostatus = ifelse(naturalised == "TRUE", "Introduced", NA_character_),
+              Distribution = na_if(str_squish(paste(coalesce(`Australian Distribution`, ""), coalesce(`Regional Distribution`, ""))), ""),
+              Author = NA_character_)
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
@@ -1966,6 +2006,32 @@ extract_one <- function(r, group_filter = TRUE) {
     str_replace("\u00b6([a-z])", function(z) str_to_upper(str_sub(z, 2)))
   # Aizoaceae: the "operculum" is the lid of the circumscissile capsule, not a petal cap as in Myrtaceae
   if (fam == "Aizoaceae" && !is.na(desc)) desc <- str_replace_all(desc, "\\bOperculum\\b", "Capsule operculum")
+  # AusGrass DELTA rhizome / stolon statements, read exactly (user 2026-11-02): "Rhizomes present, short / elongated / short or
+  # elongated", "Rhizomes absent", "Stolons present / absent"; "absent or present" is present on a commonness_qualifier = sometimes
+  # row. Rhizomes: storage_organ rhizome, stem_growth_habit rhizomatous, rhizome_form short_creeping / long_creeping; only elongated
+  # rhizomes (and stolons) are clonal spread (clonal_spread_mechanism, vegetative_reproduction_ability vegetative). "Stolons absent" is
+  # clonal_spread_mechanism stolon_absent; "Rhizomes absent" gives no row. The statements are then taken out of the text the general
+  # rules read.
+  dg_recs <- list()
+  if (ausgrass_mode && !is.na(desc)) {
+    ag <- function(trait, value, txt, q) dg_recs[[length(dg_recs) + 1]] <<- rec_cat(trait, tibble(pos = 1L, value = value, term = txt, qual = q), txt)
+    rh <- str_match(desc, "\\bRhizomes (absent or present|present|absent)(?:, (short or elongated|short|elongated))?\\.")
+    if (!is.na(rh[1]) && rh[2] != "absent") {
+      q <- if (rh[2] == "absent or present") "sometimes" else NA_character_; tx <- str_remove(rh[1], "\\.$")
+      ag("storage_organ", "rhizome", tx, q); ag("stem_growth_habit", "rhizomatous", tx, q)
+      if (!is.na(rh[3])) ag("rhizome_form", c(short = "short_creeping", elongated = "long_creeping", `short or elongated` = "short_creeping long_creeping")[[rh[3]]], tx, q)
+      if (!is.na(rh[3]) && str_detect(rh[3], "elongated")) { ag("clonal_spread_mechanism", "rhizome", tx, q); ag("vegetative_reproduction_ability", "vegetative", tx, q) }
+    }
+    st <- str_match(desc, "\\bStolons (absent or present|present|absent)\\.")
+    if (!is.na(st[1])) {
+      tx <- str_remove(st[1], "\\.$")
+      if (st[2] == "absent") ag("clonal_spread_mechanism", "stolon_absent", tx, NA_character_) else {
+        q <- if (st[2] == "absent or present") "sometimes" else NA_character_
+        ag("stem_growth_habit", "stoloniferous", tx, q); ag("clonal_spread_mechanism", "stolon", tx, q); ag("vegetative_reproduction_ability", "vegetative", tx, q)
+      }
+    }
+    desc <- str_squish(str_remove_all(desc, "\\b(?:Rhizomes|Stolons) (?:absent or present|present|absent)(?:, (?:short or elongated|short|elongated))?\\.\\s*"))
+  }
   # genus / family descriptions summarise variation: sentences scoped to some species ("or introduced basal-rosetted
   # species", "most species ...") and comma segments carrying a commonness word are not universal, so they are dropped
   if (r[["rank"]] %in% c("genus", "family") && group_filter) {
@@ -1991,10 +2057,13 @@ extract_one <- function(r, group_filter = TRUE) {
       # ranges ("herbaceous to coriaceous", "globose to obloid-ovoid") are variation across the group: the range words are
       # removed, the rest of the segment kept ("Fruit a globose to obloid-ovoid, syncarpous fleshy berry")
       adv <- "(?:(?:slightly|weakly|strongly|very|more|less|shortly|narrowly|broadly|widely|deeply|shallowly|densely|sparsely|somewhat|minutely|finely|irregularly)\\s+)?"
+      x_or <- x
       x <- str_remove_all(x, paste0(adv, "\\b(?!(?:up|reduced|similar|adnate|attached|fused|close|due|next|equal|subequal|inserted|appressed|confined|restricted|tapering|tapered|narrowed|narrowing|extending|leading|according|relative|opposite|decurrent|connate|joined)\\b)[a-z-]+(?: to ", adv, "(?!the\\b|an?\\b|[0-9])[a-z-]+)+"))
       # ("Leaves simple or palmately lobed": the alternative is the lobing, so it is "simple, palmately lobed or not")
       x <- str_replace_all(x, rx("\\bsimple or ((?:[a-z]+ly )?(?:lobed|dissected|divided|incised))\\b"), "simple, \\1 or not \\1")
       seg <- str_split(x, "(?<=[,;:])\\s+")[[1]]
+      # (segments of the text before the range words were removed: "terete to angular or flattened" does not open with "or")
+      seg_or <- str_split(str_replace_all(x_or, rx("\\bsimple or ((?:[a-z]+ly )?(?:lobed|dissected|divided|incised))\\b"), "simple, \\1 or not \\1"), "(?<=[,;:])\\s+")[[1]]
       # segments naming a particular genus ("glandular-pubescent (Hydrocleys)") describe only that genus
       # ... and alternatives ("smooth or variously winged") are variation across the group
       # (a commonness word governs what follows it in its segment, not what precedes it: "Fruit a capsule with a usually woody
@@ -2026,6 +2095,11 @@ extract_one <- function(r, group_filter = TRUE) {
       # petiolate, fleshy, coriaceous ...") may govern the whole list: the rest of the clause is dropped too
       # (only for the clause's opening segment, and not when the commonness word governs a count: "Seeds usually 3-6, angled, black")
       clause_end <- str_detect(seg0, ";$|:$")
+      # (a segment followed by an "or ..." segment is one alternative: "Culms woody and persistent, or herbaceous"; 2026-11-02)
+      # (not a rare alternative, which is cut and leaves the main value: Orchidaceae "usually bisexual, or rarely unisexual")
+      # (nor an "or" left behind by a removed range: Restionaceae "Stems (culms) green and photosynthetic, terete to angular or flattened")
+      or_seg <- if (length(seg_or) == length(seg0)) str_detect(seg_or, "^or\\b") else str_detect(seg0, "^or\\b")
+      for (k in which(c(or_seg[-1] & !str_detect(seg0[-1], rx(paste0("^or\\s+,?\\s*(?:", paste(rare_quals, collapse = "|"), ")\\b"))), FALSE) & !clause_end)) drop[k] <- TRUE
       # (a rare alternative cut from its segment takes its list with it: Poaceae "Fruit a caryopsis ..., rarely a nut, berry, or an
       # utricle" is not "caryopsis, berry"; the short list items that close with "or ..."; not Acacia "sometimes woody, flat to terete,
       # dehiscent", where the items are other characters; 2026-11-01)
@@ -2083,6 +2157,8 @@ extract_one <- function(r, group_filter = TRUE) {
   if (identical(fam, "Cyperaceae")) u$sec[u$sec == "fruit" & str_detect(coalesce(u$subj, ""), rx("^(?:the )?(?:mature |ripe )?utricles?$"))] <- "perigynium"
   recs <- list()
   add <- function(x) if (!is.null(x) && nrow(x)) recs[[length(recs) + 1]] <<- x
+  # (the AusGrass rhizome / stolon records, read above)
+  for (x in dg_recs) add(x)
   addc <- function(trait, txt, dict, neg = NULL, generic_neg = TRUE, prep_fun = NULL, ctx_type = NA_character_, ctx_value = NA_character_) {
     if (is.na(txt) || txt == "") return(invisible(NULL))
     h <- scan_terms(txt, dict, neg, generic_neg, prep_fun)
@@ -3379,6 +3455,9 @@ extract_one <- function(r, group_filter = TRUE) {
     stc <- count_after(unit_text(uu, "androecium", subj_re = "^(?:the )?(?:fertile )?stamens?$") %>% { .[!str_detect(., rx(paste0("^(?:fertile )?stamens? (?:usually |c\\. |mostly |often )?[0-9.]+(?:\\s*-\\s*[0-9.]+)?", if (legume_mode) "(?:\\s*\\([^)]*\\))?" else "", "\\s*(?:mm|cm|m)\\b")))] },
                        "^(?:fertile )?stamens? (?:usually |c\\. |mostly |often )?([0-9]+)(?:(?:,? [a-z, -]+?)?(?:-| or | to )([0-9]+))?(?![0-9.])")
     if (is.null(stc)) stc <- count_after(fl_u, "\\b([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))? (?:fertile )?stamens\\b")
+    # (grasses: one stamen per anther, AusGrass "Anthers 3."; 2026-11-02)
+    if (is.null(stc) && (grass_mode || gram_mode)) stc <- count_after(c(unit_text(uu, "androecium", parts = "any"), fl_u) %>% { .[str_detect(., rx("^(?:the )?anthers?\\b"))] },
+                                                                    "^anthers? ([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?(?![0-9.]|\\s*(?:mm|cm)\\b)")
     if (!is.null(stc)) addn("flower_fertile_stamens_count", stc$v, stc$txt, ct[1], ct[2])
     anth <- m_first(unit_text(uu, "androecium", subj_re = "anther"), "long|in length", excl("anthers?"))
     if (is.null(anth)) {
@@ -4383,8 +4462,18 @@ copydown_exclude <- tribble(
   "Cryptocarya", "pedicel_texture", "Cryptocarya", "staminode_hairs", "Cryptocarya", "flower_orientation", "Endiandra", "pedicel_texture",
   "Cyperus", "flower_colour", "Cyperus", "flower_colour_detailed", "Pomaderris", "fruit_fusion", "Ericaceae", "flower_structural_sex_type",
   # Crassulaceae "Herbs or small shrubs, ..., chiefly annual": Sedum ("perennial herbs or shrubs"), Bryophyllum, Kalanchoe are perennial
-  "Crassulaceae", "life_history"
+  "Crassulaceae", "life_history",
+  # (AusGrass genera, read 2026-11-02) "Culms woody and persistent (subgenus Bambusina ...), or herbaceous" (Austrostipa, Panicum);
+  # "keeled (rarely) or non-keeled (usually)" (Eriachne), "1 keeled to not keeled" (Triodia); "Plants bisexual, with bisexual
+  # spikelets or dioecious" (Poa); Eragrostis "paniculate (often with multicellular glands, characteristically scented)"
+  "Austrostipa", "stem_persistence", "Panicum", "stem_persistence", "Eriachne", "lemma_surface", "Triodia", "lemma_surface",
+  "Poa", "flower_structural_sex_type", "Eragrostis", "flower_scent_production",
+  # (Eragrostis "Lemmas less firm than glumes (hyaline) ..., glabrous": the lemma of a sterile floret)
+  "Eragrostis", "lemma_hairs"
 )
+# (AusGrass Triodia "Prickly perennial": the pungent leaf tips, not prickles; the species texts give pungent_leaf_apex. The FoA genus
+# text, "blade woody, pungent-pointed", is copied)
+if (ausgrass_mode) copydown_exclude <- bind_rows(copydown_exclude, tibble(group_name = "Triodia", trait = "plant_physical_defence_structures"))
 # groups whose description stitches together several segregate genera, so no statement holds throughout: Dendrobium sens. lat.
 # ("includes the following descriptions from Jones (2021): Australorchis ...: Epiphytic orchids ... Ceraia ...: ... Conostalix ...:
 # Terrestrial clumping orchids ..."); likewise Prasophyllum sens. lat. ("Prasophyllum: deciduous, terrestrial ...", then Paraprasophyllum)
@@ -4496,6 +4585,10 @@ if (nrow(recs_hi)) {
     mutate(facet = facet_of(trait, value)) %>% anti_join(hi_variable, by = c("group_name", "trait", "facet")) %>%
     semi_join(hi_full_vals, by = c("group_name", "trait", "value")) %>%
     anti_join(copydown_exclude, by = c("group_name", "trait")) %>% filter(!group_name %in% copydown_exclude_groups) %>%
+    # (grass genera: rhizomes and stolons vary between the species, and each AusGrass species states its own: not copied down;
+    # 2026-11-02, an annual Thaumastochloa had a rhizome from its genus)
+    filter(!(trait %in% c("storage_organ", "rhizome_form", "clonal_spread_mechanism", "vegetative_reproduction_ability") &
+               group_name %in% c("Poaceae", d_higher$scientific_name[d_higher$family %in% "Poaceae"]))) %>%
     select(group_name, group_rank, trait, value, desc) %>% distinct(group_name, trait, .keep_all = TRUE)
   own_tv <- recs %>% filter(!is.na(value), value != "", !trait %in% c("flowering_time", "fruiting_time")) %>%
     group_by(taxon_name, trait) %>% summarise(vals = paste(value, collapse = " "), .groups = "drop") %>%
@@ -5084,6 +5177,7 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
       # (CPBR_2026, NHNSW_2026: the profile links are EUCLID's / PlantNET's, and context columns with no values are left out)
       if (euclid_mode) df <- df %>% rename(euclid_url = foa_url)
       if (wattle_mode) df <- df %>% rename(wattle_url = foa_url)
+      if (ausgrass_mode) df <- df %>% rename(ausgrass_url = foa_url)
       # (NHNSW_2026: the profile link, repeated on every row, was 44% of the file and took it to the 100 MB GitHub limit: it is written
       # once per taxon to raw/taxon_urls.csv instead)
       if (plantnet_mode) {
