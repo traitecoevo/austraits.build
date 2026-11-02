@@ -37,7 +37,13 @@ if (euclid_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_ext
 # so the same family modes and genus / family copy-down apply; override / vetted CSVs live in NHNSW_2026/raw.
 plantnet_mode <- Sys.getenv("FOA_SOURCE") == "plantnet"
 if (plantnet_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/plantnet_nsw_flora.csv"
-own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else NA_character_
+# WATTLE mode (env FOA_SOURCE=wattle; user 2026-11-02): the WATTLE (Acacias of Australia) profiles on Lucid (wattle_fact_sheets.csv:
+# Acacia, Vachellia, Senegalia, Acaciella; 1277 species, infraspecific taxa, hybrids and informal variants) into the long-format
+# dataset WATTLE_2026. The text is mostly the FoA Acacia treatment (as in ABRS_Fabaceae_2026) but it is a separate source: no genus /
+# family profiles (no copy-down); override / vetted CSVs live in WATTLE_2026/raw.
+wattle_mode <- Sys.getenv("FOA_SOURCE") == "wattle"
+if (wattle_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/wattle_fact_sheets.csv"
+own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
@@ -48,7 +54,7 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
 # 2026-10-22); ABRS_Proteaceae_2026 and ABRS_Asteraceae_2026 from the start (user, 2026-10-29)
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
-              "CPBR_2026", "NHNSW_2026")
+              "CPBR_2026", "NHNSW_2026", "WATTLE_2026")
 dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -201,6 +207,30 @@ if (plantnet_mode) {
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
+if (wattle_mode) {
+  fams <- "Fabaceae"; gens <- character(0)
+  # names as written (no authorities in taxon_name): hybrid formulae ("Acacia ampliceps x sclerosperma subsp. sclerosperma"), informal
+  # variants ("Acacia ayersiana (narrow phyllode variant)", "(hybrid)") and phrase names ("Acacia terminalis subsp. Glabrous form
+  # (M.Hancock 94)") are kept; hybrids and informal variants have rank species. Distribution, Habitat, Notes, Phenology ("Flowers
+  # Apr.-Oct.") and Conservation are the FoA fields of the same names
+  d_all <- d_all %>%
+    transmute(scientific_name = str_squish(taxon_name),
+              rank = case_when(str_detect(scientific_name, " x |\\(") ~ "species", str_detect(scientific_name, " subsp\\. ") ~ "subspecies",
+                               str_detect(scientific_name, " var\\. ") ~ "variety", str_detect(scientific_name, " f\\. ") ~ "form", TRUE ~ "species"),
+              family = coalesce(Family, "Fabaceae"), url, Description,
+              # (state abbreviations in the FoA wording, so that regional flowering times keep their region: "Flowers mid-Apr.-July in
+              # coastal Qld; late Apr.-Aug. in inland Qld; (May-) June-Sept. in N.S.W.")
+              Phenology = Phenology %>% str_replace_all("\\bN\\.S\\.W\\.", "New South Wales") %>% str_replace_all("\\bA\\.C\\.T\\.", "Australian Capital Territory") %>%
+                str_replace_all("\\bW\\.A\\.", "Western Australia") %>% str_replace_all("\\bS\\.A\\.", "South Australia") %>% str_replace_all("\\bN\\.T\\.", "Northern Territory") %>%
+                str_replace_all("\\bQld\\b\\.?", "Queensland") %>% str_replace_all("\\bVic\\.", "Victoria") %>% str_replace_all("\\bTas\\.", "Tasmania") %>%
+                # (and the months: "Aug. in inland Qld" is not a sentence end)
+                str_replace_all(c("\\bJan\\." = "January", "\\bFeb\\." = "February", "\\bMar\\." = "March", "\\bApr\\." = "April", "\\bAug\\." = "August",
+                                  "\\bSept?\\." = "September", "\\bOct\\." = "October", "\\bNov\\." = "November", "\\bDec\\." = "December",
+                                  "\\b(May|June|July)\\.(?=\\s*[\u2013-])" = "\\1")),
+              Habitat, Distribution, Notes, `Common Name`, Author, Conservation)
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
 if (euclid_mode) {
   fams <- "Myrtaceae"; gens <- character(0)
   # EUCLID columns in FoA form: the "Cultivated seedlings (measured at ca node 10): ..." text closing each description is the
@@ -270,7 +300,8 @@ orch_terr_genera <- d_higher %>% filter(family == "Orchidaceae", rank == "genus"
   filter(str_detect(s1, regex("terrestrial", ignore_case = TRUE)), !str_detect(s1, regex("epiphyt|lithophyt", ignore_case = TRUE))) %>%
   pull(scientific_name)
 # (in FOA_FAMILIES chunk runs the whole family is read, for QA of the next batch)
-if (Sys.getenv("FOA_FAMILIES") == "") d <- d %>% group_by(family) %>% filter(!(family %in% names(partial_n)) | row_number() <= partial_n[family]) %>% ungroup()
+# (ABRS only: the other sources are read whole)
+if (Sys.getenv("FOA_FAMILIES") == "" && is.na(own_id)) d <- d %>% group_by(family) %>% filter(!(family %in% names(partial_n)) | row_number() <= partial_n[family]) %>% ungroup()
 
 # ---------------------------------------------------------------- source typos / fixes
 fix_text <- tribble(
@@ -4080,7 +4111,7 @@ extract_one <- function(r, group_filter = TRUE) {
     tr <- c(fl = "flowering_time", fr = "fruiting_time")[[k]]; xk <- ph[[paste0(k, "_x")]]
     qx <- if (nrow(ph$q_extra)) ph$q_extra %>% filter(k == !!k) else tibble()
     if (!is.na(ph[[k]])) add(tibble(trait = tr, value = ph[[k]], desc = ph[[paste0(k, "_s")]], min = NA, max = NA, ctx_type = NA, ctx_value = NA,
-                                    qualifier = if (!is.null(ph$main_q) && !is.na(ph$main_q[[k]])) ph$main_q[[k]] else if (!is.na(xk) || any(qx$q != "peak")) "usually" else NA_character_))
+                                    qualifier = if (!is.null(ph$main_q) && !is.na(ph$main_q[[k]])) ph$main_q[[k]] else if (!is.na(xk) || (nrow(qx) > 0 && any(qx$q != "peak"))) "usually" else NA_character_))
     # (a peak inside the window is not an alternative: the window keeps no commonness word, Bidens bipinnata "December-August, with a peak February-April")
     if (nrow(qx)) qx <- qx %>% group_by(q) %>% summarise(m = list(sort(unique(unlist(m)))), s = first(s), .groups = "drop")
     for (j in seq_len(nrow(qx))) add(tibble(trait = tr, value = yn(sort(unique(unlist(qx$m[j])))), desc = qx$s[j], min = NA, max = NA,
@@ -4655,6 +4686,7 @@ inf <- main %>% transmute(taxon_name, family, genus = word(taxon_name, 1)) %>%
   left_join(tv("plant_growth_form") %>% rename(gf = v), by = "taxon_name") %>%
   left_join(tv("plant_growth_substrate") %>% rename(sub = v), by = "taxon_name") %>%
   left_join(tv("plant_photosynthetic_organ") %>% rename(pho = v), by = "taxon_name") %>%
+  left_join(tv("leaf_compoundness") %>% rename(cmpd = v), by = "taxon_name") %>% left_join(tv("leaf_phenology") %>% rename(lphen = v), by = "taxon_name") %>%
   left_join(tv("parasitic") %>% rename(par = v), by = "taxon_name") %>%
   left_join(tv("leaf_type") %>% rename(lt = v), by = "taxon_name") %>%
   left_join(tv(c("leaf_length_type")) %>% rename(llt = v), by = "taxon_name") %>%
@@ -4725,6 +4757,9 @@ recs <- bind_rows(recs,
     mutate(desc = paste0(str_remove(desc, "\\]$"), ": '", str_squish(inf$rock_txt[inf$sub_ok & inf$rock_chk]), "']")),
   inf_rec(inf$pho_ok, "plant_photosynthetic_organ", "leaf", "leaves described; no leafless, scale-leaved, phyllode, cladode or photosynthetic-stem wording"),
   inf_rec(inf$nonpho_ok, "plant_photosynthetic_organ", "non-photosynthetic_plant", "achlorophyllous: mycoheterotroph, saprophyte or holoparasite"),
+  # (phyllodinous taxa, as in Maslin_2012; user 2026-11-02: a phyllode is a simple blade, and phyllodes are evergreen)
+  inf_rec(str_detect(coalesce(inf$pho, ""), "phyllode") & is.na(inf$cmpd), "leaf_compoundness", "simple", "phyllodes, simple blades; no compound leaves named"),
+  inf_rec(str_detect(coalesce(inf$pho, ""), "phyllode") & is.na(inf$lphen), "leaf_phenology", "evergreen", "phyllodinous; no deciduous or seasonal leaf loss named"),
   inf_rec(inf$clad_ok, "plant_photosynthetic_organ", "cladode", "leafless or scale-leaved; the green stems photosynthesise"),
   inf_rec(inf$par_ok, "parasitic", "not_parasitic", "green plant outside parasitic families and genera; no parasitism, host or mycoheterotrophy named"),
   inf_rec(inf$lt_ok, "leaf_type", "broadleaf", "leaf or leaflet shapes all flat-lamina shapes, or leaves at least 3 mm wide, or a divided fern lamina; no terete, needle, involute or scale leaves named"))
@@ -4834,7 +4869,8 @@ for (i in seq_len(nrow(value_fixes))) {
   hit <- recs$trait == vf$trait & !is.na(recs$value) & str_detect(recs$value, paste0("(?:^| )", fixed_re(vf$value), "(?: |$)"))
   if (!is.na(vf$where)) hit <- hit & str_detect(paste0(coalesce(fam_of[recs$taxon_name], ""), "|", recs$taxon_name), vf$where)
   if (!any(hit)) next
-  if (vf$to != "") recs <- bind_rows(recs, recs[hit, ] %>% mutate(trait = vf$to, value = vf$to_value))
+  # (the moved rows are appended: the index is padded so that it does not recycle over them; 2026-11-02)
+  if (vf$to != "") { n0 <- nrow(recs); recs <- bind_rows(recs, recs[hit, ] %>% mutate(trait = vf$to, value = vf$to_value)); hit <- c(hit, rep(FALSE, nrow(recs) - n0)) }
   recs$value[hit] <- str_squish(str_replace_all(paste0(" ", recs$value[hit], " "), paste0(" ", fixed_re(vf$value), "(?= )"), ""))
   recs$vf_emptied[hit & recs$value == ""] <- TRUE
 }
@@ -5047,6 +5083,7 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
       df <- long_of(main$taxon_name[dataset_of(main$family) == id])
       # (CPBR_2026, NHNSW_2026: the profile links are EUCLID's / PlantNET's, and context columns with no values are left out)
       if (euclid_mode) df <- df %>% rename(euclid_url = foa_url)
+      if (wattle_mode) df <- df %>% rename(wattle_url = foa_url)
       # (NHNSW_2026: the profile link, repeated on every row, was 44% of the file and took it to the 100 MB GitHub limit: it is written
       # once per taxon to raw/taxon_urls.csv instead)
       if (plantnet_mode) {

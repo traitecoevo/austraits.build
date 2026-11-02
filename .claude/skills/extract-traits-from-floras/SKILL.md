@@ -526,6 +526,29 @@ not the main checkout's: the user switches branches in the main checkout, and it
   orchids and herbs only (not annuals, biennials or palms); fire, dispersal (seeds spread by birds → dispersers birds + endozoochory;
   tumbleweed), pollination and cleistogamy; hedged with the hedge word. dispersers levels are plural (birds, mammals).
 
+## WATTLE: Acacias of Australia (WATTLE_2026, user 2026-11-02)
+
+- **Scope:** all 1277 WATTLE profiles (`data_extra/wattle_fact_sheets.csv`: Acacia, Vachellia, Senegalia, Acaciella; species,
+  infraspecific taxa, hybrids, informal variants, phrase names), dataset id WATTLE_2026, long format; most text is the FoA Acacia
+  treatment (as in ABRS_Fabaceae_2026). Do not look at Maslin_2012 (WATTLE 2) while extracting: it is the comparison case.
+- **Same parser, WATTLE mode:** `FOA_SOURCE=wattle FOA_CORES=12 Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R` (~2 min).
+  Fields: Description, Habitat, Distribution, Notes, Phenology, Conservation, Common Name, Author; the link column is
+  `wattle_url`. No genus profiles, so no copy-down. Names as written; hybrids ("A. ampliceps x sclerosperma subsp.
+  sclerosperma") and informal variants ("(narrow phyllode variant)") have rank species. Metadata first created by
+  `ignore/jobs/wt1/make_meta.py` (contexts and substitutions from ABRS_Fabaceae_2026), then add-only.
+- **Phenology:** WATTLE abbreviates states and months ("mid-Apr.-July in coastal Qld; ... in N.S.W."): both are expanded to
+  the FoA wording before parsing ("Aug. in inland Qld" is not a sentence end). Regional calendars are hand overrides in
+  `WATTLE_2026/raw/phenology_overrides.csv` (from WATTLE's own months), as in the ABRS overrides.
+- **Ecology vetted** (`ignore/jobs/wt1/vet.py` -> `raw/ecology_vetted.csv`): the ABRS vetted rows whose evidence is verbatim in
+  WATTLE, plus every WATTLE Habitat / Notes sentence on fire, suckering, salt / frost tolerance, lifespan and establishment read
+  by hand (`eco_cand.py` lists the candidates).
+- **Source limits (comparison 2026-11-02):** only 5 of the 224 infraspecific taxa have a species profile in the scrape, so their
+  shared characters (pods, seeds, flowers) are missing; 868 profiles have no flowering text. WATTLE itself has no species pages
+  for divided species (checked 2026-11-02: e.g. acacia_mutabilis.htm is 404; the subspecies pages hold only their own
+  description), and the FoA species profiles are NOT copied in (user 2026-11-02: no mixing of sources).
+- **Phyllodinous taxa (all sources, user 2026-11-02):** leaf_compoundness simple and leaf_phenology evergreen are inferred
+  (trait_scoring_method inferred) when the profile scores neither, as in Maslin_2012.
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`
