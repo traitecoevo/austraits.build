@@ -1,0 +1,306 @@
+source:
+  primary:
+    key: Dorey_2021
+    bibtype: Article
+    year: 2021
+    author: James B. Dorey
+    title: 'Missing for almost 100 years: the rare and potentially threatened bee,
+      Pharohylaeus lactiferus (Hymenoptera, Colletidae)'
+    journal: Journal of Hymenoptera Research
+    volume: 81
+    pages: 165--180
+    doi: 10.3897/jhr.81.59365
+contributors:
+  data_collectors:
+  - last_name: Dorey
+    given_name: James B.
+    ORCID: 0000-0003-2721-3842
+    affiliation: University of Wollongong, Australia
+    additional_role: contact
+  - last_name: Teys
+    given_name: Maddison
+    ORCID: .na.character
+    affiliation: University of Wollongong, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data |>
+      dplyr::group_by(
+        taxon_name, location_name, collection_date, basis_of_record,
+        flower_visitor, visitor_taxon_name
+      ) |>
+      dplyr::summarise(
+        visitor_count = dplyr::if_else(
+          all(is.na(visitor_count)),
+          NA_character_,
+          as.character(sum(as.numeric(visitor_count), na.rm = TRUE))
+        ),
+        vial_code = dplyr::na_if(paste(sort(unique(stats::na.omit(vial_code))), collapse = "; "), ""),
+        record_id = paste(unique(record_id), collapse = "; "),
+        .groups = "drop"
+      )
+    '
+  collection_date: collection_date
+  taxon_name: taxon_name
+  location_name: location_name
+  description: To locate extant populations of the rare bee Pharohylaeus lactiferus,
+    unrecorded since 1923, and describe its floral and habitat associations.
+  basis_of_record: basis_of_record
+  life_stage: adult
+  sampling_strategy: I undertook general collections in parts of Queensland and New
+    South Wales in a variety of habitats with most collections made across two sampling
+    periods from December to February 2018–19 and November to December of 2019 (summer).
+    I chose sampling sites by the presence of flowering vegetation on the side of
+    roads and trails. I caught specimens by sweep-netting (up to 13 m from the ground
+    using an 11 m Lito net) off flowering plants, vegetation or potential bee-nesting
+    sites. After collection, I transferred specimens to 99% ethanol and stored them
+    at ~2 °C. For each collection event I recorded latitude, longitude and elevation
+    in metres above sea level (m asl) and later checked these to ensure accuracy.
+    I estimated the number of bees for each vial while in the field. Other data that
+    I collected included date, time, collector, sampling effort (in minutes), sampling
+    notes and, where possible, flower species visited and the resource that I used
+    to identify that plant. I undertook general collections between 0525 and 2200
+    (Suppl. material 2, Table S1). I did not collect any plant vouchers. I identified
+    Pharohylaeus using the keys by Houston (1975) and Smith (2018). ^p I used two
+    initial collection events of P. lactiferus to inform targeted sampling (see results).
+    However, I undertook general collections and observations at every site where
+    I found P. lactiferus in an attempt to find additional associated plant species.
+    I chose targeted sampling sites haphazardly as target plant species were encountered,
+    generally near the side of roads or hiking trails. I undertook observations of
+    the target plant species, Stenocarpus sinuatus (Loudon) Endl. (Proteaceae) and
+    Brachychiton acerifolius (A.Cunn. ex G.Don) F.Muell. (Malvaceae), for a minimum
+    of five minutes (maximum of 67 minutes) for each collection event (Suppl. material
+    2, Table S1). Where I increased sampling time, I did so to collect P. lactiferus
+    specimens and to determine their distribution or activity times. I did not undertake
+    a systematic temporal sampling regime; however, I made targeted collections throughout
+    the day (between 0730 and 1751) (Suppl. material 2, Table S1). ^p Representative
+    materials are stored at the South Australian Museum (SAMA 32-37949, SAMA 32-37950,
+    SAMA 32-40838, SAMA 32-40846, SAMA 32-40847, SAMA 32-40848, SAMA 32-40849).
+  original_file: raw/journal_of_hymenoptera_research-081-165-s002.xlsx (Supplementary
+    material 2, Tables S1-S5, https://doi.org/10.3897/jhr.81.59365.suppl2). data.csv
+    and locations.csv are written from Tables S1 and S3 by raw/extra_R_code_Dorey_2021.R,
+    with the other flower visitors named in each record's notes transcribed in raw/Dorey_2021_note_visitors.csv.
+  notes: Table S3 rows for the Table S1 observation-only events are replaced by the Table S1 rows, whose notes are fuller. Fourteen vials
+    with no Plant ID whose note names the plant (e.g. "General sweeps over snowgum",
+    "Sight-swept off flame tree"), or that come from the same tree on the same day
+    as a vial with a Plant ID, are included with that plant in plant_name_from_notes.
+    The remaining 254 vials without a Plant ID were collected at nests, over bare
+    ground, grass or general vegetation, on snow, at a light trap or on unidentified
+    flowers, and are not included. custom_R_code collapses the vials of one collecting
+    event (same plant, location and date) into one observation per visitor taxon,
+    summing the counts and listing the vial codes.
+    Dorey's specimens from the Table S1 events that are also in the BeeBDC compilation
+    (Dorey_2023) are kept here and removed from Dorey_2023.
+identifiers:
+- var_in: vial_code
+  identifier_type: catalogNumber
+  institution_code: Dorey (J.B. Dorey collection)
+locations: locations.csv
+contexts:
+- context_property: flower visitor taxon name
+  category: entity_context
+  var_in: visitor_taxon_name
+- context_property: pollinator count
+  category: entity_context
+  var_in: visitor_count
+traits:
+- var_in: flower_visitor
+  unit_in: .na
+  trait_name: flower_visitor
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: I caught specimens by sweep-netting (up to 13 m from the ground using an
+    11 m Lito net) off flowering plants, vegetation or potential bee-nesting sites.
+    [...] Other data that I collected included date, time, collector, sampling effort
+    (in minutes), sampling notes and, where possible, flower species visited and the
+    resource that I used to identify that plant. ^p I undertook observations of the
+    target plant species, Stenocarpus sinuatus (Loudon) Endl. (Proteaceae) and Brachychiton
+    acerifolius (A.Cunn. ex G.Don) F.Muell. (Malvaceae), for a minimum of five minutes
+    (maximum of 67 minutes) for each collection event (Suppl. material 2, Table S1).
+    ^p I only identified plants on which I caught bee specimens; thus, this represents
+    a subset of those examined. ^p Each record is a bee taxon collected from the flowers
+    of the plant, or another animal named in the collection notes as visiting them.
+substitutions: .na
+taxonomic_updates:
+- find: Acacia spirorbis subsp. solandi
+  replace: Acacia spirorbis subsp. solandri
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Ackma paniculosa
+  replace: Ackama paniculosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Adenthera palonina
+  replace: Adenanthera pavonina
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Angophora costata subsp. Costata
+  replace: Angophora costata subsp. costata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Angophora costata subsp. Euryphylla
+  replace: Angophora costata subsp. euryphylla
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Anthropodium milleflorum
+  replace: Arthropodium milleflorum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Bachausia myrtifolia
+  replace: Backhousia myrtifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Brachychiton populneus subsp. Populneus
+  replace: Brachychiton populneus subsp. populneus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Cassia fistulata
+  replace: Cassia fistula
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Corymbia leichardti
+  replace: Corymbia leichhardtii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus camaldulensis subsp. Camaldulensis
+  replace: Eucalyptus camaldulensis subsp. camaldulensis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Eucalyptus cambogeana
+  replace: Eucalyptus cambageana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus laevopinae
+  replace: Eucalyptus laevopinea
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus meliodora
+  replace: Eucalyptus melliodora
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus pauciflora subsp. Pauciflora
+  replace: Eucalyptus pauciflora subsp. pauciflora
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Grevillia australis
+  replace: Grevillea australis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Grevillia baileyana
+  replace: Grevillea baileyana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leptospermum spaerocarpum
+  replace: Leptospermum sphaerocarpum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Lophostomon suaveolens
+  replace: Lophostemon suaveolens
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Melaleuca stypheloides
+  replace: Melaleuca styphelioides
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Parsonsia straminae
+  replace: Parsonsia straminea
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Pennentia cunninghamii
+  replace: Pennantia cunninghamii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Senna pedula
+  replace: Senna pendula
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Verbana rigida
+  replace: Verbena rigida
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Angophora costata subsp. Leiocarpa
+  replace: Angophora costata subsp. leiocarpa
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Durantas repens
+  replace: Duranta repens
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus racemosa subsp. Rossii
+  replace: Eucalyptus racemosa subsp. rossii
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Brassica napus
+  replace: Brassica x napus
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-11-03)
+  taxonomic_resolution: species
+- find: Caesalpinia ferrea
+  replace: Caesalpinia sp. [Caesalpinia ferrea; Dorey_2021]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Corymbia c.f greeniana
+  replace: Corymbia sp. [Corymbia c.f greeniana; Dorey_2021]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Eucalyptus c.f resinifera subsp. Resinifera
+  replace: Eucalyptus sp. [Eucalyptus c.f resinifera subsp. Resinifera; Dorey_2021]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Koelreuteria paniculata
+  replace: Koelreuteria sp. [Koelreuteria paniculata; Dorey_2021]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Ranunculus acrophilus (sp. uncertain - imaged)
+  replace: Ranunculus sp. [Ranunculus acrophilus (sp. uncertain - imaged); Dorey_2021]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus;
+    species identification given as uncertain (2026-11-03)
+  taxonomic_resolution: genus
+- find: Lemon myrtle
+  replace: Backhousia citriodora
+  reason: Manual alignment of common name to APC-accepted taxon Backhousia citriodora
+    (2026-11-03)
+  taxonomic_resolution: species
+exclude_observations:
+- variable: taxon_name
+  find: '****, Angophora or other one - terminal flower buds, Asteraceae sp., Fabaceae
+    sp., gum'
+  reason: too low resolution (E. Wenk, 2026-11-03)
+- variable: taxon_name
+  find: Beaucarnea recurvata, Caesalpinia ferrea, Koelreuteria paniculata
+  reason: non-native, non-naturalised taxa
+questions: .na

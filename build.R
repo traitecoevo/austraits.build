@@ -425,6 +425,14 @@ Dong_2017_config <- dataset_configure("data/Dong_2017/metadata.yml", definitions
 Dong_2017_raw <- dataset_process("data/Dong_2017/data.csv", Dong_2017_config, schema, resource_metadata, unit_conversions)
 Dong_2017 <- dataset_update_taxonomy(Dong_2017_raw, taxon_list)
 
+Dorey_2021_config <- dataset_configure("data/Dorey_2021/metadata.yml", definitions)
+Dorey_2021_raw <- dataset_process("data/Dorey_2021/data.csv", Dorey_2021_config, schema, resource_metadata, unit_conversions)
+Dorey_2021 <- dataset_update_taxonomy(Dorey_2021_raw, taxon_list)
+
+Dorey_2023_config <- dataset_configure("data/Dorey_2023/metadata.yml", definitions)
+Dorey_2023_raw <- dataset_process("data/Dorey_2023/data.csv", Dorey_2023_config, schema, resource_metadata, unit_conversions)
+Dorey_2023 <- dataset_update_taxonomy(Dorey_2023_raw, taxon_list)
+
 Doyle_2023_config <- dataset_configure("data/Doyle_2023/metadata.yml", definitions)
 Doyle_2023_raw <- dataset_process("data/Doyle_2023/data.csv", Doyle_2023_config, schema, resource_metadata, unit_conversions)
 Doyle_2023 <- dataset_update_taxonomy(Doyle_2023_raw, taxon_list)
@@ -913,6 +921,10 @@ Lamont_2002_config <- dataset_configure("data/Lamont_2002/metadata.yml", definit
 Lamont_2002_raw <- dataset_process("data/Lamont_2002/data.csv", Lamont_2002_config, schema, resource_metadata, unit_conversions)
 Lamont_2002 <- dataset_update_taxonomy(Lamont_2002_raw, taxon_list)
 
+Lamont_2026_config <- dataset_configure("data/Lamont_2026/metadata.yml", definitions)
+Lamont_2026_raw <- dataset_process("data/Lamont_2026/data.csv", Lamont_2026_config, schema, resource_metadata, unit_conversions)
+Lamont_2026 <- dataset_update_taxonomy(Lamont_2026_raw, taxon_list)
+
 Lawes_2012_config <- dataset_configure("data/Lawes_2012/metadata.yml", definitions)
 Lawes_2012_raw <- dataset_process("data/Lawes_2012/data.csv", Lawes_2012_config, schema, resource_metadata, unit_conversions)
 Lawes_2012 <- dataset_update_taxonomy(Lawes_2012_raw, taxon_list)
@@ -992,6 +1004,10 @@ Liu_2023 <- dataset_update_taxonomy(Liu_2023_raw, taxon_list)
 Lopresti_2023_config <- dataset_configure("data/Lopresti_2023/metadata.yml", definitions)
 Lopresti_2023_raw <- dataset_process("data/Lopresti_2023/data.csv", Lopresti_2023_config, schema, resource_metadata, unit_conversions)
 Lopresti_2023 <- dataset_update_taxonomy(Lopresti_2023_raw, taxon_list)
+
+Lopresti_2023_2_config <- dataset_configure("data/Lopresti_2023_2/metadata.yml", definitions)
+Lopresti_2023_2_raw <- dataset_process("data/Lopresti_2023_2/data.csv", Lopresti_2023_2_config, schema, resource_metadata, unit_conversions)
+Lopresti_2023_2 <- dataset_update_taxonomy(Lopresti_2023_2_raw, taxon_list)
 
 Lopresti_2026_config <- dataset_configure("data/Lopresti_2026/metadata.yml", definitions)
 Lopresti_2026_raw <- dataset_process("data/Lopresti_2026/data.csv", Lopresti_2026_config, schema, resource_metadata, unit_conversions)
@@ -2058,6 +2074,8 @@ austraits_raw <- austraits::bind_databases(
   Detombeur_2025,
   Doherty_2021,
   Dong_2017,
+  Dorey_2021,
+  Dorey_2023,
   Doyle_2023,
   Doyle_2025,
   Drake_2011,
@@ -2180,6 +2198,7 @@ austraits_raw <- austraits::bind_databases(
   Ladd_2023,
   Laliberte_2012,
   Lamont_2002,
+  Lamont_2026,
   Lawes_2012,
   Lawes_2014,
   Lawson_2015,
@@ -2200,6 +2219,7 @@ austraits_raw <- austraits::bind_databases(
   Lim_2017,
   Liu_2023,
   Lopresti_2023,
+  Lopresti_2023_2,
   Lopresti_2026,
   Lord_1997,
   Lunt_2012,

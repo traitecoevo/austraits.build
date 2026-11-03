@@ -1,0 +1,1024 @@
+source:
+  primary:
+    key: Dorey_2023
+    bibtype: Article
+    year: 2023
+    author: James B. Dorey and Erica E. Fischer and Paige R. Chesshire and Angela
+      Nava-Bolaños and Robert L. O'Reilly and Silas Bossert and Shannon M. Collins
+      and Elinor M. Lichtenberg and Erika Tucker and Allan Smith-Pardo and Armando
+      Falcon-Brindis and Diego A. Guevara and Bruno R. Ribeiro and Diego de Pedro
+      and James Keng-Lou Hung and Katherine A. Parys and Lindsie M. McCabe and Matthew
+      S. Rogan and Robert L. Minckley and Santiago J. E. Velazco and Terry Griswold
+      and Tracy A. Zarrillo and Walter Jetz and Yanina V. Sica and Michael C. Orr
+      and Laura Melissa Guzman and John Ascher and Alice C. Hughes and Neil S. Cobb
+    title: A globally synthesised and flagged bee occurrence dataset and cleaning
+      workflow
+    journal: Scientific Data
+    volume: 10
+    pages: 747
+    doi: 10.1038/s41597-023-02626-w
+contributors:
+  data_collectors:
+  - last_name: Dorey
+    given_name: James B.
+    ORCID: 0000-0003-2721-3842
+    affiliation: University of Wollongong, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: ' data |> dplyr::filter(!is.na(location_name), is.na(omit_duplicate)) |> dplyr::group_by(taxon_name,
+    bee_species, flower_visitor, location_name, collection_date) |> dplyr::summarise(
+    individualCount = sum(dplyr::coalesce(as.numeric(individualCount), 1)), count_method
+    = paste(sort(unique(count_method)), collapse = "; "), dplyr::across(c(catalog_number,
+    occurrenceID, gbifID, database_id, duplicate_database_id), ~ dplyr::na_if(paste(stats::na.omit(.x),
+    collapse = "; "), "")), .groups = "drop" ) '
+  collection_date: collection_date
+  taxon_name: taxon_name
+  location_name: location_name
+  description: Host plants recorded on the labels of Australian bee specimens, compiled
+    from museum collections and online biodiversity repositories as part of the BeeBDC
+    global bee occurrence dataset.
+  basis_of_record: field
+  life_stage: adult
+  sampling_strategy: Bee occurrence records were compiled from the major online repositories
+    (ALA, GBIF, SCAN, iDigBio and others) and private collections, then taxonomically
+    harmonised, flagged for spatial, temporal and taxonomic issues, and de-duplicated
+    using the BeeBDC R workflow (Dorey et al. 2023). Australian records that list
+    an associated plant taxon (the `associatedTaxa` field, typically "host:" followed
+    by the plant family and name transcribed from the specimen label) were extracted
+    by James Dorey for AusTraits. The great majority are pinned museum specimens,
+    each a bee collected while visiting, or netted from, the named plant.
+  original_file: raw/AusData_out.xlsx, supplied by James Dorey in November 2026 (46,724
+    Australian BeeBDC records with an associatedTaxa value, 139 columns); not in GitHub
+    due to its size. data.csv and locations.csv are written from it by raw/extra_R_code_Dorey_2023.R,
+    using raw/Dorey_2023_plant_lookup.csv to clean the host plant names.
+  notes: Each row of data.csv is one bee specimen (a label naming two host plants
+    gives a row for each), with its museum catalogue number, occurrenceID, gbifID
+    and BeeBDC database_id kept as identifiers. 21,542 specimens were present twice
+    in the supplied file, once from ALA and once from GBIF (same catalogue number,
+    bee species, host, locality, date and coordinates, both marked Unique by BeeBDC,
+    because the shared number is held in recordNumber, which is not among the columns
+    BeeBDC compares when de-duplicating, and the ALA copy lacks the gbifID and occurrenceID);
+    each is kept once, from the GBIF copy, with the ALA copy's BeeBDC id in duplicate_database_id.
+    Specimens of one bee species collected on one host plant at one location on one
+    date are different individual bees (each was killed when collected); custom_R_code
+    collapses each such collecting event into one observation, with individualCount
+    giving the number of bees (each pinned specimen counting as one unless its record
+    gives an individualCount) and the specimens' identifiers listed, separated by
+    semicolons; the context pollinator count determination records whether the count
+    is of preserved specimens or of photographic observations (15 iNaturalist records).
+    Records from a canola (Brassica rapa) crop survey (S. Rao, 2008-2009, Boorowa
+    and Ginninderra; 2,766 specimens) were removed, as crop studies are not included
+    in AusTraits, as were records whose host was not a plant (a Sceliphron nest, mites)
+    or was given as none. J.B. Dorey's 18 specimens from the targeted Pharohylaeus
+    lactiferus observation events (Dorey 2021, Table S1; 11 vials on Stenocarpus sinuatus
+    and Brachychiton acerifolius) are marked omit_duplicate = Dorey_2021 and removed by
+    custom_R_code, as Dorey_2021 holds these events with their other visitors and counts.
+    Host plant names were taken from associatedTaxa after removing
+    the "host:" prefix and family name (raw/Dorey_2023_plant_lookup.csv, which also
+    corrects Mesembrion to Mesembryanthemum and the common name Oleander to Nerium
+    oleander, both of which APCalign mismatches). Genus-level host names are suffixed
+    with their location (e.g. Eucalyptus sp. [Katherine; Dorey_2023]), to distinguish
+    between the many identical 'genus sp.' entries (e.g. Eucalyptus sp., representing
+    many species of Eucalyptus); coordinates and collection date are added only where
+    the same genus was collected at more than one point under one place name, or on
+    more than one day at one point (e.g. Eucalyptus sp. [Katherine (-14.4667, 132.2667),
+    1974-11-20; Dorey_2023]). collection_date is taken from the BeeBDC year, month
+    and day fields or, where these are empty or were mis-parsed by BeeBDC, from the
+    date written on the label (often held in the locality field). Four label years
+    that were single outliers against the same collector's other records from that
+    collecting event were corrected (1871 to 1971, 1884 to 1994, 1894 to 1984 and
+    1195 to 1995); records with no recoverable year are given unknown/2023, the year
+    the BeeBDC dataset was compiled. Each unique coordinate pair, rounded to 4 decimal
+    places (about 10 m), is a location, labelled with the place part of the label
+    locality most often given for it; a place name given for more than one coordinate
+    pair carries the coordinates in each location name. Records without coordinates
+    (3,439 rows) are kept in data.csv but removed by custom_R_code, as in the BeeBDC
+    cleaned dataset, which drops records flagged by bdc_coordinates_empty; they have
+    no location and would need georeferencing from the label text in locality_verbatim.
+    The bee taxon is mapped to the most specific flower_visitor level available, from
+    genus (honeybee, allodapini, anthophorini, carpenter_bee) or family (colletidae,
+    sweat_bee, megachilidae, stenotritid_bee); the remaining Apidae (Thyreus, Ceratina,
+    Melissodes) are mapped to bee.  Most plant taxa with a species-rank name could
+    be aligned to a known/accepted name in the APC or explicitly identified as non-native,
+    non-nautralised garden plantings. 6 names could not be matched and are aligned
+    to genus only, Cassia carpa, Eremophila spinosa, Eucalyptus linariifolia, Hypoxis
+    rooporis, Leptospermum contintenalis, Melaleuca latrobsi.
+identifiers:
+- var_in: catalog_number
+  identifier_type: catalogNumber
+  institution_code: various (institution code prefixed to each catalogue number)
+- var_in: occurrenceID
+  identifier_type: occurrenceID
+  institution_code: various (ALA, GBIF and SCAN data publishers)
+- var_in: gbifID
+  identifier_type: gbifID
+  institution_code: GBIF
+locations: locations.csv
+contexts:
+- context_property: flower visitor taxon name
+  category: entity_context
+  var_in: bee_species
+- context_property: pollinator count
+  category: entity_context
+  var_in: individualCount
+- context_property: pollinator count determination
+  category: method_context
+  var_in: count_method
+  values:
+  - value: count of preserved specimens
+    description: Number of bees collected on the host plant during the collecting
+      event and preserved as specimens, each pinned individually or several catalogued
+      together as one lot.
+  - value: count of photographic observations
+    description: Number of bees photographed on the host plant during the collecting
+      event (iNaturalist observations), with no specimen collected.
+traits:
+- var_in: flower_visitor
+  unit_in: .na
+  trait_name: flower_visitor
+  entity_type: population
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Bees were collected visiting flowers in the field and the host plant noted
+    on the specimen label; specimens were later identified by bee taxonomists and
+    catalogued in museum collections. Contact with the flower's reproductive structures
+    and pollen transfer were not recorded, so the bees are recorded as flower visitors.
+    The bee species was mapped to the most specific AusTraits flower_visitor level
+    available for its genus or family.
+substitutions: .na
+taxonomic_updates:
+- find: Acacia calamnifolia
+  replace: Acacia calamifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Acacia miccronota
+  replace: Acacia mucronata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Amyema miraculosus
+  replace: Amyema miraculosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Amyema pendulus
+  replace: Amyema pendula
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Amyema preissi
+  replace: Amyema preissii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Amyema pressei
+  replace: Amyema preissii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Angophora subvaleutina
+  replace: Angophora subvelutina
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Anthirrhinum majus
+  replace: Antirrhinum majus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Anthotium humile var. junctiforme
+  replace: Anthotium humile var. junciforme
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: variety
+- find: Aotus ercoides
+  replace: Aotus ericoides
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Baeckea aff. pentagonantha
+  replace: Baeckea sp. [Baeckea aff. pentagonantha; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Beaufortia micrantha puberula
+  replace: Beaufortia micrantha var. puberula
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: variety
+- find: Beaufortia mierantha puberula
+  replace: Beaufortia micrantha var. puberula
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: variety
+- find: Brassica napus
+  replace: Brassica x napus
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-11-03)
+  taxonomic_resolution: species
+- find: Bulbine semibarbarta
+  replace: Bulbine semibarbata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Burtonia hendersoni
+  replace: Burtonia hendersonii
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Byblis linifolia
+  replace: Byblis liniflora
+  reason: Manual alignment to APC-accepted taxon Byblis liniflora (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Caladenia deformia
+  replace: Caladenia decora
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Callistachys lanceolatum
+  replace: Callistachys lanceolata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Callistemon citrumus
+  replace: Callistemon citrinus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Callistemon macropunctata
+  replace: Callistemon macropunctatus
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Callistemon pheoniceus
+  replace: Callistemon phoeniceus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Callistemon salignas
+  replace: Callistemon salignus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Calothamnus quadrifidus acerosa
+  replace: Calothamnus quadrifidus f. acerosus
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: form
+- find: Calytrix brachchaeta
+  replace: Calytrix brachychaeta
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Carpobrotus rossi
+  replace: Carpobrotus rossii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Cassia carpa
+  replace: Cassia sp. [Cassia carpa; Dorey_2023]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Chaemescilla corymbosa
+  replace: Chamaescilla corymbosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Claoxylon australis
+  replace: Claoxylon australe
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Corymbia leichardti
+  replace: Corymbia leichhardtii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Cotoneaster serotina
+  replace: Cotoneaster serotinus
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Crotalaria eremaea strehlowii
+  replace: Crotalaria eremaea subsp. strehlowii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Cynoglossum australae
+  replace: Cynoglossum australe
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Daviesia benthamsii humilis
+  replace: Daviesia benthamii subsp. humilis
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Daviesia genestifolia
+  replace: Daviesia genistifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Daviesia olicifolia
+  replace: Daviesia ulicifolia
+  reason: Manual alignment to APC-accepted taxon Daviesia ulicifolia (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Dichopogon strictum
+  replace: Dichopogon strictus
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Diocirea aernata
+  replace: Diocirea ternata
+  reason: Manual alignment to APC-accepted taxon Diocirea ternata (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Eremophila aff. freelingi
+  replace: Eremophila sp. [Eremophila aff. freelingi; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Eremophila aff. georgei
+  replace: Eremophila sp. [Eremophila aff. georgei; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Eremophila cf. spinosa
+  replace: Eremophila sp. [Eremophila cf. spinosa; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Eremophila demsteri
+  replace: Eremophila dempsteri
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eremophila freelingi
+  replace: Eremophila freelingii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eremophila ioantha
+  replace: Eremophila ionantha
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eremophila latrobsi
+  replace: Eremophila latrobei
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eremophila platycalyx laneifolia
+  replace: Eremophila platycalyx var. lancifolia
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: variety
+- find: Eremophila spinosa
+  replace: Eremophila sp. [Eremophila spinosa; Dorey_2023]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Eucalyptus aff. decipiens
+  replace: Eucalyptus sp. [Eucalyptus aff. decipiens; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Eucalyptus aff. gracilis
+  replace: Eucalyptus sp. [Eucalyptus aff. gracilis; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Eucalyptus aff. oxymitra
+  replace: Eucalyptus sp. [Eucalyptus aff. oxymitra; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Eucalyptus blakely
+  replace: Eucalyptus blakelyi
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus bruinosa
+  replace: Eucalyptus pruinosa
+  reason: Manual alignment to APC-accepted taxon Eucalyptus pruinosa (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus consideriana
+  replace: Eucalyptus consideniana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus creba
+  replace: Eucalyptus crebra
+  reason: Manual alignment to APC-accepted taxon Eucalyptus crebra (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus exerta
+  replace: Eucalyptus exserta
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus foelcheana
+  replace: Eucalyptus frenchiana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus gacilis
+  replace: Eucalyptus gracilis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus gammophylla
+  replace: Eucalyptus gamophylla
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus gimlei
+  replace: Eucalyptus gillii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus landsdowneana
+  replace: Eucalyptus lansdowneana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus linariifolia
+  replace: Eucalyptus sp. [Eucalyptus linariifolia; Dorey_2023]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Eucalyptus meliodora
+  replace: Eucalyptus melliodora
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus striaticalyse
+  replace: Eucalyptus striaticalyx
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus tectiflora
+  replace: Eucalyptus tectifica
+  reason: Manual alignment to APC-accepted taxon Eucalyptus tectifica (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus tetradonta
+  replace: Eucalyptus tetrodonta
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eucalyptus tetragona
+  replace: Eucalyptus tetrodonta
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Eugenia armstrongi
+  replace: Eugenia armstrongii
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Frankenia serpyillifolia
+  replace: Frankenia serpyllifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Frankenia surpyllifolia
+  replace: Frankenia serpyllifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Glischrocaryon aurem
+  replace: Glischrocaryon aureum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Gliscocaryon behrii
+  replace: Glischrocaryon behrii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Goodenia waria
+  replace: Goodenia varia
+  reason: Manual alignment to APC-accepted taxon Goodenia varia (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Grevillea aff. eriostachya
+  replace: Grevillea sp. [Grevillea aff. eriostachya; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (E. Wenk, 2026-11-03)
+  taxonomic_resolution: genus
+- find: Grevillea aff. hookerana
+  replace: Grevillea sp. [Grevillea aff. hookerana; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Grevillea aff. petrophiloides
+  replace: Grevillea sp. [Grevillea aff. petrophiloides; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Grevillea apicoloba
+  replace: Grevillea apiciloba
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Grevillea hookerana
+  replace: Grevillea hookeriana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Hakea tereticornis
+  replace: Hakea teretifolia
+  reason: Manual alignment to APC-accepted taxon Hakea teretifolia (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Halgania viscida
+  replace: Halgania viscosa
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Helichrysum rupiabla
+  replace: Helichrysum rupicola
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Helipterum pterochartum
+  replace: Helipterum pterochaetum
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Hibbertia fascicularis
+  replace: Hibbertia fasciculata
+  reason: Manual alignment to APC-accepted taxon Hibbertia fasciculata (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Hibbertia fasicularis
+  replace: Hibbertia fasciculata
+  reason: Manual alignment to APC-accepted taxon Hibbertia fasciculata (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Hibbertia prostata
+  replace: Hibbertia prolata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Hypochoeris radicans
+  replace: Hypochaeris radicata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Hypoxis rooporis
+  replace: Hypoxis sp. [Hypoxis rooporis; Dorey_2023]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Isopogon tribolus
+  replace: Isopogon trilobus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Jacksonia aff. grevilleoides
+  replace: Jacksonia sp. [Jacksonia aff. grevilleoides; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Jacksonia aff. sternbergiana
+  replace: Jacksonia sp. [Jacksonia aff. sternbergiana; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Lasiopetalum baureri
+  replace: Lasiopetalum baueri
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Lasiopetalum schulzeni
+  replace: Lasiopetalum schulzenii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leptomeria priessiana
+  replace: Leptomeria preissiana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leptorhynchus squamatus
+  replace: Leptorhynchos squamatus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leptospermum altenuatum
+  replace: Leptospermum attenuatum
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leptospermum breviceps
+  replace: Leptospermum brevipes
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leptospermum contintenalis
+  replace: Leptospermum sp. [Leptospermum contintenalis; Dorey_2023]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Leptospermum contintentale
+  replace: Leptospermum continentale
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leptospermum contintentalis
+  replace: Leptospermum continentale
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leptospermum mysinoides
+  replace: Leptospermum myrsinoides
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leptospermum ploygalifolium
+  replace: Leptospermum polygalifolium
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leucopogon parviflora
+  replace: Leucopogon parviflorus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Leucopogon virgata
+  replace: Leucopogon virgatus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Lophostemon grandifloris
+  replace: Lophostemon grandiflorus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Loranthus preissi
+  replace: Loranthus preissii
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Melaleuca bracheata
+  replace: Melaleuca bracteata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Melaleuca huegeliana
+  replace: Melaleuca huegelii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Melaleuca latrobsi
+  replace: Melaleuca sp. [Melaleuca latrobsi; Dorey_2023]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-03)
+  taxonomic_resolution: genus
+- find: Melaleuca rhapiophylla
+  replace: Melaleuca rhaphiophylla
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Melaleuca staphloides
+  replace: Melaleuca styphelioides
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Myriocephalus sturtii
+  replace: Myriocephalus stuartii
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Olea europeae
+  replace: Olea europaea
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Olearia vamulosa
+  replace: Olearia ramulosa
+  reason: Manual alignment to APC-accepted taxon Olearia ramulosa (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Oxalis pes-capre
+  replace: Oxalis pes-caprae
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Persoonia laevis
+  replace: Persoonia levis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Persoonia mollis ledifolia
+  replace: Persoonia mollis subsp. ledifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Persoonia mollis leptophylla
+  replace: Persoonia mollis subsp. leptophylla
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Persoonia mollis livens
+  replace: Persoonia mollis subsp. livens
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Persoonia mollis nectans
+  replace: Persoonia mollis subsp. nectens
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Persoonia mollis revoluta
+  replace: Persoonia mollis subsp. revoluta
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Persoonia subvellutina
+  replace: Persoonia subvelutina
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Persoonia sylvatica
+  replace: Persoonia silvatica
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Pileanthus fillifolius
+  replace: Pileanthus filifolius
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Pileanthus peduncularis borealis
+  replace: Pileanthus peduncularis subsp. borealis
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Platysace maxwelli
+  replace: Platysace maxwellii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Pollia crispa
+  replace: Pollia crispata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Portulaca oleacea
+  replace: Portulaca oleracea
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Presophyllum elatum
+  replace: Prasophyllum elatum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Ptilotus calostachys
+  replace: Ptilotus calostachyus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Puirenea villosa
+  replace: Pultenaea villosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Pultenaea aff. neurocalyx
+  replace: Pultenaea sp. [Pultenaea aff. neurocalyx; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Pultenaea pedunculeda
+  replace: Pultenaea pedunculata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Samolus alerandi
+  replace: Samolus valerandi
+  reason: Manual alignment to APC-accepted taxon Samolus valerandi (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Scabiosa atroposporea
+  replace: Scabiosa atropurpurea
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Scaevola aff. lanceolata
+  replace: Scaevola sp. [Scaevola aff. lanceolata; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Scaevola aff. spinescens
+  replace: Scaevola sp. [Scaevola aff. spinescens; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Scaevola ameula
+  replace: Scaevola aemula
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Scaevola calundulacea
+  replace: Scaevola calendulacea
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Scholtzia sparthulata
+  replace: Scholtzia spatulata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Sedum praeanthes
+  replace: Sedum praealtum
+  reason: Manual alignment to APC-accepted taxon Sedum praealtum (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Senna artemisoides
+  replace: Senna artemisioides
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Solanum eburnium
+  replace: Solanum eburneum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Solidage canadensis
+  replace: Solidago canadensis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Sphaerolobium grandifolium
+  replace: Sphaerolobium grandiflorum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Stemodia floribunda
+  replace: Stemodia florulenta
+  reason: Manual alignment to APC-accepted taxon Stemodia florulenta (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Stylidium aff. divaricatum
+  replace: Stylidium sp. [Stylidium aff. divaricatum; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Stylidium brunonianum brunonianum
+  replace: Stylidium brunonianum subsp. brunonianum
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Swainsona lessetifolia
+  replace: Swainsona lessertiifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Thelymitra ixiodes
+  replace: Thelymitra ixioides
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Thryptomene aff. mucronulata
+  replace: Thryptomene sp. [Thryptomene aff. mucronulata; Dorey_2023]
+  reason: Exact match to APC genus. Taxon name includes 'affinis' or 'aff' indicating
+    an unknown taxon that bears an affinity to a different taxon in the same genus
+    and taxon can only be aligned to genus-rank (2026-11-03)
+  taxonomic_resolution: genus
+- find: Thryptomene camphorosmae
+  replace: Baeckea camphorosmae
+  reason: Manual alignment to APC-known taxon Baeckea camphorosmae (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Thryptomene gilgandra
+  replace: Thryptomene oligandra
+  reason: Probable misspelling of Thryptomene oligandra; collected near Mt Webb, within
+    its range (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Thryptomene maisonneurii
+  replace: Thryptomene maisonneuvii
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Trachymene glancifolia
+  replace: Trachymene glaucifolia
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Trichodesma zeylandicum
+  replace: Trichodesma zeylanicum
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Tristania suaveolans
+  replace: Tristania suaveolens
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Tristaniopsis conferta
+  replace: Tristania conferta
+  reason: Manual alignment to APC-known taxon Tristania conferta (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Tristaniopsis lactiflua
+  replace: Tristania lactiflua
+  reason: Manual alignment to APC-known taxon Tristania lactiflua (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Tristaniopsis suaveolans
+  replace: Tristania suaveolens
+  reason: Manual alignment to APC-known taxon Tristania suaveolens (E. Wenk, 2026-11-03)
+  taxonomic_resolution: species
+- find: Veronica hillbandi
+  replace: Veronica hillebrandii
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Verticordia densiflora caespitosa
+  replace: Verticordia densiflora var. cespitosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: variety
+- find: Verticordia dichroma dichroma
+  replace: Verticordia dichroma var. dichroma
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: variety
+- find: Verticordia dichroma syntoma
+  replace: Verticordia dichroma var. syntoma
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: variety
+- find: Verticordia duchroma var. syntoma
+  replace: Verticordia dichroma var. syntoma
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: variety
+- find: Verticordia muelleriana muelleriana
+  replace: Verticordia muelleriana subsp. muelleriana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Verticordia serrata serrata
+  replace: Verticordia serrata var. serrata
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: variety
+- find: Verticordia tumida therogana
+  replace: Verticordia tumida subsp. therogana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: subspecies
+- find: Wahlenbergia tadgelli
+  replace: Wahlenbergia tadgellii
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Wahlenbergia tumidifructii
+  replace: Wahlenbergia tumidifructa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Westringia dampiera
+  replace: Westringia dampieri
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Westringia rosmarinifolia
+  replace: Westringia rosmariniformis
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+- find: Xanthorrhoea caesipitosa
+  replace: Xanthorrhoea caespitosa
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-03)
+  taxonomic_resolution: species
+exclude_observations:
+- variable: taxon_name
+  find: Brenesia sp., Cotinus coggria, Dypsis lutescens, Pachylepis sp.
+  reason: genera neither native nor naturalised in Australia (not in APC); APCalign
+    fuzzy-matches Brenesia, a Neotropical orchid genus, to unrelated Australian genera
+    (E. Wenk, 2026-11-02)
+- variable: taxon_name
+  find: Asteraceae sp., Cucurbitaceae sp., Cyperaceae sp., Ericaceae sp., Fabaceae
+    sp., Goodeniaceae sp., Malvaceae sp., Myrtaceae sp., Poaceae sp.
+  reason: too low resolution (E. Wenk, 2026-11-02)
+- variable: taxon_name
+  find: Argemone platyceras, Aristea major, Borago pygmaea, Calendula moroccana, Felicia
+    amelloides, Geum queilyon, Limonium spectabile, Lippia citriodora, Oxalis succulenta,
+    Oxalis truncatula, Papaver nudicaule, Potentilla hepalensis, Thymus citriodorus,
+    Thymus praecox, Veronica longifolia
+  reason: cultivated species neither native nor naturalised in Australia (not in APC),
+    mostly collected in Adelaide Botanic Gardens and Wittunga Botanic Garden (E. Wenk,
+    2026-11-03)
+questions: .na

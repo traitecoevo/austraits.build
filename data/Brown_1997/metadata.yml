@@ -20,6 +20,32 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data |>
+      dplyr::filter(
+        !(
+          stringr::str_detect(dplyr::coalesce(Comments, ""), "\\(1997\\):153$") &
+            !stringr::str_detect(`Animal species binomial name`, "^(Comptosia|Eusurbus)")
+        ),
+        !(
+          stringr::str_detect(dplyr::coalesce(Comments, ""), "\\(1997\\):152$") &
+            `Animal species binomial name` == "Pachytricha sp."
+        ),
+        !(
+          stringr::str_detect(`Plant scientific name`, "^Verticordia (nitens|aurea)") &
+            stringr::str_detect(`Animal species binomial name`, "^Euryglossa")
+        ),
+        !(
+          stringr::str_detect(`Plant scientific name`, "^Leporella fimbriata") &
+            stringr::str_detect(`Animal species binomial name`, "^Myrmecia urens")
+        ),
+        !(
+          stringr::str_detect(`Plant scientific name`, "^Rhizanthella gardneri") &
+            stringr::str_detect(`Animal species binomial name`, "^Megaselia")
+        ),
+        !(
+          stringr::str_detect(`Plant scientific name`, "^Stylidium scandens") &
+            stringr::str_detect(`Animal species binomial name`, "^Aleucosia tridentata")
+        )
+      ) |>
       dplyr::mutate(
         `Plant scientific name` = dplyr::if_else(
           `Plant scientific name` %in% c("Acacia sp.", "Adenanthos sp.", "Agonis sp.", "Astartea sp.", "Astroloma sp.", "Baeckea sp.", "Banksia sp.", "Barringtonia sp.", "Bauhinia sp.", "Beaufortia sp.", "Billardiera sp.", "Bombax sp.", "Brachychiton sp.", "Callistemon sp.", "Calothamnus sp.", "Calytrix sp.", "Carpobrotus sp.", "Dicrastylis sp.", "Dryandra sp.", "Eremophila sp.", "Eucalyptus sp.", "Gardenia sp.", "Grevillea sp.", "Hakea sp.", "Hibbertia sp.", "Jacksonia sp.", "Lechenaultia sp.", "Leptospermum sp.", "Leucopogon sp.", "Melaleuca sp.", "Myoporum sp.", "Pimelea sp.", "Ptilotus sp.", "Scholtzia sp.", "Solanum sp.", "Sphenotoma sp.", "Stylidium sp.", "Thryptomene sp.", "Verticordia sp.", "Xanthorrhoea sp.") & location_name != "unknown",
@@ -28,7 +54,11 @@ dataset:
         )
       ) |>
       generate_observation_numbers(`Plant scientific name`, location_name) |>
-      mutate(Date = util_format_collection_date(Date, "dmy"))
+      mutate(Date = util_format_collection_date(Date, "dmy")) |>
+      dplyr::mutate(
+        Date = stringr::str_replace(Date, "^([0-9]{4}-[0-9]{2})-15$", "\\1"),
+        Date = dplyr::if_else(is.na(Date) | Date == "", "1997", Date)
+      )
   '
   collection_date: Date
   taxon_name: Plant scientific name
@@ -57,7 +87,41 @@ dataset:
     location, `Plant scientific name` is suffixed with that location (e.g.
     `Eucalyptus sp. [Kings Park_1]`) so these are not conflated as the same
     unidentified species; records left with an "unknown" location keep the plain
-    `Genus sp.` name.
+    `Genus sp.` name. Records from Lamont (1985; reference 153, Crystal Brook) and
+    the Pachytricha record from Lamont (1982; reference 152, Bull Creek) are filtered
+    out in custom_R_code, as Lamont_2026 holds them with pollen evidence and the corrected
+    identification of Verticordia acerosa (listed here as V. chrysantha); the Comptosia
+    and Eusurbus records on Verticordia huegelii, not in Lamont_2026, are kept. The
+    Euryglossa records on Verticordia nitens and V. aurea, Myrmecia urens on Leporella
+    fimbriata, Megaselia on Rhizanthella gardneri and Aleucosia tridentata on Stylidium
+    scandens are filtered for the same reason; Lamont_2026 carries their sites and dates.
+    The 653 records with no Date, Month or Year in the source are given the publication
+    year (1997) as their collection_date. Day 15 is a placeholder for an unknown day
+    - 1,509 of the 3,455 dated records (44%) fall on the 15th, against 41-98 records
+    for every other day of the month - so dates on the 15th are kept to year and month
+    (yyyy-mm).
+    Coordinates - the source's Latitude (S) and Longitude (E) columns hold degrees and
+    minutes written as decimals (31.57 = 31 degrees 57 minutes), presumably transcribed
+    from degree-minute coordinates in the published handbook (two records still read
+    "29 50", "115 00"). Evidence across all 7,757 coordinate values in data.csv - of
+    the 5,685 values with two decimal digits, only 4 exceed .59, and none of the 1,512
+    values with one decimal digit exceed .5, whereas true decimal degrees would put
+    about 40% of values in each group above those limits. A single decimal digit is
+    therefore tens of minutes (115.5 = 115 degrees 50 minutes, a dropped trailing zero).
+    In locations.csv, every location whose latitude and longitude both have no more
+    than two decimal digits, with no minute value above 59, is converted to decimal
+    degrees (degrees + minutes/60; 1,242 locations). Every location was then geocoded
+    from its locality (Nominatim, OpenStreetMap); of the 933 converted locations with
+    a geocode, the converted coordinates lie closer to the place than the source values
+    read as decimals for 751, and further for 97. Four named places (Arthur River,
+    Gunyidi_3, Gunyidi_4, Ravensthorpe_1), where the source values read as decimals
+    lie within about 10 km of the place and the converted values do not, are kept as
+    given, with a georeference remark giving both distances. The remaining 22 locations are
+    kept exactly as the source gives them - those with values of three or more decimal
+    digits (true decimal degrees), those where either value has a minute value of 60
+    or more, and one with no coordinates. Some of these appear to be wrong (e.g. Kings
+    Park_2 longitude 115.0836, where Kings Park is at 115.83) and need checking against
+    the published handbook.
 identifiers: .na
 locations: locations.csv
 contexts:

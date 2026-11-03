@@ -21,8 +21,9 @@
 #   visitor_match_value          most precise visitor name that maps to a controlled value
 #                                (tribe-level genus for Amegilla/Exoneurella, else family)
 #   visits                       value from the flower_visitor sheet
-#   pollen_transport             value from the pollination_vector_possible sheet, rounded
-#                                to 2 decimals (two cells are fractions, e.g. 436.333...)
+#   pollen_transport             value from the pollination_vector_possible sheet (mean
+#                                pollen load per bee x number of visits), rounded to 2
+#                                decimals (two cells are fractions, e.g. 436.333...)
 #   flower_visitor               mapped value, where visits were recorded
 #   pollination_vector_possible  mapped value, where pollen was transported
 #
