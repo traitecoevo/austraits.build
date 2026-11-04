@@ -39,9 +39,24 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: yes
-  custom_R_code: ' data |> dplyr::mutate( trait_value = dplyr::case_when( trait %in%
-    c("flower_visitor", "pollination_vector_possible") ~ trait_value_clean, is.na(trait_value)
-    ~ trait_value_clean, TRUE ~ trait_value ) ) '
+  custom_R_code: '
+    data |>
+      dplyr::filter(
+        !pollination_treatment %in% c(
+          "autonomous selfing and manipulative selfing",
+          "manipulative outcross and open control",
+          "manipulative outcross",
+          "all treatments"
+        )
+      ) |>
+      dplyr::mutate(
+        trait_value = dplyr::case_when(
+          trait %in% c("flower_visitor", "pollination_vector_possible") ~ trait_value_clean,
+          is.na(trait_value) ~ trait_value_clean,
+          TRUE ~ trait_value
+        )
+      )
+  '
   collection_date: collection_date
   taxon_name: taxon_name
   trait_name: trait
@@ -83,6 +98,9 @@ dataset:
     pollen_shape, pollen_outline_polar_view, pollen_polarity, pollen_exine_ornamentation,
     pollen_tackiness, pollen_wind_transport, fruit_time_from_pollination_to_fruiting,
     seed_predation_fraction, seed_predator and flower_visitor_presence_fraction.
+    Fruit initiation, fruit set, seed set and seed predation from the selfing and
+    manipulative outcross treatments, and values pooled with them, are kept in data.csv
+    but filtered out; they were used only to score breeding_system.
 identifiers: .na
 locations:
   Jerrara Dam Reserve:
@@ -167,26 +185,11 @@ contexts:
   category: treatment_context
   var_in: pollination_treatment
   values:
-  - find: autonomous selfing and manipulative selfing
-    value: selfing
-    description: inflorescences bagged before flowers opened, either left unmanipulated
-      (autonomous selfing) or hand-pollinated with pollen from the same shrub (manipulative
-      selfing)
-  - find: manipulative outcross and open control
-    value: outcross and open control
-    description: inflorescences bagged and hand-pollinated with pollen from a different
-      shrub (manipulative outcross), or left unbagged and open to pollinators (open
-      control)
-  - value: manipulative outcross
-    description: inflorescences bagged before flowers opened and hand-pollinated with
-      pollen from a different shrub
   - value: open control
     description: inflorescences left unbagged and open to pollinators
   - find: no treatment (fruit collected opportunistically)
     value: no treatment
     description: fruit collected opportunistically from untreated inflorescences
-  - value: all treatments
-    description: pooled across outcross, open control and untreated inflorescences
   - value: bagged fruiting branches
     description: fruiting branches bagged to exclude seed predators
 - context_property: entity measured
@@ -376,37 +379,15 @@ traits:
     prior to flowers opening, and then hand-pollinating each flower with pollen sourced
     from a different shrub within 1 h of collecting the pollen. [...] The autonomous
     selfing treatment involved bagging an inflorescence without manipulating the pollen.
-    Control inflorescences were not bagged and were thus open to pollinators. ^p Breeding
-    system as concluded by the authors from fruit and viable-seed production across
-    treatments.
-- var_in: fruit_set_proportion
-  unit_in: '%'
-  trait_name: fruit_set_proportion
-  entity_type: metapopulation
-  value_type: mean
-  basis_of_value: measurement
-  replicates: replicates
-  methods: All inflorescences were monitored for reproductive success from the time
-    of pollination to fruit maturation. Fruit development was defined as the swelling
-    of the ovary after abscission of petals and stamens. Fruit was classed as mature
-    when swelling had ceased and a colour change was observed in the exocarp. At this
-    point, fruits were harvested and examined for viable seed. ^p Value is the proportion
-    of self-pollinated flowers that produced mature fruit, pooled across sites, shrubs
-    and inflorescences.
-- var_in: fruit_initiation_proportion
-  unit_in: '%'
-  trait_name: fruit_initiation_proportion
-  entity_type: metapopulation
-  value_type: value_type
-  basis_of_value: measurement
-  replicates: replicates
-  methods: All inflorescences were monitored for reproductive success from the time
-    of pollination to fruit maturation. Fruit development was defined as the swelling
-    of the ovary after abscission of petals and stamens. [...] Reproductive success
-    was defined as (1) the percentage of flowers that produced fruit, and (2) the
-    percentage of flowers that produced viable seed. [...] For this analysis, data
-    were combined from all sites, shrubs and inflorescences, and the design was unbalanced.
-    ^p Minimum and maximum values span the two treatments in each treatment group.
+    Control inflorescences were not bagged and were thus open to pollinators. ^p Flowers
+    that were self-pollinated (manipulative and autonomous selfing) produced less than
+    half the amount of fruit (2–11%) produced by those that were outcrossed (26–33%;
+    F3,159 = 35.685, P < 0.001; Fig. 6a). No fruit matured when pollen was sourced
+    from the same individual (autonomous or manipulative selfing) and no seed from
+    these treatments was collected for subsequent analysis. Autonomous and manipulative
+    selfing did not result in viable seed set, indicating that this is an obligate
+    outcrossing species. ^p Breeding system as concluded by the authors from fruit
+    and viable-seed production across treatments.
 - var_in: seed_set_proportion
   unit_in: '%'
   trait_name: seed_set_proportion

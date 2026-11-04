@@ -1525,6 +1525,18 @@ Sauquet_2026_config <- dataset_configure("data/Sauquet_2026/metadata.yml", defin
 Sauquet_2026_raw <- dataset_process("data/Sauquet_2026/data.csv", Sauquet_2026_config, schema, resource_metadata, unit_conversions)
 Sauquet_2026 <- dataset_update_taxonomy(Sauquet_2026_raw, taxon_list)
 
+Scaccabarozzi_2018_config <- dataset_configure("data/Scaccabarozzi_2018/metadata.yml", definitions)
+Scaccabarozzi_2018_raw <- dataset_process("data/Scaccabarozzi_2018/data.csv", Scaccabarozzi_2018_config, schema, resource_metadata, unit_conversions)
+Scaccabarozzi_2018 <- dataset_update_taxonomy(Scaccabarozzi_2018_raw, taxon_list)
+
+Scaccabarozzi_2020_config <- dataset_configure("data/Scaccabarozzi_2020/metadata.yml", definitions)
+Scaccabarozzi_2020_raw <- dataset_process("data/Scaccabarozzi_2020/data.csv", Scaccabarozzi_2020_config, schema, resource_metadata, unit_conversions)
+Scaccabarozzi_2020 <- dataset_update_taxonomy(Scaccabarozzi_2020_raw, taxon_list)
+
+Scaccabarozzi_2025_config <- dataset_configure("data/Scaccabarozzi_2025/metadata.yml", definitions)
+Scaccabarozzi_2025_raw <- dataset_process("data/Scaccabarozzi_2025/data.csv", Scaccabarozzi_2025_config, schema, resource_metadata, unit_conversions)
+Scaccabarozzi_2025 <- dataset_update_taxonomy(Scaccabarozzi_2025_raw, taxon_list)
+
 Schmidt_1993_config <- dataset_configure("data/Schmidt_1993/metadata.yml", definitions)
 Schmidt_1993_raw <- dataset_process("data/Schmidt_1993/data.csv", Schmidt_1993_config, schema, resource_metadata, unit_conversions)
 Schmidt_1993 <- dataset_update_taxonomy(Schmidt_1993_raw, taxon_list)
@@ -2349,6 +2361,9 @@ austraits_raw <- austraits::bind_databases(
   Santini_2016,
   Saunders_2024,
   Sauquet_2026,
+  Scaccabarozzi_2018,
+  Scaccabarozzi_2020,
+  Scaccabarozzi_2025,
   Schmidt_1993,
   Schmidt_1997,
   Schmidt_2003,

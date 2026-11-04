@@ -41,6 +41,14 @@ dataset:
   data_is_long_format: yes
   custom_R_code: '
     data |>
+      dplyr::filter(
+        !pollination_treatment %in% c(
+          "manipulative outcross",
+          "manipulative selfing",
+          "autonomous selfing",
+          "all treatments"
+        )
+      ) |>
       dplyr::mutate(
         trait_value = dplyr::if_else(
           trait %in% c("flower_visitor", "pollination_vector_possible"),
@@ -99,6 +107,9 @@ dataset:
     pollen_shape, pollen_outline_polar_view, pollen_polarity, pollen_exine_ornamentation,
     pollen_tackiness, seed_partially_filled_fraction,
     seed_empty_fraction, seed_predation_fraction and seed_predator.
+    Fruit initiation and seed data from the manipulative outcross, manipulative selfing
+    and autonomous selfing treatments, and values pooled across treatments, are kept
+    in data.csv but filtered out; they were used only to score breeding_system.
 identifiers: .na
 locations:
   Jerrara Dam Reserve:
@@ -204,14 +215,6 @@ contexts:
   category: treatment_context
   var_in: pollination_treatment
   values:
-  - value: manipulative outcross
-    description: inflorescences bagged before flowers opened and hand-pollinated with
-      pollen from a donor tree at least 10 m away in the same population
-  - value: manipulative selfing
-    description: inflorescences bagged before flowers opened and hand-pollinated with
-      pollen from the same tree
-  - value: autonomous selfing
-    description: inflorescences bagged before flowers opened and not manipulated
   - value: open control
     description: inflorescences left unbagged and open to natural pollinators
   - value: procedural control
@@ -219,8 +222,6 @@ contexts:
       could visit the flowers
   - value: no treatment
     description: fruit collected from inflorescences not assigned to a treatment
-  - value: all treatments
-    description: pooled across pollination treatments
 traits:
 - var_in: flower_dichogamy
   unit_in: .na
@@ -378,7 +379,8 @@ traits:
     of flowers that produced fruits were compared among treatments using a one-way
     ANOVA. For both plant species, data were pooled from all sites and trees, and arcsine
     transformed if needed. ^p Values are the percentage of flowers with early fruit
-    development, by pollination treatment, pooled across sites or for one site or tree.
+    development in open control inflorescences, pooled across sites or for one site
+    or tree.
 - var_in: seed_viability
   unit_in: '%'
   trait_name: seed_viability
@@ -392,8 +394,9 @@ traits:
     filling the entire space and an 'empty' seed lacked both embryo and endosperm.
     A 'partially filled' seed contained an embryo, but the endosperm did not fill the
     entire space enclosed by the seed coat; these seeds are potentially viable. ^p
-    Values are the filled seeds as a percentage of seeds dissected, by pollination
-    treatment and site, as the authors treat filled seeds as viable.
+    Values are the filled seeds as a percentage of seeds dissected, for open control,
+    procedural control and untreated inflorescences, by site, as the authors treat
+    filled seeds as viable.
 - var_in: pollination_syndrome
   unit_in: .na
   trait_name: pollination_syndrome
@@ -457,7 +460,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
-  methods: A series of pollination experiments were conducted for both species to
+  methods: 'A series of pollination experiments were conducted for both species to
     determine their breeding systems. Inflorescences containing at least five buds
     were haphazardly selected and subjected to one of five randomly applied treatments,
     (1) manipulative outcross, (2) autonomous selfing, (3) manipulative selfing, (4)
@@ -471,9 +474,15 @@ traits:
     [...] Treatments were applied and replicated five (Acronychia oblongifolia) or
     ten (Sarcomelicope simplicifolia subsp. simplicifolia) times per tree. [...] Reproductive
     success was classed as the percentage of flowers that developed fruit (early fruit
-    development), and the quantity of viable seeds produced per treatment. ^p Breeding
-    system as concluded by the authors from fruit and viable-seed production across
-    treatments.
+    development), and the quantity of viable seeds produced per treatment. ^p Fruit
+    was produced from all treatments except manipulative selfing (Acronychia oblongifolia);
+    no fruit was produced when pollinators were excluded from flowers (Sarcomelicope
+    simplicifolia subsp. simplicifolia). Autonomous and manipulative selfing treatments
+    produced few (Acronychia oblongifolia: <3%) or no (Sarcomelicope simplicifolia
+    subsp. simplicifolia) viable seed, indicating these are predominantly outcrossing
+    species [...] with no fruit set on any tree when pollinators were excluded from
+    the flowers. ^p Breeding system as concluded by the authors from fruit and viable-seed
+    production across treatments.'
 - var_in: flower_visitor
   unit_in: .na
   trait_name: flower_visitor

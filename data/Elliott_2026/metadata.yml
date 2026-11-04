@@ -202,6 +202,14 @@ dataset:
   data_is_long_format: yes
   custom_R_code: '
     data |>
+      dplyr::filter(
+        !(
+          source_id == "Lamont_1988" &
+            stringr::str_trim(`Visitor Genus`) %in% c("Phylidonyris", "Acanthorhynchus", "Lichmera", "Anthochaera", "Liparetrus", "Leioproctus") &
+            !(stringr::str_trim(`Visitor Genus`) == "Phylidonyris" & stringr::str_trim(`Visitor Species`) == "niger") &
+            !(stringr::str_trim(`Visitor Genus`) == "Anthochaera" & stringr::str_trim(`Visitor Species`) == "carunculata")
+        )
+      ) |>
       mutate(
         taxon_name = trimws(paste(`Plant Genus`, ifelse(is.na(`Plant Species`), "", `Plant Species`))),
         pollinator_taxon = case_when(
@@ -235,6 +243,10 @@ dataset:
   original_file: in raw data folder
   notes: Plant and pollinator taxon identities were split across several raw columns
     (`Visitor Order/Family`, `Visitor Genus`, `Visitor Species`, `Morphospecies`) and merged into taxon name columns for the context and pollinator/flower visitor values.
+    Records also in Lamont_2026, a table compiled by Byron Lamont with pollen-load detail,
+    are filtered out in custom_R_code and kept there - the Banksia ilicifolia visitors
+    of Lamont and Collins (1988) that the table lists (New Holland honeyeater, western
+    spinebill, brown honeyeater, little wattlebird, Liparetrus, Leioproctus).
 identifiers: .na
 locations:
   Rankin Springs:

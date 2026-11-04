@@ -23,13 +23,8 @@ dataset:
   data_is_long_format: yes
   custom_R_code: '
     data |>
-      mutate(
-        pollination_treatment = case_when(
-          stringr::str_detect(context, stringr::fixed("autogamy (Auto) treatment")) ~ "autogamy",
-          stringr::str_detect(context, stringr::fixed("pollen supplementation (Supp) treatment")) ~ "pollen supplementation",
-          stringr::str_detect(context, stringr::fixed("treatments pooled, mating-system trial")) ~ "all treatments pooled",
-          stringr::str_detect(context, "^natural population") ~ "open pollination"
-        )
+      dplyr::filter(
+        !grepl("mating-system trial", context)
       )
   '
   collection_date: 2015/2021
@@ -52,7 +47,9 @@ dataset:
     style_length_relative_to_anther, native_bee_visitation_rate, larval_seed_predation_behaviour,
     proportion_fruit_with_larva, proportion_fruit_free_of_larva, beetles_per_flower, beetles_observed, pollen_grains_per_stigma,
     proportion_stigmas_with_pollen, flowering_density_max, flowering_density_peak,
-    stamen_form and style_form
+    stamen_form and style_form. Fruit set and seeds per fruit from the T. manglesianus
+    mating-system trial (Auto and Supp treatments, and the mean across treatments)
+    are kept in data.csv but filtered out; they were used only to score breeding_system.
 locations:
   NR:
     latitude (deg): -32.0435
@@ -100,18 +97,6 @@ contexts:
 - context_property: flower visitor taxon name
   category: entity_context
   var_in: entity_context
-- context_property: pollination treatment
-  category: treatment_context
-  var_in: pollination_treatment
-  values:
-  - value: autogamy
-    description: Auto treatment in the mating-system trial at NR; flowers isolated from pollinators and not hand-pollinated, testing autonomous self-pollination.
-  - value: pollen supplementation
-    description: Supp treatment in the mating-system trial at NR; open flowers given additional hand-applied outcross pollen.
-  - value: all treatments pooled
-    description: Mean across the Self, OCL (long-anther outcross), OCS (short-anther outcross), Open and Supp treatments of the mating-system trial at NR.
-  - value: open pollination
-    description: Unmanipulated flowers in natural populations, pooled across years and/or sites.
 traits:
 - var_in: plant_growth_form
   unit_in: unit
@@ -197,7 +182,7 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: unknown
-  methods: Fruit set of T. manglesianus was recorded in a mating-system trial at NR, in which flowers were isolated from pollinators and either left unpollinated (Auto), hand self-pollinated (Self), hand outcross-pollinated with pollen from long (OCL) or short (OCS) anthers, left open (Open) or given supplementary outcross pollen (Supp) (Results p.4-5; Fig. 5A). Fruit set of T. patersonii was recorded on marked plants in natural populations at KH across seven years of study (Results p.5; Fig. 6).
+  methods: Fruit set of T. patersonii was recorded on marked, unmanipulated plants in natural populations at KH across seven years of study (Results p.5; Fig. 6).
 - var_in: seeds_per_fruit
   unit_in: '{count}/{count}'
   trait_name: seeds_per_fruit
@@ -205,7 +190,7 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: unknown
-  methods: Seeds were counted in mature fruits from the T. manglesianus mating-system trial at NR (Results p.5) and from fruits collected in natural populations of both species (Results p.5; Fig. 7).
+  methods: Seeds were counted in mature fruits collected from unmanipulated plants in natural populations of both species (Results p.5; Fig. 7).
 substitutions: .na
 taxonomic_updates: .na
 exclude_observations: .na
