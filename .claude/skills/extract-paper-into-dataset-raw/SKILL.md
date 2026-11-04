@@ -71,11 +71,37 @@ results by a short site code rather than a spelled-out name), and
 that skill documents (`entity_type`, `entity_context`, `trait_value`,
 `value_type`, `unit`, `error_type`/`error_value`, `n`, `context`,
 `source_section`, `notes` -- read it before writing your first row if
-**Specimen identifiers get their own column.** When the source gives herbarium voucher / collection numbers (or tree tags, accession numbers), add a `record_number` column right after `location_name` holding only the identifiers (semicolon-separated if several) -- never bury them in `notes` or `entity_context`. They will later map to the metadata.yml `identifiers:` block (DarwinCore `recordNumber` for collectors' numbers), one identifier column per holding herbarium, split in `raw/extra_R_code_<id>.R`. Also keep the source's own collection/provenance cell verbatim in its own column (e.g. `herb_coll_nos`): its garden/field/glasshouse codes drive a per-record `basis_of_record` later. Seedlot numbers are not vouchers (Hallam_1970).
+unsure).
 
-**Site/treatment information read from the source gets its own column, not a `context` string.** A site's fire severity, a time-since-fire, whether a percentage covers all sites or burnt sites only: add a named column (e.g. `fire_severity`, `sites_included`) right after `location_name`, so data.csv can simply be a copy of trait_data.csv. Don't write `"fire severity: high"` into `context` and then parse it back out in `raw/extra_R_code_<id>.R`. That script is only for genuinely derived logic (Tasker_2026).
+**Specimen identifiers get their own column.** When the source gives
+herbarium voucher / collection numbers (or tree tags, accession numbers),
+add a `record_number` column right after `location_name` holding only the
+identifiers (semicolon-separated if several) -- never bury them in `notes` or
+`entity_context`. They will later map to the metadata.yml `identifiers:`
+block (DarwinCore `recordNumber` for collectors' numbers), one identifier
+column per holding herbarium, split in `raw/extra_R_code_<id>.R`. Also keep the source's
+own collection/provenance cell verbatim in its own column (e.g.
+`herb_coll_nos`): its garden/field/glasshouse codes drive a per-record
+`basis_of_record` later. Seedlot numbers are not vouchers (Hallam_1970).
 
-**`entity_type` and `value_type` for numbers:** a measured value (nutrient concentrations and other chemistry included) is never `species`, even a range compiled across many studies in a review -- use `population` with no location, or `metapopulation` for a named region. `value_type: raw` is only for a value the source explicitly gives for one individual or one bulked sample; a lone value printed in a min-max range column is `mean` (Judd_1996).
+**Site/treatment information read from the source gets its own column, not a
+`context` string.** A site's fire severity, a time-since-fire, whether a
+percentage covers all sites or burnt sites only: add a named column (e.g.
+`fire_severity`, `sites_included`) right after `location_name`, so data.csv can
+simply be a copy of trait_data.csv. Don't write `"fire severity: high"` into
+`context` and then parse it back out in `raw/extra_R_code_<id>.R`. That
+script is only for genuinely derived logic (Tasker_2026). Fire history, fire
+severity and fire intensity always get such a column, filled on every row
+even when the whole study shares one value (`fire_intensity` = `moderate to
+high intensity`, Harvey_2017). These are later mapped as contexts despite
+being constant.
+
+**`entity_type` and `value_type` for numbers:** a measured value (nutrient
+concentrations and other chemistry included) is never `species`, even a range
+compiled across many studies in a review -- use `population` with no location,
+or `metapopulation` for a named region. `value_type: raw` is only for a value
+the source explicitly gives for one individual or one bulked sample; a lone
+value printed in a min-max range column is `mean` (Judd_1996).
 
 The one worth restating because it's easy to get backwards:
 
@@ -96,6 +122,8 @@ mapped one; never leave a real measurement out just because it won't map.
 
 **Name candidates the way traits.yml already names things (Dadswell_1972).**
 - A statistic of an existing trait is never a new trait. "Mean of the 10 widest vessels" is `stem_vessel_diameter` with `value_type: maximum`, not `stem_vessel_diameter_largest`.
+- Nor is the same quantity measured on a different part. The duration of stigma receptivity or of pollen availability is `flower_lifespan` with a `flower_part` column (`stigma`, `anther`, `whole flower`), later mapped as an `entity measured` context. A stated month of mature fruit is `fruiting_time` (Lopresti_2023).
+- Intervals between two events are `<organ>_time_from_<event>_to_<event>`, like `fire_time_from_fire_to_fruiting`. Pollination to mature fruit is `fruit_time_from_pollination_to_fruiting` (Lopresti_2023).
 - No suffixes like `_abundance`, `_percentage`, `_height_cells`, `_test` or `_distinctness`. Proportions are `_fraction` (`wood_ray_biseriate_fraction`). A height counted in cells is `wood_ray_height`, with the unit carrying "cells". `wood_ray_cell_height` would mean the height of a cell. A categorical version of a numeric trait takes `_categorical` (`wood_axial_parenchyma_fraction_categorical`, like `wood_fibre_wall_thickness_categorical`).
 - Otherwise use the plain IAWA/structure noun: `wood_vessel_tyloses`, `wood_fibre_pits`, `wood_crystals`, `wood_deposits` (with a tissue column), `wood_splinter_burning`, `wood_apotracheal_parenchyma` (paralleling `wood_paratracheal_parenchyma`).
 
@@ -104,6 +132,13 @@ mapped one; never leave a real measurement out just because it won't map.
 **Branch/twig/stemwood tissue chemistry is a `wood_*` trait, not a `stem_*` or new organ trait.** Nutrient concentrations in branches, twigs or stemwood go under the matching `wood_<element>_per_dry_mass` (e.g. `wood_N_per_dry_mass`), with `entity_measured: branch` / `twig` / `stem wood` added to `context` (plus any size class, e.g. `twig diameter: <2 cm`) -- never `stem_*_per_dry_mass`, and never invented `branch_*`/`twig_*` traits (Judd_1996). When a source splits woody organs into **wood vs bark** (including root crown / tap root / lateral root), map them to `wood_*` / `bark_*` with the organ (`root crown`, `tap root`, `primary branch`, ...) as the `entity_measured` context -- not `root_*` traits. Dead-stem tissue goes to `wood_dead_*` / `bark_dead_*` (Westman_1977).
 
 **Stratum and habitat descriptors are context columns, not candidate traits.** "Overstorey trees", "understorey shrubs", "secondary canopy species", "species of more open habitats" go in their own columns (e.g. `canopy_position`, `habitat_openness`) on every row of that taxon, later mapped as `contexts:`. A germination response to a hormone or chemical that is not a germination treatment (e.g. GA3 *inhibiting* germination) is a new value of the candidate trait `germination_cues`, not a trait of its own (Bell_1995).
+
+**Pollination studies: measures of the animals are not plant traits (Scaccabarozzi_2020, Scaccabarozzi_2025).**
+- Pollinarium removal, pollination efficiency and visits per observation trial describe what the pollinators did, so they are not candidate traits. Keep them as their own columns, unmapped. Only the count of visitor individuals on a visitor's own row is mapped, as a context. Pollinator surveys, flower counts of co-flowering or model plants, and plant densities per quadrat stay unmapped too (see the fill-metadata-yml contexts rules).
+- Fruit counts per plant are allometric, not traits. Keep the counts as columns.
+- **Outcomes of manipulations are not traits.** Fruit set, fruit initiation, seed set, seeds per fruit and seed mass per fruit are traits only when measured on unmanipulated, open-pollinated plants: natural populations, open controls and procedural controls. Outcomes under bagging, hand self- or cross-pollination, supplementation, emasculation, or anther removal or painting are not. Extract those rows with a treatment column so they stay in data.csv, but they are filtered out in custom_R_code. Score the authors' conclusion as `breeding_system`, and as `pollination_vector_*: autonomous` if bagged flowers set fruit. A value pooled across treatments counts as manipulated. Per-plant values from experimental plants, such as Scaccabarozzi_2025's tagged plants, are not mapped either.
+- Buzzing is the `foraging behaviour` context (`buzzing`, Lopresti_2026), not a trait.
+- Honeybee colour-hexagon loci (x, y) are converted, not added as new traits. `flower_colour_bee_hue` = atan2(x, y) in degrees, mod 360: 0 at the top of the hexagon, increasing clockwise, as in pavo. `flower_colour_bee_chroma` = sqrt(x² + y²). Check the hues against the sectors the paper states.
 
 **Geophytes, cultivation and species descriptions (Reiter_2025).**
 - For a geophyte, check every deciduousness trait: `leaf_phenology` (deciduous / summer_dormancy / withered_at_flowering), `foliage_time`, and `bud_bank_location` (`fleshy_underground_organ`) as well as `storage_organ`.
@@ -170,8 +205,21 @@ good worked example -- over inventing a new one).
 - A short list of the candidate (non-`config/traits.yml`) trait names used,
   so the curator can decide whether any are worth proposing as real traits.
 
-This is reconnaissance output sitting in a real dataset folder, not a
-finished dataset -- it does not touch `metadata.yml`, does not decide
+**Also write every open question into `data/<id>/metadata.yml`'s
+`questions:` block** (`question1:`, `question2:`, ...): unreachable
+supplementary tables, named gaps, inconsistent numbers, ambiguous wording,
+taxon-name mismatches. Reporting them in chat alone is not enough, because the
+curator reviews them in the file (Harvey_2017). The questions go to the
+authors, so write each one as a plain question about their data (see
+`fill-metadata-yml` Step 6). Candidate traits and other mapping decisions are
+ours, so they go in `notes:` and the chat report, not `questions:`. If `metadata.yml` doesn't exist yet, create the stub with the
+`questions:` block. If it does exist, Read it and make a targeted Edit to
+`questions:` only. Append after any existing questions and never regenerate
+the file.
+
+Apart from that `questions:` block, this is reconnaissance output sitting in
+a real dataset folder, not a finished dataset -- it does not touch the rest
+of `metadata.yml`, does not decide
 `unit_in` conversions or `substitutions`, and does not align taxonomy.
 Turning it into a build-ready dataset is `traits-build-add-dataset`'s job
 from here (`fill-metadata-yml`, `fix-location-metadata`,
