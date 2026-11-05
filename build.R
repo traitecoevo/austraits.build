@@ -1385,6 +1385,10 @@ RBGV_2023_config <- dataset_configure("data/RBGV_2023/metadata.yml", definitions
 RBGV_2023_raw <- dataset_process("data/RBGV_2023/data.csv", RBGV_2023_config, schema, resource_metadata, unit_conversions)
 RBGV_2023 <- dataset_update_taxonomy(RBGV_2023_raw, taxon_list)
 
+RBGV_2026_config <- dataset_configure("data/RBGV_2026/metadata.yml", definitions)
+RBGV_2026_raw <- dataset_process("data/RBGV_2026/data.csv", RBGV_2026_config, schema, resource_metadata, unit_conversions)
+RBGV_2026 <- dataset_update_taxonomy(RBGV_2026_raw, taxon_list)
+
 Read_1985_config <- dataset_configure("data/Read_1985/metadata.yml", definitions)
 Read_1985_raw <- dataset_process("data/Read_1985/data.csv", Read_1985_config, schema, resource_metadata, unit_conversions)
 Read_1985 <- dataset_update_taxonomy(Read_1985_raw, taxon_list)
@@ -2306,6 +2310,7 @@ austraits_raw <- austraits::bind_databases(
   RBGK_2014,
   RBGV_2022,
   RBGV_2023,
+  RBGV_2026,
   Read_1985,
   Read_2003,
   Read_2005,
@@ -2404,6 +2409,10 @@ austraits_raw <- austraits::bind_databases(
   WAH_2022_2,
   WAH_2023_1,
   WAH_2023_2,
+  WAH_2026_1,
+  WAH_2026_2,
+  WAH_2026_3,
+  WAH_2026_4,
   WATTLE_2026,
   Warren_2005,
   Warren_2006,
@@ -2447,10 +2456,6 @@ austraits_raw <- austraits::bind_databases(
   Zieminska_2015,
   Zolfaghar_2015,
   NULL)
-  WAH_2026_1,
-  WAH_2026_2,
-  WAH_2026_3,
-  WAH_2026_4,
 
 # Version information
 version_number <- util_get_version("config/metadata.yml")

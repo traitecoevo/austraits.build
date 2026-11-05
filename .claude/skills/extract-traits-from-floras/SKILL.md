@@ -53,7 +53,9 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   order with their qualifier ("blue-purple; dark blue; lilac", "sometimes scrambling"); for
   numeric traits one `<trait>_description` per trait with the verbatim measurement.
 - **Never drop parenthetical extremes.** "(3.7–) 10 (–30) m", "2–4 (rarely 6) mm": typical
-  range in `_min`/`_max`, extremes in `_extreme_min`/`_extreme_max` (unmapped for now).
+  range in `_min`/`_max`, extremes in `_extreme_min`/`_extreme_max` (long format: minimum / maximum rows with measurement_range =
+  extreme). **Settled (user 2026-11-05):** they are always scraped into data.csv but not mapped into AusTraits (custom_R_code filters
+  them out); no metadata question about them.
 - **Genus and family copy-down (FoA-style treatments)**: a categorical value stated singly in
   the genus (else family) description is the group's default and is copied to member taxa silent
   on that trait (`trait_scoring_method` = `inferred_from_genus` / `inferred_from_family`). Drop
@@ -61,6 +63,17 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   segments naming a genus in brackets ("(Hydrocleys)"). A statement counts only if it names
   exactly one term, counting terms with no level ("flat, terete or triquetrous" is not "all
   terete"). Never copy numbers.
+  - **An "or" makes only its own words alternatives (user 2026-11-05):** Hakea "Fruit a smooth or rugose to tuberculate woody
+    modified follicle" is a woody follicle — the "X or Y" words (each a word or an "A to B" range) are removed from the group text and
+    the rest of the segment is kept. A segment still goes whole when the alternative is a phrase ("solitary or in racemes", "a capsule
+    or a berry") or "X or not".
+    **Only when the "or" joins two plain modifiers of what follows** (build10 review, 2026-11-05): the segment also goes whole when the
+    next word continues the alternative ("stipules absent or small and caducous", "bisexual or unisexual and then plants dioecious",
+    "opposite or alternate and spiral", "smooth or covered in imbricate scales", "entire or serrate (... leaves needle-like)"), when the
+    terms are plural nouns ("climbers or leafless parasites"), "-ing" words ("splitting to base or remaining fused") or adverbs ("simple
+    or palmately lobed"), or when words before the pair join it to more ("free and alternating with the tepals or fused"). Read loosely,
+    the rule had copied Campanulaceae / Asparagaceae dioecious, Convolvulaceae parasitic, Apocynaceae caducous stipules, Amaranthaceae
+    spiral leaves and Ericaceae needle leaves to every member — caught before commit.
   - **Species descriptions name only the exceptions (user 2026-10-31)**, as for terrestrial vs
     aquatic: a member taxon that scores the trait itself keeps its own value, and a single
     contradicting member does not stop the copy to the silent members (Hibbertia "Fruit a
@@ -71,8 +84,10 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
     alternatives belong to other traits ("creeping rhizome, annually renewed tuber or thickened
     rootstocks"; "simple, pinnatifid, pinnate or bipinnate") are not caught by the veto: add them to
     `copydown_exclude`, and read every new copy-down reaching ≥40 taxa after a build.
-  - **Hedged group statements are copied** as a plain value (no commonness_qualifier; the
-    `inferred_from_*` method and the "[family description] …" text carry the source):
+  - **Hedged group statements are copied with their hedge word as commonness_qualifier (user 2026-11-05; before: a plain value)**:
+    "Fruit usually a capsule" → capsule `usually`, "Leaves mostly basal" → `mostly`, "connate (mostly)" → `mostly`; and the main value
+    of "X or rarely Y" / "X, rarely Y" → X `usually` (the rare Y is not copied). Read from the group's own text (the hedge words are
+    removed only for the segment filter). An "or" between plain alternatives copies nothing for that trait. Older wording:
     "Fruit usually a capsule" (Orchidaceae), "Fruit mostly a caryopsis …, rarely a nut, berry,
     or an utricle" (Poaceae) → capsule / caryopsis. Copied hedges: usually, mostly, mainly,
     generally, commonly, typically, predominantly, normally, chiefly. Not "often" /
@@ -627,6 +642,46 @@ not the main checkout's: the user switches branches in the main checkout, and it
   they are complements for only 57 of 87 taxa). Plain "Reproduction. Seed." is not scored not_vegetative. "Generally
   survives fire" is resprouts (usually), confirmed by the user 2026-11-05.
 - **All sources (2026-11-04):** a hyphenated "non-" negates only its own word ("Non-lignotuberous shrub" is a shrub).
+
+## VicFlora: Flora of Victoria (RBGV_2026, user 2026-11-05)
+
+- **Scope:** `data_extra/vicflora_profiles.csv` (8,399 profiles: families, genera, species, infraspecific taxa), dataset id RBGV_2026,
+  long format. **Vascular plants only** (user): profiles whose parent chain reaches Bryophyta, Marchantiophyta or Anthocerotophyta are
+  left out (chains that break below the phylum, e.g. Australina -> Urticaceae, are kept). **Introduced and extinct taxa included** (user).
+  Do not look at RBGV_2022 / RBGV_2023 while extracting: they are the comparison case.
+- **Same parser, VicFlora mode:** `FOA_SOURCE=vicflora FOA_CORES=12 Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R` (~11 min). Fields:
+  Description; Distribution and habitat → Habitat; Notes; common_name; profile_author (else profile_source) → author; establishment_means
+  introduced → biostatus; Bioregions (treatment) + Outside Victoria → distribution; EPBC / FFG / Victorian threat status → conservation.
+  Names are written without authorities in the source ("×" → "x "); phrase names ("Astrotricha sp. 1 subsp. 2", "Caladenia sp. aff.
+  concolor (Violet Town)") kept as written. Metadata first created by `ignore/jobs/vf1/make_meta.py`, then add-only.
+- **Phenology:** the "Flowers Sep.–Oct." / "Fruits mostly Dec.–Feb." / "Flowers and fruits ..." sentences of the description are moved to
+  the phenology with the months written out as in FoA ("Flowers September–October"; a sentence-final "Oct." keeps its full stop);
+  "Description based on Victorian specimens only." is dropped. "Flowers most of (the) year" stays blank (earlier rule).
+- **Herbarium-specimen months (user: also scored):** each profile's counts of specimens with flowers / fruit / buds per month →
+  flowering_time / fruiting_time / candidate flower_bud_time, "y" where at least one specimen, on rows with trait_scoring_method =
+  from_herbarium_specimens (counts in value_description), beside the description's own calendar. Added after the species →
+  infraspecific inheritance and the copy-down, so they neither stop nor are passed on by them. Taxa with no description are not written
+  (question2 in metadata: should their specimen months be?).
+- **Copy-down exclusions found here (all sources, 2026-11-05; NHNSW had the same):** Acacia "Leaves bipinnate, reduced to phyllodes
+  or rarely absent" (not bipinnate for phyllodinous species); Poaceae ligule "membranous, a row of hairs ..." (not membranous);
+  Cyperaceae "Leaves basal and/or cauline" / "only at base of the culm or also cauline" (not basal) — alternatives with no level of the trait.
+- **Ecology vetted** (`ignore/jobs/vf1/eco_cand.py` → 651 sentences, `vet.py` → raw/ecology_vetted.csv, 766 rows): fire response,
+  clonality, dispersal, pollination and breeding systems, germination, lifespan, salt tolerance; habitat-only wording ("in saline
+  swamps", "seasonally flooded") is not a tolerance.
+  - **A genus / family Notes / Ecology statement is copied to the members only when it states one value that clearly applies to every
+    member (user 2026-11-05, all sources; a member whose own text differs still overrides the copy). Never when any word suggests
+    ambiguity ("most" definitely means don't copy). This is for the vetted ecology statements only: the description copy-down keeps
+    its hedge list ("Fruit usually a capsule" is still copied; user 2026-11-05). ABRS: 12 hedged statements dropped by
+    `ignore/jobs/vf1/drop_hedged_group_copies.py` (Chiloglottis "Most species", Zieria "Usually pollinated by flies", Euphrasia
+    "primarily by native bees", Viola "Cleistogamous flowers are common" ...).**
+  - VicFlora: not copied when hedged ("usually open only on the death of the branch"), conditional ("plants grown in shaded sites"),
+    about some species ("several have become naturalised"), or contradicted by a member's own text or by the same note ("Some species
+    apparently producing seed without fertilization"). Copied: Chiloglottis thynnine wasps (C. cornuta self; VicFlora states it for the
+    genus without "most"), Cryptostylis ichneumon wasp, Glossodia bees, Stylidium / Levenhookia insects, Najas / Ruppiaceae /
+    Posidoniaceae / Cymodoceaceae water, Amphibolis seedling, Taraxacum natives self-compatible, Hakea resprouts / killed read from each
+    species' own lignotuber wording. Not copied: Hakea serotiny (varies between Hakea species; user), Prasophyllum insects / nectar,
+    Salix vegetative, Fumaria cleistogamy, Cotoneaster birds, Gyrostemonaceae lifespan / fire germination, Taraxacum introduced apomixis
+    ("all introduced taxa investigated to date").
 
 ## Every trait for every taxon (user 2026-10-30)
 

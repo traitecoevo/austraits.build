@@ -57,8 +57,14 @@ if (ausgrass_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_e
 florabase_mode <- Sys.getenv("FOA_SOURCE") == "florabase"
 fb_text <- Sys.getenv("FB_TEXT", "brief")
 if (florabase_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/florabase_profiles.csv"
+# VicFlora mode (env FOA_SOURCE=vicflora; user 2026-11-05): the VicFlora (Flora of Victoria, RBGV) profiles (vicflora_profiles.csv:
+# family, genus, species and infraspecific profiles) into the long-format dataset RBGV_2026. Flora of Victoria prose, like FoA, so the
+# family modes and genus / family copy-down apply. Vascular plants only (user: bryophytes left out); introduced and extinct taxa
+# included; the herbarium-specimen counts by month are also scored, on their own rows (user).
+vicflora_mode <- Sys.getenv("FOA_SOURCE") == "vicflora"
+if (vicflora_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/vicflora_profiles.csv"
 own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else if (ausgrass_mode) "AusGrass3_2026" else
-  if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else NA_character_
+  if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else if (vicflora_mode) "RBGV_2026" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
@@ -69,7 +75,7 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
 # 2026-10-22); ABRS_Proteaceae_2026 and ABRS_Asteraceae_2026 from the start (user, 2026-10-29)
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
-              "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3")
+              "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026")
 dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -555,6 +561,49 @@ if (florabase_mode) {
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
+if (vicflora_mode) {
+  gens <- character(0)
+  # vascular plants only (user 2026-11-05): a profile is a bryophyte when its parent chain reaches Bryophyta, Marchantiophyta or
+  # Anthocerotophyta (some chains break below the phylum, e.g. Australina -> Urticaceae: those are kept, as vascular)
+  par <- setNames(d_all$parent, d_all$taxon_name); rk <- setNames(d_all$taxon_rank, d_all$taxon_name)
+  phy <- map_chr(d_all$taxon_name, function(n) { for (i in 1:15) { if (is.na(n) || !n %in% names(rk)) return(NA_character_)
+    if (rk[[n]] == "phylum") return(n); n <- par[[n]] }; NA_character_ })
+  bryo <- coalesce(phy, "") %in% c("Bryophyta", "Marchantiophyta", "Anthocerotophyta")
+  # the "Flowers Sep.–Oct." / "Fruits mostly Dec.–Feb." sentences of the description are the phenology, with the months written out
+  # as in FoA ("Flowers September–October"); "Description based on Victorian specimens only." is a note, not a character
+  # (the abbreviation's full stop is kept where it also ends the sentence: "Flowers Sep.–Oct. Seeds ..." -> "... October. Seeds ...")
+  mon_vf <- setNames(c("January", "February", "March", "April", "June", "July", "August", "September", "October", "November", "December"),
+                     paste0("\\b", c("Jan", "Feb", "Mar", "Apr", "Jun", "Jul", "Aug", "Sept?", "Oct", "Nov", "Dec"), "\\b(?:\\.(?!\\s+[A-Z(]|\\s*$))?"))
+  vf_split <- function(x) map(x, function(t) if (is.na(t) || t == "") character(0) else
+    str_split(str_replace_all(t, mon_vf), "(?<=\\.)\\s+(?=[A-Z(])")[[1]])
+  is_phen <- function(s) str_detect(s, "^(?:Flower|Fruit|Seeds? shed|Spor|Cones?)\\w*\\b") &
+    str_detect(s, "\\b(?:January|February|March|April|May|June|July|August|September|October|November|December|spring|summer|autumn|winter|(?:all|any time of|most of(?: the)?|throughout the) year)\\b") &
+    !str_detect(s, "\\d\\s*(?:mm|cm|m)\\b")
+  ss <- vf_split(d_all$Description)
+  d_all <- d_all %>%
+    mutate(bryo = bryo,
+           Description_vf = map_chr(ss, ~ na_if(str_squish(paste(.x[!is_phen(.x) & !str_detect(.x, "^Description based on")], collapse = " ")), "")),
+           Phenology_vf = map_chr(ss, ~ na_if(str_squish(paste(.x[is_phen(.x)], collapse = " ")), ""))) %>%
+    filter(taxon_rank %in% c("family", "genus", "species", "subspecies", "variety", "form"), !bryo)
+  # herbarium-specimen counts by month (user: also scored, on their own rows; see "VicFlora specimen months" below)
+  vf_spec <- d_all %>% filter(taxon_rank %in% c("species", "subspecies", "variety", "form")) %>%
+    transmute(taxon_name = str_squish(str_replace_all(taxon_name, "×\\s*", "x ")), flowers = specimens_with_flowers_by_month,
+              fruit = specimens_with_fruit_by_month, buds = specimens_with_buds_by_month)
+  d_all <- d_all %>%
+    transmute(scientific_name = str_squish(str_replace_all(taxon_name, "×\\s*", "x ")),
+              rank = taxon_rank, family = na_if(family, ""), url, Description = Description_vf, Phenology = Phenology_vf,
+              Habitat = na_if(`Distribution and habitat`, ""), Notes = na_if(Notes, ""), `Common Name` = na_if(common_name, ""),
+              Author = coalesce(na_if(profile_author, ""), na_if(profile_source, "")),
+              Biostatus = ifelse(establishment_means == "introduced", "Introduced", NA_character_),
+              Conservation = na_if(str_squish(paste(ifelse(coalesce(epbc, "") == "", "", paste0("EPBC: ", epbc, ";")),
+                                                    ifelse(coalesce(ffg, "") == "", "", paste0("FFG: ", ffg, ";")),
+                                                    ifelse(coalesce(threat_status, "") == "", "", paste0("Victoria: ", threat_status)))), ""),
+              Distribution = na_if(str_squish(paste0(ifelse(coalesce(`Bioregions (treatment)`, "") == "", "", paste0("Victorian bioregions: ", `Bioregions (treatment)`)),
+                                                     ifelse(coalesce(`Outside Victoria`, "") == "", "", paste0("; outside Victoria: ", `Outside Victoria`)))), ""))
+  if (Sys.getenv("FOA_FAMILIES") == "") fams <- unique(na.omit(d_all$family))
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
 if (wattle_mode) {
   fams <- "Fabaceae"; gens <- character(0)
   # names as written (no authorities in taxon_name): hybrid formulae ("Acacia ampliceps x sclerosperma subsp. sclerosperma"), informal
@@ -655,6 +704,13 @@ if (Sys.getenv("FOA_FAMILIES") == "" && is.na(own_id)) d <- d %>% group_by(famil
 # ---------------------------------------------------------------- source typos / fixes
 fix_text <- tribble(
   ~taxon, ~find, ~replace,
+  # VicFlora (RBGV_2026; flagged 2026-11-05): units that cannot be right (cm / m for mm) - Argemone petals "25–35 cm long", Olearia petiole
+  # "to c. 22 m long", Caladenia perianth segments "18–30 cm" / "55–65 cm long" on plants under 14 / 40 cm tall, Taraxacum achenes "3.3–3.4m long"
+  "Argemone ochroleuca subsp. ochroleuca", "25–35 cm long", "25–35 mm long",
+  "Olearia pannosa subsp. cardiophylla", "to c. 22 m long", "to c. 22 mm long",
+  "Caladenia brachyscapa", "Perianth segments 18–30 cm long", "Perianth segments 18–30 mm long",
+  "Caladenia sp. aff. fragrantissima (Central Victoria)", "perianth segments 55–65 cm long", "perianth segments 55–65 mm long",
+  "Taraxacum kernianum", "3.3–3.4m long", "3.3–3.4 mm long",
   # Florabase key (WAH_2026_2): Hakea megalosperma seed "40-60 mm long (including wing), 26-2630 mm wide" (26-30 intended; flagged 2026-11-04)
   "Hakea megalosperma", "26-2630 mm wide", "26-30 mm wide",
   # "fertile glumes 11–20 m long" in spikelets 12–22 mm long (mm intended; flagged 2026-10-31)
@@ -1607,7 +1663,7 @@ sex_type_dict <- c("dioecious|plants (?:male or female|unisexual)" = "dioecious"
                    "polygamomonoecious|polygamo-monoecious" = "polygamonoecious", "polygamous" = "polygamous")
 flower_sex_dict <- c("bisexual|hermaphrodite|perfect" = "bisexual", "unisexual|imperfect" = "unisexual")
 parasitic_dict <- c("root hemiparasites?|root-hemiparasit\\w*|hemiparasitic on roots" = "hemiparasitic root_parasitic",
-                    "(?:aerial |stem |branch )(?:hemi-?)?parasites?|parasitic on (?:the )?(?:branches|stems)" = "stem_parasitic",
+                    "(?:aerial |stem |branch )(?:hemi-?)?parasites?|stem-(?:hemi)?parasit\\w*|parasitic on (?:the )?(?:branches|stems)" = "stem_parasitic",
                     "hemi-?parasit\\w*" = "hemiparasitic", "holoparasit\\w*" = "holoparasitic", "root parasit\\w*" = "root_parasitic",
                     "parasit(?:e|es|ic)" = "parasitic")
 climbing_dict <- c("twining|twiners?|twines" = "twining", "tendrils?|tendrillar" = "tendrils", "scrambling|scramblers?|scrambles|clambering" = "scrambling",
@@ -2408,6 +2464,37 @@ extract_one <- function(r, group_filter = TRUE) {
       # removed, the rest of the segment kept ("Fruit a globose to obloid-ovoid, syncarpous fleshy berry")
       adv <- "(?:(?:slightly|weakly|strongly|very|more|less|shortly|narrowly|broadly|widely|deeply|shallowly|densely|sparsely|somewhat|minutely|finely|irregularly)\\s+)?"
       x_or <- x
+      # (user 2026-11-05: an "or" makes only its own words alternatives, not the whole segment: Hakea "Fruit a smooth or rugose to
+      # tuberculate woody modified follicle" is still a follicle (and woody); the "X or Y" words (each a word or "A to B" range) are
+      # removed and the rest kept. Phrases ("solitary or in racemes", "a capsule or a berry") and "X or not" still drop the segment below)
+      # (a commonness word is never one of the terms: "actinomorphic or rarely zygomorphic" is left for the rare-alternative cut below,
+      # which keeps "actinomorphic"; read as terms it had left "zygomorphic")
+      or_word <- paste0("(?!(?:", paste(unique(c(unlist(str_split(qual_words, " ")), "also", "even", "very", "more", "less", "much")), collapse = "|"), ")\\b)[a-z-]+")
+      or_term <- paste0(adv, or_word, "(?: to ", adv, or_word, ")?")
+      # (only where the "or" joins two plain modifiers of what follows (2026-11-05 rebuild review); otherwise the segment keeps its "or"
+      # and is dropped below, as before: "stipules absent or small and caducous", "bisexual or unisexual and then plants dioecious",
+      # "Leaves opposite or alternate and spiral" (the next word continues the alternative), "climbers or leafless parasites" (a
+      # plural noun: the alternatives are nouns), "smooth or covered in imbricate scales", "entire or serrate (margins strongly revolute
+      # and leaves needle-like)", "splitting to base or remaining fused", "free and alternating with the tepals or fused" (words before
+      # the pair that join it to more), "simple or palmately lobed" (an adverb modifies the next word))
+      x <- str_replace_all(x, rx("\\bsimple or ((?:[a-z]+ly )?(?:lobed|dissected|divided|incised))\\b"), "simple, \\1 or not \\1")
+      or_pair <- paste0("\\b(?<!\\bor )", or_term, "(?: or (?!(?:in|on|at|with|within|by|from|to|not|a|an|the|as|when|if|more|less|fewer|absent|present)\\b)", or_term, ")+\\b(?! (?:to|or)\\b)")
+      or_glue <- "\\b(?:and|or|with|then|in|on|of|at|by|from|to|into|onto|but|when|if|than|between|along|near|towards?|below|above|within)\\b"
+      x <- paste(map_chr(str_split(x, "(?<=[,;:])\\s+")[[1]], function(sg) {
+        for (it in 1:3) {
+          m <- str_match(sg, or_pair)[1, 1]
+          if (is.na(m)) break
+          loc <- str_locate(sg, fixed(m))[1, ]
+          pre <- str_sub(sg, 1, loc[1] - 1); post <- str_sub(sg, loc[2] + 1)
+          wd <- str_split(str_remove_all(m, "\\b(?:or|to)\\b"), "\\s+")[[1]] %>% .[. != ""]
+          ok <- !str_detect(pre, rx(or_glue)) && !str_detect(pre, "[()]") &&
+            !any(str_detect(wd, "(?:[^suio]s|ing|ly)$")) &&
+            str_detect(post, "^\\s+[a-z]") && !str_detect(post, rx(paste0("^\\s+", or_glue)))
+          if (!ok) break
+          sg <- str_squish(paste(pre, post))
+        }
+        sg
+      }), collapse = " ") %>% str_squish() %>% str_replace_all("\\s+([,;:])", "\\1")
       x <- str_remove_all(x, paste0(adv, "\\b(?!(?:up|reduced|similar|adnate|attached|fused|close|due|next|equal|subequal|inserted|appressed|confined|restricted|tapering|tapered|narrowed|narrowing|extending|leading|according|relative|opposite|decurrent|connate|joined)\\b)[a-z-]+(?: to ", adv, "(?!the\\b|an?\\b|[0-9])[a-z-]+)+"))
       # ("Leaves simple or palmately lobed": the alternative is the lobing, so it is "simple, palmately lobed or not")
       x <- str_replace_all(x, rx("\\bsimple or ((?:[a-z]+ly )?(?:lobed|dissected|divided|incised))\\b"), "simple, \\1 or not \\1")
@@ -3034,7 +3121,12 @@ extract_one <- function(r, group_filter = TRUE) {
   # (part of the plant only: phyllanthoid Sauropus / Synostemon / Breynia "Stem leaves scale-like" with normal branchlet leaves, Limonium
   # "leafless above rosette", Callitriche "lower leaves reduced to ... scales")
   all_txt <- str_remove_all(all_txt, "\\bstem leaves (?:[a-z]+ ){0,2}scale-like\\b|\\bleafless above (?:the )?(?:basal )?rosettes?\\b|\\b(?:lower|basal|lowermost|upper|uppermost|stem) leaves (?:[a-z]+ ){0,2}reduced to\\b")
-  if (str_detect(all_txt, "\\bleafless\\b|\\bleaves (?:absent|0)\\b|\\bplants? without leaves\\b")) {
+  # (partial or conditional leaflessness is not a leafless plant: Hydrocotyle rugulosa "often almost leafless in fruit"; nor a count range
+  # from 0: Cardamine corymbosa "cauline leaves 0–2(–4)"; VicFlora, 2026-11-05 - the same exceptions as the inferred photosynthetic organ,
+  # except "appearing leafless": Tecticornia "Shrubs, appearing leafless" stays leafless, as before)
+  all_txt <- str_remove_all(all_txt, paste0("\\b(?:sometimes|often|occasionally|usually|frequently|at length|becoming|can be)\\s+(?:completely\\s+|±\\s+|almost\\s+|virtually\\s+)?leafless\\b[^,;|]*",
+                                            "|\\bleafless\\s+(?:in|below|above|towards|at|when|during|for)\\b[^,;|]*"))
+  if (str_detect(all_txt, "\\bleafless\\b|\\bleaves (?:absent|0(?![0-9]|[.,][0-9]|\\s*[-–‒]))\\b|\\bplants? without leaves\\b")) {
     lt <- grab_sent(desc, "leafless|leaves absent")
     lh <- scan_terms(lt, c("leafless|leaves absent|leaves 0|without leaves" = "leafless"), generic_neg = FALSE)
     add(rec_cat("leaf_length_type", lh, lt))
@@ -4765,6 +4857,11 @@ hi_variable <- hi_full_vals %>% filter(is.na(qualifier) | !qualifier %in% rare_q
 # group statements that read as universal but are not (vetted by reading the group description)
 copydown_exclude <- tribble(
   ~group_name, ~trait,
+  # (2026-11-05, VicFlora; NHNSW had the same: alternatives with no level of the trait) Acacia "Leaves bipinnate, reduced to phyllodes
+  # or rarely absent" is not "bipinnate" for the phyllodinous species; Poaceae "ligule ... membranous, a row of hairs, rarely absent" /
+  # "either a membranous collar, a row of hairs or a combination" is not "membranous"; Cyperaceae "Leaves only at base of the culm or
+  # also cauline" / "basal and/or cauline" is not "basal"
+  "Acacia", "leaf_compoundness", "Acacia", "leaf_lamina_division", "Poaceae", "ligule_texture", "Cyperaceae", "leaf_arrangement",
   # "Petals 5, sometimes 4, free or fused, imbricate": the operculate eucalypts (Eucalyptus, Corymbia, Angophora in part) have no
   # free imbricate petals
   "Myrtaceae", "petal_orientation", "Myrtaceae", "sepal_orientation",
@@ -5021,6 +5118,24 @@ if (nrow(recs_hi)) {
   # Dampiera "pink")
   universal <- universal %>% filter(!(members_reporting - members_agree >= 2 & members_reporting - members_agree > members_agree))
   taxa <- main %>% transmute(taxon_name, genus = gkey(taxon_name), family)
+  # (user 2026-11-05: a copied value carries the group text's hedge as its commonness_qualifier - "Fruit usually a capsule" -> usually,
+  # "Leaves mostly alternate" -> mostly, "connate (mostly)" -> mostly - and the main value of "X or rarely Y" / "X, rarely Y" -> usually;
+  # read from the group's own text, where the hedge words are still present)
+  grp_txt <- d_higher %>% group_by(group_name = scientific_name) %>% summarise(gt = str_to_lower(paste(Description, collapse = " ")), .groups = "drop")
+  hedge_of <- function(gt, desc) {
+    if (is.na(gt) || is.na(desc)) return(NA_character_)
+    for (term in str_split(str_to_lower(desc), ";\\s*")[[1]]) {
+      t_re <- str_replace_all(str_squish(term), "([.()\\[\\]{}+*?^$|\\\\])", "\\\\\\1")
+      if (!nzchar(t_re)) next
+      h <- str_match(gt, paste0("\\b(", paste(copy_quals, collapse = "|"), ")\\s+(?:an?\\s+|the\\s+)?(?:[a-z-]+\\s+)?", t_re, "\\b"))[, 2]
+      if (!is.na(h)) return(h)
+      h <- str_match(gt, paste0("\\b", t_re, "\\s*\\((", paste(copy_quals, collapse = "|"), ")\\)"))[, 2]
+      if (!is.na(h)) return(h)
+      if (str_detect(gt, paste0("\\b", t_re, ",?\\s+(?:or\\s+)?,?\\s*(?:", paste(rare_quals, collapse = "|"), ")\\b"))) return("usually")
+    }
+    NA_character_
+  }
+  universal <- universal %>% left_join(grp_txt, by = "group_name") %>% mutate(q_copy = map2_chr(gt, desc, hedge_of)) %>% select(-gt)
   copied <- list()
   for (lvl in c("genus", "family")) {
     have <- bind_rows(recs %>% select(taxon_name, trait), fb_ext %>% select(taxon_name, trait), if (length(copied)) bind_rows(copied) %>% select(taxon_name, trait)) %>% distinct()
@@ -5030,7 +5145,7 @@ if (nrow(recs_hi)) {
       # (Florabase: a family value only for genera whose DELTA profile names that same Watson family)
       { if (lvl == "family" && exists("fb_watson")) filter(., (family == fb_watson$watson[match(genus, fb_watson$genus)]) %in% TRUE) else . } %>%
       transmute(taxon_name, trait, value, desc = paste0("[", lvl, " description] ", desc), min = NA_real_, max = NA_real_,
-                ctx_type = NA_character_, ctx_value = NA_character_, qualifier = NA_character_, region = NA_character_,
+                ctx_type = NA_character_, ctx_value = NA_character_, qualifier = q_copy, region = NA_character_,
                 scoring = paste0("inferred_from_", lvl))
     copied[[lvl]] <- cp
   }
@@ -5162,7 +5277,7 @@ inf_water_desc <- "\\b(?:submerged|submersed|floating)(?:,? (?:or|and) [a-z]+)? 
 inf_water_strong_leg <- str_replace(str_replace(inf_water_strong, fixed("rocks?|boulders?|cliffs?|"), ""), fixed("|in rock crevices|crevices"), "")
 inf_water_wet <- "\\b(?:swamps?|swampy|marsh\\w*|bogs?|boggy|ponds?|lakes?|lagoons?|billabongs?|waterholes?|creek ?beds?|stream ?beds?|river ?beds?|beds of|inundat\\w*|flooded|flooding|waterlogged|mud\\w*|wetlands?|seepages?|soaks?|claypans?|gilgais?|saline|salt ?lakes?|stream margins|water's edge|edges? of (?:streams|creeks|rivers|pools|lakes))\\b"
 # ("leaves 0" is a leaf count of zero, not "leaves 0.3-0.7 cm wide")
-inf_noleaf_re <- "\\b(?:phyllod\\w*|cladod\\w*|phyllocla\\w*|(?<!flowering plants )(?<!flowering plants are )(?<!flowering plant is )leafless(?! (?:at|when|while|during) (?:the time of )?(?:flowering|anthesis))(?! (?:flower(?:ing)? |terminal |axillary )?(?:portions?|parts?|sections?|lengths?|internodes?|stems?|scapes?|peduncles?|inflorescences?))|aphyllous|photosynthetic stems?|stems? (?:green and )?photosynthetic|assimilat\\w* (?:stems?|branchlets?)|scale-?like leaves|(?<!upper |uppermost |floral |cauline |distal |stem |bract-like |inflorescence )leaves (?:reduced|scale-like|minute|vestigial|caducous|early caducous|soon falling|ephemeral)|reduced to (?:minute )?scales|scale leaves|leaves (?:absent|0(?![.,0-9]))|broom-like|switch-like|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*|(?:without|lacking|lacks) chlorophyll|non-green|holoparasit\\w*)\\b"
+inf_noleaf_re <- "\\b(?:phyllod\\w*|cladod\\w*|phyllocla\\w*|(?<!flowering plants )(?<!flowering plants are )(?<!flowering plant is )leafless(?! (?:at|when|while|during) (?:the time of )?(?:flowering|anthesis))(?! (?:flower(?:ing)? |terminal |axillary )?(?:portions?|parts?|sections?|lengths?|internodes?|stems?|scapes?|peduncles?|inflorescences?))|aphyllous|photosynthetic stems?|stems? (?:green and )?photosynthetic|assimilat\\w* (?:stems?|branchlets?)|scale-?like leaves|(?<!upper |uppermost |floral |cauline |distal |stem |bract-like |inflorescence )leaves (?:reduced|scale-like|minute|vestigial|caducous|early caducous|soon falling|ephemeral)|reduced to (?:minute )?scales|scale leaves|leaves (?:absent|0(?![0-9]|[.,][0-9]|\\s*[-–‒]))|broom-like|switch-like|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*|(?:without|lacking|lacks) chlorophyll|non-green|holoparasit\\w*)\\b"
 inf_par_re <- "\\b(?:parasit\\w*|hemiparasit\\w*|haustor\\w*|host plants?|on the roots of|attached to (?:the )?roots|saprophyt\\w*|mycoheterotroph\\w*|achlorophyll\\w*)\\b"
 inf_nonflat_re <- "\\b(?:terete|subterete|semi-?terete|needle\\w*|acicular|subulate|filiform|setaceous|involute|convolute|inrolled|rolled|scale-like|cylindrical|triquetrous|trigonous|quadrangular|channelled|grooved above)\\b"
 # (Fabaceae: phyllodes are the leaves of most Acacia; a flat phyllode is a broadleaf, so phyllode wording does not block leaf_type)
@@ -5383,6 +5498,24 @@ recs <- recs %>% mutate(cue_scored_from = case_when(taxon_name %in% both_cues & 
 if (exists("fb_members") && nrow(fb_members)) {
   recs <- recs %>% filter(!taxon_name %in% fb_members$taxon_name | scoring %in% c("inferred_from_genus", "inferred_from_family"))
   main <- main %>% filter(!taxon_name %in% fb_members$taxon_name | taxon_name %in% recs$taxon_name)
+}
+# ---------------------------------------------------------------- VicFlora specimen months (user 2026-11-05)
+# VicFlora counts the herbarium specimens with flowers, fruit and buds per month (January first). A month with at least one specimen
+# is "y", on rows with trait_scoring_method = from_herbarium_specimens, beside the description's own calendar; the counts are the
+# value_description. Bud months are the candidate flower_bud_time. Added after the species -> infraspecific inheritance and the
+# copy-down, so that they neither stop nor are passed on by them.
+if (vicflora_mode) {
+  spec_yn <- function(x) map_chr(x, function(v) { n <- suppressWarnings(as.integer(str_split(str_squish(coalesce(v, "")), " ")[[1]]))
+    if (length(n) != 12 || any(is.na(n)) || all(n == 0)) NA_character_ else paste(ifelse(n > 0, "y", "n"), collapse = "") })
+  spec <- vf_spec %>% filter(taxon_name %in% main$taxon_name) %>%
+    pivot_longer(c(flowers, fruit, buds), names_to = "what", values_to = "counts") %>%
+    mutate(value = spec_yn(counts)) %>% filter(!is.na(value)) %>%
+    transmute(taxon_name, trait = c(flowers = "flowering_time", fruit = "fruiting_time", buds = "flower_bud_time")[what], value,
+              desc = paste0("[herbarium specimens with ", what, ", January to December] ", str_squish(counts)),
+              min = NA_real_, max = NA_real_, ctx_type = NA_character_, ctx_value = NA_character_, qualifier = NA_character_,
+              region = NA_character_, scoring = "from_herbarium_specimens")
+  recs <- bind_rows(recs, spec)
+  cat("VicFlora specimen months:", paste(names(table(spec$trait)), table(spec$trait), collapse = ", "), "\n")
 }
 # ---------------------------------------------------------------- assemble rows
 # one row per taxon x (commonness_qualifier, leaf_division, entity_measured, population_region, trait_scoring_method);
