@@ -1781,6 +1781,22 @@ WATTLE_2026_config <- dataset_configure("data/WATTLE_2026/metadata.yml", definit
 WATTLE_2026_raw <- dataset_process("data/WATTLE_2026/data.csv", WATTLE_2026_config, schema, resource_metadata, unit_conversions)
 WATTLE_2026 <- dataset_update_taxonomy(WATTLE_2026_raw, taxon_list)
 
+WAH_2026_1_config <- dataset_configure("data/WAH_2026_1/metadata.yml", definitions)
+WAH_2026_1_raw <- dataset_process("data/WAH_2026_1/data.csv", WAH_2026_1_config, schema, resource_metadata, unit_conversions)
+WAH_2026_1 <- dataset_update_taxonomy(WAH_2026_1_raw, taxon_list)
+
+WAH_2026_2_config <- dataset_configure("data/WAH_2026_2/metadata.yml", definitions)
+WAH_2026_2_raw <- dataset_process("data/WAH_2026_2/data.csv", WAH_2026_2_config, schema, resource_metadata, unit_conversions)
+WAH_2026_2 <- dataset_update_taxonomy(WAH_2026_2_raw, taxon_list)
+
+WAH_2026_3_config <- dataset_configure("data/WAH_2026_3/metadata.yml", definitions)
+WAH_2026_3_raw <- dataset_process("data/WAH_2026_3/data.csv", WAH_2026_3_config, schema, resource_metadata, unit_conversions)
+WAH_2026_3 <- dataset_update_taxonomy(WAH_2026_3_raw, taxon_list)
+
+WAH_2026_4_config <- dataset_configure("data/WAH_2026_4/metadata.yml", definitions)
+WAH_2026_4_raw <- dataset_process("data/WAH_2026_4/data.csv", WAH_2026_4_config, schema, resource_metadata, unit_conversions)
+WAH_2026_4 <- dataset_update_taxonomy(WAH_2026_4_raw, taxon_list)
+
 Warren_2005_config <- dataset_configure("data/Warren_2005/metadata.yml", definitions)
 Warren_2005_raw <- dataset_process("data/Warren_2005/data.csv", Warren_2005_config, schema, resource_metadata, unit_conversions)
 Warren_2005 <- dataset_update_taxonomy(Warren_2005_raw, taxon_list)
@@ -2431,6 +2447,10 @@ austraits_raw <- austraits::bind_databases(
   Zieminska_2015,
   Zolfaghar_2015,
   NULL)
+  WAH_2026_1,
+  WAH_2026_2,
+  WAH_2026_3,
+  WAH_2026_4,
 
 # Version information
 version_number <- util_get_version("config/metadata.yml")

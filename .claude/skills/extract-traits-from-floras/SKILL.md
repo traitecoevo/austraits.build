@@ -578,6 +578,56 @@ not the main checkout's: the user switches branches in the main checkout, and it
 - **Comparison (2026-11-02):** GrassBase_2014 (4 traits) agrees on leaf and culm sizes; its seed_length is the grain, which
   2026 records as fruit_length. ABRS Poaceae: FoA's "Tufted perennial" (caespitose) has no AusGrass species-level equivalent.
 
+## Florabase (WAH_2026_1 to _4, user 2026-11-04)
+
+- **Scope:** `data_extra/florabase_profiles.csv`, current and not-current names (one profile per cleaned name, current first);
+  marine algae (Huisman's Algae of Australia and their families), fungi and protists left out. **One dataset per kind of text**
+  (user): WAH_2026_1 Descriptive Catalogue brief descriptions, WAH_2026_2 C. Hollister & K.R. Thiele key descriptions,
+  WAH_2026_3 DELTA genus / family descriptions (L. Watson, H.R. Coleman, J. Gathe ...) + prose species descriptions (R. Davis
+  Ptilotus), WAH_2026_4 Swan NRM management notes. Do not look at WAH_1998 / WAH_2022 / WAH_2023 while extracting.
+- **Same parser, Florabase mode:** `FOA_SOURCE=florabase FB_TEXT=brief|key|delta Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R`;
+  build brief and key before delta (delta reads their data.csv). WAH_2026_4 has its own script (`data/WAH_2026_4/raw/build_data_csv.R`).
+  Names from the classification path's last element without authority ("×molesta" -> "x molesta"); metadata first created by
+  `ignore/jobs/fb1/make_meta.py`, then add-only. **Names (2026-11-05):** drop only the authority words, never an epithet or rank
+  (two ranks, nothovar., cv., "forma" -> "f.", hybrid formulae "A b x c" and intergrades "A b - c" all kept); phrase names kept as
+  written: "sp.", a rank before a capitalised or quoted word ("subsp. Badgingarra (S.D. Hopper 7114)", "subsp. A Kimberley Flora"),
+  "variant", a bracketed voucher. Reducing these to the species name dropped ~390 profiles as duplicates of the species.
+  "Tree-like monocot" -> palmoid (Pandanus, Xanthorrhoea, Kingia; without it a "perennial" fell back to herb).
+- **Brief descriptions:** text before "Fl." = description; "Fl. <colours>, <months>" -> "Flowers <colours>." + phenology; the rest is
+  habitat. Colours joined by "-", "/" or "&" are **each** scored ("pink-red-brown" -> pink, red, brown; user). Bracketed peaks
+  "(mainly Apr-May)", "(mainly 8-10)" -> mainly rows; "or Mar (occasionally)" -> occasionally; "(depending on rainfall)" -> cue.
+- **Keys:** the raw character lists (943, mostly Fabaceae: "Stems Indumentum hairy, Pustules or glands absent, ...") are rewritten as
+  the key's own prose before parsing (sizes and hairs first, margins / tubercles / glands after ";"). "Pustules or glands" are
+  surface glands, not extrafloral nectaries; "apparently absent" stipules = absent; "indehiscent and splitting into sections
+  (schizocarps)" = indehiscent schizocarp; sizes coded 0 are left out and "0-X" is "to X". **"(?)" states are scored with
+  scoring_certainty = uncertain** (user): each such profile is parsed again with every state, and values only that reading finds
+  go on uncertain rows.
+- **DELTA:** sections Habit and leaf form, Reproductive type, Inflorescence and flower, Fruit and seed, Physiology, Special features,
+  Additional characters; anatomy, seedling and pollen sentences, geography, etymology, uses left out; "To X m high." joins the habit
+  sentence. "Entomophilous" etc. -> pollination_syndrome; "Photosynthetic pathway: C3 and C4" -> c3 c4; "Dispersal unit the fruit" ->
+  dispersal_unit. **Genus / family rows are taxa of WAH_2026_3 and are copied down** (user) to every Florabase taxon with a
+  description: a taxon is silent only when none of its texts (WAH_2026_1, _2, _3) scores the trait, and those values count for the
+  veto; taxa with no DELTA / prose text carry only their copies in WAH_2026_3.
+  - Genus / family rows are read in full (alternatives kept); the group filter is only for the copy-down, where conditional clauses
+    ("when compound, pinnate") are dropped and a DELTA pollination / pathway / dispersal-unit statement counts only as a single
+    unqualified term ("Anemophilous (rarely ...), or entomophilous (nearly always)" is not copied).
+  - **Family copies only where the families match (user 2026-11-04):** the DELTA family descriptions are Watson's pre-APG families
+    (narrow Asparagaceae, Malvaceae without Sterculiaceae, Scrophulariaceae without Myoporaceae), so a family value goes only to genera
+    whose own DELTA profile names that family ("Family Sterculiaceae." in Lasiopetalum); genera with another or no header get none.
+  - Not copied (read 2026-11-04): Myoporaceae / Eremophila "deciduous" (Eremophila are evergreen; user: kept on the genus row,
+    flagged), Orchidaceae "Floral nectaries present", seed wings of Eucalyptus / Corymbia / Grevillea / Banksia, Petrophile
+    "helicophylla spirally twisted". "neither X nor Y" negates both; "(the ... fleshy endosperm ...)" and "hooded by the petals" are not
+    seed or stamen characters; "not gland-dotted" is not an extrafloral nectary.
+- **Management notes:** General Biology fields mapped by tables (growth / life form, reproduction -> clonal spread, dispersal agents ->
+  dispersers + dispersal_syndrome, time to first flowering -> reproductive_maturity, seedbank persistence -> seedbank_longevity_class
+  (Short = transient, Medium = short_persistent, Long = long_persistent; years only when no class word), fire response, regeneration
+  strategy -> resprouting_capacity_non_fire_disturbance, woody structure -> wood_porosity); calendars with "(O)" = occasionally;
+  Germination months -> recruitment_time and "Type of stem. Succulent" -> plant_succulence succulent_stems (user 2026-11-05);
+  Active Growth / Dormant months -> active_growing_time / dormancy_time (new y/n calendar traits, user 2026-11-05: two traits because
+  they are complements for only 57 of 87 taxa). Plain "Reproduction. Seed." is not scored not_vegetative. "Generally
+  survives fire" is resprouts (usually), confirmed by the user 2026-11-05.
+- **All sources (2026-11-04):** a hyphenated "non-" negates only its own word ("Non-lignotuberous shrub" is a shrub).
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`
@@ -813,6 +863,9 @@ taxon, then main row first.
   Simple "or" with no qualifier stays on the main row.
 - **"tufted"/"tufts" on a graminoid → add `tussock`**, in text order (e.g. "tufted grass-like
   plant" → `tussock graminoid`). Not for tufted herbs or ferns.
+- **Mallet, marlock (user 2026-11-05):** scored as the source term (`mallet`, `marlock`; "Mallett" too), mapped to `mallee` (user's mapping) by a
+  `match: word` substitution in each dataset's metadata.yml so the mapping can change later; they count as trees for the life
+  history / woodiness inferences.
 - Mappings: grass / sedge / grass-like → `graminoid`; palm, cycad, banana → `palmoid`; tree fern
   → `fern palmoid`; orchid, aquatic plant → `herb`; vine/climber → `climber`
   (`climber_woody` / `climber_herbaceous` when stated, and then drop the generic `climber`);

@@ -1,0 +1,307 @@
+source:
+  primary:
+    key: WAH_2026_4
+    bibtype: Online
+    author: '{Western Australian Herbarium}'
+    year: '2026'
+    title: 'Florabase: the Western Australian Flora'
+    publisher: Department of Biodiversity, Conservation and Attractions
+    url: https://florabase.dbca.wa.gov.au
+    note: accessed 1 October 2026
+contributors:
+  data_collectors:
+  - last_name: Wenk
+    given_name: Elizabeth
+    ORCID: 0000-0001-5640-5910
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    notes: Extracted the trait data from the Florabase profiles
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      dplyr::filter(
+        trait_name %in% c(
+          "active_growing_time", "dormancy_time", "plant_succulence", "recruitment_time",
+          "bud_bank_location", "clonal_spread_mechanism", "dispersal_syndrome", "dispersers",
+          "flowering_time", "fruiting_time", "germination_cues", "life_history",
+          "photosynthetic_pathway", "plant_growth_form", "post_fire_flowering", "post_fire_recruitment",
+          "reproductive_maturity", "resprouting_capacity", "resprouting_capacity_non_fire_disturbance", "seedbank_location",
+          "seedbank_longevity", "seedbank_longevity_class", "stem_growth_habit", "storage_organ",
+          "vegetative_reproduction_ability", "wood_porosity"
+        )
+      )
+    '
+  collection_date: '2026'
+  taxon_name: taxon_name
+  trait_name: trait_name
+  value: value
+  description: To compile plant trait values from the Management Notes (Swan NRM Region) of the Florabase profiles of weeds
+    of the Swan region.
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  sampling_strategy: The Management Notes (for the Swan NRM Region) of the Florabase profiles (K. Brown, K. Bettink and others)
+    were downloaded. Their General Biology fields (Growth form, Life form, Reproduction, Dispersal, Photosynthetic Pathway,
+    Time to first flowering, Seedbank persistence, Fire response, Toxicity, Vegetative regeneration strategy, Woody structure)
+    and their calendars (Flowering, Fruiting, Germination, Active Growth, Dormant; "(O)" = occasionally) were read field by
+    field with the script raw/build_data_csv.R, which maps each field's terms to AusTraits values (the field's text is kept
+    in value_description); fire responses were mapped from the statements as read. Management (herbicide, removal, treatment
+    months) is not a trait and is left out. Taxon names are given without authorities.
+  original_file: florabase_profiles.csv (Florabase profiles, downloaded 1 October 2026), field Management Notes (for the Swan
+    NRM Region)
+  notes: The profile URL of each taxon is in the florabase_url column. Rows whose trait_name is not mapped below (candidate
+    traits, and text fields such as habit_description or habitat_description with the verbatim organ-level text) are in data.csv
+    but filtered out in custom_R_code.
+identifiers: .na
+locations: .na
+contexts:
+- context_property: commonness qualifier
+  category: entity_context
+  var_in: commonness_qualifier
+- context_property: population region
+  category: entity_context
+  var_in: population_region
+- context_property: scoring certainty
+  category: method_context
+  var_in: scoring_certainty
+traits:
+- var_in: bud_bank_location
+  unit_in: .na
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored only where the text ties resprouting to an organ: resprouting from a lignotuber or rootstock = basal_stem_buds,
+    from rhizomes = rhizome, by epicormic shoots = epicormic_buds (verbatim in value_description).'
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from statements in the Ecology and Notes text of the taxon profile (verbatim in value_description).
+- var_in: dispersal_syndrome
+  unit_in: .na
+  trait_name: dispersal_syndrome
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from statements in the Ecology and Notes text of the taxon profile (verbatim in value_description).
+- var_in: dispersers
+  unit_in: .na
+  trait_name: dispersers
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from statements in the Ecology and Notes text of the taxon profile (verbatim in value_description); statements
+    made for a whole genus or family are on trait_scoring_method = inferred_from_genus / inferred_from_family rows.
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Months of flowering from the calendar of the taxon's Management Notes (Swan NRM Region; verbatim in
+    value_description), as a 12-character y/n string starting in January. Months marked (O) are recorded on a
+    commonness_qualifier = occasionally row, and the other months then on a commonness_qualifier = usually row.
+- var_in: fruiting_time
+  unit_in: .na
+  trait_name: fruiting_time
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Months of fruiting from the calendar of the taxon's Management Notes (Swan NRM Region; verbatim in
+    value_description), as a 12-character y/n string starting in January. Months marked (O) are recorded on a
+    commonness_qualifier = occasionally row, and the other months then on a commonness_qualifier = usually row.
+- var_in: germination_cues
+  unit_in: .na
+  trait_name: germination_cues
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from Phenology, Ecology, Notes or Habitat statements that germination follows rainfall, fire, smoke, soil
+    burial or similar (verbatim in value_description); hedged statements are recorded only as text.
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the taxon description (verbatim source terms in value_description). Where the profile gives no life
+    history, perennial is recorded on a trait_scoring_method = inferred_from_growth_form row for trees, shrubs, mallees, palmoids,
+    woody climbers and geophytes (the ABRS_2022 rule).
+- var_in: photosynthetic_pathway
+  unit_in: .na
+  trait_name: photosynthetic_pathway
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored only where the taxon or genus text names the pathway (e.g. Pyrrosia, CAM reported for named species; verbatim
+    in value_description).
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the taxon description (verbatim source terms in value_description). Where the profile names no growth
+    form but a life history, herb is recorded on a trait_scoring_method = inferred_from_life_history row (the ABRS_2022 rule).
+- var_in: post_fire_flowering
+  unit_in: .na
+  trait_name: post_fire_flowering
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from Phenology, Ecology or Notes statements about flowering after fire (verbatim in value_description).
+    Flowering best, most prolifically or mainly after fire is fire_enhanced_flowering; flowering only or predominantly after
+    fire is fire_dependent_flowering; flowering regardless of fire is fire_independent_flowering. A plain statement that plants
+    flower after fire is recorded in the description only.
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from Phenology, Ecology, Notes or Habitat statements that flowering, fruiting or germination follows rainfall,
+    fire, floods or similar (verbatim in value_description); hedged statements are recorded in the description only.
+- var_in: reproductive_maturity
+  unit_in: a
+  trait_name: reproductive_maturity
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Value given in the taxon profile (verbatim in value_description): a range is recorded as minimum and maximum values,
+    a single value as a mean, "to X" as a maximum and "X or more" as a minimum.'
+- var_in: resprouting_capacity
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from statements on the response to fire in the Ecology and Notes text of the taxon profile ('resprouts after
+    fire' = resprouts; 'killed by fire', 'obligate seeder' = fire_killed; 'commonly killed by hot fires, but clumps can regenerate'
+    = partial_resprouting) (verbatim in value_description).
+- var_in: resprouting_capacity_non_fire_disturbance
+  unit_in: .na
+  trait_name: resprouting_capacity_non_fire_disturbance
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from statements in the Ecology and Notes text of the taxon profile (verbatim in value_description).
+- var_in: seedbank_location
+  unit_in: .na
+  trait_name: seedbank_location
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from Ecology or Notes statements that seeds persist in the soil (verbatim in value_description).
+- var_in: seedbank_longevity
+  unit_in: a
+  trait_name: seedbank_longevity
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Value given in the taxon profile (verbatim in value_description): a range is recorded as minimum and maximum values,
+    a single value as a mean, "to X" as a maximum and "X or more" as a minimum.'
+- var_in: seedbank_longevity_class
+  unit_in: .na
+  trait_name: seedbank_longevity_class
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the taxon profile (verbatim source terms in value_description).
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the taxon description (verbatim source terms in value_description).
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the taxon description (verbatim source terms in value_description).
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from statements in the Ecology and Notes text of the taxon profile (verbatim in value_description).
+- var_in: wood_porosity
+  unit_in: .na
+  trait_name: wood_porosity
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the taxon profile (verbatim source terms in value_description).
+- var_in: plant_succulence
+  unit_in: .na
+  trait_name: plant_succulence
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the Type of stem field of the taxon's Management Notes ("Succulent" -> succulent_stems; verbatim in
+    value_description).
+- var_in: recruitment_time
+  unit_in: .na
+  trait_name: recruitment_time
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Months of germination (the Germination calendar) from the calendar of the taxon's Management Notes (Swan NRM Region; verbatim in
+    value_description), as a 12-character y/n string starting in January. Months marked (O) are recorded on a
+    commonness_qualifier = occasionally row, and the other months then on a commonness_qualifier = usually row.
+- var_in: active_growing_time
+  unit_in: .na
+  trait_name: active_growing_time
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Months of active growth (the Active Growth calendar) from the calendar of the taxon's Management Notes (Swan NRM
+    Region; verbatim in value_description), as a 12-character y/n string starting in January. Months marked (O) are
+    recorded on a commonness_qualifier = occasionally row, and the other months then on a commonness_qualifier = usually row.
+- var_in: dormancy_time
+  unit_in: .na
+  trait_name: dormancy_time
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Months of dormancy (the Dormant calendar) from the calendar of the taxon's Management Notes (Swan NRM
+    Region; verbatim in value_description), as a 12-character y/n string starting in January. Months marked (O) are
+    recorded on a commonness_qualifier = occasionally row, and the other months then on a commonness_qualifier = usually row.
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions:
+  question2: Reproduction 'Seed' alone is not scored as not_vegetative (only 'reproduces only by seed' is). Agree?
