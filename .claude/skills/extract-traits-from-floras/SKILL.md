@@ -683,6 +683,83 @@ not the main checkout's: the user switches branches in the main checkout, and it
     Salix vegetative, Fumaria cleistogamy, Cotoneaster birds, Gyrostemonaceae lifespan / fire germination, Taraxacum introduced apomixis
     ("all introduced taxa investigated to date").
 
+## SA Flora: Flora of South Australia online (SAH_2026, user 2026-11-05)
+
+- **Scope:** `data_extra/saflora_profiles.csv` (6,949 accepted names: 1,249 genera, 4,906 species, 794 infraspecific taxa, 2 cultivars;
+  no family profiles; all vascular), dataset id SAH_2026 (user), long format, introduced taxa included ("Naturalised" and "Questionably
+  naturalised" -> biostatus introduced). Do not look at SAH_2014 / SAH_2022 / SAH_2023 while extracting: they are the comparison case.
+  The user asked for a first pass without questions: judgement calls go to metadata questions and the report.
+- **Same parser, SA Flora mode:** `FOA_SOURCE=saflora FOA_CORES=8 Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R`. Fields:
+  Description (paragraphs joined by " | " in the scrape: a full stop ends each paragraph, since " | " is the parser's own unit
+  separator; "8–30 X 1–8 mm" is a dimension); Habitat; Notes + Biological Notes + Taxonomic Notes -> Notes; Common Name; Author (else
+  Authors); Native status -> biostatus; Distribution (SA regions, "*" = naturalised there, then other states); EPBC / SA conservation
+  status. Names are written without authorities in the source; phrase names, hybrid formulae ("Acacia dodonaeifolia x Acacia
+  paradoxa") and cultivars ("Platanus x hispanica cv. Acerifolia", rank "unranked" -> species rows) kept as written. Profile links in
+  the saflora_url column. Metadata first created by `ignore/jobs/sa1/make_meta.py`, then add-only.
+- **Misfiled text (the web pages themselves):** about 10 profiles have description sentences under "Common Names" (Arthropodium,
+  Digitaria violascens, Gratiola pumilo, Trifolium cernuum), "Phenology" (Hibbertia, Soleirolia, Rumex pulcher) or "Published
+  Illustrations" (Solanum coactiliferum, Tecticornia calyptrata); `sa_mv` in the SA block moves them into the description; the Ptilotus
+  hair-terminology note under "Phenology" is a note.
+- **Phenology:** "Flowers: Aug.-Oct." -> "Flowers August-October."; a field with no flowering / fruiting word ("July-October.", "Mainly
+  winter", "Irregular periods, mainly August-November.") is the flowering time; "Flowers and/or fruits: ..." (133 profiles) is read as
+  flowering and fruiting; the Acacia notes (Whibley & Symon: "collected in flower between December and February and in pod between
+  February and June") are read as written; those the parser misreads (regional calendars "in adjacent N.T. and Qld it flowers ...",
+  "(in Vic.)", "principally", "Irregular periods, mainly ...") are hand-read into raw/phenology_overrides.csv by
+  `ignore/jobs/sa1/phen_over.py` (34 taxa; other states / regions on population_region rows). "mainly X and occasionally at other times
+  throughout the year" is "occasionally at other times" (the rest of the year on an occasionally row).
+- **Genus Habitat is not read:** it describes the genus worldwide ("About 60 species in Europe, Asia ...; confined primarily to saline
+  and gypseous soils"), so it would copy Frankenia gypsum to every SA species.
+- **Source slips (fix_text):** OCR slips ("15–2 mm wide", "i.5", "D.6", "2.-5") and cm / m for mm (Ecballium ovary, Medicago truncatula
+  pod) corrected; illegible pod lengths (Acacia menzelii "2.514.5 cm", A. symonii "345 cm") put in square brackets so they are not read.
+- **plant_width (all sources, found here):** a width is not the plant's when the last noun before it is an organ that leads its own
+  comma segment ("articles cylindrical, ... 2–3 mm diam.", "joints ... 7–16 cm wide", "lowest 2 leaves ... 2.5–20 mm broad", "Perennial
+  stems arising from a rhizome, to 130 cm high, c. 4 mm diam."), an organ inside a phrase with a width under 2 cm ("with branches
+  decumbent ..., 10–18 mm diam."), a lamina-like organ given its length first ("adult leaves to 12 cm long, 9 cm wide", "cladodes ...,
+  28–40 cm long, 6.5–20 cm wide", "leaves 2.5–6 cm long and wide"), or a bracketed size before an organ ("thin (less than 5 mm diam.)
+  grooved branches"). It stays the
+  plant's after a plant noun or spread word, with a spread word in the measurement ("forming dense mats up to 30 cm diam") or "across",
+  and for larger widths after an organ inside a phrase ("shrub with woody rootstock, to 1 m diam.", "small tree, usually with a few
+  thick trunks, to 10 m high, 10 m wide"). (Two stricter versions lost real ABRS / NHNSW / RBGV widths: checked on the build12 / 13
+  diffs before this one.)
+- **Comparison with SAH_2014 / 2022 / 2023 (2026-11-06, `ignore/jobs/sa2/`: `proc_sah.R` processes all four with traits.build,
+  `cmp2.R` aligns names to APC via config/taxon_list.csv, `cmp4.R` numeric minimum / maximum, `cmp5.R` categorical value words):**
+  2,849 of the old datasets' 3,705 accepted taxa are in SAH_2026; the other 856 have no description on the SA Flora website (641) or
+  are under a name it does not list (215), so the old datasets stay the only SA source for them. 91% of 12,703 shared minimum /
+  maximum pairs are identical and 89% of shared categorical values agree; most differences are the website's revised text (Eucalyptus,
+  Pultenaea heights), old extraction errors (Banksia infructescence as fruit width, Fumaria height 2 mm) or vocabulary
+  (lobed / lobed_deep). Parser and source errors it found, fixed for all sources:
+  - "ram" after a number is an OCR slip for mm (21 SA profiles); source unit slips in fix_text (Swainsona campestris pod, Gyrostemon
+    ramulosus leaves);
+  - thistle "marginal spines ..., 2-6 mm long" and Cirsium "0.8-2 mm long spinules" are not leaf lengths (`marginal spines` is a leaf
+    part; spinules an outgrowth);
+  - Frankenia "long-shoot leaves 2-13 mm long" are the leaves (long- / short-shoot qualifiers; "shoot" after "long-" is not another
+    organ), not the "leaf bases ... 0.1-0.5 mm long" that follow;
+  - Proteaceae: a "cone" is never the fruit - "Fruiting cone ... 1.5-4 cm long" (Petrophile, Isopogon) is the infructescence
+    (infructescence_length / _width), and so is a bare "Cones ovoid, 15-40 mm long" (FoA) or "Cone with persistent scales, 11-14 mm
+    long" (Florabase key) in those two genera ("cone scales" are its bracts); Hakea "pollen-presenter ..., central cone 0.1-0.35 mm
+    long" is a part of the presenter;
+  - plant_photosynthetic_organ cladode (and leaf_type leafless) only for leafless plants: "broom-like" alone is not leafless; "radical /
+    cauline / basal / lobed / linear leaves absent", "stems / scapes / branchlets leafless", "often appearing leafless", "leafless except
+    for 2 leaves", "leafless ... or leafy" are partial, but "leafless except for the sheaths" (Restionaceae) or "except a small scale"
+    is leafless; the Florabase pea key's "absent or apparently so (reduced to scales)" (109 taxa: Jacksonia, Daviesia, Bossiaea ...)
+    is rewritten to "absent or reduced to scales" before the hedge filter cuts it; Centrolepis, Aphelia and Gaimardia are leafy genera of Restionaceae (APG IV);
+    Gastrodia and the other leafless mycoheterotrophic orchid genera are non-photosynthetic;
+  - a hyphenated "leaf-blade ... 0.7-1 mm wide" unit after a leaf length with no width gives the leaf width (Frankenia);
+  - leaf hairs count as "leaves described" for the photosynthetic-organ / parasitic inference (thistles have no leaf size or shape).
+  Left as they are: genus woodiness copied onto a few species whose own text says "shrubs" (8 SA taxa, mostly soft-wooded succulents,
+  where semi_woody is right); flowering-stem height as plant_height of herbs (Ranunculus lappaceus) and frond length of ferns (Todea).
+- **User answers (2026-11-06):** "Flowers and/or fruits" -> both flowering_time and fruiting_time; "Questionably naturalised" ->
+  introduced; genus Habitat never used; Acacia notes on studies done elsewhere (Cape Peninsula, Perth, Sydney, Victoria) are scored as
+  the species' traits with no region, unless the note explicitly states the trait differs between regions (then population_region
+  rows). The remaining question (illegible values) is in metadata.yml (`ignore/jobs/sa1/add_questions.py`).
+- **Ecology vetted** (`ignore/jobs/sa1/eco_cand.py` -> 388 sentences, `vet.py` -> raw/ecology_vetted.csv): the Acacia notes are long
+  study summaries (germination trials, seed predation, insect faunas): scored only where they state a trait of the species (fire-killed,
+  ant / bird dispersal, suckering, bird pollination of A. pycnantha ...); seed treatment experiments, "seed eaten by birds", mistletoe /
+  dodder host lists, "regenerating around planted trees" and horticultural notes are not scored. Genus copies only for statements
+  that hold for every member: Calochilus self, Chiloglottis thynnine wasps (not C. cornuta: self-pollinated in SA), Corybas and
+  Pterostylis flies; not Acianthus "mainly", Diuris / Glossodia "chiefly", Microtis / Thelymitra / Oxalis "most", Prasophyllum (by
+  season), Nicotiana "may", Fumaria (shade / late plants), Amphibromus "fairly common".
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`

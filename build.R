@@ -1489,6 +1489,10 @@ SAH_2023_config <- dataset_configure("data/SAH_2023/metadata.yml", definitions)
 SAH_2023_raw <- dataset_process("data/SAH_2023/data.csv", SAH_2023_config, schema, resource_metadata, unit_conversions)
 SAH_2023 <- dataset_update_taxonomy(SAH_2023_raw, taxon_list)
 
+SAH_2026_config <- dataset_configure("data/SAH_2026/metadata.yml", definitions)
+SAH_2026_raw <- dataset_process("data/SAH_2026/data.csv", SAH_2026_config, schema, resource_metadata, unit_conversions)
+SAH_2026 <- dataset_update_taxonomy(SAH_2026_raw, taxon_list)
+
 Sams_2017_config <- dataset_configure("data/Sams_2017/metadata.yml", definitions)
 Sams_2017_raw <- dataset_process("data/Sams_2017/data.csv", Sams_2017_config, schema, resource_metadata, unit_conversions)
 Sams_2017 <- dataset_update_taxonomy(Sams_2017_raw, taxon_list)
@@ -2336,6 +2340,7 @@ austraits_raw <- austraits::bind_databases(
   SAH_2014,
   SAH_2022,
   SAH_2023,
+  SAH_2026,
   Sams_2017,
   Santini_2012,
   Santini_2013,
