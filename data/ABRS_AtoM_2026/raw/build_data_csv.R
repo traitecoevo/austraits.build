@@ -69,8 +69,16 @@ if (vicflora_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_e
 # no family profiles); introduced taxa included.
 saflora_mode <- Sys.getenv("FOA_SOURCE") == "saflora"
 if (saflora_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/saflora_profiles.csv"
+# NT Flora mode (env FOA_SOURCE=ntflora; user 2026-11-07): the NT Flora online (eflora.nt.gov.au, Northern Territory Herbarium) factsheets
+# (ntflora_profiles.csv, scraped 2026-11-07: genus, species and infraspecific factsheets, phrase names included) into the long-format
+# dataset NT_2026. The descriptions are those of the 2022 scrape (split_sentences_NT_Flora.csv: the site's texts have not changed), now
+# with their full names and the other factsheet fields (Habitat, Flowering / Fruiting months, Introduced Status, Notes, Diagnostic
+# Characters, Similar Taxa). They come from several floras (Flora of the Darwin Region, Flora of Central Australia, Flora of the Kimberley
+# Region, unpublished FloraNT notes ...), in FoA-like prose, so the family modes and the genus copy-down apply (no family factsheets).
+ntflora_mode <- Sys.getenv("FOA_SOURCE") == "ntflora"
+if (ntflora_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/ntflora_profiles.csv"
 own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else if (ausgrass_mode) "AusGrass3_2026" else
-  if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else if (vicflora_mode) "RBGV_2026" else if (saflora_mode) "SAH_2026" else NA_character_
+  if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else if (vicflora_mode) "RBGV_2026" else if (saflora_mode) "SAH_2026" else if (ntflora_mode) "NT_2026" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
@@ -81,7 +89,7 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
 # 2026-10-22); ABRS_Proteaceae_2026 and ABRS_Asteraceae_2026 from the start (user, 2026-10-29)
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
-              "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026", "SAH_2026")
+              "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026", "SAH_2026", "NT_2026")
 dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -685,6 +693,56 @@ if (saflora_mode) {
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
+if (ntflora_mode) {
+  # (a chunk run may name genera: FOA_FAMILIES=None FOA_GENERA="Sida,Hydrocotyle")
+  if (Sys.getenv("FOA_FAMILIES") == "") gens <- character(0)
+  # the Flowering / Fruiting fields ("Ecological Attributes") are month lists ("Mar, Apr, May, Jun, Aug, Sep", "all months", "most months"):
+  # read in FoA form ("Flowers March, April, May, June, August, September. Fruits ...")
+  # ("not recorded (for the NT)" is no phenology; the fern factsheets' "Fertile plants: Apr-Aug", in both fields, is kept once as written,
+  # without "Flowers" / "Fruits", so that it is not read as flowering or fruiting months)
+  nt_months <- function(x, lab) { x <- str_squish(coalesce(x, ""))
+    ifelse(x == "" | str_detect(x, regex("^not recorded\\b", ignore_case = TRUE)), NA_character_,
+           paste0(ifelse(str_detect(x, "^Fertile plants"), "", paste0(lab, " ")), str_remove(str_replace_all(x, setNames(month.name, paste0("\\b", month.abb, "\\b"))), "\\.$"), ".")) }
+  # (characters lost in the site's text: "¬" and soft hyphens are line-break hyphens - "other¬wise", "cor-date", "40¬-70mm"; \x1a is a lost
+  # quote mark ("the \x1asuicide tree\x1a") or fraction ("2/3\x1a of their length", "a claw c. \x1a the length"), as is "¿" ("¿–¿ of lamina
+  # length"): quotes are restored, an unknown fraction is "[?]", which the parser does not read)
+  nt_txt <- function(x) x %>% str_replace_all("[\u00ad\u00ac]", "") %>% str_replace_all("(?<=[0-9]/[0-9])\u001a|\u001a(?=[0-9]/[0-9])", "") %>%
+    str_replace_all("(^|[\\s(])\u001a(?=[A-Za-z])", "\\1\u201c") %>% str_replace_all("(?<=[A-Za-z.,])\u001a(?=$|[\\s),.;:])", "\u201d") %>%
+    str_replace_all("[\u001a\u00bf]", "[?]") %>% str_squish() %>% na_if("")
+  # (the Common Name field opens with the genus name on every factsheet - "Avicennia, White Mangrove", "Pomax" - which is not a common name)
+  nt_cn <- function(cn, g) map2_chr(cn, g, function(x, y) { if (is.na(x)) return(NA_character_)
+    p <- str_squish(str_split(x, ",")[[1]]); na_if(paste(p[p != y & p != ""], collapse = ", "), "") })
+  # Diagnostic Characters are read as the description only for the 98 factsheets without a Description (otherwise they stay in the notes,
+  # with Similar Taxa), and only their sentences that name no other taxon and make no comparison: "Pupalia lappacea differs from P. micrantha
+  # in having tepals ...", "Platysace arnhemica has ... leaves 20-40 mm long. P saxatilis has ... leaf blades 31-62 mm long", "Var. angustifolia
+  # and var. distans have ...", "---- C. grandiflora: ..." (another species, after the dashes) are not read
+  nt_diag <- function(x, nm) map2_chr(x, nm, function(t, n) {
+    if (is.na(t) || str_squish(t) == "") return(NA_character_)
+    ep <- word(n, -1); s <- str_split(str_squish(str_remove(t, "\\s*-{3,}.*$")), "(?<=[a-z]{2}[.;]|[0-9)][.;])\\s+(?=[A-Z])")[[1]]   # (not after initials: "Ewart & O.B. Davies")
+    oth <- str_detect(s, regex("\\b(?:differ\\w*|unlike|distinguish\\w* from|than (?:in |that of |those of )?(?:[A-Z]|var|subsp)|similar to|resembl\\w*|compared)\\b", ignore_case = TRUE)) |
+      str_detect(s, "\\b[A-Z]\\. ?[a-z]{3,}\\b|^[A-Z] [a-z]{4,}\\b") |
+      map_lgl(str_extract_all(s, "\\b(?:[Vv]ar|[Ss]ubsp|[Ss]usp)\\.\\s+([a-z-]+)"), ~ any(word(.x, -1) != ep))
+    na_if(str_squish(paste(s[!oth], collapse = " ")), "")
+  })
+  d_all <- d_all %>%
+    transmute(scientific_name = str_squish(taxon_name), rank, family = na_if(family, ""), url,
+              Description = coalesce(nt_txt(Description), nt_diag(`Diagnostic Characters`, taxon_name)),
+              Phenology = map2_chr(nt_months(Flowering, "Flowers"), nt_months(Fruiting, "Fruits"), ~ na_if(paste(unique(na.omit(c(.x, .y))), collapse = " "), "")),
+              # (a genus factsheet's Habitat is the genus as a whole - "Found in arid often saline habitats" (Frankenia) - not its NT members:
+              # not read, so not copied down, as in SAH_2026)
+              Habitat = ifelse(rank == "genus", NA_character_, nt_txt(Habitat)),
+              # (Diagnostic Characters and Similar Taxa, often comparative - "the latter differing in its shorter stem hairs" - are kept with the notes)
+              Notes = nt_txt(paste(coalesce(Notes, ""), coalesce(`Diagnostic Characters`, ""), coalesce(`Similar Taxa`, ""))),
+              `Common Name` = nt_cn(`Common Name`, genus), Author = nt_txt(`Flora Description Source`),
+              Biostatus = ifelse(`Introduced Status` %in% c("Introduced to NT", "Formerly introduced to NT (extinct)"), "Introduced", NA_character_),
+              Conservation = na_if(str_squish(paste(ifelse(coalesce(`Conservation Status (EPBC)`, "") == "", "", paste0("EPBC: ", `Conservation Status (EPBC)`, ";")),
+                                                    ifelse(coalesce(`Conservation Status (TPWCA)`, "") == "", "", paste0("Northern Territory (TPWCA): ", `Conservation Status (TPWCA)`)))), ""),
+              Distribution = na_if(str_squish(paste0(ifelse(coalesce(Bioregion, "") == "", "", paste0("NT bioregions: ", Bioregion, ". ")),
+                                                     coalesce(`Distribution Notes`, ""), ifelse(coalesce(International, "") %in% c("", "Nil"), "", paste0(" International: ", International)))), ""))
+  if (Sys.getenv("FOA_FAMILIES") == "") fams <- unique(na.omit(d_all$family))
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
 if (wattle_mode) {
   fams <- "Fabaceae"; gens <- character(0)
   # names as written (no authorities in taxon_name): hybrid formulae ("Acacia ampliceps x sclerosperma subsp. sclerosperma"), informal
@@ -785,6 +843,32 @@ if (Sys.getenv("FOA_FAMILIES") == "" && is.na(own_id)) d <- d %>% group_by(famil
 # ---------------------------------------------------------------- source typos / fixes
 fix_text <- tribble(
   ~taxon, ~find, ~replace,
+  # FloraNT (NT_2026; 2026-11-07): m for mm (Coccinia grandis "style c.8 m long" beside "stigmas ... c. 8 mm long", Aegiceras style
+  # "6 m long" beside "filaments 4 mm", Jacksonia divisa "Seeds ... 2.7-2.8 m long, 1.9-2 mm wide"); organ words lost to a lowercase
+  # or misspelt sentence start ("vine. petioles 10-25 mm long" read as the climbing height, "nflorescence", "lnflorescence", "slender.
+  # fruit a siliqua"); Polygala longifolia "plant often leafless or with only a few leaves, linear ..., 5-32 mm long, 0.5-7.0 mm wide"
+  # (the leaves, not the plant). (Caldesia acanthocarpa "basal ones to 80 cm long" bracts are left: the intended unit is unclear.)
+  "Coccinia grandis", "style c.8 m long", "style c. 8 mm long",
+  "Aegiceras corniculatum", "style 6 m long", "style 6 mm long",
+  "Jacksonia divisa", "Seeds ellipsoid, 2.7-2.8 m long", "Seeds ellipsoid, 2.7-2.8 mm long",
+  "Smilax blumei", "Perennial vine. petioles", "Perennial vine. Petioles",
+  "Homalanthus novo-guineensis", "acute. nflorescence", "acute. Inflorescence",
+  "Acacia lycopodiifolia", "phyllode. lnflorescence", "phyllode. Inflorescence",
+  "Rorippa eustylis", "slender. fruit a siliqua", "slender. Fruit a siliqua",
+  "Polygala longifolia", "plant often leafless or with only a few leaves, linear", "plant often leafless or with only a few leaves; leaves linear",
+  # (m for mm in leaf widths: Grevillea miniata, G. versicolor, Suriana maritima; letters lost at the start: "ree or mallee", "shub"; the
+  # Sersalisia sericea page starts mid-sentence in the leaf blade ("(15) cm long, ... discolorous, ... apex obtuse"); "Leafy twigs" and the
+  # leaves of a "tuft of ... basal leaves" (Agave, Aloe) were read as the plant's width)
+  "Grevillea miniata", "43–140 mm long, 30–70 m wide", "43–140 mm long, 30–70 mm wide",
+  "Grevillea versicolor", "45–130 mm long, 67–80 m wide", "45–130 mm long, 67–80 mm wide",
+  "Suriana maritima", "11-36 mm long, 1.8-5 m wide", "11-36 mm long, 1.8-5 mm wide",
+  "Eucalyptus limitaris", "ree or mallee to 8 m tall", "Tree or mallee to 8 m tall",
+  "Acacia colei", "shub", "shrub",
+  "Sersalisia sericea", "(15) cm long, (1.4) 3.5-5 (6.5) cm wide, discolorous", "Leaves [start of the description lost on the FloraNT page] (15) cm long, (1.4) 3.5-5 (6.5) cm wide, discolorous",
+  "Gardenia resinosa subsp. resinosa", "Leafy twigs 1–3 mm in diameter", "Twigs leafy, 1–3 mm in diameter",
+  "Agave vivipara", "basal leaves to c. 1.2 m high and 30-100 mm wide with rigid marginal teeth", "basal leaves to c. 1.2 m high; leaves 30-100 mm wide with rigid marginal teeth",
+  "Aloe vera var. officinalis", "from a tuft of rigid, pale-spotted succulent basal leaves to c. 60 cm long", "from a tuft of basal leaves; leaves rigid, pale-spotted, succulent, to c. 60 cm long",
+  "Lysiana maritima", "Aerial stem parasitic shrub, spreading to erect", "Shrub, aerial stem-parasitic, spreading to erect",
   # SA Flora (SAH_2026; 2026-11-05): OCR slips of the scanned Flora of South Australia text - Brassica nigra siliqua "15–2 mm wide" (1.5–2),
   # Goodenia benthamiana leaves "0.4–0.2 cm wide" (reversed), Scaevola collina "i.5–2.5 mm", Hakea leucoptera "D.6–0.9 mm", Grammosolen
   # dixonii seeds "2.-5–3.5 mm" (Lissanthe strigosa peduncle "2–1.5 mm" and Geranium molle leaves "2–0.5 cm long" are left: intent unclear)
@@ -1719,7 +1803,9 @@ growth_form_dict <- c(
   "ferns?" = "fern",
   "geophytes?" = "geophyte"
 )
-life_history_dict <- c("short-lived perennials?" = "short_lived_perennial", "annuals?" = "annual", "biennials?" = "biennial",
+# ("subshrub with annual stems", "perennial herb with annual shoots" from a perennial rootstock: not an annual plant; NT_2026 chunk test, 2026-11-07)
+life_history_dict <- c("short-lived perennials?" = "short_lived_perennial",
+                       "annuals?(?!\\s+(?:flowering\\s+|leafy\\s+|aerial\\s+|erect\\s+|vegetative\\s+)?(?:stems?|shoots?|culms?|branch(?:es|lets)?|growth)\\b)" = "annual", "biennials?" = "biennial",
                        "perennials?" = "perennial", "ephemerals?" = "ephemeral")
 stem_habit_dict <- c(
   "erect|upright" = "erect", "prostrate|procumbent|prostate" = "prostrate", "decumbent|ascending" = "decumbent",
@@ -1785,14 +1871,53 @@ sex_type_dict <- c("dioecious|plants (?:male or female|unisexual)" = "dioecious"
                    "polygamomonoecious|polygamo-monoecious" = "polygamonoecious", "polygamous" = "polygamous")
 flower_sex_dict <- c("bisexual|hermaphrodite|perfect" = "bisexual", "unisexual|imperfect" = "unisexual")
 parasitic_dict <- c("root hemiparasites?|root-hemiparasit\\w*|hemiparasitic on roots" = "hemiparasitic root_parasitic",
-                    "(?:aerial |stem |branch )(?:hemi-?)?parasites?|stem-(?:hemi)?parasit\\w*|parasitic on (?:the )?(?:branches|stems)" = "stem_parasitic",
+                    # ("Glabrous mistletoe", "Grey mistletoe", "Aerial stem parasitic shrub": FloraNT, 2026-11-07)
+                    "(?:aerial |stem |branch )(?:hemi-?)?parasites?|stem[- ](?:hemi)?parasit\\w*|parasitic on (?:the )?(?:branches|stems)|mistletoes?" = "stem_parasitic",
                     "hemi-?parasit\\w*" = "hemiparasitic", "holoparasit\\w*" = "holoparasitic", "root parasit\\w*" = "root_parasitic",
                     "parasit(?:e|es|ic)" = "parasitic")
+# the Viscaceae genera, now in Santalaceae: mistletoes like the Loranthaceae (rebuild review, 2026-11-08: Korthalsella "Parasitic on a broad
+# range of hosts" was a generic parasite)
+mistletoe_gen <- c("Korthalsella", "Viscum", "Notothixos", "Ginalloa", "Phoradendron", "Dendrophthora", "Arceuthobium")
+# text about a plant's own parasites or its hosts, not its own parasitism (user 2026-11-08: subject and object flipped): "It is frequently
+# parasitised by the mistletoe Lysiana exocarpi" (Acacia brachystachya, PlantNET: the Acacia is the host); and a commonness word before
+# "parasitic on" is about the host ("Usually parasitic on Syzygium smithii", Korthalsella; Cuscuta "usually parasitic on native and
+# naturalised Polygonaceae"), not a qualifier of the parasitism
+par_clean <- function(x) x %>%
+  str_remove_all(regex("\\b(?:(?:often|frequently|commonly|sometimes|occasionally|rarely|usually)\\s+)?(?:parasiti[sz]ed|attacked|infested)\\s+by\\b[^.;]*", ignore_case = TRUE)) %>%
+  str_remove_all(regex("\\b(?:a\\s+)?(?:common\\s+|favoured\\s+|preferred\\s+|frequent\\s+)?hosts?\\s+(?:of|for|to)\\b[^.;]*", ignore_case = TRUE)) %>%
+  str_replace_all(regex("\\b(?:usually|mostly|mainly|chiefly|generally|commonly|often|frequently|typically|predominantly|normally)\\s+((?:hemi-?)?parasitic\\s+on)\\b", ignore_case = TRUE), "\\1")
 climbing_dict <- c("twining|twiners?|twines" = "twining", "tendrils?|tendrillar" = "tendrils", "scrambling|scramblers?|scrambles|clambering" = "scrambling",
                    "hooks|hooked prickles|recurved prickles" = "hooks", "adventitious roots|climbing by roots|root-climbing|aerial roots" = "adventitious_roots")
 substrate_dict <- c("hemi-?epiphyt\\w*" = "hemiepiphyte", "epiphyt\\w*" = "epiphyte", "lithophyt\\w*" = "lithophyte",
                     "terrestrial" = "terrestrial", "free-floating|floating aquatic" = "aquatic_floating", "semi-aquatic|amphibious" = "semiaquatic",
                     "aquatic|submerged" = "aquatic", "marine" = "marine")
+# swamp and marsh wording (plant_growth_substrate semiaquatic: read from the Habitat text and inferred from the other texts), not swamp-named
+# trees and animals ("swamp gum", "swamp paperbark"), and not plants beside a swamp ("edges of mangrove swamps", "near swamps", "swamp margins")
+inf_swamp_re <- "\\b(?:swamps?|swampy|marsh(?:es)?|marshy)\\b(?!\\s+(?:gums?|paperbarks?|oaks?|she-?oaks?|box|mahogany|bloodwoods?|tea-?trees?|banksias?|wallab(?:y|ies)|harriers?|hens?|rats?|margins?|edges?|fringes?)\\b)"
+place_swamp_re <- "\\b[A-Z][a-z]+(?: [A-Z][a-z]+)* (?:Marsh|Swamp|Lagoon|Bog)s?\\b"
+# a swamp named as one land unit among dry ones ("Occurs on rocky or gravelly hills or rises ..., sandplains, fertile alluvial plains,
+# intermittent watercourses and run-on areas, temporary freshwater swamps and claypans": FloraNT's central Australian habitat lists, 95
+# factsheets, Atriplex vesicaria ...; Florabase "hills, dunes, ridges, flats, freshwater swamps, salt lakes") is read as terrestrial and
+# semiaquatic (user 2026-11-07): in a sentence that names two or more dry land units the Habitat reader adds terrestrial beside the swamp's
+# semiaquatic, and the inferred substrate does not read those swamp words (swamp_list_strip), so they never give semiaquatic alone
+# (floodplains are not dry)
+dry_unit_re <- "\\b(?:hills?|hillslopes?|ranges|rises|plains|sandplains?|sand ?dunes|dunes|dunefields?|swales|breakaways?|outcrops?|ridges?|tablelands?|plateaus?|screes?)\\b"
+swamp_list_strip <- function(x) map_chr(x, function(t) {
+  if (is.na(t) || !str_detect(t, regex(inf_swamp_re, ignore_case = TRUE))) return(t)
+  s <- str_split(t, "(?<=[.;])\\s+")[[1]]
+  dry <- map_int(str_extract_all(str_to_lower(s), dry_unit_re), ~ n_distinct(str_remove(.x, "s$")))
+  s[dry >= 2] <- str_remove_all(s[dry >= 2], regex(inf_swamp_re, ignore_case = TRUE))
+  paste(s, collapse = " ")
+})
+# ("around swamp or creek margins", Goodenia cravenii; "fringes of temporary freshwater swamps", FloraNT; NT_2026 review, 2026-11-07. Not
+# "swamps and creek margins" or "swamps and immediate fringes": the swamps themselves. "within or on the fringes of X" is in X: see swamp_in_re)
+inf_swamp_edge_re <- paste0("\\b(?:near|edges? of|margins? of|fringes? of|adjacent to|fringing|beside|bordering|close to|surrounding|around|landward of|behind)\\s+(?:the\\s+)?(?:[a-z-]+\\s+){0,2}",
+                            "(?:swamps?|swampy\\s+[a-z]+|marsh(?:es)?|marshy\\s+[a-z]+)\\b|\\b(?:swamps?|marsh(?:es)?)\\s+(?:margins?|edges?|fringes?)\\b")
+# ("within or on the fringes of temporary freshwater swamps", Atriplex holocarpa: in the swamp as well as beside it; likewise "Grows in or
+# near swamps", Carex blakei (PlantNET), and "near or in swamps": rebuild review, 2026-11-08)
+swamp_in_re <- paste0("\\b(?:within|in) (?:or|and) (?:on |at |around )?(?:the )?(?:fringes?|margins?|edges?) of\\b",
+                      "|\\b(?:within|in) (?:or|and) (?:near|beside|around|adjacent to|close to)\\b",
+                      "|\\b(?:near|beside|around|adjacent to|close to|on the (?:fringes?|margins?|edges?) of) (?:or|and) (?:with)?in\\b")
 
 phyllotaxis_dict <- c("alternate|alternately arranged|spirally arranged|spiral|distichous" = "alternate",
                       "opposite|subopposite|decussate|opposite pairs|in (?:[a-z]+ )?(?:unequal |subequal |equal )?pairs" = "opposite",
@@ -2477,6 +2602,7 @@ orchid_clubs <- function(desc) str_replace_all(str_replace_all(desc, "\\s*\\(([^
 
 extract_one <- function(r, group_filter = TRUE) {
   taxon <- r[["scientific_name"]]; fam <- r[["family"]]
+  is_mistletoe <- fam %in% c("Loranthaceae", "Viscaceae") || str_extract(coalesce(taxon, ""), "^\\S+") %in% mistletoe_gen
   # (all family modes are set first: sentences() and classify_token() read them, also in the genus / family filter below; set
   # later, the filter saw the previous taxon's mode, so genus copy-downs depended on how the taxa were split between workers)
   fern_mode <<- fam %in% fern_families
@@ -2903,7 +3029,16 @@ extract_one <- function(r, group_filter = TRUE) {
     }
   }
   addc("plant_succulence", habit_txt, c("succulent" = "succulent"))
-  sub_h <- addc("plant_growth_substrate", habit_txt, substrate_dict)
+  sub_h <- if (is.na(habit_txt) || habit_txt == "") NULL else scan_terms(habit_txt, substrate_dict)
+  # (place names are not habitats: "Bacchus Marsh", "Moyston Swamp")
+  hab_lc <- str_replace_all(str_to_lower(str_remove_all(coalesce(prep(r[["Habitat"]]), ""), place_swamp_re)), swamp_in_re, "in")
+  # ("Aquatic or terrestrial herb. Grows in shallow water or mud.": a plant of water or mud is amphibious, so its "terrestrial"
+  # alternative is semiaquatic; user 2026-11-07, Marsilea comparison; not "terrestrial or subaquatic", Utricularia, already semiaquatic)
+  if (!is.null(sub_h) && "terrestrial" %in% sub_h$value && any(sub_h$value == "aquatic" & !coalesce(if ("sub" %in% names(sub_h)) sub_h$sub else FALSE, FALSE)) &&
+      str_detect(hab_lc, "\\bmud\\b|\\bwater\\b"))
+    sub_h <- sub_h %>% mutate(term = ifelse(value == "terrestrial", paste(term, "(in water or mud: amphibious)"), term),
+                              value = ifelse(value == "terrestrial", "semiaquatic", value))
+  add(rec_cat("plant_growth_substrate", sub_h, habit_txt))
   # orchids: species descriptions rarely name the substrate, but the Habitat text does ("growing on the upper branches of
   # trees", "forms strands on trees, boulders and cliff faces", "in freely draining sands"). Substrates are read in text order
   # from "on ..." phrases (trees, branches, trunks ... -> epiphyte; rocks, boulders, cliff faces ... -> lithophyte; outcrops and
@@ -2985,9 +3120,81 @@ extract_one <- function(r, group_filter = TRUE) {
       if (n_distinct(hh$value) == 1 && all(is.na(hh$region)) && (!any(hh$qual %in% rare_quals) || all(hh$value == "terrestrial"))) hh$qual <- NA_character_
       hdesc <- paste("[habitat]", paste(hsrc, collapse = " "))
       add(rec_cat("plant_growth_substrate", hh, hdesc) %>% mutate(desc = paste0("[habitat] ", desc, ": ", paste(hsrc, collapse = " "))))
+      sub_h <- hh
     }
   }
-  addc("parasitic", habit_txt, parasitic_dict)
+  # water plants named only in the Habitat text (all families; user 2026-11-07, after Marsilea hirsuta lost "aquatic": FoA "Grows in
+  # shallow water and drying mud", PlantNET "mostly in shallow swamps"): "in (shallow / still / running ...) water", "in water bodies",
+  # "submerged", "floating in the water", "emergent aquatic", "aquatic weed" -> aquatic; "amphibious", "semi-aquatic", "partly submerged /
+  # immersed", "drying mud", herbs "in / on (wet ...) mud" (not woody plants on mud, nor mudflats), and swamps and marshes -> semiaquatic
+  # (user 2026-11-07: a swamp is not fully aquatic; it replaces "terrestrial swampy"). In text order, with the commonness word of the same
+  # comma segment; negated segments ("not usually a submerged plant"), other plants ("caught on submerged vegetation", "swamp gum") and
+  # places beside a swamp ("edges of mangrove swamps", "near swamps") are not read.
+  # (not for mistletoes: their Habitat lists the country of their hosts - Amyema preissii "rocky ... hills ..., temporary freshwater swamps")
+  if ((is.null(sub_h) || !nrow(sub_h)) && hab_lc != "" && !is_mistletoe &&
+      !str_detect(str_to_lower(coalesce(habit_txt, "")), "mistletoe|stem[- ]parasit|aerial (?:stem )?(?:hemi-?)?parasit")) {
+    woody_gf <- nrow(gf) > 0 && any(str_detect(gf$value, "tree|shrub|mallee|mallet|marlock|climber_woody"))
+    # (water plants by family or leaves - waterlilies, Nymphoides "floating leaves" - are aquatic in a swamp too; trees and shrubs
+    # standing in water, mangroves "in brackish waters", Ilex arnhemensis "often growing in water in perennial streams", are semiaquatic)
+    aq_plant <- fam %in% c("Nymphaeaceae", "Nelumbonaceae", "Cabombaceae", "Hydrocharitaceae", "Potamogetonaceae", "Ruppiaceae", "Zosteraceae",
+                           "Posidoniaceae", "Cymodoceaceae", "Ceratophyllaceae", "Aponogetonaceae", "Lemnaceae", "Salviniaceae", "Azollaceae", "Podostemaceae") ||
+      str_detect(str_to_lower(coalesce(desc, "")), "\\bfree-floating\\b|\\b(?:floating|submerged|submersed) (?:leaves|leaf|laminae?|blades?|fronds?|plants?)\\b")
+    wadj <- "(?:shallow|still|standing|running|flowing|slow[- ]flowing|fast[- ]flowing|fresh|brackish|deep|stagnant|permanent|open|clear|quiet|temporary|ephemeral|seasonal|turbulent|saline|salt|cold|warm)"
+    # ("in freshwater swamps / lakes", "in freshwater clay pans": a kind of place, read by its own noun)
+    aq_res <- c(paste0("\\b(?:in|into)\\s+(?:", wadj, ",?\\s+(?:(?:or|and)\\s+)?){0,3}(?:fresh|salt|brackish)?\\s?waters?\\b(?![- ]?(?:courses?|logged|holes?|ways?|falls?|sheds?|retentive|tables?|lines?|'?s edge|edges?|margins?|level))",
+                       "(?!\\s+(?:swamps?|marsh\\w*|lakes?|creeks?|streams?|rivers?|pools?|lagoons?|wetlands?|habitats?|areas?|sites?|places?|situations?|environments?|bodies|ponds?|dams?|billabongs?|springs?|soaks?|seepages?|clay ?pans?|pans?|flats?|depressions?|drains?|channels?)\\b)"),
+                "\\bin (?:[a-z]+ ){0,2}water ?bodies\\b", "\\bfloating (?:in|on) (?:the )?water\\b",
+                "(?<!partially |partly |half |semi-|semi)\\bsubmerged\\b(?!\\s+(?:vegetation|rocks?|logs?|plants|timber|branches|stems of))",
+                "\\b(?:an? |emergent |common |as an? |rooted )aquatic\\b(?!\\s+(?:sites?|areas?|habitats?|situations?|environments?|-))", "^\\s*aquatic\\b(?!\\s*-)")
+    sa_res <- c("\\bamphibious\\b", "\\bsemi-?aquatic\\b", "\\b(?:partially|partly|half|semi-)\\s*(?:submerged|immersed|inundated)\\b", "\\bdrying mud\\b",
+                if (!woody_gf) "\\b(?:in|on|into)\\s+(?:(?:[a-z]+|,)\\s+){0,2}mud\\b(?![- ]?flats?)", inf_swamp_re)
+    hw <- list(); hsrc <- character(0)
+    for (s in sentences(hab_lc)) {
+      # (a swamp among two or more dry land units: terrestrial beside it, before or after it as the first dry unit stands; see swamp_list_strip)
+      dry_w <- unique(str_extract_all(s, dry_unit_re)[[1]]); sw_pos <- NA_real_
+      for (sg in str_split(s, "[;,]")[[1]]) {
+        if (str_detect(sg, "\\b(?:not|never)\\b")) next
+        sg <- str_remove_all(sg, inf_swamp_edge_re)
+        q <- tail(str_extract_all(sg, qual_re)[[1]], 1); q <- if (length(q)) q else NA_character_
+        found <- FALSE
+        for (k in c(aq_res, sa_res)) {
+          loc <- str_locate(sg, k)
+          if (is.na(loc[1, 1])) next
+          v <- if (k %in% aq_res) "aquatic" else "semiaquatic"
+          if (v == "aquatic" && woody_gf) v <- "semiaquatic"
+          if (v == "semiaquatic" && k == inf_swamp_re && aq_plant) v <- "aquatic"
+          p <- (length(hsrc) + 1) * 1e4 + loc[1, 1]
+          if (k == inf_swamp_re && is.na(sw_pos)) sw_pos <- p
+          hw[[length(hw) + 1]] <- tibble(pos = p, value = v, term = str_squish(str_sub(sg, loc[1, 1], loc[1, 2])), qual = q, region = NA_character_)
+          found <- TRUE
+        }
+        if (found) hsrc <- c(hsrc, str_squish(sg))
+      }
+      if (!is.na(sw_pos) && n_distinct(str_remove(dry_w, "s$")) >= 2) {
+        dry_first <- str_locate(s, dry_unit_re)[1, 1] < str_locate(s, inf_swamp_re)[1, 1]
+        hw[[length(hw) + 1]] <- tibble(pos = sw_pos + ifelse(dry_first, -0.5, 0.5), value = "terrestrial", term = paste(dry_w, collapse = ", "),
+                                       qual = NA_character_, region = NA_character_)
+        hsrc <- c(hsrc, paste(dry_w, collapse = ", "))
+      }
+    }
+    if (length(hw)) {
+      hw <- bind_rows(hw) %>% arrange(pos) %>% distinct(value, .keep_all = TRUE) %>% mutate(end = pos)
+      if (n_distinct(hw$value) == 1 && !any(hw$qual %in% rare_quals)) hw$qual <- NA_character_
+      add(rec_cat("plant_growth_substrate", hw, paste(hsrc, collapse = "; ")) %>% mutate(desc = paste0("[habitat] ", desc)))
+      sub_h <- hw
+    }
+  }
+  addc("parasitic", par_clean(habit_txt), parasitic_dict)
+  # (when the habit says nothing, the Habitat's parasitism sentence: "In Eucalypt savanna; parasitic on Eucalyptus", Amyema bifurcata, FloraNT;
+  # in the mistletoes, parasitic on a host is on its branches: stem_parasitic, as the genus descriptions say)
+  if (!any(map_lgl(recs, ~ any(.x$trait %in% "parasitic")))) {
+    par_s <- str_subset(sentences(par_clean(coalesce(prep(r[["Habitat"]]), ""))), regex("\\bparasit", ignore_case = TRUE))
+    if (length(par_s)) {
+      ph <- scan_terms(collapse_text(par_s, " "), parasitic_dict)
+      if (!is.null(ph) && nrow(ph) && is_mistletoe) ph$value[ph$value == "parasitic"] <- "stem_parasitic"
+      add(rec_cat("parasitic", ph, collapse_text(par_s, " ")))
+    }
+  }
 
   # heights / widths (habit units)
   # ("Root-suckering shrub to small tree to 8 m high": "root-" is no root organ)
@@ -4904,6 +5111,16 @@ extract_one <- function(r, group_filter = TRUE) {
     recs <- map(recs, ~ .x %>% mutate(trait = str_replace(trait, "^bract_count$", "involucral_bract_count")))
 
   recs <- bind_rows(recs)
+  # parasitism (rebuild review, 2026-11-08): a mistletoe is parasitic on its host's branches; and a generic "parasitic" beside the specific
+  # kind is the same statement (Notothixos subaureus "mistletoes", "Usually parasitic on other mistletoes"): only the specific kind is kept
+  if (nrow(recs) && any(recs$trait %in% "parasitic")) {
+    is_par <- recs$trait %in% "parasitic" & !is.na(recs$value) & recs$value != ""
+    pv <- str_split(recs$value, " ")
+    if (is_mistletoe) pv[is_par] <- map(pv[is_par], ~ unique(ifelse(.x == "parasitic", "stem_parasitic", .x)))
+    if (any(map_lgl(pv[is_par], ~ any(.x %in% c("stem_parasitic", "root_parasitic"))))) pv[is_par] <- map(pv[is_par], ~ setdiff(.x, "parasitic"))
+    recs$value[is_par] <- map_chr(pv[is_par], ~ paste(.x, collapse = " "))
+    recs <- recs[!(is_par & recs$value == ""), ]
+  }
   # ---- verbatim text columns for the main row
   eco <- prep(r[["Ecology"]]); notes <- prep(r[["Notes"]]); hab <- prep(r[["Habitat"]])
   eco_all <- collapse_text(c(eco, notes), " ")
@@ -5230,12 +5447,61 @@ recs <- bind_rows(recs, inherited)
 # (no group profiles, as in EUCLID mode: nothing to copy down)
 universal <- rejected <- copied <- tibble()
 if (nrow(recs_hi)) {
-  universal <- recs_hi %>%
+  # (the substrate in a group description segment that the group filter drops for an unrelated "or" phrase: "Deciduous terrestrial orchids
+  # growing singly or in loose groups" (Microtis, Drakaea, Cyanicula, Elythranthera), Caladenia "Most above-ground parts of these terrestrial
+  # orchids are hairy" (a "most" sentence): taken from the full read when it is the group's only substrate anywhere in its text, the
+  # Habitat included (hi_variable below). Until 2026-11-08 their Habitat text stood in for it, and with Habitat no longer copied
+  # 78 orchids lost their substrate)
+  # Every group substrate (this one and the group filter's) is copied only when each clause of the group text that names it is unambiguous
+  # (third rebuild, 2026-11-08: the full read keeps what the group filter drops - Ericaceae "epiphytic or not" was copied to 128 NHNSW taxa;
+  # Polypodiaceae "Epiphytic or growing on rocks, rarely terrestrial", Ficus "some epiphytic or strangling", Rorippa "some aquatic",
+  # Hydrocharitaceae "Freshwater or marine", Myriophyllum "aquatic to fully emergent" - and the group filter's own copies since HEAD:
+  # NHNSW Loranthaceae "Hemiparasitic, terrestrial, root-parasitic shrubs or trees, or aerial, stem-parasitic shrubs" (terrestrial on 38
+  # mistletoes), Isolepis "... OR aquatic elongate perennials" (aquatic on 16), Lindsaeaceae "Terrestrial [or sometimes epiphytic] ferns"):
+  # no hedge or quantity word or "not" in the clause, no "or" / "to" next to another substrate or habitat word ("Annual or perennial aquatic
+  # herbs" is still aquatic; "singly or in loose groups" is how the plants grow), and never for mistletoes (Viscum "epiphytic hemiparasitic
+  # shrubs on branches")
+  sub_w <- "(?:terrestrial|epiphyt\\w*|hemi-?epiphyt\\w*|epilithic|lithophyt\\w*|aquatic\\w*|semi-?aquatic|submerged|submersed|floating|emergent|marine|freshwater|brackish|wetland|littoral|damp|wet|marsh\\w*|swamp\\w*|aerial|stem-parasitic|root-parasitic|growing|found|amphibious|rheophyt\\w*|mud|strangl\\w*)"
+  sub_hedge_re <- "\\b(?:some|many|several|few|sometimes|rarely|occasionally|mostly|usually|often|frequently|generally|commonly|mainly|chiefly|less|not|when|if|where|unless)\\b"
+  sub_or_re <- paste0("\\b", sub_w, "\\W+(?:or|and/or|to)\\b|\\b(?:or|and/or|to)\\s+[\\[(]?(?:(?:fully|partly|partially|sometimes|rarely|occasionally)\\s+)?", sub_w, "\\b")
+  sub_clean_ok <- function(gt, desc) {
+    terms <- str_squish(str_split(str_to_lower(desc), ";\\s*")[[1]]); terms <- terms[nzchar(terms)]
+    cl <- str_split(str_to_lower(gt), "[.;]")[[1]]
+    cl <- str_remove_all(cl, "\\b(?:growing |occurring )?(?:singly|individually|solitary) or in (?:[a-z]+ ){0,3}(?:groups?|clumps?|colonies|tufts?)\\b")
+    hit <- cl[map_lgl(cl, function(x) any(str_detect(x, fixed(terms))))]
+    # (hedge words count in the comma segments that name a substrate or habitat, not in the rest of the clause: Lastreopsis "Terrestrial
+    # ferns, rhizome usually creeping", Todea "usually arborescent", Leptopteris "stipe bases not persistent" were blocked in rebuild 4)
+    seg <- unlist(str_split(hit, "[,\\[\\]()]"))
+    seg <- seg[str_detect(seg, paste0("\\b", sub_w, "\\b"))]
+    length(hit) > 0 && !any(str_detect(seg, sub_hedge_re)) && !any(str_detect(hit, sub_or_re))
+  }
+  sub_gt <- d_higher %>% group_by(group_name = scientific_name) %>% summarise(gt = paste(Description, collapse = ". "), fam_g = first(family), .groups = "drop")
+  sub_ok_rows <- function(x) x %>% left_join(sub_gt, by = "group_name") %>%
+    filter(trait != "plant_growth_substrate" |
+             # (mistletoes: no family copy, no copy in the Viscaceae genera, and no epiphyte in a Loranthaceae genus; a genus of root
+             # parasites keeps its "Terrestrial root-parasitic shrubs", Atkinsonia, Nuytsia)
+             (!group_name %in% c("Loranthaceae", "Viscaceae", mistletoe_gen) &
+                !(coalesce(fam_g, "") %in% c("Loranthaceae", "Viscaceae") & value != "terrestrial") &
+                map2_lgl(gt, desc, ~ !is.na(.x) && !is.na(.y) && sub_clean_ok(.x, .y)))) %>%
+    select(-gt, -fam_g)
+  sub_full <- hi_full_vals %>%
+    filter(trait == "plant_growth_substrate", !str_detect(coalesce(desc, ""), "\\[habitat\\]"), is.na(qualifier),
+           is.na(region), is.na(ctx_type), coalesce(alts, 1L) == 1) %>%
+    anti_join(recs_hi %>% filter(trait == "plant_growth_substrate", !str_detect(coalesce(desc, ""), "\\[habitat\\]")), by = c("group_name", "trait"))
+  universal <- bind_rows(recs_hi, sub_full) %>% sub_ok_rows() %>%
     filter(!is.na(value), value != "", is.na(qualifier) | qualifier %in% copy_quals, is.na(region), is.na(ctx_type), !str_detect(value, " "),
            coalesce(alts, 1L) == 1, !trait %in% c("flowering_time", "fruiting_time", "flowering_cues", "fruiting_cues", "germination_cues", "post_fire_recruitment",
                                          "plant_climbing_mechanism", "post_fire_flowering",
                                          # (user 2026-11-01: these vary between species, so a genus / family statement is not copied down)
                                          "leaf_lobation", "leaf_margin", "leaf_margin_posture", "leaf_lamina_posture", "stem_growth_habit")) %>%
+    # (user 2026-11-08, a hard rule: a group value is copied only when the group text gives that one value, unambiguously. A group's
+    # Habitat text is never copied: it lists the places the group's species grow, most of them no trait level, so a single level looks
+    # like the only value - Grevillea "Occurs in most habitats, but only a few species alpine, few in swamps", Stellaria "a wide range of
+    # habitats ... including coastal dunes, heathlands, ..., swamps", Dichanthium "from marshes to subdesert", Cyperaceae (PlantNET) "mostly
+    # in damp or swampy places" were copied as semiaquatic to every species. Nor a statement about some of the group's species: "a few /
+    # some / many species", "most species")
+    filter(!str_detect(coalesce(desc, ""), "\\[habitat\\]"),
+           !str_detect(coalesce(desc, ""), regex("\\b(?:a few|few|some|many|several|most|certain|a number of)\\s+(?:\\w+\\s+)?(?:species|taxa|members|genera)\\b", ignore_case = TRUE))) %>%
     group_by(group_name, trait, value) %>% filter(n_distinct(part) == first(n_parts)) %>% ungroup() %>%
     mutate(facet = facet_of(trait, value)) %>% anti_join(hi_variable, by = c("group_name", "trait", "facet")) %>%
     semi_join(hi_full_vals, by = c("group_name", "trait", "value")) %>%
@@ -5405,7 +5671,8 @@ inf_text <- d %>% left_join(main %>% select(taxon_name, habit_description), by =
                             # (user, 2026-10-28: default values unless the text names a special case; the broad water / epiphyte / rock
                             # test reads the habit sentence and the Habitat / Ecology / Notes text, the morphology only for unambiguous
                             # words: "spikelets ... on secondary branches", "persisting on tree" are not epiphyte wording)
-                            stxt = str_to_lower(paste(coalesce(habit_description, ""), coalesce(Habitat, ""), coalesce(Ecology, ""), coalesce(Notes, ""))),
+                            # (place names are not habitats: "Bacchus Marsh")
+                            stxt = swamp_list_strip(str_replace_all(str_to_lower(str_remove_all(paste(coalesce(habit_description, ""), coalesce(Habitat, ""), coalesce(Ecology, ""), coalesce(Notes, "")), place_swamp_re)), swamp_in_re, "in")),
                             dtxt = str_to_lower(coalesce(Description, "")),
                             hab = str_to_lower(coalesce(Habitat, "")))
 # (EUCLID notes repeat the bark and bud morphology: "rough bark on the lower trunk", "buds on the same tree" are not epiphyte wording;
@@ -5447,7 +5714,6 @@ inf_water_strong <- "\\b(?:aquatic|submerged|submersed|free-floating|floating|in
 inf_water_strong <- paste0(inf_water_strong, "|\\b(?:quiet|still|open|stagnant|fresh|eutrophic|mesotrophic) waters\\b|\\b(?:grows|found|floating) in (?:[a-z-]+,? ){0,3}waters\\b")
 # ("midrib submerged", "gland submerged ... within the lamina" are morphology; but Myriophyllum "submerged leaves trifid", Ludwigia
 # "pneumatophores arising from submerged or buried roots" are water plants)
-inf_swamp_re <- "\\b(?:swamps?|swampy|marsh(?:es)?|marshy)\\b"
 inf_water_desc <- "\\b(?:submerged|submersed|floating)(?:,? (?:or|and) [a-z]+)? (?:leaves|leaf|stems?|shoots?|plants?|parts|forms?|roots?|lamina)\\b|\\bif submerged\\b|\\b(?:aquatic|free-floating|semi-?aquatic|epiphyt\\w*|hemi-?epiphyt\\w*|lithophyt\\w*|strangl\\w*|marine|seagrass\\w*|mangroves?)\\b"
 inf_water_strong_leg <- str_replace(str_replace(inf_water_strong, fixed("rocks?|boulders?|cliffs?|"), ""), fixed("|in rock crevices|crevices"), "")
 inf_water_wet <- "\\b(?:swamps?|swampy|marsh\\w*|bogs?|boggy|ponds?|lakes?|lagoons?|billabongs?|waterholes?|creek ?beds?|stream ?beds?|river ?beds?|beds of|inundat\\w*|flooded|flooding|waterlogged|mud\\w*|wetlands?|seepages?|soaks?|claypans?|gilgais?|saline|salt ?lakes?|stream margins|water's edge|edges? of (?:streams|creeks|rivers|pools|lakes))\\b"
@@ -5506,13 +5772,14 @@ inf <- inf %>% mutate(
   # plants may be semiaquatic; a taxon without a growth form is not blocked)
   sub_ok = is.na(sub) & !family %in% inf_fam_aquatic & !genus %in% inf_gen_parasitic & !family %in% c("Loranthaceae", "Viscaceae") &
     !str_detect(stxt, ifelse(family == "Fabaceae", inf_water_strong_leg, inf_water_strong)) & !str_detect(dtxt, inf_water_desc) &
-    (woody | !str_detect(stxt, inf_water_wet)) & !str_detect(stxt, inf_swamp_re),
-  # (user, 2026-10-28: plants of swamps or marshes, herbs and woody plants alike, are "terrestrial semiaquatic" - "terrestrial swampy"
-  # since 2026-10-30, a new substrate level; other wet wording,
-  # creek beds, lake margins, seepages ..., leaves herbs unscored)
+    (woody | !str_detect(stxt, inf_water_wet)) & !str_detect(str_remove_all(stxt, inf_swamp_edge_re), inf_swamp_re),
+  # (user, 2026-10-28: plants of swamps or marshes, herbs and woody plants alike, are "terrestrial semiaquatic"; "terrestrial swampy" from
+  # 2026-10-30 (a new level); "semiaquatic" from 2026-11-07 (user: a swamp is not fully aquatic, nor dry land); not plants beside a swamp
+  # ("edges of mangrove swamps", "near swamps") or swamp-named trees ("swamp gum"); other wet wording, creek beds, lake margins,
+  # seepages ..., leaves herbs unscored)
   semi_ok = is.na(sub) & !family %in% inf_fam_aquatic & !genus %in% inf_gen_parasitic & !family %in% c("Loranthaceae", "Viscaceae") &
     !str_detect(stxt, ifelse(family == "Fabaceae", inf_water_strong_leg, inf_water_strong)) & !str_detect(dtxt, inf_water_desc) &
-    str_detect(stxt, inf_swamp_re),
+    str_detect(str_remove_all(stxt, inf_swamp_edge_re), inf_swamp_re),
   rock_chk = family == "Fabaceae" & str_detect(txt, inf_rock_re),
   rock_txt = str_extract(txt, paste0("[^.;]{0,60}", inf_rock_re, "[^.;]{0,30}")),
   pho_ok = is.na(pho) & leafy & (!family %in% inf_fam_leafless | genus %in% inf_gen_leafy) & !genus %in% inf_gen_leafless & !genus %in% inf_gen_nonpho &
@@ -5540,7 +5807,7 @@ inf_rec <- function(ok, trait, value, why) inf %>% filter(ok) %>%
             ctx_type = NA_character_, ctx_value = NA_character_, qualifier = NA_character_, region = NA_character_, scoring = "inferred", kind = "cat")
 recs <- bind_rows(recs,
   inf_rec(inf$sub_ok & !inf$rock_chk, "plant_growth_substrate", "terrestrial", "no aquatic, epiphytic, lithophytic or marine habit named; growth form and habitat typical of terrestrial plants"),
-  inf_rec(inf$semi_ok, "plant_growth_substrate", "terrestrial swampy", "grows in swamps or marshes"),
+  inf_rec(inf$semi_ok, "plant_growth_substrate", "semiaquatic", "grows in swamps or marshes"),
   inf_rec(inf$sub_ok & inf$rock_chk, "plant_growth_substrate", "terrestrial", "CHECK: grows on or among rocks, assumed rooted in soil") %>%
     mutate(desc = paste0(str_remove(desc, "\\]$"), ": '", str_squish(inf$rock_txt[inf$sub_ok & inf$rock_chk]), "']")),
   inf_rec(inf$pho_ok, "plant_photosynthetic_organ", "leaf", "leaves described; no leafless, scale-leaved, phyllode, cladode or photosynthetic-stem wording"),
@@ -5897,6 +6164,7 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
       if (wattle_mode) df <- df %>% rename(wattle_url = foa_url)
       if (ausgrass_mode) df <- df %>% rename(ausgrass_url = foa_url)
       if (saflora_mode) df <- df %>% rename(saflora_url = foa_url)
+      if (ntflora_mode) df <- df %>% rename(ntflora_url = foa_url)
       # (NHNSW_2026: the profile link, repeated on every row, was 44% of the file and took it to the 100 MB GitHub limit: it is written
       # once per taxon to raw/taxon_urls.csv instead)
       if (plantnet_mode) {

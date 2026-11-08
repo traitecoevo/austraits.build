@@ -414,6 +414,9 @@ extract_one <- function(r) {
     str_sub(gm, loc[1], loc[2]) <- strrep(" ", loc[2] - loc[1] + 1)
   }
   if ("aquatic_floating" %in% sh$value) sh <- sh %>% filter(value != "aquatic")
+  # ("Aquatic or terrestrial herb. Grows in shallow water or mud.", Marsilea: a plant of water or mud is amphibious, so its "terrestrial"
+  # alternative is semiaquatic; user 2026-11-07, as in the flora parser)
+  if (all(c("aquatic", "terrestrial") %in% sh$value) && !"semiaquatic" %in% sh$value) sh$value[sh$value == "terrestrial"] <- "semiaquatic"
   # "grows on rocks and on trees", "mats on rocks, logs and tree trunks": epiphyte when no substrate adjective names it
   if (!"epiphyte" %in% sh$value && !"hemiepiphyte" %in% sh$value && !str_detect(sub_txt, "climb") &&
       str_detect(sub_txt, "\\bon (?:[a-z]+,? (?:and |or )?){0,3}(?:trees|tree trunks|trunks)\\b"))

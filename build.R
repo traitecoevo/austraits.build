@@ -1229,6 +1229,10 @@ NTH_2023_config <- dataset_configure("data/NTH_2023/metadata.yml", definitions)
 NTH_2023_raw <- dataset_process("data/NTH_2023/data.csv", NTH_2023_config, schema, resource_metadata, unit_conversions)
 NTH_2023 <- dataset_update_taxonomy(NTH_2023_raw, taxon_list)
 
+NT_2026_config <- dataset_configure("data/NT_2026/metadata.yml", definitions)
+NT_2026_raw <- dataset_process("data/NT_2026/data.csv", NT_2026_config, schema, resource_metadata, unit_conversions)
+NT_2026 <- dataset_update_taxonomy(NT_2026_raw, taxon_list)
+
 OGrady_1999_config <- dataset_configure("data/OGrady_1999/metadata.yml", definitions)
 OGrady_1999_raw <- dataset_process("data/OGrady_1999/data.csv", OGrady_1999_config, schema, resource_metadata, unit_conversions)
 OGrady_1999 <- dataset_update_taxonomy(OGrady_1999_raw, taxon_list)
@@ -2275,6 +2279,7 @@ austraits_raw <- austraits::bind_databases(
   NTH_2014,
   NTH_2022,
   NTH_2023,
+  NT_2026,
   OGrady_1999,
   OGrady_2006,
   OGrady_2009,

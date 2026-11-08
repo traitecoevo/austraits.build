@@ -63,6 +63,31 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   segments naming a genus in brackets ("(Hydrocleys)"). A statement counts only if it names
   exactly one term, counting terms with no level ("flat, terete or triquetrous" is not "all
   terete"). Never copy numbers.
+  - **HARD RULE (user 2026-11-08, restated: "how does this rule keep getting ignored?"):** copy ONLY when the group text gives that
+    one value, unambiguously. Ambiguity is itself a reason not to copy. **A group's Habitat text is never copied**: it lists where the
+    group's species grow, mostly in words that are no trait level, so one level looks like the only value. A habitat water reader
+    added for NT_2026 ran on group profiles and copied semiaquatic to 505 Grevillea ("Occurs in most habitats, but only a few species
+    alpine, few in swamps"), 224 NHNSW Cyperaceae ("mostly in damp or swampy places"), Stellaria ("a wide range of habitats …
+    including … swamps"), Andersonia, Terminalia ("Many species … often of riverine and swampy habitats"), Dichanthium ("from marshes
+    to subdesert"), Phalaris. Nor is a statement about some of the species copied ("a few / some / many / most species"). Any new or
+    widened reader: check whether it runs on genus / family profiles and could pass the copy-down filter, and read the "group copies
+    gained" table of every rebuild diff first.
+    The group's substrate is taken from its description in the full read when the group filter drops the segment for an unrelated
+    "or" phrase ("Deciduous terrestrial orchids growing singly or in loose groups": Microtis, Drakaea, Cyanicula, Elythranthera;
+    Caladenia "Most above-ground parts of these terrestrial orchids are hairy") and it is the only substrate anywhere in the group's
+    text, Habitat included. Their Habitat had stood in for it, so excluding the Habitat had left 78 orchids without a substrate or a
+    geophyte height type. Corunastylis says "terrestrial" only in its Habitat, so it is not copied.
+    **Every group substrate copy passes a clause check** (`sub_clean_ok`, 2026-11-08). Each clause (split at . ;) of the group text that
+    names the substrate must have no "or" / "to" next to another substrate or habitat word. Its comma segments that name a substrate
+    or habitat must have no hedge, quantity or conditional word (some, many, few, sometimes, rarely, occasionally, mostly, usually,
+    often …, not, when, if, where). A hedge in another segment of the clause doesn't count: Lastreopsis "Terrestrial ferns, rhizome
+    usually creeping" and Todea "usually arborescent" are copied. Juncaginaceae "emergent when aquatic" is not. "Annual or perennial aquatic herbs" still counts, and "singly or
+    in loose groups" is ignored. Mistletoe groups are never copied. Blocked so far: Ericaceae "epiphytic or not" (128 NHNSW taxa in
+    rebuild 3); also, already in HEAD, NHNSW Loranthaceae "terrestrial, root-parasitic shrubs or trees, or aerial, stem-parasitic shrubs"
+    (terrestrial on 38 mistletoes), Isolepis "… OR aquatic …", Lindsaeaceae "Terrestrial [or sometimes epiphytic]"; and Polypodiaceae
+    "Epiphytic or growing on rocks, rarely terrestrial", Ficus "some epiphytic", Rorippa "some aquatic", Hydrocharitaceae "Freshwater or
+    marine", Myriophyllum "aquatic to fully emergent", Pandanus, Triglochin, Typha "aquatic or semi-aquatic". The check covers substrate
+    only; other traits still use the group filter alone.
   - **An "or" makes only its own words alternatives (user 2026-11-05):** Hakea "Fruit a smooth or rugose to tuberculate woody
     modified follicle" is a woody follicle — the "X or Y" words (each a word or an "A to B" range) are removed from the group text and
     the rest of the segment is kept. A segment still goes whole when the alternative is a phrase ("solitary or in racemes", "a capsule
@@ -292,11 +317,26 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   or trees") is not a value for every member: add it to `copydown_exclude`.
 - **Inferred defaults** (terrestrial / leaf / not_parasitic) unless the text names a special case: the broad water /
   epiphyte / rock test reads the habit sentence + Habitat / Ecology / Notes (morphology only for unambiguous wording;
-  "midrib submerged", "on secondary branches" are not habitats); herbs without Habitat text get the default; plants of
-  swamps / marshes (herbs and woody plants alike) are inferred `terrestrial swampy` (`swampy`: a substrate level added
-  2026-10-30, replacing `semiaquatic` for swamp plants in every dataset; explicit "semi-aquatic" wording stays semiaquatic); other wet wording (creek beds,
-  lake margins) leaves herbs unscored. Habitat
-  text is kept verbatim as `habitat_description`.
+  "midrib submerged", "on secondary branches" are not habitats); herbs without Habitat text get the default; other wet wording
+  (creek beds, lake margins) leaves herbs unscored. Habitat text is kept verbatim as `habitat_description`.
+- **Water plants and swamps (user 2026-11-07, after Marsilea hirsuta lost "aquatic" in four 2026 datasets; all sources):**
+  - **Swamp and marsh plants (herbs and woody plants alike) are `semiaquatic`** (user: a swamp is not fully aquatic). This
+    replaces "terrestrial semiaquatic" (2026-10-28) and "terrestrial swampy" (2026-10-30 to 11-06); the `swampy` level in
+    traits.yml is no longer used here. "Swampy" is a habitat as much as a substrate, and AusTraits has no habitat trait, so the
+    swamp detail lives in `habitat_description`. Not plants beside a swamp ("edges of mangrove swamps", "near swamps", "swamp
+    margins") or swamp-named trees ("swamp gum").
+  - **The Habitat text is read for water plants** when the description names no substrate: "in (shallow / still / running ...)
+    water", "in water bodies", "submerged", "floating in the water", "emergent aquatic", "aquatic weed" → aquatic; "amphibious",
+    "semi-aquatic", "partly submerged / immersed", "drying mud", herbs "in / on (wet) mud" (not woody plants on mud, nor
+    mudflats), swamps, marshes → semiaquatic. Text order, commonness word of the comma segment, negated segments skipped. FoA
+    Marsilea hirsuta "Grows in shallow water and drying mud" → aquatic semiaquatic. Refinements from the chunk test: trees and
+    shrubs standing in water (mangroves "in brackish waters", Ilex arnhemensis) are semiaquatic; water plants (waterlily families,
+    or floating / submerged leaves in the description: Nymphoides, Myriophyllum glomeratum) in a swamp are aquatic; "water" before a
+    place noun ("in freshwater swamps / lakes / clay pans") is read by that noun; place names ("Bacchus Marsh", "Tootgarook Swamp")
+    are not habitats (also in the inferred rule). A hedged-only mention keeps its hedge (Triglochin hexagona "rarely swamps" →
+    semiaquatic rarely) and, being the taxon's own text, replaces a family copy.
+  - **"Aquatic or terrestrial" plants of water or mud are amphibious:** the terrestrial alternative becomes semiaquatic (Marsilea
+    "Aquatic or terrestrial herb. Grows in shallow water or mud." → aquatic semiaquatic; also in the LucidFerns_2026 script).
 - **Source unit typos:** fix in `fix_text` only with evidence (a later description, or the profile's own diagnostic
   features), and flag them; e.g. Austrostipa heights given in m for dm.
 - **Measurements:** "to c. 0.5 m" is a maximum; an extreme in its own unit ("to 40 cm (–1 m) across") is converted to the
@@ -760,6 +800,69 @@ not the main checkout's: the user switches branches in the main checkout, and it
   Pterostylis flies; not Acianthus "mainly", Diuris / Glossodia "chiefly", Microtis / Thelymitra / Oxalis "most", Prasophyllum (by
   season), Nicotiana "may", Fumaria (shade / late plants), Amphibromus "fairly common".
 
+## FloraNT: Northern Territory flora online (NT_2026, user 2026-11-07)
+
+- **Scope:** the user asked for "all traits" from `split_sentences_NT_Flora.csv` (the 2022 scrape; OneDrive
+  `data_for_GitHub_repos/.../floras/`), named NT_2026. That file is only each factsheet's Description, with infraspecific names cut
+  back to the species (71 names repeated) and 24 unnamed family descriptions; the user chose to re-scrape the full factsheets
+  (`ignore/jobs/nt1/scrape.py` -> `data_extra/ntflora_profiles.csv`, pages cached in `data_extra/NTFlora_html`, 0.5 s between requests:
+  6,817 factsheets, 1,156 genera, 4,980 species incl. 292 phrase names and hybrids, 681 infraspecific; no family factsheets exist).
+  The site HAS changed since 2022: 2,867 of the 3,003 old descriptions are identical, 33 lightly edited, 46 revised under the same name,
+  30 under names no longer on the site, 4 now without a description; 798 descriptions are new. Do not look at NTH_2014 / 2022 / 2023 /
+  2025 while extracting: they are the comparison case.
+- **Scrape gotcha:** browse rows mark phrase names as `<species normal >sp. Watarrka</species>`: match tags with attributes
+  (`<species\b[^>]*>`), or every phrase name is lost.
+- **Same parser, NT Flora mode:** `FOA_SOURCE=ntflora FOA_CORES=4 nice -n 19 Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R`. Fields:
+  Description; Habitat (species only: a genus Habitat is the genus as a whole); Notes + Diagnostic Characters + Similar Taxa -> Notes
+  (comparative, so not read for morphology); Flowering / Fruiting (Ecological Attributes: month lists "Mar, Apr, May" or ranges ->
+  "Flowers March, April, May. Fruits ..."; "not recorded" dropped; the ferns' "Fertile plants: Apr-Aug" kept as written, once, without
+  "Flowers", so it is not flowering time); Common Name without the genus name that opens every list ("Avicennia, White Mangrove");
+  Flora Description Source -> Author; Introduced Status "Introduced to NT" / "Formerly introduced" -> biostatus introduced;
+  Bioregion + Distribution Notes + International -> Distribution; EPBC / TPWCA conservation status. Profile links in ntflora_url.
+- **Diagnostic Characters as description:** only for the 98 factsheets with no Description, and only their sentences that name or
+  compare no other taxon ("differs from P. micrantha", "P saxatilis has ...", "Var. angustifolia and var. distans have ...", text after
+  "----"); sentences split after full words only ("Ewart & O.B. Davies").
+- **Lost characters in the site text:** "¬" and soft hyphens are line-break hyphens ("other¬wise", "40¬-70mm"); `\x1a` is a lost quote
+  mark (restored as curly quotes) or fraction ("2/3\x1a", "c. \x1a the length" -> "[?]"); "¿" -> "[?]".
+- **Parser fix found here (all sources):** "annual stems / shoots / culms / branches / growth" is not life_history annual ("subshrub with
+  annual stems", Flemingia parviflora; also ~10 ABRS taxa, Linum marginale, Solanum hystrix ...).
+- **Review of the first build (traits.build `dataset_process`: 117,318 traits, 66 excluded values; `ignore/jobs/nt1/proc_nt.R`):**
+  source slips in fix_text (m for mm: Coccinia / Aegiceras styles, Jacksonia divisa seeds, Grevillea miniata / versicolor and Suriana
+  leaf widths; "ree or mallee", "shub", "nflorescence", "lnflorescence", lowercase "vine. petioles", "slender. fruit"; Sersalisia sericea's
+  page starts mid-leaf, marked "[start of the description lost on the FloraNT page]"; "Leafy twigs", Agave / Aloe "tuft of ... leaves"
+  and Polygala longifolia "plant often leafless ..., linear ..." leaf sizes were plant widths). Real extremes stay (Nelumbo pedicels
+  1-3.5 m, Barringtonia filaments 8-15 cm, palm leaves 4-6 m) and are excluded only by the traits.yml ranges.
+- **Swamps in land-unit lists (all sources; user 2026-11-07: "terrestrial semiaquatic"):** a swamp named in a sentence that also names
+  two or more dry land units ("rocky or gravelly hills or rises ..., sandplains, ..., temporary freshwater swamps and claypans", FloraNT's
+  central Australian lists, 95 factsheets; Florabase "hills, dunes, ridges, flats, freshwater swamps, salt lakes", ~69 WAH_2026_1 taxa;
+  ~12 ABRS / NHNSW sentences) gives terrestrial AND semiaquatic, in text order (the Habitat reader adds terrestrial beside the swamp,
+  value_description "[habitat] plains, hills; swamp"); the inferred substrate ignores those swamp words (`swamp_list_strip`), so they
+  never give semiaquatic alone. (85 NT dryland taxa, Atriplex vesicaria ..., had been semiaquatic only.) Mistletoes are skipped: their
+  Habitat lists their hosts' country. "around swamp or creek margins" and "fringes of temporary freshwater swamps" are beside a swamp,
+  not in one; but "within or on the fringes of X" is in X (`swamp_in_re`), and "swamps and creek margins" / "swamps and immediate
+  fringes" are the swamps themselves (a broader edge pattern that ate them left "in temporary freshwater" and gave aquatic: Verbena).
+- **User 2026-11-07: site only.** The 57 descriptions only in the 2022 file (30 renamed / removed taxa, 4 now without a description,
+  23 family descriptions) are not added.
+- **Mistletoes (all sources):** "mistletoe" and "stem parasitic" (with a space) are stem_parasitic; when the habit says nothing, the
+  Habitat's "parasitic on Eucalyptus" is read (stem_parasitic in Loranthaceae / Viscaceae). FloraNT has no family factsheets, so the
+  Loranthaceae family statement that covers the mistletoes in the other sources is missing here.
+  (Rebuild review, user 2026-11-08) The Viscaceae genera, now in Santalaceae (Korthalsella, Viscum, Notothixos, Ginalloa …), are
+  mistletoes too: generic "parasitic" → stem_parasitic, and their Habitat is not read for swamps. A generic "parasitic" beside a specific
+  kind (stem / root parasitic) is dropped. **Subject and object:** "frequently parasitised by the mistletoe Lysiana …" (Acacia
+  brachystachya) and "host of / for …" name the plant as a host, not a parasite: not read. A commonness word before "parasitic on"
+  is about the host ("Usually parasitic on Syzygium smithii"; Cuscuta "usually parasitic on … Polygonaceae"), not a qualifier.
+- **Eucalypts:** FloraNT's 92 "Eucalypts of Australia" descriptions are EUCLID's ("Eucalypt descriptions courtesy of Centre for Plant
+  Biodiversity Research", site credits), so they repeat CPBR_2026 text.
+- **Not read:** propagation fields (Seed / Cutting / Division Collection and Propagation: horticultural), Ethnobotany, Weeds Status
+  (dates), Etymology, Taxonomic Literature, NT Parks, Restricted Range / NT Endemic flags.
+- **Ecology vetted** (`ignore/jobs/nt1/eco_cand.py` -> 585 sentences, `vet.py` -> raw/ecology_vetted.csv, 201 rows / 112 taxa):
+  "seen (mostly) in recently burnt areas" -> post_fire_recruitment + establish_post_fire with the frequency word; "flowers after dry
+  season fires" -> fire_enhanced_flowering; "obligate seeder" / "fire sensitive" -> fire_killed; mangrove notes (Floodplain Flora:
+  buoyant fruit -> hydrochory, pollinators); a Similar Taxa statement about the other species is scored on that species (Acacia
+  salicina root-suckering from the A. ligulata factsheet). Evidence sentences end at full stops not after abbreviations ("A. salicina",
+  "et al.", "e.g."). Genus copies only Casuarina (wind) and Macaranga (gap colonisers). Not scored: host lists, "vine thicket" habitats,
+  colonies not stated clonal, fire-protected habitats, fire-regime susceptibility, timber / firewood uses.
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`
@@ -816,8 +919,8 @@ not the main checkout's: the user switches branches in the main checkout, and it
   "subaquatic" → `semiaquatic`, "subdeciduous" → `semi_deciduous`), else to the base value (globoid, basifixed, opposite,
   terminal); the source word stays in value_description. The parser looks the sub- / semi- levels up in traits.yml, so levels
   added later are used without changing the script.
-- A hedged swamp habitat ("may be anticipated along streams and in swampy areas", E. rudis) → terrestrial + a secondary `swampy`
-  row with scoring_certainty possibly. A habitat sentence for the species that says "habitat depending on the subspecies" is
+- A hedged swamp habitat ("may be anticipated along streams and in swampy areas", E. rudis) → terrestrial + a secondary
+  `semiaquatic` row (`swampy` until 2026-11-07) with scoring_certainty possibly. A habitat sentence for the species that says "habitat depending on the subspecies" is
   scored only on the subspecies whose own paragraph names that habitat.
 - Hybrids written "Eucalyptus x phylacis" get rank species (they were dropped when the profile had no rank).
 - The FoA scrape loses text after a "<" ("branches <8 cm diameter smooth" → "branches Juvenile growth …"; ~17–29 profiles,
