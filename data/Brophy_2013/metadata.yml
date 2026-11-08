@@ -31,14 +31,14 @@ dataset:
           "flowers_per_inflorescence", "fruit_dehiscence", "fruit_fleshiness", "fruit_length",
           "fruit_shape", "fruit_texture", "fruit_width", "hypanthium_length",
           "hypanthium_width", "inflorescence_type", "leaf_apex_shape", "leaf_arrangement",
-          "leaf_attachment", "leaf_base_shape", "leaf_essential_oil_per_dry_mass", "leaf_hairs_adult_leaves",
-          "leaf_heterogeneity", "leaf_intramarginal_vein", "leaf_lamina_posture", "leaf_length",
-          "leaf_main_vein_count", "leaf_margin_posture", "leaf_phyllotaxis", "leaf_shape",
-          "leaf_surface_reflectivity", "leaf_type", "leaf_width", "life_history",
-          "parasitic", "petal_shape", "petiole_length", "plant_growth_form",
-          "plant_growth_substrate", "plant_height", "plant_photosynthetic_organ", "plant_physical_defence_structures",
-          "seed_colour", "seed_length", "seed_shape", "stem_branching_form",
-          "stem_hairs", "stem_shape", "woodiness_detailed"
+          "leaf_attachment", "leaf_base_shape", "leaf_essential_oil_per_dry_mass", "leaf_essential_oil_per_fresh_mass",
+          "leaf_hairs_adult_leaves", "leaf_heterogeneity", "leaf_intramarginal_vein", "leaf_lamina_posture",
+          "leaf_length", "leaf_main_vein_count", "leaf_margin_posture", "leaf_phyllotaxis",
+          "leaf_shape", "leaf_surface_reflectivity", "leaf_type", "leaf_width",
+          "life_history", "parasitic", "petal_shape", "petiole_length",
+          "plant_growth_form", "plant_growth_substrate", "plant_height", "plant_photosynthetic_organ",
+          "plant_physical_defence_structures", "seed_colour", "seed_length", "seed_shape",
+          "stem_branching_form", "stem_hairs", "stem_shape", "woodiness_detailed"
         ),
         is.na(measurement_range) | measurement_range != "extreme"
       )
@@ -59,7 +59,7 @@ dataset:
     the habitat and the Flowering time paragraph the flowering months. For a species with subspecies or varieties, the book gives one
     Natural occurrence, Ecology, Flowering time and Oil yield paragraph per infraspecific taxon, and a short key to them in the Notes; each
     infraspecific taxon is recorded from its own paragraphs and its key text, and takes the values of its species where these are silent
-    (inferred_from_species). Leaf essential oil yields on a dry-weight basis are recorded from the Oil yield paragraph (raw/oil_yield.R).
+    (inferred_from_species). Leaf essential oil yields are recorded from the Oil yield paragraph, per dry or fresh mass as stated (raw/oil_yield.R).
     Categorical terms are mapped to AusTraits trait values, with the source terms kept verbatim in value_description; several values are
     listed in the order they appear in the text, and alternatives qualified by a commonness word are recorded on separate rows. A measured
     range is recorded as minimum and maximum values, a single measurement as a mean, a single count as a mode and "to X" as a maximum.
@@ -69,7 +69,8 @@ dataset:
   original_file: Melaleucas_mn156-species-a-c_1.pdf, ...-species-d-k_1.pdf, mn156-species-l-o_1.pdf, Melaleucas_mn156-species-p-r_1.pdf
     and ...-species-s-z_1.pdf (the species accounts, chapter 7), transcribed to brophy2013_profiles.csv
   notes: 'The book page of each taxon is in the source_page column; the synonyms the book gives are in raw/taxon_info.csv. Stamen counts
-    given per bundle ("Stamens 6-7 per bundle") are not recorded as stamens per flower. The book also treats the
+    given per bundle ("Stamens 6-7 per bundle") are recorded per flower, multiplied by the number of bundles (5, unless the account
+    states otherwise), with the multiplier in value_description. The book also treats the
     Melaleuca species of New Caledonia and South-East Asia; these stay in data.csv and are excluded under exclude_observations. Candidate traits not yet in traits.yml are listed
     with their coverage in raw/candidate_traits.csv; custom_R_code keeps only the traits mapped below. Rows whose trait_name is a text
     field (habit_description, leaf_description, distribution_description, ...) carry the verbatim paragraph text and are unmapped.'
@@ -364,11 +365,23 @@ traits:
   value_type: value_type
   basis_of_value: measurement
   replicates: .na
-  methods: 'Leaf essential oil yield as given in the species account''s Oil yield paragraph, as a percentage of dry leaf weight
-    (w/w) (verbatim in value_description; raw/oil_yield.R). Only yields stated on a dry-weight basis are recorded: most of
-    the book''s yields are on a fresh-weight basis and are not recorded. Where a statement gives yields for several chemotypes,
-    forms or collections, the range over them is recorded; "<0.1%" is recorded as a maximum. The two yields the book describes
-    as unreliable (very small samples) are not recorded.'
+  methods: Leaf essential oil yield as given in the species account's Oil yield paragraph, as a percentage of dry leaf weight
+    (w/w) (verbatim in value_description; raw/oil_yield.R). Each yield is recorded under the trait for the basis the book
+    states (dry or fresh weight). Where a statement gives yields for several chemotypes, forms or collections, the range over
+    them is recorded; "<0.1%" is recorded as a maximum, as is a range whose lower figure is "<" or "trace"; "nil" is recorded
+    as 0. The two yields the book describes as unreliable (very small samples) are not recorded.
+- var_in: leaf_essential_oil_per_fresh_mass
+  unit_in: '%'
+  trait_name: leaf_essential_oil_per_fresh_mass
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: Leaf essential oil yield as given in the species account's Oil yield paragraph, as a percentage of fresh leaf weight
+    (w/w) (verbatim in value_description; raw/oil_yield.R). Each yield is recorded under the trait for the basis the book
+    states (dry or fresh weight). Where a statement gives yields for several chemotypes, forms or collections, the range over
+    them is recorded; "<0.1%" is recorded as a maximum, as is a range whose lower figure is "<" or "trace"; "nil" is recorded
+    as 0. The two yields the book describes as unreliable (very small samples) are not recorded.
 - var_in: leaf_hairs_adult_leaves
   unit_in: .na
   trait_name: leaf_hairs_adult_leaves

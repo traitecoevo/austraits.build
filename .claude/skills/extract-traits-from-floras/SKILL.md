@@ -959,14 +959,17 @@ not the main checkout's: the user switches branches in the main checkout, and it
   ("in transverse section transversely elliptic, transversely linear or ...", over several commas up to ", the base") are not leaf_shape
   (they had leaked into 212 taxa); an indumentum clause before the outline ("blade glabrescent, the indumentum as on the branchlets,
   linear ...") is bracketed so the outline stays in the blade's unit (17 species had no leaf_shape). **All sources:** "Stamens 6-7 per
-  bundle" is not a stamens-per-flower count (no trait for per-bundle counts). Not scored (no traits.yml trait): stamens per bundle,
-  bundle claw, ovules per locule, triads / monads per inflorescence, inflorescence width, length:width ratio, oil gland density,
+  bundle" is not read as a stamens-per-flower count. **Brophy mode** (user 2026-11-09): it is scored per flower, times the bundles (5 in
+  Melaleuca, or as stated, "usually in 5 bundles or occasionally in 6, 15-26 per bundle when in 5 bundles" -> x 5), the words and the
+  multiplier in value_description ("6--7 per bundle [x 5 bundles]"), extremes kept; a per-flower count later in the clause ("Stamens free
+  or ..., 52-71 per flower") is read too. Not scored (no traits.yml trait): bundle claw, ovules per locule, triads / monads per inflorescence, inflorescence width, length:width ratio, oil gland density,
   cotyledons, filament colour (candidate, as in ABRS_Myrtaceae_2026).
-- **Oil yield** (`data/Brophy_2013/raw/oil_yield.R` -> raw/ecology_vetted.csv): only dry-weight yields ->
-  `leaf_essential_oil_per_dry_mass` (unit_in %, as written; "<0.1%" -> max); mixed chemotype / collection statements by hand (dry figures,
-  range over them); the two yields the book calls unreliable are left out. Fresh-weight yields (most species) and the oil composition
-  have no trait.
-- Build check (`ignore/jobs/brophy1/proc_brophy.R`): 11,780 values, 317 taxa, 58 traits; nothing excluded beyond the 10 non-Australian taxa. 43 names are not in
+- **Oil yield** (`data/Brophy_2013/raw/oil_yield.R` -> raw/ecology_vetted.csv): dry-weight yields ->
+  `leaf_essential_oil_per_dry_mass`, fresh-weight yields -> **`leaf_essential_oil_per_fresh_mass`** (added to config/traits.yml by the user's
+  request 2026-11-09, mirroring the dry-mass trait); unit_in %, as written; "<0.1%" -> max, "nil" -> 0, "trace" not a value; mixed
+  chemotype / collection / basis statements by hand (range over them, per basis); the two yields the book calls unreliable are left out.
+  The oil composition has no trait.
+- Build check (`ignore/jobs/brophy1/proc_brophy.R`): 12,691 values, 317 taxa, 59 traits; nothing excluded beyond the 10 non-Australian taxa. 43 names are not in
   config/taxon_list.csv (the New Caledonian and Asian taxa, ex-Callistemon names, new infraspecific taxa).
 
 ## Every trait for every taxon (user 2026-10-30)

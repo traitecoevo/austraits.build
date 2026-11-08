@@ -4430,7 +4430,7 @@ extract_one <- function(r, group_filter = TRUE) {
     if (!is.null(lab)) addn("labellum_length", lab$v, lab$txt, ct[1], ct[2])
     andr <- unit_text(uu, "androecium", parts = "any")
     # (Fabaceae: "stamens 2-3 (-3.5) mm long" is a stamen length: a parenthetical extreme may sit before the unit)
-    # (Melaleuca, Brophy_2013: "Stamens 6-7 per bundle" counts one of the five bundles, not the flower: not read)
+    # (Melaleuca, Brophy_2013: "Stamens 6-7 per bundle" counts one of the five bundles, not the flower: not read here; see below)
     stc <- count_after(unit_text(uu, "androecium", subj_re = "^(?:the )?(?:fertile )?stamens?$") %>% { .[!str_detect(., rx("\\bper (?:bundle|fascicle|phalanx)\\b"))] } %>%
                          { .[!str_detect(., rx(paste0("^(?:fertile )?stamens? (?:usually |c\\. |mostly |often )?[0-9.]+(?:\\s*-\\s*[0-9.]+)?", if (legume_mode) "(?:\\s*\\([^)]*\\))?" else "", "\\s*(?:mm|cm|m)\\b")))] },
                        "^(?:fertile )?stamens? (?:usually |c\\. |mostly |often )?([0-9]+)(?:(?:,? [a-z, -]+?)?(?:-| or | to )([0-9]+))?(?![0-9.])")
@@ -4439,6 +4439,22 @@ extract_one <- function(r, group_filter = TRUE) {
     if (is.null(stc) && (grass_mode || gram_mode)) stc <- count_after(c(unit_text(uu, "androecium", parts = "any"), fl_u) %>% { .[str_detect(., rx("^(?:the )?anthers?\\b"))] },
                                                                     "^anthers? ([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))?(?![0-9.]|\\s*(?:mm|cm)\\b)")
     if (!is.null(stc)) addn("flower_fertile_stamens_count", stc$v, stc$txt, ct[1], ct[2])
+    # (Brophy_2013, user 2026-11-09: a per-bundle count is scored per flower, times the bundles - 5 in Melaleuca, or as stated: "Stamens
+    # usually in 5 bundles or occasionally in 6, 15-26 per bundle when in 5 bundles"; the words, with the multiplier, in value_description)
+    # (and a per-flower count not right after "Stamens": "Stamens free or with most free but some fused into bundles, 52-71 per flower";
+    # parenthetical extremes allowed: "Stamens (6-)8-12(-15) per bundle")
+    if (brophy_mode && is.null(stc)) {
+      stf <- count_after(unit_text(uu, "androecium", parts = "any"), "(?:\u27e8lo:[0-9.]+\u27e9)?\\b([0-9]+)(?:\\s*-\\s*([0-9]+))?(?:\u27e8hi:[0-9.]+\u27e9)? per flower\\b")
+      if (!is.null(stf)) { stc <- stf; addn("flower_fertile_stamens_count", stf$v, stf$txt, ct[1], ct[2]) }
+    }
+    if (brophy_mode && is.null(stc)) {
+      stb_u <- unit_text(uu, "androecium", parts = "any") %>% { .[str_detect(., rx("\\bper (?:bundle|fascicle)\\b"))] }
+      stb <- count_after(stb_u, "(?:\u27e8lo:[0-9.]+\u27e9)?\\b([0-9]+)(?:\\s*-\\s*([0-9]+))?(?:\u27e8hi:[0-9.]+\u27e9)? per (?:bundle|fascicle)\\b")
+      if (!is.null(stb)) {
+        nb <- suppressWarnings(as.numeric(str_match(paste(stb_u, collapse = " "), rx("\\bin ([0-9]+) bundles"))[, 2])); if (is.na(nb)) nb <- 5
+        addn("flower_fertile_stamens_count", stb$v, paste0(stb$txt, " [x ", nb, " bundles]"), ct[1], ct[2], scale = nb)
+      }
+    }
     anth <- m_first(unit_text(uu, "androecium", subj_re = "anther"), "long|in length", excl("anthers?"))
     if (is.null(anth)) {
       am <- str_match(mark_extremes(join_units(andr) %||% ""), rx(paste0("\\banthers?\\b[^;:|]{0,30}?(", meas, ")\\s*long")))
