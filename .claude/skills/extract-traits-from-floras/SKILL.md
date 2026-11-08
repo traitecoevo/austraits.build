@@ -1000,6 +1000,36 @@ not the main checkout's: the user switches branches in the main checkout, and it
 - Known parser issue seen here (all sources, not fixed): a pedicel length after a comma inside a flower clause ("Male flowers: ... on
   filiform pedicels, 5-9 mm long") is also read as flower_length.
 
+## Book scans: George 2002, Verticordia (George_2002, user 2026-11-09)
+
+- **Scope:** E.A. George (2002) "Verticordia: the turner of hearts" (plates by M. Pieroni), the species accounts: six photographed PDFs
+  (`resources-books/Verticordia George compressed_Part1.pdf` ... `_Part6.pdf`, 145 pages, 150 ppi). `Verticordia George.pdf` in the same
+  folder is the same 145 pages at 560 ppi: OCR it (page numbers match). 101 species, 23 subspecies, 44 varieties. New dataset.
+- **OCR** (`data_extra/Verticordia_ocr/scripts/page.py`): the Paper Capture layer is unusable (scrambled lines). Apple Vision on the page
+  rendered at 250 dpi, three ways: the whole page, the two text columns cropped, and three overlapping full-width bands. Layout: a
+  full-width species description and key, then two columns of notes. Vision's word boxes inside a line are too rough to split a line it
+  ran across both columns, so a wide line is replaced by the column crops' lines when the left crop's text ends short of the gutter and
+  the right crop's starts at it. Lines the full page missed are added from the bands (full-width text, first) and then the crops. Full-page
+  "lines" much taller than their kind's median are Vision garbling several lines and are dropped (compared with lines of the same kind:
+  the full-width text is set larger than the columns; never drop entry headings). Map labels, page numbers and the running foot dropped;
+  key answers at the far right ("...... var. major") joined to their line. Recall vs the Adobe layer (`recall.py`): ~410 missing words, mostly
+  the layer's own split words ("culti vation").
+- **Entries** (`entries.py` -> `data_extra/verticordia_profiles.csv`): headings "4. Verticordia endlicheriana Schauer (1846)", "4a. ... var.
+  endlicheriana", hybrid "91. Verticordia × eurardyensis", wrapped "21b. ... subsp. cylindracea A.S. George" / "var. cylindracea (1991)"
+  (names keep every rank); an infraspecific heading's species epithet is its species entry's (OCR "servata"). Species: common name,
+  etymology / type, description (first sentence that opens a habit, "A shrub ...", "Usually a slender spindly shrub ...", even without a
+  full stop before it), key ("There are five varieties:", "The species has two subspecies, one of which contains two varieties:", numbered
+  or unnumbered two-taxon keys). Each taxon's notes: labelled DISTRIBUTION, HABITAT, FLOWERING PERIOD, DISTINGUISHING CHARACTERISTICS,
+  RELATED (AND CONFUSING) SPECIES, OTHER NAME(S) USED, CONSERVATION STATUS, CULTIVATION, PLATE. An infraspecific taxon's opening
+  paragraph is split by sentence: name / collection sentences -> etymology_type, the rest -> its description. Key paths: each taxon gets
+  the leads on its path through the key (answers matched fuzzily to the entries, "subsp. roet"); used only when the key reads cleanly.
+- **Same parser, Verticordia mode** (`FOA_SOURCE=verticordia`, gated): species description; infraspecific description + key path (species
+  inherited where silent); Habitat, Distribution, "Flowers <Flowering period>"; Notes = distinguishing + related species (not cultivation:
+  garden plants). "Floral leaves" sizes -> `entity_measured` floral_leaf (beside "Stem leaves" cauline_leaf); their shapes are still in
+  leaf_shape with the stem leaves'. OCR slip fixed: V. dasystylis subsp. dasystylis key "petals 2-2.5 m long".
+- Build check (`ignore/jobs/vert1/proc_vert.R`): 168 taxa, 56 traits, nothing excluded; 75 candidate traits (staminodes, hypanthium,
+  sepal colour ...) not in traits.yml.
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`

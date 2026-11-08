@@ -633,6 +633,10 @@ Geange_2020_config <- dataset_configure("data/Geange_2020/metadata.yml", definit
 Geange_2020_raw <- dataset_process("data/Geange_2020/data.csv", Geange_2020_config, schema, resource_metadata, unit_conversions)
 Geange_2020 <- dataset_update_taxonomy(Geange_2020_raw, taxon_list)
 
+George_2002_config <- dataset_configure("data/George_2002/metadata.yml", definitions)
+George_2002_raw <- dataset_process("data/George_2002/data.csv", George_2002_config, schema, resource_metadata, unit_conversions)
+George_2002 <- dataset_update_taxonomy(George_2002_raw, taxon_list)
+
 Ghannoum_2010_config <- dataset_configure("data/Ghannoum_2010/metadata.yml", definitions)
 Ghannoum_2010_raw <- dataset_process("data/Ghannoum_2010/data.csv", Ghannoum_2010_config, schema, resource_metadata, unit_conversions)
 Ghannoum_2010 <- dataset_update_taxonomy(Ghannoum_2010_raw, taxon_list)
@@ -2142,6 +2146,7 @@ austraits_raw <- austraits::bind_databases(
   Gardiner_2019,
   Geange_2017,
   Geange_2020,
+  George_2002,
   Ghannoum_2010,
   Goble_1981,
   Gosper_1999,

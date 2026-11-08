@@ -98,9 +98,15 @@ if (brophy_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_ext
 # atrp_page_extras.csv (ATRP_scripts/page_extras.py). The family pages describe the families world-wide and are not read.
 atrp_mode <- Sys.getenv("FOA_SOURCE") == "atrp"
 if (atrp_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/atrp_fact_sheets.csv"
+# Verticordia mode (env FOA_SOURCE=verticordia; user 2026-11-09): E.A. George (2002) "Verticordia: the turner of hearts" (plates by M.
+# Pieroni), the species accounts (101 species, 67 subspecies and varieties) into the long-format dataset George_2002. The pages were
+# photographed (six PDFs, Paper Capture text layer unusable) and OCR'd with Apple Vision from the full-resolution PDF (whole page, column
+# crops and full-width bands; Verticordia_ocr/scripts/page.py), then split into entries and fields (entries.py -> verticordia_profiles.csv).
+verticordia_mode <- Sys.getenv("FOA_SOURCE") == "verticordia"
+if (verticordia_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/verticordia_profiles.csv"
 own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else if (ausgrass_mode) "AusGrass3_2026" else
   if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else if (vicflora_mode) "RBGV_2026" else if (saflora_mode) "SAH_2026" else if (ntflora_mode) "NT_2026" else
-  if (cooper_mode) "Cooper_2004_2" else if (brophy_mode) "Brophy_2013" else if (atrp_mode) "ATRP_2026" else NA_character_
+  if (cooper_mode) "Cooper_2004_2" else if (brophy_mode) "Brophy_2013" else if (atrp_mode) "ATRP_2026" else if (verticordia_mode) "George_2002" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
@@ -112,7 +118,7 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
               "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026", "SAH_2026", "NT_2026", "Cooper_2004_2",
-              "Brophy_2013", "ATRP_2026")
+              "Brophy_2013", "ATRP_2026", "George_2002")
 dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -907,6 +913,26 @@ if (atrp_mode) {
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
+if (verticordia_mode) {
+  fams <- "Myrtaceae"; gens <- character(0)
+  vt_txt <- function(x) na_if(str_squish(coalesce(x, "")), "")
+  # a species' description is its own; a subspecies' or variety's is its opening note without the etymology / type sentences ("This
+  # typical variety is a small, compact ... shrub
+  # 10-70 cm x 10-80 cm. Floral leaves are broader than stem leaves ...") and the leads on its path through the species' key (key_path);
+  # the species description is inherited where these are silent. A species without infraspecific taxa has its opening note after the
+  # description. Notes: Distinguishing characteristics and Related species (not Cultivation: garden plants, "30-45 cm tall when cultivated";
+  # not Conservation status)
+  d_all <- d_all %>%
+    transmute(scientific_name = str_squish(taxon_name), rank, family = "Myrtaceae", url = NA_character_,
+              Description = vt_txt(ifelse(rank == "species", paste(coalesce(description, ""), coalesce(intro, "")), paste(coalesce(description, ""), coalesce(intro, ""), coalesce(key_path, "")))),
+              Phenology = ifelse(is.na(vt_txt(flowering_period)), NA_character_, paste0("Flowers ", str_remove(vt_txt(flowering_period), "\\.$"), ".")),
+              Habitat = vt_txt(habitat), Distribution = vt_txt(distribution),
+              Notes = vt_txt(paste(coalesce(distinguishing, ""), coalesce(related_species, ""))),
+              `Common Name` = vt_txt(common_name), Biostatus = NA_character_, Author = NA_character_,
+              source_page = page, other_names = vt_txt(other_names))
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
 if (wattle_mode) {
   fams <- "Fabaceae"; gens <- character(0)
   # names as written (no authorities in taxon_name): hybrid formulae ("Acacia ampliceps x sclerosperma subsp. sclerosperma"), informal
@@ -1022,6 +1048,8 @@ fix_text <- tribble(
   "Diospyros rugosula", "lobes 4 ca. 5-6 m long", "lobes 4 ca. 5-6 mm long",
   "Cocos nucifera", "Leaflets are 1.5-5 x 50-150 cm long", "Leaflets are 50-150 cm long, 1.5-5 cm wide",
   "Philydrum lanuginosum", "dark reddish, bulb-shaped, 0.8-0.9 x 0.3-0.4 mm", "dark reddish, 0.8-0.9 x 0.3-0.4 mm, bulb-shaped",
+  # George_2002 (2026-11-09): "mm" read as "m" by the OCR in a key lead (petals of a few mm)
+  "Verticordia dasystylis subsp. dasystylis", "petals 2-2.5 m long", "petals 2-2.5 mm long",
   # FloraNT (NT_2026; 2026-11-07): m for mm (Coccinia grandis "style c.8 m long" beside "stigmas ... c. 8 mm long", Aegiceras style
   # "6 m long" beside "filaments 4 mm", Jacksonia divisa "Seeds ... 2.7-2.8 m long, 1.9-2 mm wide"); organ words lost to a lowercase
   # or misspelt sentence start ("vine. petioles 10-25 mm long" read as the climbing height, "nflorescence", "lnflorescence", "slender.
@@ -3982,15 +4010,18 @@ extract_one <- function(r, group_filter = TRUE) {
   # and the type word is dropped before measuring ("Stem leaves to c. 20 cm long": "stem" is not another organ here)
   # (Euphrasia "Upper stem leaves ovate ..., 6-14 mm long": an upper leaf)
   # (and Senecio "Mid-stem leaves mostly 2-7 cm long", Hibiscus "Mid-stem and upper-stem leaves", "Leaves in mid-region of stems")
-  lf_ty_re <- "^(?:the )?(basal|radical|rosette|cauline|stem|upper|uppermost|lower|lowermost|lowest|middle|median|mid|mid-stem|mid-cauline)(?:[- ]stem| cauline)?(?: and [a-z-]+)? (?:leaves|leaf)\\b(?! surfaces?)"
+  # (George_2002: Verticordia's "Floral leaves", the leaves among the flowers, beside its "Stem leaves": floral_leaf rows; Verticordia only)
+  lf_ty_alt <- paste0("basal|radical|rosette|cauline|stem|upper|uppermost|lower|lowermost|lowest|middle|median|mid|mid-stem|mid-cauline", if (verticordia_mode) "|floral" else "")
+  lf_ty_re <- paste0("^(?:the )?(", lf_ty_alt, ")(?:[- ]stem| cauline)?(?: and [a-z-]+)? (?:leaves|leaf)\\b(?! surfaces?)")
   lf_u <- u %>% filter(sec %in% c("leaf", if (length(lam)) "lamina"), is.na(part)) %>% group_by(unit, sec) %>%
     summarise(t = paste(text, collapse = ", "), .groups = "drop") %>% arrange(unit) %>%
     mutate(ty = if_else(sec == "leaf", str_match(str_to_lower(t), lf_ty_re)[, 2], NA_character_))
   for (i in which(lf_u$sec == "lamina")) { prv <- which(lf_u$sec == "leaf" & lf_u$unit < lf_u$unit[i]); if (length(prv)) lf_u$ty[i] <- lf_u$ty[max(prv)] }
   lf_u <- lf_u %>% mutate(ent = recode(ty, basal = "basal_leaf", radical = "basal_leaf", rosette = "basal_leaf", cauline = "cauline_leaf", stem = "cauline_leaf",
                                        upper = "upper_leaf", uppermost = "upper_leaf", lower = "lower_leaf", lowermost = "lower_leaf", lowest = "lower_leaf",
-                                       middle = "middle_leaf", median = "middle_leaf", mid = "middle_leaf", `mid-stem` = "middle_leaf", `mid-cauline` = "middle_leaf"),
-                          t = str_replace(t, rx("^((?:the )?)(?:basal|radical|rosette|cauline|stem|upper|uppermost|lower|lowermost|lowest|middle|median|mid|mid-stem|mid-cauline)(?:[- ]stem| cauline)?(?: and [a-z-]+)? (leaves|leaf)\\b(?! surfaces?)"), "\\1\\2"))
+                                       middle = "middle_leaf", median = "middle_leaf", mid = "middle_leaf", `mid-stem` = "middle_leaf", `mid-cauline` = "middle_leaf",
+                                       floral = "floral_leaf"),
+                          t = str_replace(t, rx(paste0("^((?:the )?)(?:", lf_ty_alt, ")(?:[- ]stem| cauline)?(?: and [a-z-]+)? (leaves|leaf)\\b(?! surfaces?)")), "\\1\\2"))
   for (en in unique(lf_u$ent)) {
     g <- if (is.na(en)) lf_u %>% filter(is.na(ent)) else lf_u %>% filter(ent %in% en)
     ld <- lf_meas(g$t[g$sec == "lamina"], g$t[g$sec == "leaf"])
@@ -6425,6 +6456,13 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
         dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
         write_csv(bp_info, file.path("data", id, "raw", "taxon_info.csv"), na = "")
         df <- df %>% select(-foa_url) %>% left_join(bp_info %>% select(taxon_name, source_page), by = "taxon_name") %>% relocate(source_page, .after = taxon_name)
+      }
+      # (George_2002: the page of each taxon's entry (of the photographed PDF) on its rows; other names in raw/taxon_info.csv)
+      if (verticordia_mode) {
+        vt_info <- d_all %>% filter(scientific_name %in% df$taxon_name) %>% distinct(taxon_name = scientific_name, source_page, other_names)
+        dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
+        write_csv(vt_info, file.path("data", id, "raw", "taxon_info.csv"), na = "")
+        df <- df %>% select(-foa_url) %>% left_join(vt_info %>% select(taxon_name, source_page), by = "taxon_name") %>% relocate(source_page, .after = taxon_name)
       }
       # (ATRP_2026: the page link, RFK code, synonyms and habit icons once per taxon in raw/taxon_info.csv, not on every row)
       if (atrp_mode) {
