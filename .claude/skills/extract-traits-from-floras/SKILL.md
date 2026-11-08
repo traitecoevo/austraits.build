@@ -935,6 +935,40 @@ not the main checkout's: the user switches branches in the main checkout, and it
   bats, rats / melomys -> rodents, rat-kangaroos / pademelons / possums / pigs -> mammals, any bird -> birds; a shared head noun "Regent
   and Satin Bowerbirds"); "seeds eaten by X" alone -> candidate `seed_predators`. The clause is the evidence.
 
+## Book PDFs with a text layer: Brophy, Craven & Doran 2013 (Brophy_2013, user 2026-11-09)
+
+- **Scope:** "Melaleucas: their botany, essential oils and uses" (ACIAR Monograph 156), chapter 7 species accounts, five PDFs in
+  `OneDrive .../resources-books/` (`Melaleucas_mn156-species-a-c_1.pdf`, `-d-k`, `-p-r`, `-s-z`, and `mn156-species-l-o_1.pdf`, named
+  differently). 290 species (every index entry), 27 subspecies, 10 varieties. One new dataset, `Brophy_2013` (none existed). The book's
+  non-Australian taxa (7 New Caledonian species and M. sphaerodendra's 2 varieties, M. cajuputi subsp. cumingiana of South-East Asia) stay
+  in data.csv and are listed under metadata.yml `exclude_observations` (variable taxon_name; user 2026-11-09: **this is how a source's
+  non-Australian taxa are handled**). Lord Howe Island taxa (M. howeana) are Australian.
+- **Text:** born-digital (InDesign), so the PDFs' own text layer is used, no OCR: `pdftotext -bbox-layout` blocks, read left column then
+  right, rotated running heads and page numbers dropped (`data_extra/Brophy_2013_text/scripts/blocks.py`); a species starts at its heading
+  block ("Melaleuca acacioides F.Muell.", near the page top) and is split at the book's labels (`profiles.py` ->
+  `data_extra/brophy2013_profiles.csv`). Text-layer slips: soft hyphens; hard line-break hyphens told from compounds by word counts over
+  the book (line-internal words only: a line's first word may be the broken piece); three letter-spaced lines and "paper y", "hair y";
+  label variants ("Natural Occurrence", "Natural Distribution", "References on essential oils :"); M. nesophila's publication printed
+  under "Description:".
+- **Same parser, Brophy mode** (`FOA_SOURCE=brophy`, all gated): Ecology "Recorded as occurring in ..." -> habitat ("Grows in ..."),
+  Flowering time "Recorded as flowering from May to November" -> phenology as written, Natural occurrence -> distribution. A species with
+  subspecies / varieties has one "subsp. X:" paragraph per taxon in those fields and a key in its Notes ("The two subspecies are
+  distinguished as follows: subsp. X: ...; subsp. Y: ..."; also "have been distinguished", "can be recognised ... as follows"): each
+  infraspecific taxon gets a row with its paragraphs and its key text as its description (the species description inherited where silent);
+  the species row keeps the species description, and the key is removed from its Notes. Craven's leaf blade: the cross-section shapes
+  ("in transverse section transversely elliptic, transversely linear or ...", over several commas up to ", the base") are not leaf_shape
+  (they had leaked into 212 taxa); an indumentum clause before the outline ("blade glabrescent, the indumentum as on the branchlets,
+  linear ...") is bracketed so the outline stays in the blade's unit (17 species had no leaf_shape). **All sources:** "Stamens 6-7 per
+  bundle" is not a stamens-per-flower count (no trait for per-bundle counts). Not scored (no traits.yml trait): stamens per bundle,
+  bundle claw, ovules per locule, triads / monads per inflorescence, inflorescence width, length:width ratio, oil gland density,
+  cotyledons, filament colour (candidate, as in ABRS_Myrtaceae_2026).
+- **Oil yield** (`data/Brophy_2013/raw/oil_yield.R` -> raw/ecology_vetted.csv): only dry-weight yields ->
+  `leaf_essential_oil_per_dry_mass` (unit_in %, as written; "<0.1%" -> max); mixed chemotype / collection statements by hand (dry figures,
+  range over them); the two yields the book calls unreliable are left out. Fresh-weight yields (most species) and the oil composition
+  have no trait.
+- Build check (`ignore/jobs/brophy1/proc_brophy.R`): 11,780 values, 317 taxa, 58 traits; nothing excluded beyond the 10 non-Australian taxa. 43 names are not in
+  config/taxon_list.csv (the New Caledonian and Asian taxa, ex-Callistemon names, new infraspecific taxa).
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`

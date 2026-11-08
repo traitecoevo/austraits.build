@@ -189,6 +189,10 @@ Brodribb_2000_config <- dataset_configure("data/Brodribb_2000/metadata.yml", def
 Brodribb_2000_raw <- dataset_process("data/Brodribb_2000/data.csv", Brodribb_2000_config, schema, resource_metadata, unit_conversions)
 Brodribb_2000 <- dataset_update_taxonomy(Brodribb_2000_raw, taxon_list)
 
+Brophy_2013_config <- dataset_configure("data/Brophy_2013/metadata.yml", definitions)
+Brophy_2013_raw <- dataset_process("data/Brophy_2013/data.csv", Brophy_2013_config, schema, resource_metadata, unit_conversions)
+Brophy_2013 <- dataset_update_taxonomy(Brophy_2013_raw, taxon_list)
+
 Brown_1997_config <- dataset_configure("data/Brown_1997/metadata.yml", definitions)
 Brown_1997_raw <- dataset_process("data/Brown_1997/data.csv", Brown_1997_config, schema, resource_metadata, unit_conversions)
 Brown_1997 <- dataset_update_taxonomy(Brown_1997_raw, taxon_list)
@@ -2023,6 +2027,7 @@ austraits_raw <- austraits::bind_databases(
   Britton_1994,
   Brock_1993,
   Brodribb_2000,
+  Brophy_2013,
   Brown_1997,
   Bryant_2021,
   Bryant_2021_2,

@@ -85,9 +85,15 @@ if (ntflora_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_ex
 # (etymology, species counts and a key only), so nothing is copied down.
 cooper_mode <- Sys.getenv("FOA_SOURCE") == "cooper"
 if (cooper_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/cooper2004_profiles.csv"
+# Brophy mode (env FOA_SOURCE=brophy; user 2026-11-09): J.J. Brophy, L.A. Craven & J.C. Doran (2013) "Melaleucas: their botany, essential
+# oils and uses" (ACIAR Monograph 156), the species accounts (chapter 7, 290 species, five PDFs) into the long-format dataset Brophy_2013.
+# The PDFs are born-digital (InDesign), so their own text layer is used, read column by column (pdftotext -bbox-layout), and split into the
+# book's labelled fields in brophy2013_profiles.csv. Craven's Melaleuca descriptions, in FoA-like prose.
+brophy_mode <- Sys.getenv("FOA_SOURCE") == "brophy"
+if (brophy_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/brophy2013_profiles.csv"
 own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else if (ausgrass_mode) "AusGrass3_2026" else
   if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else if (vicflora_mode) "RBGV_2026" else if (saflora_mode) "SAH_2026" else if (ntflora_mode) "NT_2026" else
-  if (cooper_mode) "Cooper_2004_2" else NA_character_
+  if (cooper_mode) "Cooper_2004_2" else if (brophy_mode) "Brophy_2013" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
@@ -98,7 +104,8 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
 # 2026-10-22); ABRS_Proteaceae_2026 and ABRS_Asteraceae_2026 from the start (user, 2026-10-29)
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
-              "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026", "SAH_2026", "NT_2026", "Cooper_2004_2")
+              "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026", "SAH_2026", "NT_2026", "Cooper_2004_2",
+              "Brophy_2013")
 dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -802,6 +809,61 @@ if (cooper_mode) {
               Biostatus = ifelse(introduced == "introduced" | str_detect(coalesce(distribution, ""), "^a native of .* now naturali[sz]ed"), "Introduced", NA_character_),
               Author = NA_character_, source_page = book_page, other_names = na_if(other_names, ""))
   if (Sys.getenv("FOA_FAMILIES") == "") fams <- unique(na.omit(d_all$family))
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
+if (brophy_mode) {
+  fams <- "Myrtaceae"; gens <- character(0)
+  # A species with subspecies / varieties ("Taxonomy: Two subspecies are recognised ...: subsp. acuminata and subsp. websteri") gives its
+  # Natural occurrence, Ecology, Flowering time and Oil yield one paragraph per taxon ("subsp. acuminata: ... subsp. websteri: ..."), and
+  # its Notes open with a key ("The two subspecies are distinguished as follows: subsp. acuminata: Leaf blade narrowly elliptic ...;
+  # hypanthium 1.8-2.7 mm long. subsp. websteri: ..."). Each infraspecific taxon gets its own row: its paragraphs, and its key text as
+  # its description (the species' description is inherited where the key is silent); the species row keeps the species description,
+  # and its per-taxon fields are left to the infraspecific rows.
+  bp_infra <- function(x) { m <- str_match_all(coalesce(x, ""), "\\b(subsp|var)\\. ([a-z][a-z-]+)")[[1]]; if (!nrow(m)) character(0) else unique(paste0(m[, 2], ". ", m[, 3])) }
+  bp_part <- function(x, nm) { x <- coalesce(x, "")
+    m <- str_locate(x, fixed(paste0(nm, ": ")))
+    if (is.na(m[1])) return(NA_character_)
+    # (to the next taxon's label)
+    str_squish(str_remove(str_sub(x, m[2] + 1), "\\s*\\b(?:subsp|var)\\. [a-z][a-z-]+:\\s.*$")) }
+  bp_split <- function(x) str_detect(coalesce(x, ""), "^(?:subsp|var)\\. [a-z][a-z-]+:")
+  # the key in the Notes: from "distinguished as follows:" to the end of the last taxon's sentence (a full stop in a number, "1.8-2.7 mm",
+  # or after "c" / "ca" is not a sentence end)
+  bp_nd <- "(?:[^.]|\\.(?=[0-9])|(?<=\\bc|\\bca)\\.)*"
+  # (M. tuberculata: "... the three more or less distinctive morphs can be recognised on the basis of leaf dimensions as follows: var. ...")
+  bp_key <- function(x) str_match(coalesce(x, ""), paste0("((?:\\bThe [a-z]+ (?:subspecies|varieties) (?:may be |are |can be |have been )?distinguished|\\bcan be recognised)[^.]*? as follows:",
+                                                           "(?:\\s*(?:subsp|var)\\. [a-z][a-z-]+:", bp_nd, "(?:\\.|$))+)"))[, 2]
+  # "Recorded as flowering from May to November." is the phenology as written; "Recorded as occurring in X, on Y" -> "Grows in X, on Y"
+  bp_ph <- function(x) na_if(str_squish(str_replace(coalesce(x, ""), "^Recorded as flowering\\b", "Flowering recorded")), "")
+  bp_hab <- function(x) na_if(str_squish(str_replace(coalesce(x, ""), "^Recorded as occurring (?:generally |mainly |usually )?", "Grows ")), "")
+  # the blade's indumentum clause before its outline ("blade glabrescent, the indumentum as on the branchlets, linear or linear-elliptic ...",
+  # "blade glabrescent, the hairs appressed, narrowly elliptic to linear") made the outline shapes a part of the hairs' unit: bracketed
+  # ("blade glabrescent (the indumentum as on the branchlets), linear ..."), inner brackets made square
+  bp_shape1 <- "(?:(?:very |narrowly |broadly |widely |shallowly |more or less )*(?:linear|elliptic|obovate|ovate|oblong|lanceolate|oblanceolate|subcircular|circular|falcate|subfalcate|suboblong|obtriangular|spathulate|orbicular|rhombic|cordate|subulate)\\b)"
+  bp_ind <- function(x) str_replace_all(coalesce(x, ""), paste0("(\\bblade [^.;(]*?),\\s*(the (?:hairs|indumentum|abaxial surface|margin)\\b.*?),\\s*(?=", bp_shape1, ")"),
+                                        function(m) { p <- str_match(m, paste0("^(\\bblade [^.;(]*?),\\s*(the (?:hairs|indumentum|abaxial surface|margin)\\b.*?),\\s*$"))
+                                          paste0(p[, 2], " (", str_replace_all(str_replace_all(p[, 3], "\\(", "["), "\\)", "]"), "), ") })
+  d_all <- d_all %>% mutate(description = na_if(bp_ind(description), ""))
+  sp <- d_all %>% mutate(infra = map(taxonomy, bp_infra), key = bp_key(notes))
+  sp_rows <- sp %>%
+    transmute(scientific_name = taxon_name, rank = "species", family = "Myrtaceae", url = NA_character_,
+              Description = na_if(str_squish(description), ""),
+              Phenology = ifelse(bp_split(flowering_time), NA_character_, bp_ph(flowering_time)),
+              Habitat = ifelse(bp_split(ecology), NA_character_, bp_hab(ecology)),
+              Distribution = ifelse(bp_split(natural_occurrence), NA_character_, na_if(natural_occurrence, "")),
+              Notes = na_if(str_squish(ifelse(is.na(key), notes, str_remove(notes, fixed(coalesce(key, "\u0001"))))), ""),
+              `Common Name` = NA_character_, Biostatus = NA_character_, Author = NA_character_,
+              source_page = book_page, other_names = na_if(synonyms, ""))
+  inf_rows <- sp %>% filter(lengths(infra) > 0) %>% select(taxon_name, book_page, infra, key, flowering_time, ecology, natural_occurrence) %>%
+    unnest(infra) %>% rowwise() %>%
+    mutate(scientific_name = paste(taxon_name, infra), rank = if (str_starts(infra, "subsp")) "subspecies" else "variety",
+           Description = { k <- bp_part(key, infra); if (is.na(k)) NA_character_ else paste0(str_to_upper(str_sub(k, 1, 1)), str_sub(str_remove(k, "\\.?$"), 2), ".") },
+           Phenology = bp_ph(bp_part(flowering_time, infra)), Habitat = bp_hab(bp_part(ecology, infra)),
+           Distribution = bp_part(natural_occurrence, infra)) %>% ungroup() %>%
+    transmute(scientific_name, rank, family = "Myrtaceae", url = NA_character_, Description, Phenology, Habitat, Distribution,
+              Notes = NA_character_, `Common Name` = NA_character_, Biostatus = NA_character_, Author = NA_character_,
+              source_page = book_page, other_names = NA_character_)
+  d_all <- bind_rows(sp_rows, inf_rows) %>% arrange(scientific_name)
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
@@ -3678,6 +3740,10 @@ extract_one <- function(r, group_filter = TRUE) {
   shape_txt <- join_units(leaf_shape_unit)
   if (!is.na(shape_txt)) shape_txt <- str_replace_all(shape_txt, "\\(\\s*((?:to|or) [a-z-]+)\\s*\\)", "\\1")
   shape_clean <- function(x) {
+    # (Brophy_2013, Craven's Melaleuca descriptions: the blade's cross-section shapes follow its outline, over several commas, up to the
+    # next "the base" / "the apex" clause - "linear or linear-elliptic, in transverse section transversely elliptic to transversely narrowly
+    # elliptic, transversely linear or very rarely approaching depressed obovate, the base ..." - and are not the leaf's shape)
+    if (brophy_mode) x <- str_remove_all(x, "\\bin (?:cross|transverse)[- ]section\\b.*?(?=,\\s*the\\s|;|\\||\\.\\s|$)")
     x <- shape_prep(x)
     x <- str_remove_all(x, "\\b[a-z-]+ (?:at|towards|near) (?:the )?(?:base|apex|tip|summit)\\b|\\b(?:basally|apically) [a-z-]+")
     x <- str_remove_all(x, "\\b(?:(?:[a-z-]+ ){1,2}(?:to|or|and) ){0,3}(?:[a-z]+ly )?[a-z-]+ (?:at|towards|near) (?:the )?(?:base|apex|tip)\\b")
@@ -4364,7 +4430,9 @@ extract_one <- function(r, group_filter = TRUE) {
     if (!is.null(lab)) addn("labellum_length", lab$v, lab$txt, ct[1], ct[2])
     andr <- unit_text(uu, "androecium", parts = "any")
     # (Fabaceae: "stamens 2-3 (-3.5) mm long" is a stamen length: a parenthetical extreme may sit before the unit)
-    stc <- count_after(unit_text(uu, "androecium", subj_re = "^(?:the )?(?:fertile )?stamens?$") %>% { .[!str_detect(., rx(paste0("^(?:fertile )?stamens? (?:usually |c\\. |mostly |often )?[0-9.]+(?:\\s*-\\s*[0-9.]+)?", if (legume_mode) "(?:\\s*\\([^)]*\\))?" else "", "\\s*(?:mm|cm|m)\\b")))] },
+    # (Melaleuca, Brophy_2013: "Stamens 6-7 per bundle" counts one of the five bundles, not the flower: not read)
+    stc <- count_after(unit_text(uu, "androecium", subj_re = "^(?:the )?(?:fertile )?stamens?$") %>% { .[!str_detect(., rx("\\bper (?:bundle|fascicle|phalanx)\\b"))] } %>%
+                         { .[!str_detect(., rx(paste0("^(?:fertile )?stamens? (?:usually |c\\. |mostly |often )?[0-9.]+(?:\\s*-\\s*[0-9.]+)?", if (legume_mode) "(?:\\s*\\([^)]*\\))?" else "", "\\s*(?:mm|cm|m)\\b")))] },
                        "^(?:fertile )?stamens? (?:usually |c\\. |mostly |often )?([0-9]+)(?:(?:,? [a-z, -]+?)?(?:-| or | to )([0-9]+))?(?![0-9.])")
     if (is.null(stc)) stc <- count_after(fl_u, "\\b([0-9]+)(?:\\s*(?:-|or|to)\\s*([0-9]+))? (?:fertile )?stamens\\b")
     # (grasses: one stamen per anther, AusGrass "Anthers 3."; 2026-11-02)
@@ -6266,6 +6334,13 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
           # (the book's hedges "may be buttressed", "may have ...", "can have ..." are recorded as sometimes, user 2026-11-08; the words stay in
           # value_description)
           mutate(commonness_qualifier = ifelse(commonness_qualifier %in% c("may be", "may have", "can have", "can be"), "sometimes", commonness_qualifier))
+      }
+      # (Brophy_2013: the book page of each taxon on its rows; its synonyms in raw/taxon_info.csv)
+      if (brophy_mode) {
+        bp_info <- d_all %>% filter(scientific_name %in% df$taxon_name) %>% distinct(taxon_name = scientific_name, source_page, other_names)
+        dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
+        write_csv(bp_info, file.path("data", id, "raw", "taxon_info.csv"), na = "")
+        df <- df %>% select(-foa_url) %>% left_join(bp_info %>% select(taxon_name, source_page), by = "taxon_name") %>% relocate(source_page, .after = taxon_name)
       }
       # (NHNSW_2026: the profile link, repeated on every row, was 44% of the file and took it to the 100 MB GitHub limit: it is written
       # once per taxon to raw/taxon_urls.csv instead)
