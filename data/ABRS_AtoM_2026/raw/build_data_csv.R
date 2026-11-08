@@ -77,8 +77,17 @@ if (saflora_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_ex
 # Region, unpublished FloraNT notes ...), in FoA-like prose, so the family modes and the genus copy-down apply (no family factsheets).
 ntflora_mode <- Sys.getenv("FOA_SOURCE") == "ntflora"
 if (ntflora_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/ntflora_profiles.csv"
+# Cooper mode (env FOA_SOURCE=cooper; user 2026-11-08): W. Cooper & W.T. Cooper (2004) "Fruits of the Australian Tropical Rainforest"
+# (Nokomis Editions) into the long-format dataset Cooper_2004_2 (user: a new dataset beside Cooper_2004, which holds 21 dispersal modes
+# from a spreadsheet). The species entries were OCR'd from the user's page photographs (4 scans + 2 rescans; Apple Vision, column by
+# column, the scan with more text used for each page) and split into the book's fields (habit sentence, Leaves, Inflorescence, Flower,
+# Male / Female cones, Fruit, Notes, Distribution) in cooper2004_profiles.csv. The genera and families have no morphological description
+# (etymology, species counts and a key only), so nothing is copied down.
+cooper_mode <- Sys.getenv("FOA_SOURCE") == "cooper"
+if (cooper_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/cooper2004_profiles.csv"
 own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else if (ausgrass_mode) "AusGrass3_2026" else
-  if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else if (vicflora_mode) "RBGV_2026" else if (saflora_mode) "SAH_2026" else if (ntflora_mode) "NT_2026" else NA_character_
+  if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else if (vicflora_mode) "RBGV_2026" else if (saflora_mode) "SAH_2026" else if (ntflora_mode) "NT_2026" else
+  if (cooper_mode) "Cooper_2004_2" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
@@ -89,7 +98,7 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
 # 2026-10-22); ABRS_Proteaceae_2026 and ABRS_Asteraceae_2026 from the start (user, 2026-10-29)
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
-              "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026", "SAH_2026", "NT_2026")
+              "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026", "SAH_2026", "NT_2026", "Cooper_2004_2")
 dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -743,6 +752,59 @@ if (ntflora_mode) {
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
+if (cooper_mode) {
+  if (Sys.getenv("FOA_FAMILIES") == "") gens <- character(0)
+  # the flowering / fruiting months end the Flower and Fruit paragraphs ("... calyx green. Sep.-Dec.", "... 12 mm long. Oct.-June.",
+  # "Jan.-Apr. & Aug.", "Any month.", "Season unknown."): moved to the phenology text in FoA form ("Flowers Sep.-Dec. Fruits Oct.-June.")
+  co_m <- "(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|June?|July?|Aug(?:ust)?|Sept?(?:ember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\\.?"
+  co_mon <- paste0("(?:", co_m, "(?:\\s*(?:-|–|&|,|and)\\s*", co_m, ")*|Any month|Season unknown)")
+  co_split <- function(x) { x <- str_squish(coalesce(x, ""))
+    m <- str_match(x, paste0("^(.*?)(?:[.;,]\\s*|\\s+|^)(", co_mon, ")[.:]?$"))
+    list(txt = ifelse(is.na(m[, 1]), x, m[, 2]), mon = m[, 3]) }
+  co_ph <- function(mon, lab) ifelse(is.na(mon) | mon == "Season unknown", "", paste0(lab, " ", ifelse(mon == "Any month", "all year", str_remove(mon, "\\.$")), ". "))
+  # FoA forms of the book's wording: "diam. 50-80 mm" -> "50-80 mm diam.", "about 12 mm" -> "c. 12 mm", "60-250 x 35-80 mm" -> "×",
+  # "22-28 mm through" (the third dimension of a fruit) -> "thick"; the Vision OCR reads "Qld" as "Old" and "McIlwraith" as "Mcllwraith"
+  co_txt <- function(x) x %>% str_replace_all("(?<=\\d)\\s*[xX×]\\s*(?=\\d)", " × ") %>%
+    str_replace_all("\\bdiam\\.\\s*((?:about |c\\. )?[0-9.]+(?:\\s*[-–]\\s*[0-9.]+)?\\s*mm)", "\\1 diam.") %>%
+    str_replace_all("\\babout (?=[0-9])", "c. ") %>% str_replace_all("(?<=\\d)(mm|m)\\b", " \\1") %>%
+    str_replace_all("\\bmm through\\b", "mm thick") %>% str_replace_all("\\bOld\\b", "Qld") %>% str_replace_all("\\bMcllwraith\\b", "McIlwraith") %>% str_squish()
+  # a Flower paragraph opening with a flower part is that part's sentence ("Flower petals 6, green ..., 22-25 mm long; calyx green" ->
+  # "Petals 6, green ..."), else it is the flower's ("Flower diam. 20-25 mm; petals blue" -> "Flowers 20-25 mm diam.; petals blue")
+  co_fl <- function(x) ifelse(x == "", "", ifelse(str_detect(x, "^(?:petals|tepals|sepals|corolla|calyx|perianth|standard)\\b"),
+                                                  paste0(str_to_upper(str_sub(x, 1, 1)), str_sub(x, 2)), paste("Flowers", x)))
+  co_part <- function(lab, x) ifelse(coalesce(x, "") == "", "", paste0(lab, str_remove(co_txt(x), "[.;,]?$"), ". "))
+  # current families (config/taxon_list.csv, by genus) for the family modes; the book's families (Mimosaceae, Caesalpiniaceae,
+  # Flacourtiaceae, Sterculiaceae ...) are kept in source_family
+  co_fam <- read_csv("config/taxon_list.csv", show_col_types = FALSE, col_types = cols(.default = "c")) %>% filter(!is.na(genus), !is.na(family)) %>%
+    count(genus, family) %>% group_by(genus) %>% slice_max(n, n = 1, with_ties = FALSE) %>% ungroup() %>% select(genus, fam_tl = family)
+  fl <- co_split(d_all$flower); fr <- co_split(d_all$fruit)
+  d_all <- d_all %>% mutate(fl_txt = fl$txt, fl_mon = fl$mon, fr_txt = fr$txt, fr_mon = fr$mon) %>% left_join(co_fam, by = "genus") %>%
+    # (the book's "forma" written "f."; ranks from the name, phrase-name subspecies included: "Rapanea subsessilis (subsp. Gordonvale)")
+    transmute(scientific_name = str_replace(str_squish(taxon_name), " forma ", " f. "),
+              rank = case_when(str_detect(scientific_name, " \\(?subsp\\. ") ~ "subspecies", str_detect(scientific_name, " \\(?var\\. ") ~ "variety",
+                               str_detect(scientific_name, " f\\. ") ~ "form", TRUE ~ "species"),
+              family = coalesce(fam_tl, recode(family, Mimosaceae = "Fabaceae", Caesalpiniaceae = "Fabaceae")), source_family = family, url = NA_character_,
+              Description = na_if(str_squish(paste0(
+                ifelse(coalesce(habit, "") == "", "", paste0(str_remove(co_txt(habit), "[.;,]?$"), ". ")),
+                co_part("Leaves ", leaves), co_part("Inflorescence ", inflorescence),
+                ifelse(fl_txt == "", "", paste0(str_remove(co_fl(co_txt(fl_txt)), "[.;,]?$"), ". ")),
+                co_part("Male flowers ", male_flowers), co_part("Female flowers ", female_flowers),
+                co_part("Male cones ", male_cones), co_part("Female cones ", female_cones),
+                ifelse(fr_txt == "" | str_detect(fr_txt, "^unknown\\.?$"), "", paste0("Fruit ", str_remove(co_txt(fr_txt), "[.;,]?$"), ". ")))), ""),
+              Phenology = na_if(str_squish(paste0(co_ph(fl_mon, "Flowers"), co_ph(fr_mon, "Fruits"))), ""),
+              # (the habitat is the Distribution's opening: "rainforest and gallery forest from Cape York to Mt Elliot, altitude 0-1020 m. Also New
+              # Guinea." -> "rainforest and gallery forest"; "a native of tropical America now naturalised in swamp forest and mangroves from ...")
+              Habitat = na_if(str_squish(str_remove(str_remove(co_txt(coalesce(distribution, "")), "^(?:a native of .*? now naturali[sz]ed (?:in Australia )?(?:in )?|known only from )"),
+                                                    "\\s+(?:from|between|on|in|at|near|around|of)\\s+(?:the\\s+)?[A-Z].*$|,?\\s*altitude\\b.*$")), ""),
+              Distribution = na_if(co_txt(coalesce(distribution, "")), ""),
+              Notes = na_if(str_squish(coalesce(notes, "")), ""),
+              `Common Name` = na_if(str_replace_all(str_to_title(str_squish(coalesce(common_name, ""))), "'S\\b", "'s"), ""),
+              Biostatus = ifelse(introduced == "introduced" | str_detect(coalesce(distribution, ""), "^a native of .* now naturali[sz]ed"), "Introduced", NA_character_),
+              Author = NA_character_, source_page = book_page, other_names = na_if(other_names, ""))
+  if (Sys.getenv("FOA_FAMILIES") == "") fams <- unique(na.omit(d_all$family))
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
 if (wattle_mode) {
   fams <- "Fabaceae"; gens <- character(0)
   # names as written (no authorities in taxon_name): hybrid formulae ("Acacia ampliceps x sclerosperma subsp. sclerosperma"), informal
@@ -843,6 +905,14 @@ if (Sys.getenv("FOA_FAMILIES") == "" && is.na(own_id)) d <- d %>% group_by(famil
 # ---------------------------------------------------------------- source typos / fixes
 fix_text <- tribble(
   ~taxon, ~find, ~replace,
+  # Cooper_2004_2 (2026-11-08): "mm" read as "m" by the OCR (the scans' own text layer has "mm": "petioles15-40 mm long", "7-18 mm wide");
+  # the book's metre sizes of palm, banana and Pandanus leaves and the Corypha petioles and panicle are real
+  "Pollia macrophylla", "petioles 15-40 m long", "petioles 15-40 mm long",
+  "Diospyros australis", "30-100 × 15-40 m", "30-100 × 15-40 mm",
+  "Fontainea picrosperma", "stipules c. 7 m long", "stipules c. 7 mm long",
+  "Desmodium heterocarpon var. strigosum", "26-70 × 15-38 m", "26-70 × 15-38 mm",
+  "Ficus virgata", "7-18 m wide", "7-18 mm wide",
+  "Syzygium bamagense", "36-46 m wide", "36-46 mm wide",
   # FloraNT (NT_2026; 2026-11-07): m for mm (Coccinia grandis "style c.8 m long" beside "stigmas ... c. 8 mm long", Aegiceras style
   # "6 m long" beside "filaments 4 mm", Jacksonia divisa "Seeds ... 2.7-2.8 m long, 1.9-2 mm wide"); organ words lost to a lowercase
   # or misspelt sentence start ("vine. petioles 10-25 mm long" read as the climbing height, "nflorescence", "lnflorescence", "slender.
@@ -1328,11 +1398,15 @@ qual_words <- c("very rarely", "more rarely", "less often", "less commonly", "le
                 "seldom", "generally", "infrequently", "typically", "predominantly", "normally", "uncommonly",
                 "exceptionally", "sporadically", "chiefly", "rarely also", "also")
 qual_words <- setdiff(qual_words, c("rarely also", "also"))
+# (Cooper_2004_2: the book's hedges "may be buttressed", "may be fragrant", "may have ...", "can have separate male and female plants";
+# rare-type qualifiers, Cooper only for now)
+if (cooper_mode) qual_words <- c(qual_words, "may be", "may have", "can have", "can be")
 # hedges that state a group's default value ("Fruit usually a capsule"), copied down as a plain value (user 2026-10-31);
 # "often" / "frequently" are weaker ("many members") and are not
 copy_quals <- c("usually", "mostly", "mainly", "generally", "commonly", "typically", "predominantly", "normally", "chiefly")
 rare_quals <- c("very rarely", "more rarely", "rarely", "occasionally", "sometimes", "seldom", "infrequently",
                 "uncommonly", "exceptionally", "sporadically", "less often", "less commonly", "less frequently")
+if (cooper_mode) rare_quals <- c(rare_quals, "may be", "may have", "can have", "can be")
 qual_re <- paste0("\\b(", paste(qual_words, collapse = "|"), ")\\b")
 filler_words <- c("a", "an", "the", "or", "and", "to", "even", "small", "tall", "large", "low", "dwarf", "robust", "slender",
                   "compact", "weak", "stout", "sprawling", "scrambling", "climbing", "erect", "prostrate", "spreading",
@@ -1803,6 +1877,9 @@ growth_form_dict <- c(
   "ferns?" = "fern",
   "geophytes?" = "geophyte"
 )
+# (Cooper_2004_2, user 2026-11-08: the book writes "Vine twiner", "Vine tendril climber" for herbaceous vines and woody lianas alike, so its
+# "vine" is a plain climber; "liana" is still climber_woody)
+if (cooper_mode) growth_form_dict[["vines?"]] <- "climber"
 # ("subshrub with annual stems", "perennial herb with annual shoots" from a perennial rootstock: not an annual plant; NT_2026 chunk test, 2026-11-07)
 life_history_dict <- c("short-lived perennials?" = "short_lived_perennial",
                        "annuals?(?!\\s+(?:flowering\\s+|leafy\\s+|aerial\\s+|erect\\s+|vegetative\\s+)?(?:stems?|shoots?|culms?|branch(?:es|lets)?|growth)\\b)" = "annual", "biennials?" = "biennial",
@@ -1869,6 +1946,8 @@ phenology_dict <- c("semi-deciduous|partly deciduous|briefly deciduous|brevi-?de
 sex_type_dict <- c("dioecious|plants (?:male or female|unisexual)" = "dioecious", "monoecious" = "monoecious", "andromonoecious" = "andromonoecious",
                    "gynodioecious" = "gynodioecious", "androdioecious" = "androdioecious", "polygamodioecious" = "polygamodioecious",
                    "polygamomonoecious|polygamo-monoecious" = "polygamonoecious", "polygamous" = "polygamous")
+# ("separate male and female plants", Cooper_2004_2's wording; all sources, user 2026-11-08: the other datasets take it at their next rebuild)
+sex_type_dict <- c("separate male and female plants" = "dioecious", sex_type_dict)
 flower_sex_dict <- c("bisexual|hermaphrodite|perfect" = "bisexual", "unisexual|imperfect" = "unisexual")
 parasitic_dict <- c("root hemiparasites?|root-hemiparasit\\w*|hemiparasitic on roots" = "hemiparasitic root_parasitic",
                     # ("Glabrous mistletoe", "Grey mistletoe", "Aerial stem parasitic shrub": FloraNT, 2026-11-07)
@@ -3242,6 +3321,9 @@ extract_one <- function(r, group_filter = TRUE) {
          else "plant_height", ht$v, ht$txt, scale = 1 / 1000)
   } else if (is_climber) {
     cl <- m_first(habit, "long|in length|", h_other)
+    # (Cooper_2004_2: the book gives climbing lengths in m; a size in mm in a vine's habit sentence is an organ's - Capparis "Vine or shrub;
+    # spines curved, 1-3 mm long" - not the climbing length; Cooper only for now)
+    if (cooper_mode && !is.null(cl) && !str_detect(cl$txt, "\\d\\s*m\\b")) cl <- NULL
     if (!is.null(cl)) addn("plant_height_climbing_plant", cl$v, cl$txt, scale = 1 / 1000)
   }
   # "Tree 6-30 (-45) m high; sometimes a shrub 1.5-3 m high": a height given for a qualified growth form goes on that
@@ -6165,6 +6247,16 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
       if (ausgrass_mode) df <- df %>% rename(ausgrass_url = foa_url)
       if (saflora_mode) df <- df %>% rename(saflora_url = foa_url)
       if (ntflora_mode) df <- df %>% rename(ntflora_url = foa_url)
+      # (Cooper_2004_2: the book page of each taxon on its rows; the book's family, other names (synonyms) and page in raw/taxon_info.csv)
+      if (cooper_mode) {
+        co_info <- d_all %>% filter(scientific_name %in% df$taxon_name) %>% distinct(taxon_name = scientific_name, source_family, source_page, other_names)
+        dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
+        write_csv(co_info, file.path("data", id, "raw", "taxon_info.csv"), na = "")
+        df <- df %>% select(-foa_url) %>% left_join(co_info %>% select(taxon_name, source_page), by = "taxon_name") %>% relocate(source_page, .after = taxon_name) %>%
+          # (the book's hedges "may be buttressed", "may have ...", "can have ..." are recorded as sometimes, user 2026-11-08; the words stay in
+          # value_description)
+          mutate(commonness_qualifier = ifelse(commonness_qualifier %in% c("may be", "may have", "can have", "can be"), "sometimes", commonness_qualifier))
+      }
       # (NHNSW_2026: the profile link, repeated on every row, was 44% of the file and took it to the 100 MB GitHub limit: it is written
       # once per taxon to raw/taxon_urls.csv instead)
       if (plantnet_mode) {

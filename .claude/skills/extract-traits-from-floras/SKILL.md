@@ -863,6 +863,72 @@ not the main checkout's: the user switches branches in the main checkout, and it
   "et al.", "e.g."). Genus copies only Casuarina (wind) and Macaranga (gap colonisers). Not scored: host lists, "vine thicket" habitats,
   colonies not stated clonal, fire-protected habitats, fire-regime susceptibility, timber / firewood uses.
 
+## Book scans: Cooper & Cooper 2004 (Cooper_2004_2, user 2026-11-08)
+
+- **Scope:** "Fruits of the Australian Tropical Rainforest" (Nokomis Editions), photographed by the user as four PDFs
+  (`OneDrive .../taxon_descriptions/resources-books/Cooper_2004_pages001-100.pdf` ... `401-560.pdf`) plus two sets of rescanned pages
+  (`..._pages_rescanned.pdf`, `..._rescanned2.pdf`, re-photos of existing pages, some without a readable page number: matched to their
+  page by shared words). **Dataset: a new `Cooper_2004_2`** beside the existing `Cooper_2004` (21 dispersal modes from a spreadsheet;
+  user: "New dataset alongside"). User: scrape the book only; **don't rebuild the other sources** for it, so every parser change made
+  for it is gated by `cooper_mode` until the user asks for a rebuild.
+- **OCR:** the PDFs' own text layer (Adobe Paper Capture) is unusable (columns interleaved, "50-IO0", "8 111"). Re-OCR with Apple Vision
+  (`VNRecognizeTextRequest`, accurate, en-AU; a small Swift tool), at the scans' native 240 dpi. A full-page pass drops lines ("long;
+  calyx green. Sep.-Dec." under Annona glabra), so a second pass OCRs each text column on its own and keeps the union. Columns: cluster
+  the x0 of full-page lines of 20+ characters and under a column's width (not the running heads, which start mid-page, nor lines Vision
+  ran across two columns); a cluster starting inside the previous column's width is its indented key lines, not a column. Each column
+  is OCR'd with a 0.04 margin into its neighbours and rebuilt from Vision's **word boxes**, keeping the words whose centre lies in the
+  column's core (between the mid-gutters): fixed strips clipped lines or left centred genus headings outside every strip, and dropping
+  "cut" lines lost whole lines that Vision had joined to a neighbour's fragment. Lines wider than a column (a genus introduction set
+  across the page, Syzygium p. 356) are taken whole from the full-page pass and read as a band between the columns above and below it.
+  Strips of the facing page caught at a photo's edge (5+ narrow lines outside the page's own text) are dropped. Pieces of one visual
+  line returned separately (the bold "Leaves" a little lower than its line) are joined. Check recall against the Adobe layer word by
+  word per page (`recall2.py`: from ~1,190 missing words to ~770, mostly running heads and fragments).
+  Vision slips seen: "mm" read "m" (6 sizes, fixed in fix_text after checking the Adobe layer; the palms' metre sizes are real), "Old"
+  for Qld, "Elacocarpus", "Excoccaria", "Julv", "Mav", "var," - all corrected.
+  Scripts and OCR output: `~/GitHub/austraits.build-data.scraping.scripts/data_extra/Cooper_2004_ocr/`; the assembled entries:
+  `data_extra/cooper2004_profiles.csv`.
+- **Assembly into entries** (one row per taxon, fields habit / leaves / inflorescence / flower / male & female cones / fruit / notes /
+  distribution; plus common name, etymology, other names, book page, genus text). Pitfalls found:
+  - Plate captions repeat names ("Annona squamosa" under the painting): a bare name is a caption when the name has a proper heading
+    (authority on the line or the next) elsewhere, or when it repeats the entry being read; two-line captions ("... fitzalanii" /
+    "subsp. tenuipes"). Not body lines that look like names ("Fruit unknown.", "Any month.", "Domatia present").
+  - Authorities may be full names on the next line ("Michael J. Parsons", "Peter G. Wilson") or carry the infraspecific name ("Lam. subsp.
+    integrifolia", "(F. Muell.) Puttock subsp. fitzalanii", "forma grayi"); phrase-name brackets may be on the next line ("Medicosma sp."
+    / "(Karnak)"); infraspecific phrase names in brackets ("Rapanea subsessilis (subsp. Gordonvale)").
+  - Genus headings misread ("ACACI", "DIOSPY.", "MACARAI"): the genus as spelt in its etymology line ("Acacia from ..."), or the genus
+    word of the species headings when it heads 2+ species (never build a name from the current genus when the heading names another real
+    genus). Etymology lines are not species ("Asystasia possibly from ...", "Abrus thought to ..."); habit lines are not species
+    ("Pandanus tree to 10 m", "Vine twiner" ~ Vigna).
+  - Keys (numbered couplets) pause the entry; it resumes only at a field it has not reached yet, below a gap, not on a second couplet
+    lead ("Fruit receptacle conspicuous") - a key to varieties sits between a species heading and its description (Stephania japonica,
+    Ficus virens, Carnarvonia araliifolia).
+  - Gaps between lines are measured to the line above that overlaps horizontally (a caption or key answer beside a heading made its gap 0).
+  - Line-break hyphens are told from compounds by the words seen whole elsewhere ("Cas-sowaries" but "Rat-kangaroos", "fruit-doves").
+  - Ficus has a "Figs" paragraph instead of Fruit. A family heading ends the entry being read, but a running head repeating the current
+    family does not (it cut off continued entries). A name with two entries (a key answer inside a family key read as a heading) keeps
+    the entry with the most fields; adjacent entries whose epithets are clipped forms of one another ("Bridelia leichhardt") are merged.
+  - QA: entries per genus against the book's "Rainforest tropical Queensland: N species" (`genus_counts.csv`: 495 of ~520 counted genera
+    match; most others are infraspecific taxa the book does not count), duplicate names, entries without fields. Result: 2,416 taxa.
+- **Same parser, Cooper mode:** `FOA_SOURCE=cooper`. The months that end the Flower and Fruit paragraphs ("Sep.-Dec.", "Jan.-Apr. & Aug.",
+  "Any month", "Season unknown") go to the phenology text ("Flowers Sep.-Dec. Fruits Oct.-June."). FoA forms: "diam. 50-80 mm" -> "50-80
+  mm diam.", "about" -> "c.", "x" -> "×", "mm through" (third fruit dimension) -> "thick". "Flower petals 6, ..." -> "Petals 6, ...". The
+  habitat is the Distribution's opening (before "from / in the ... [place]"; "a native of X now naturalised in ..." -> introduced). Family
+  modes use the current family (config/taxon_list.csv by genus); the book's family is in raw/taxon_info.csv. **All sources** (user
+  2026-11-08; the others take it at their next rebuild): "separate male and female plants" -> dioecious. Cooper-only (gated; user
+  2026-11-08): the hedges "may be", "may have", "can have", "can be" are rare-type qualifiers recorded as **sometimes** ("may be
+  buttressed", 930 in the book; the words stay in value_description); **"Vine" is plain `climber`** (the book uses it for herbaceous
+  vines and woody lianas alike; "liana" is still climber_woody); a fruit given only as "diam. X mm" gets width and height, not length
+  (user: the globose-only rule stands); altitude ranges are left in the distribution text (user: skip). A vine's habit size in mm is an
+  organ's, not the climbing length
+  (Capparis "spines ... 1-3 mm long"). Ranks are set from the names ("forma" -> "f."; "Rapanea subsessilis (subsp. Gordonvale)" is a
+  subspecies). Nothing is copied down: the genera and families have no morphological description. Build check (traits.build
+  dataset_process, `ignore/jobs/cooper1/proc_cooper.R`): 83,473 values, 2,416 taxa, 119 traits, 1 value out of range (Dolichandrone
+  petals 125-175 mm, real).
+- **Notes -> dispersers** (`data/Cooper_2004_2/raw/vet_notes.R` -> raw/ecology_vetted.csv; user 2026-11-08, as in Cooper_2013): "fruit /
+  flesh / aril eaten by X" (also "seeds and aril eaten by") -> `dispersers` (Cassowaries -> cassowaries, flying-foxes -> flying_foxes,
+  bats, rats / melomys -> rodents, rat-kangaroos / pademelons / possums / pigs -> mammals, any bird -> birds; a shared head noun "Regent
+  and Satin Bowerbirds"); "seeds eaten by X" alone -> candidate `seed_predators`. The clause is the evidence.
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`

@@ -337,6 +337,10 @@ Cooper_2004_config <- dataset_configure("data/Cooper_2004/metadata.yml", definit
 Cooper_2004_raw <- dataset_process("data/Cooper_2004/data.csv", Cooper_2004_config, schema, resource_metadata, unit_conversions)
 Cooper_2004 <- dataset_update_taxonomy(Cooper_2004_raw, taxon_list)
 
+Cooper_2004_2_config <- dataset_configure("data/Cooper_2004_2/metadata.yml", definitions)
+Cooper_2004_2_raw <- dataset_process("data/Cooper_2004_2/data.csv", Cooper_2004_2_config, schema, resource_metadata, unit_conversions)
+Cooper_2004_2 <- dataset_update_taxonomy(Cooper_2004_2_raw, taxon_list)
+
 Cooper_2013_config <- dataset_configure("data/Cooper_2013/metadata.yml", definitions)
 Cooper_2013_raw <- dataset_process("data/Cooper_2013/data.csv", Cooper_2013_config, schema, resource_metadata, unit_conversions)
 Cooper_2013 <- dataset_update_taxonomy(Cooper_2013_raw, taxon_list)
@@ -2056,6 +2060,7 @@ austraits_raw <- austraits::bind_databases(
   Collette_2021,
   Cook_2005,
   Cooper_2004,
+  Cooper_2004_2,
   Cooper_2013,
   Cornwell_2018,
   Cowling_1987,
