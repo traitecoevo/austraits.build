@@ -140,7 +140,9 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   ("probably in response to rain") → description only. Field seedlings/germination after fire → also
   `post_fire_recruitment`.
 - **Climbers:** "vine" = `climber_herbaceous` unless stated woody; "liana" = `climber_woody`; "twiner" stays
-  `climber` (twining is kept in plant_climbing_mechanism / stem_growth_habit).
+  `climber` (twining is kept in plant_climbing_mechanism / stem_growth_habit). The "vine" rule holds only for a source that also uses
+  "liana". In a source that never says "liana", "vine" covers woody and herbaceous climbers alike, so it is plain `climber` (user
+  2026-11-09; Cooper_2004_2). Check the whole source before choosing.
 - **Growth form by family when the text names none:** Arecaceae -> `palmoid`; ferns -> `fern`;
   Centrolepidaceae -> `graminoid herb`. "with woody base" -> `subshrub`; "woody perennial" says nothing.
 - **Species -> infraspecific inheritance:** a subspecies/variety/form silent on a trait inherits its species' own
@@ -916,8 +918,12 @@ not the main checkout's: the user switches branches in the main checkout, and it
   modes use the current family (config/taxon_list.csv by genus); the book's family is in raw/taxon_info.csv. **All sources** (user
   2026-11-08; the others take it at their next rebuild): "separate male and female plants" -> dioecious. Cooper-only (gated; user
   2026-11-08): the hedges "may be", "may have", "can have", "can be" are rare-type qualifiers recorded as **sometimes** ("may be
-  buttressed", 930 in the book; the words stay in value_description); **"Vine" is plain `climber`** (the book uses it for herbaceous
-  vines and woody lianas alike; "liana" is still climber_woody); a fruit given only as "diam. X mm" gets width and height, not length
+  buttressed", 930 in the book; the words stay in value_description); **"Vine" is plain `climber`** (the user's rule: "vine" is
+  climber_herbaceous only in a source that also uses "liana"; the word "liana" appears nowhere in this book, text layer or OCR). The book
+  never says woody or herbaceous for a climber either, so a plain climber takes the habit's hints (user 2026-11-09): corky bark, older
+  stems corky or lenticels, or a shrub/tree alternative ("Shrub or vine twiner") -> `climber_woody`; a herb alternative ("Herb or vine
+  trailer") -> `climber_herbaceous`; Deeringia arborescens -> `climber_woody` from its etymology ("this vine becoming large and woody");
+  a stem diameter alone is not a hint (Cassytha); the other ~350 climbers stay `climber`; a fruit given only as "diam. X mm" gets width and height, not length
   (user: the globose-only rule stands); altitude ranges are left in the distribution text (user: skip). A vine's habit size in mm is an
   organ's, not the climbing length
   (Capparis "spines ... 1-3 mm long"). Ranks are set from the names ("forma" -> "f."; "Rapanea subsessilis (subsp. Gordonvale)" is a

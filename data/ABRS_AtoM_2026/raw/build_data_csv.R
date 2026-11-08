@@ -1877,8 +1877,8 @@ growth_form_dict <- c(
   "ferns?" = "fern",
   "geophytes?" = "geophyte"
 )
-# (Cooper_2004_2, user 2026-11-08: the book writes "Vine twiner", "Vine tendril climber" for herbaceous vines and woody lianas alike, so its
-# "vine" is a plain climber; "liana" is still climber_woody)
+# (Cooper_2004_2, user 2026-11-08/09: "vine" means climber_herbaceous only in a source that also uses "liana". This book never uses
+# "liana" and writes "Vine twiner", "Vine tendril climber" for herbaceous and woody climbers alike, so its "vine" is a plain climber)
 if (cooper_mode) growth_form_dict[["vines?"]] <- "climber"
 # ("subshrub with annual stems", "perennial herb with annual shoots" from a perennial rootstock: not an annual plant; NT_2026 chunk test, 2026-11-07)
 life_history_dict <- c("short-lived perennials?" = "short_lived_perennial",
@@ -3012,6 +3012,16 @@ extract_one <- function(r, group_filter = TRUE) {
   }
   # climbing ferns are herbaceous climbers
   if (fern_mode) gf <- gf %>% mutate(value = str_replace(value, "^climber(?:_woody)?$", "climber_herbaceous"))
+  # (Cooper_2004_2, user 2026-11-09: the book never says woody or herbaceous for a climber, so its plain "climber" takes the habit's hints:
+  # corky bark / older stems corky / lenticels, or a shrub or tree alternative ("Shrub or vine twiner") -> climber_woody; a herb
+  # alternative ("Herb or vine trailer") -> climber_herbaceous; Deeringia arborescens from its etymology, "this vine becoming large and woody")
+  if (cooper_mode && any(gf$value == "climber")) {
+    # (the bark / stem clauses sit in their own units after the habit, "Vine twiner, bark corky; exudate white.": read the habit sentence)
+    hab_sent <- coalesce(str_extract(desc, "^.*?(?:\\.\\s+(?=[A-Z])|$)"), "")
+    cv <- if (str_detect(hab_sent, regex("cork|\\bbark\\b|lenticel", ignore_case = TRUE)) || taxon == "Deeringia arborescens" || any(gf$value %in% c("shrub", "tree"))) "climber_woody"
+          else if (any(gf$value == "herb")) "climber_herbaceous" else "climber"
+    gf <- gf %>% mutate(value = if_else(value == "climber", cv, value))
+  }
   if (fam %in% lyco_families) gf <- gf %>% mutate(value = str_replace(value, "\\bfern\\b", "lycophyte"))
   # a climbing habit on a shrub / herb is a growth-form alternative too: "Shrub to 3 m high, rarely climbing"
   # -> shrub (usually) + climber_woody (rarely); "Spreading shrub, sometimes scandent" -> climber_woody (sometimes)
