@@ -972,6 +972,34 @@ not the main checkout's: the user switches branches in the main checkout, and it
 - Build check (`ignore/jobs/brophy1/proc_brophy.R`): 12,691 values, 317 taxa, 59 traits; nothing excluded beyond the 10 non-Australian taxa. 43 names are not in
   config/taxon_list.csv (the New Caledonian and Asian taxa, ex-Callistemon names, new infraspecific taxa).
 
+## Australian Tropical Rainforest Plants online (ATRP_2026, user 2026-11-09)
+
+- **Scope:** the Lucid online edition 8 species pages, scraped 2026-11-08 (`data_extra/atrp_fact_sheets.csv`, pages in `ATRP_html/`):
+  2,762 species and infraspecific taxa; the 176 family pages describe families world-wide and are not read. **New dataset `ATRP_2026`**
+  beside ATRP_2020 (growth form and a few other traits from the 2022 scrape; user: "New ATRP_2026").
+- **Names:** use `index_name`, not `taxon_name` - the scrape's taxon_name drops the infraspecific part of 209 names (both subspecies of
+  Actephila petiolaris were "Actephila petiolaris"); "( L.S.Smith" -> "(L.S.Smith".
+- **Same parser, ATRP mode** (`FOA_SOURCE=atrp`, gated): Stem, Leaves, Flowers and Fruit paragraphs are the description; Seedlings the
+  seedling text; Distribution and Ecology is the distribution, and its habitat sentences ("grows in", "found in", "A characteristic tree
+  of ...", "Parasitic on rain forest plants", any sentence naming a vegetation type or substrate, but not "Occurs in CYP ...", "Endemic
+  to ...", "Also found in ...", "Altitudinal range ...") the habitat; "An introduced species" / "naturalised" -> introduced. Page link,
+  RFK code, synonyms and icons go to raw/taxon_info.csv, not on every row.
+- **Habit icons** (`ATRP_scripts/page_extras.py` -> `atrp_page_extras.csv`; user 2026-11-09): the icons are the growth form and the text's
+  growth forms the icons lack are added ("[ATRP habit icon] ..." in value_description): Tree, Shrub, Herb, Grass -> graminoid, "Palm,
+  pandan or cycad" -> palmoid, **Vine -> climber_woody** (its pages say "stem diameters to N cm recorded"), **Slender Vine ->
+  climber_herbaceous** (stem diameter up to c. 2 cm); a text climber beside an icon climber is dropped; Mistletoe -> stem_parasitic
+  (when the text says nothing), Epiphyte -> epiphyte substrate; **Weed is ignored** (introduced status comes from the text). A vine's
+  climbing height must be in m (the Stem paragraph's "Vine stem diameters to 3 cm recorded" is not a height; as for Cooper).
+- **Seedlings** (`data/ATRP_2026/raw/seedlings.R` -> raw/ecology_vetted.csv): seedling_germination_location from the seedling photo
+  caption ("Cotyledon stage, epigeal germination"); seed_germination_time from "Seed germination time 15 to 19 days" ("ca." read,
+  "to 43 days" -> max). Germination times over 1,000 days (Acacia auriculiformis "9 to 3664 days") are excluded by the traits.yml range.
+- Text slips fixed (fix_text): m for mm (Argyrodendron sp. Boonjee flowers, Ristantia filaments, Diospyros rugosula corolla lobes), Cocos
+  leaflets given width x length, Philydrum "bulb-shaped" seeds read as a bulb.
+- Build check (`ignore/jobs/atrp1/proc_atrp.R`): 2,762 taxa, 152 traits; ~48 values excluded (germination times > 1,000 d, 0.5 mm
+  tubes, palm prophylls as bracteoles, corolla shapes such as urceolate / campanulate given as petal shapes).
+- Known parser issue seen here (all sources, not fixed): a pedicel length after a comma inside a flower clause ("Male flowers: ... on
+  filiform pedicels, 5-9 mm long") is also read as flower_length.
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`

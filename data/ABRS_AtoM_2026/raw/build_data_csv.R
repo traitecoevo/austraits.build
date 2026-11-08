@@ -91,9 +91,16 @@ if (cooper_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_ext
 # book's labelled fields in brophy2013_profiles.csv. Craven's Melaleuca descriptions, in FoA-like prose.
 brophy_mode <- Sys.getenv("FOA_SOURCE") == "brophy"
 if (brophy_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/brophy2013_profiles.csv"
+# ATRP mode (env FOA_SOURCE=atrp; user 2026-11-09): Australian Tropical Rainforest Plants, online edition (Lucid; F.A. Zich, B.P.M. Hyland,
+# T. Whiffin, R.A. Kerrigan et al.), the species pages scraped 2026-11-08 (atrp_fact_sheets.csv: Stem, Leaves, Flowers, Fruit, Seedlings,
+# Distribution and Ecology, Natural History & Notes ...) into the long-format dataset ATRP_2026 (user: a new dataset beside ATRP_2020, which
+# holds growth form and a few other traits from the 2022 scrape). The pages' habit icons and germination photo captions are in
+# atrp_page_extras.csv (ATRP_scripts/page_extras.py). The family pages describe the families world-wide and are not read.
+atrp_mode <- Sys.getenv("FOA_SOURCE") == "atrp"
+if (atrp_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/atrp_fact_sheets.csv"
 own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else if (ausgrass_mode) "AusGrass3_2026" else
   if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else if (vicflora_mode) "RBGV_2026" else if (saflora_mode) "SAH_2026" else if (ntflora_mode) "NT_2026" else
-  if (cooper_mode) "Cooper_2004_2" else if (brophy_mode) "Brophy_2013" else NA_character_
+  if (cooper_mode) "Cooper_2004_2" else if (brophy_mode) "Brophy_2013" else if (atrp_mode) "ATRP_2026" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
@@ -105,7 +112,7 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
               "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026", "SAH_2026", "NT_2026", "Cooper_2004_2",
-              "Brophy_2013")
+              "Brophy_2013", "ATRP_2026")
 dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -867,6 +874,39 @@ if (brophy_mode) {
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
+if (atrp_mode) {
+  if (Sys.getenv("FOA_FAMILIES") == "") gens <- character(0)
+  ex <- read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/atrp_page_extras.csv", show_col_types = FALSE, col_types = cols(.default = "c"))
+  at_txt <- function(x) na_if(str_squish(coalesce(x, "")), "")
+  at_sent <- function(x) str_split(coalesce(x, ""), "(?<=[a-z0-9)%]\\.)\\s+(?=[A-Z])")
+  at_hab <- paste0("\\bgrow|\\bfound (?:in|on|as|along|near)\\b|\\binhabits?\\b|\\blocated (?:in|on)\\b|\\b(?:forests?|woodlands?|thickets?|scrubs?|heaths?|",
+                   "swamps?|mangroves?|grasslands?|savannah?|shrublands?|rain ?forest|creeks?|rivers?|streams?|beach|dunes?|sand|soils?|rocks?|granite|basalt|",
+                   "disturbed|roadsides?)\\b")
+  at_dist <- "^(?:Also (?:found|occurs)|Altitudinal|Occurs in (?:WA|NT|CYP|NEQ|CEQ|Queensland|the [A-Z])|Endemic to|Probably endemic|An introduced|Native to)"
+  d_all <- d_all %>% rename(file = 1) %>% filter(taxon_rank != "family") %>% left_join(ex, by = "file") %>%
+    # (the name is the index name: the scrape's taxon_name drops the infraspecific part of 209 names, "Actephila petiolaris" for both
+    # subspecies; "Argyrodendron sp. Mt Haig ( L.S.Smith 14307)" -> "(L.S.Smith 14307)")
+    transmute(scientific_name = str_replace_all(str_squish(index_name), "\\(\\s+", "("),
+              rank = case_when(str_detect(scientific_name, " subsp\\. ") ~ "subspecies", str_detect(scientific_name, " var\\. ") ~ "variety",
+                               str_detect(scientific_name, " f\\. ") ~ "form", TRUE ~ "species"),
+              family = Family, url,
+              # (the Stem, Leaves, Flowers and Fruit fields in turn are the description; each is its own paragraph)
+              Description = at_txt(pmap_chr(list(Stem, Leaves, Flowers, Fruit), function(...) {
+                x <- str_squish(coalesce(c(...), "")); paste(str_replace(x[x != ""], "([^.])$", "\\1."), collapse = " ") })),
+              Seedlings = at_txt(Seedlings),
+              # (the habitat is the Distribution and Ecology field's sentences on where the plant grows - "Usually grows in open forest but
+              # occasionally ...", "Grows as an understory plant in ...", "A characteristic tree of drier rain forest ...", "Parasitic on rain
+              # forest plants" - or that name a vegetation type or substrate; not the distribution sentences, "Occurs in CYP, NEQ ...",
+              # "Endemic to NEQ, restricted to ...", "Also found in New Guinea", "Altitudinal range ...")
+              Habitat = map_chr(at_sent(`Distribution and Ecology`), ~ na_if(paste(.x[str_detect(.x, regex(at_hab, ignore_case = TRUE)) & !str_detect(.x, at_dist)], collapse = " "), "")),
+              Distribution = at_txt(`Distribution and Ecology`), Notes = at_txt(`Natural History & Notes`),
+              `Common Name` = at_txt(`Common name`),
+              Biostatus = ifelse(str_detect(coalesce(`Distribution and Ecology`, ""), regex("\\b(?:an introduced species|naturali[sz]ed)\\b", ignore_case = TRUE)), "Introduced", NA_character_),
+              Author = NA_character_, other_names = at_txt(Synonyms), rfk_code = `RFK Code`, atrp_url = url, habit_icons)
+  if (Sys.getenv("FOA_FAMILIES") == "") fams <- unique(na.omit(d_all$family))
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
 if (wattle_mode) {
   fams <- "Fabaceae"; gens <- character(0)
   # names as written (no authorities in taxon_name): hybrid formulae ("Acacia ampliceps x sclerosperma subsp. sclerosperma"), informal
@@ -975,6 +1015,13 @@ fix_text <- tribble(
   "Desmodium heterocarpon var. strigosum", "26-70 × 15-38 m", "26-70 × 15-38 mm",
   "Ficus virgata", "7-18 m wide", "7-18 mm wide",
   "Syzygium bamagense", "36-46 m wide", "36-46 mm wide",
+  # ATRP_2026 (2026-11-09): m for mm (flowers, filaments and corolla lobes of a few mm); Cocos leaflets given width x length; Philydrum's
+  # "bulb-shaped" seeds read as a bulb's size
+  "Argyrodendron sp. Boonjee (B.Hyland 2139RFK)", "Flowers about 9-11 m diam.", "Flowers about 9-11 mm diam.",
+  "Ristantia waterhousei", "filaments 1-3.5 m long", "filaments 1-3.5 mm long",
+  "Diospyros rugosula", "lobes 4 ca. 5-6 m long", "lobes 4 ca. 5-6 mm long",
+  "Cocos nucifera", "Leaflets are 1.5-5 x 50-150 cm long", "Leaflets are 50-150 cm long, 1.5-5 cm wide",
+  "Philydrum lanuginosum", "dark reddish, bulb-shaped, 0.8-0.9 x 0.3-0.4 mm", "dark reddish, 0.8-0.9 x 0.3-0.4 mm, bulb-shaped",
   # FloraNT (NT_2026; 2026-11-07): m for mm (Coccinia grandis "style c.8 m long" beside "stigmas ... c. 8 mm long", Aegiceras style
   # "6 m long" beside "filaments 4 mm", Jacksonia divisa "Seeds ... 2.7-2.8 m long, 1.9-2 mm wide"); organ words lost to a lowercase
   # or misspelt sentence start ("vine. petioles 10-25 mm long" read as the climbing height, "nflorescence", "lnflorescence", "slender.
@@ -3094,6 +3141,20 @@ extract_one <- function(r, group_filter = TRUE) {
       gf <- bind_rows(gf, ch %>% mutate(value = cv)) %>% arrange(pos)
     }
   }
+  # (ATRP_2026, user 2026-11-09: the page's habit icons are the growth form, and the text's growth forms the icons lack are added: Tree,
+  # Shrub, Herb, Grass -> graminoid, "Palm, pandan or cycad" -> palmoid, Vine -> climber_woody (stems recorded to several cm diameter),
+  # Slender Vine -> climber_herbaceous; a text climber beside an icon climber is the icon's; Weed, Mistletoe and Epiphyte are not growth
+  # forms (Mistletoe and Epiphyte are read below))
+  if (atrp_mode && !is.na(r[["habit_icons"]])) {
+    ic <- str_split(r[["habit_icons"]], ";\\s*")[[1]]
+    icon_gf <- c("Tree" = "tree", "Shrub" = "shrub", "Herb" = "herb", "Grass" = "graminoid", "Palm" = "palmoid", "Vine" = "climber_woody", "Slender Vine" = "climber_herbaceous")
+    icn <- tibble(ic = ic, value = unname(icon_gf[str_remove(ic, "(?:,| \\().*$")])) %>% filter(!is.na(value)) %>% distinct(value, .keep_all = TRUE)
+    if (nrow(icn)) {
+      txt_gf <- gf %>% filter(!value %in% icn$value, !(str_detect(value, "^climber") & any(str_detect(icn$value, "^climber"))))
+      gf <- bind_rows(tibble(pos = seq_len(nrow(icn)) - 100L, end = seq_len(nrow(icn)) - 100L, value = icn$value, term = paste0("[ATRP habit icon] ", icn$ic),
+                             qual = NA_character_, region = NA_character_), txt_gf)
+    }
+  }
   add(rec_cat("plant_growth_form", gf, habit_txt))
   addc("life_history", habit_txt, life_history_dict)
   # FoA herb descriptions often open with the stems ("Stems prostrate, to 2 m long")
@@ -3189,6 +3250,9 @@ extract_one <- function(r, group_filter = TRUE) {
       str_detect(hab_lc, "\\bmud\\b|\\bwater\\b"))
     sub_h <- sub_h %>% mutate(term = ifelse(value == "terrestrial", paste(term, "(in water or mud: amphibious)"), term),
                               value = ifelse(value == "terrestrial", "semiaquatic", value))
+  # (ATRP_2026: the Epiphyte habit icon)
+  if (atrp_mode && str_detect(coalesce(r[["habit_icons"]], ""), "\\bEpiphyte\\b") && !any(coalesce(sub_h$value, "") == "epiphyte"))
+    sub_h <- bind_rows(sub_h, tibble(pos = -100L, end = -100L, value = "epiphyte", term = "[ATRP habit icon] Epiphyte", qual = NA_character_, region = NA_character_)) %>% arrange(pos)
   add(rec_cat("plant_growth_substrate", sub_h, habit_txt))
   # orchids: species descriptions rarely name the substrate, but the Habitat text does ("growing on the upper branches of
   # trees", "forms strands on trees, boulders and cliff faces", "in freely draining sands"). Substrates are read in text order
@@ -3336,6 +3400,9 @@ extract_one <- function(r, group_filter = TRUE) {
     }
   }
   addc("parasitic", par_clean(habit_txt), parasitic_dict)
+  # (ATRP_2026: the Mistletoe habit icon - parasitic on its host's branches - when the text says nothing)
+  if (atrp_mode && str_detect(coalesce(r[["habit_icons"]], ""), "\\bMistletoe\\b") && !any(map_lgl(recs, ~ any(.x$trait %in% "parasitic"))))
+    add(rec_cat("parasitic", tibble(pos = 1L, end = 1L, value = "stem_parasitic", term = "[ATRP habit icon] Mistletoe", qual = NA_character_, region = NA_character_), "[ATRP habit icon] Mistletoe"))
   # (when the habit says nothing, the Habitat's parasitism sentence: "In Eucalypt savanna; parasitic on Eucalyptus", Amyema bifurcata, FloraNT;
   # in the mistletoes, parasitic on a host is on its branches: stem_parasitic, as the genus descriptions say)
   if (!any(map_lgl(recs, ~ any(.x$trait %in% "parasitic")))) {
@@ -3394,8 +3461,9 @@ extract_one <- function(r, group_filter = TRUE) {
   } else if (is_climber) {
     cl <- m_first(habit, "long|in length|", h_other)
     # (Cooper_2004_2: the book gives climbing lengths in m; a size in mm in a vine's habit sentence is an organ's - Capparis "Vine or shrub;
-    # spines curved, 1-3 mm long" - not the climbing length; Cooper only for now)
-    if (cooper_mode && !is.null(cl) && !str_detect(cl$txt, "\\d\\s*m\\b")) cl <- NULL
+    # spines curved, 1-3 mm long" - not the climbing length; Cooper only for now; also ATRP_2026, whose vines' Stem paragraph gives the
+    # stem diameter, "Vine stem diameters to 3 cm recorded", "Wiry vine up to 5 mm diameter")
+    if ((cooper_mode || atrp_mode) && !is.null(cl) && !str_detect(cl$txt, "\\d\\s*m\\b")) cl <- NULL
     if (!is.null(cl)) addn("plant_height_climbing_plant", cl$v, cl$txt, scale = 1 / 1000)
   }
   # "Tree 6-30 (-45) m high; sometimes a shrub 1.5-3 m high": a height given for a qualified growth form goes on that
@@ -6357,6 +6425,13 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
         dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
         write_csv(bp_info, file.path("data", id, "raw", "taxon_info.csv"), na = "")
         df <- df %>% select(-foa_url) %>% left_join(bp_info %>% select(taxon_name, source_page), by = "taxon_name") %>% relocate(source_page, .after = taxon_name)
+      }
+      # (ATRP_2026: the page link, RFK code, synonyms and habit icons once per taxon in raw/taxon_info.csv, not on every row)
+      if (atrp_mode) {
+        at_info <- d_all %>% filter(scientific_name %in% df$taxon_name) %>% distinct(taxon_name = scientific_name, rfk_code, atrp_url, habit_icons, other_names)
+        dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
+        write_csv(at_info, file.path("data", id, "raw", "taxon_info.csv"), na = "")
+        df <- df %>% select(-foa_url)
       }
       # (NHNSW_2026: the profile link, repeated on every row, was 44% of the file and took it to the 100 MB GitHub limit: it is written
       # once per taxon to raw/taxon_urls.csv instead)

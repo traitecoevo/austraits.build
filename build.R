@@ -101,6 +101,10 @@ ATRP_2020_config <- dataset_configure("data/ATRP_2020/metadata.yml", definitions
 ATRP_2020_raw <- dataset_process("data/ATRP_2020/data.csv", ATRP_2020_config, schema, resource_metadata, unit_conversions)
 ATRP_2020 <- dataset_update_taxonomy(ATRP_2020_raw, taxon_list)
 
+ATRP_2026_config <- dataset_configure("data/ATRP_2026/metadata.yml", definitions)
+ATRP_2026_raw <- dataset_process("data/ATRP_2026/data.csv", ATRP_2026_config, schema, resource_metadata, unit_conversions)
+ATRP_2026 <- dataset_update_taxonomy(ATRP_2026_raw, taxon_list)
+
 Auld_2000_config <- dataset_configure("data/Auld_2000/metadata.yml", definitions)
 Auld_2000_raw <- dataset_process("data/Auld_2000/data.csv", Auld_2000_config, schema, resource_metadata, unit_conversions)
 Auld_2000 <- dataset_update_taxonomy(Auld_2000_raw, taxon_list)
@@ -2005,6 +2009,7 @@ austraits_raw <- austraits::bind_databases(
   Atkinson_2020,
   Atkinson_2020_2,
   ATRP_2020,
+  ATRP_2026,
   Auld_2000,
   AVH_2026,
   Baker_2019,
