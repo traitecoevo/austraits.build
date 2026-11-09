@@ -125,6 +125,10 @@ Barrett_2009_config <- dataset_configure("data/Barrett_2009/metadata.yml", defin
 Barrett_2009_raw <- dataset_process("data/Barrett_2009/data.csv", Barrett_2009_config, schema, resource_metadata, unit_conversions)
 Barrett_2009 <- dataset_update_taxonomy(Barrett_2009_raw, taxon_list)
 
+Bean_1992_config <- dataset_configure("data/Bean_1992/metadata.yml", definitions)
+Bean_1992_raw <- dataset_process("data/Bean_1992/data.csv", Bean_1992_config, schema, resource_metadata, unit_conversions)
+Bean_1992 <- dataset_update_taxonomy(Bean_1992_raw, taxon_list)
+
 Bean_1997_config <- dataset_configure("data/Bean_1997/metadata.yml", definitions)
 Bean_1997_raw <- dataset_process("data/Bean_1997/data.csv", Bean_1997_config, schema, resource_metadata, unit_conversions)
 Bean_1997 <- dataset_update_taxonomy(Bean_1997_raw, taxon_list)
@@ -1025,6 +1029,10 @@ Lord_1997_config <- dataset_configure("data/Lord_1997/metadata.yml", definitions
 Lord_1997_raw <- dataset_process("data/Lord_1997/data.csv", Lord_1997_config, schema, resource_metadata, unit_conversions)
 Lord_1997 <- dataset_update_taxonomy(Lord_1997_raw, taxon_list)
 
+LucidFerns_2026_config <- dataset_configure("data/LucidFerns_2026/metadata.yml", definitions)
+LucidFerns_2026_raw <- dataset_process("data/LucidFerns_2026/data.csv", LucidFerns_2026_config, schema, resource_metadata, unit_conversions)
+LucidFerns_2026 <- dataset_update_taxonomy(LucidFerns_2026_raw, taxon_list)
+
 Lunt_2012_config <- dataset_configure("data/Lunt_2012/metadata.yml", definitions)
 Lunt_2012_raw <- dataset_process("data/Lunt_2012/data.csv", Lunt_2012_config, schema, resource_metadata, unit_conversions)
 Lunt_2012 <- dataset_update_taxonomy(Lunt_2012_raw, taxon_list)
@@ -1809,10 +1817,6 @@ WAH_2023_2_config <- dataset_configure("data/WAH_2023_2/metadata.yml", definitio
 WAH_2023_2_raw <- dataset_process("data/WAH_2023_2/data.csv", WAH_2023_2_config, schema, resource_metadata, unit_conversions)
 WAH_2023_2 <- dataset_update_taxonomy(WAH_2023_2_raw, taxon_list)
 
-WATTLE_2026_config <- dataset_configure("data/WATTLE_2026/metadata.yml", definitions)
-WATTLE_2026_raw <- dataset_process("data/WATTLE_2026/data.csv", WATTLE_2026_config, schema, resource_metadata, unit_conversions)
-WATTLE_2026 <- dataset_update_taxonomy(WATTLE_2026_raw, taxon_list)
-
 WAH_2026_1_config <- dataset_configure("data/WAH_2026_1/metadata.yml", definitions)
 WAH_2026_1_raw <- dataset_process("data/WAH_2026_1/data.csv", WAH_2026_1_config, schema, resource_metadata, unit_conversions)
 WAH_2026_1 <- dataset_update_taxonomy(WAH_2026_1_raw, taxon_list)
@@ -1836,6 +1840,10 @@ Warren_2005 <- dataset_update_taxonomy(Warren_2005_raw, taxon_list)
 Warren_2006_config <- dataset_configure("data/Warren_2006/metadata.yml", definitions)
 Warren_2006_raw <- dataset_process("data/Warren_2006/data.csv", Warren_2006_config, schema, resource_metadata, unit_conversions)
 Warren_2006 <- dataset_update_taxonomy(Warren_2006_raw, taxon_list)
+
+WATTLE_2026_config <- dataset_configure("data/WATTLE_2026/metadata.yml", definitions)
+WATTLE_2026_raw <- dataset_process("data/WATTLE_2026/data.csv", WATTLE_2026_config, schema, resource_metadata, unit_conversions)
+WATTLE_2026 <- dataset_update_taxonomy(WATTLE_2026_raw, taxon_list)
 
 Weerasinghe_2014_config <- dataset_configure("data/Weerasinghe_2014/metadata.yml", definitions)
 Weerasinghe_2014_raw <- dataset_process("data/Weerasinghe_2014/data.csv", Weerasinghe_2014_config, schema, resource_metadata, unit_conversions)
@@ -2019,11 +2027,12 @@ austraits_raw <- austraits::bind_databases(
   ATRP_2020,
   ATRP_2026,
   Auld_2000,
+  AusGrass3_2026,
   AVH_2026,
   Baker_2019,
   Barrett_2009,
+  Bean_1992,
   Bean_1997,
-  AusGrass3_2026,
   Bebawi_2015,
   Bell_1995,
   Benwell_2024,
@@ -2248,6 +2257,7 @@ austraits_raw <- austraits::bind_databases(
   Lim_2017,
   Liu_2023,
   Lord_1997,
+  LucidFerns_2026,
   Lunt_2012,
   Lusk_2010,
   Lusk_2012,
@@ -2448,9 +2458,9 @@ austraits_raw <- austraits::bind_databases(
   WAH_2026_2,
   WAH_2026_3,
   WAH_2026_4,
-  WATTLE_2026,
   Warren_2005,
   Warren_2006,
+  WATTLE_2026,
   Weerasinghe_2014,
   Wells_2012,
   Wenk_2022,
