@@ -1,0 +1,7 @@
+# NT_2026: the values traits.build excludes, with their source text (2026-11-07)
+suppressPackageStartupMessages({library(traits.build); library(dplyr)})
+schema <- get_schema(); resource_metadata <- get_schema("config/metadata.yml", "metadata")
+definitions <- get_schema("config/traits.yml", "traits"); unit_conversions <- get_unit_conversions("config/unit_conversions.csv")
+cfg <- dataset_configure("data/NT_2026/metadata.yml", definitions)
+x <- dataset_process("data/NT_2026/data.csv", cfg, schema, resource_metadata, unit_conversions)
+print(x$excluded_data %>% filter(trait_name %in% c("flower_tube_length", "flower_style_shape")) %>% count(trait_name, taxon_name, value) %>% as.data.frame())

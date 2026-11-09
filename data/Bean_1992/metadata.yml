@@ -1,0 +1,799 @@
+source:
+  primary:
+    key: Bean_1992
+    bibtype: Article
+    year: 1992
+    author: A. R. Bean
+    title: The genus Leptospermum Forst. et Forst. f. (Myrtaceae) in northern Australia and Malesia
+    journal: Austrobaileya
+    volume: 3
+    number: 4
+    pages: 643--659
+    doi: 10.5962/p.366003
+contributors:
+  data_collectors:
+  - last_name: Bean
+    given_name: Anthony
+    ORCID: 0000-0001-5697-1664
+    affiliation: Queensland Herbarium, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      dplyr::filter(
+        trait %in% c(
+          "bark_colour", "bark_texture", "flower_anther_attachment",
+          "flower_anther_dehiscence", "flower_colour", "flower_diameter",
+          "flower_fertile_stamens_count", "flower_hypanthium_length",
+          "flower_petal_length", "flower_petal_shape", "flowering_time",
+          "flowers_per_inflorescence", "fruit_colour", "fruit_fleshiness",
+          "fruit_length", "fruit_shape", "fruit_surface_hairs", "fruit_type",
+          "fruit_width", "inflorescence_type", "leaf_apex_shape", "leaf_base_shape",
+          "leaf_discolority", "leaf_hairs_adult_leaves", "leaf_hairs_immature_leaves",
+          "leaf_length", "leaf_length_to_width_ratio", "leaf_main_vein_count",
+          "leaf_margin_posture", "leaf_phyllotaxis", "leaf_shape",
+          "leaf_surface_colour", "leaf_type", "leaf_width", "parasitic",
+          "pedicel_length", "petiole_length", "plant_growth_form",
+          "plant_growth_substrate", "plant_height", "plant_photosynthetic_organ",
+          "seed_colour", "seed_length", "seed_shape", "seed_surface_texture",
+          "seed_width", "stem_growth_habit", "stem_hairs", "stem_shape"
+        ),
+        is.na(commonness_qualifier) | commonness_qualifier != "extreme_range"
+      ) |>
+      dplyr::mutate(
+        source_rank = dplyr::case_when(
+          grepl("^Dichotomous", source_section) ~ 3,
+          grepl("^Multi-access", source_section) ~ 2,
+          TRUE ~ 1
+        )
+      ) |>
+      dplyr::group_by(taxon_name, trait, population_region, entity_measured) |>
+      dplyr::filter(source_rank == min(source_rank)) |>
+      dplyr::ungroup()
+    '
+  collection_date: '1992'
+  taxon_name: taxon_name
+  trait_name: trait
+  value: trait_value
+  description: 'To resolve the taxonomic problems remaining in the northern Australian and
+    Malesian species of Leptospermum, in particular the circumscriptions of L. parviflorum
+    and L. javanicum, and to describe new taxa from Queensland, the Northern Territory and
+    Western Australia.'
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  sampling_strategy: 'A revision of the genus Leptospermum was recently published by Joy
+    Thompson (Thompson 1989), which elucidated many matters of concern to taxonomists and
+    provided a basis for further research. Readers are referred to that publication for
+    descriptions and full synonymy of species not treated in this paper. ^p The seeds of
+    most of the northern Leptospermum species have been examined in the present study. In
+    most cases, seeds were collected from plants in their natural habitat, rather than
+    from herbarium specimens. Thus, seed maturity could be properly assessed. ^p I would
+    like to thank the Directors of A, DNA, L, NSW, PERTH and SING for the loan of their
+    herbarium material and types, and the directors of BRI, JCT and QRS for access to
+    their herbaria.'
+  original_file: 'Myrtaceae Leptospermum partial_revision Bean_1992 Austrobaileya
+    part366003.pdf (BHL scan of Austrobaileya 3(4): 643--659)'
+  notes: 'data.csv is raw/trait_data.csv (a hand transcription of every clause of the paper,
+    from the page images) with trait_scoring_method added from rank_scored_from
+    (inferred_from_genus for the genus statement in the Introduction,
+    inferred_from_species for subspecies silent on a character,
+    inferred_from_species_group for a key lead or group statement covering several taxa,
+    inferred for typical values stated only when atypical). Type and cited specimens are
+    in raw/Bean_1992_vouchers.csv. Six species are described in full (L. pallidum, L.
+    madidum and its two subspecies, L. parviflorum, L. venustum, L. javanicum, L.
+    amboinense); the rest are annotated with distribution and habitat and scored through
+    the two keys. Each value is recorded in the source words (trait_value_raw, the clause;
+    trait_value, the source terms) and mapped with substitutions. Several values are
+    listed in text order; a commonness word splits a character onto rows
+    (commonness_qualifier), and parenthetical extremes are on extreme_range rows, in
+    data.csv but not mapped. When a taxon has a character from several places
+    custom_R_code keeps the highest-ranked source for each taxon, trait, region and part
+    measured: the taxon own text, then the multi-access key, then the dichotomous key.
+    Numbers in a key lead covering several taxa, and bounds such as Largest leaves <9 mm
+    or Pedicels >8 mm, are not values for a taxon; they are kept in the *_class
+    candidates. L. madidum subsp. sativum growth rate and soils in cultivation (Brock
+    1988) are candidate rows. Candidate traits not yet in traits.yml (unmapped, dropped in
+    custom_R_code): anther_cell_length, anther_cell_orientation, anther_cell_size,
+    anther_gland_colour, anther_gland_prominence, anther_gland_shape, associated_species,
+    bark_adherence, bark_description, bark_persistence, bract_bud_coverage, bract_colour,
+    bract_hairs, bract_persistence, bract_shape, bracteole_colour, bracteole_persistence,
+    bracteole_scar_position, bracteole_shape, branch_orientation, branchlet_hair_length,
+    branchlet_hair_orientation, conservation_status, cultivation_status,
+    distribution_description, distribution_queensland_pastoral_districts, elevation,
+    flowers_per_inflorescence_class, fruit_attachment, fruit_base_shape,
+    fruit_diameter_class, fruit_dome, fruit_dome_apex_position,
+    fruit_dome_height_relative_to_hypanthium, fruit_hypanthium_surface,
+    fruit_locule_count, fruit_surface, fruit_texture, fruit_valve_count,
+    fruit_valve_position, geology_terms, growth_rate, habitat_description, habitat_terms,
+    hypanthium_hairs, hypanthium_shape, inflorescence_arrangement,
+    inflorescence_description, inflorescence_position, inflorescence_unit,
+    leaf_abaxial_colour, leaf_abaxial_hair_colour, leaf_abaxial_hair_orientation,
+    leaf_abaxial_hairs, leaf_apex_prickliness, leaf_attachment, leaf_hair_orientation,
+    leaf_length_class, leaf_length_largest_leaves_class, leaf_length_to_width_ratio_class,
+    leaf_margin_hairs, leaf_midrib_adaxial_relief, leaf_midrib_visibility,
+    leaf_oil_gland_abundance, leaf_oil_gland_prominence, leaf_orientation, leaf_scent,
+    leaf_thickness_categorical, leaf_venation, leaf_width_class, ovary_hair_orientation,
+    ovary_hair_position, ovary_hairs, ovary_locule_count, pedicel_length_class,
+    pedicel_presence, petal_hairs, seed_chaff_similarity, seed_length_to_width_ratio,
+    seed_wings, sepal_hair_position, sepal_hairs, sepal_margin_hairs, sepal_oil_dots,
+    sepal_persistence, sepal_shape, soil_terms, stamen_fusion,
+    stamen_length_relative_to_petals, stamen_length_uniformity, stamen_whorls,
+    stem_flange_extent, stem_flange_prominence, stem_flanges, stem_hair_persistence,
+    stigma_shape, stigma_to_style_width_class, style_position, unfertilised_seed_colour,
+    unfertilised_seed_shape.'
+identifiers: .na
+locations: .na
+contexts:
+- context_property: commonness qualifier
+  category: entity_context
+  var_in: commonness_qualifier
+- context_property: population region
+  category: entity_context
+  var_in: population_region
+- context_property: entity measured
+  category: method_context
+  var_in: entity_measured
+- context_property: trait scoring method
+  category: method_context
+  var_in: trait_scoring_method
+traits:
+- var_in: bark_colour
+  unit_in: .na
+  trait_name: bark_colour
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions, the Introduction and the dichotomous key.'
+- var_in: bark_texture
+  unit_in: .na
+  trait_name: bark_texture
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions, the Distribution and habitat text, the
+    Notes, the Introduction and the multi-access key. Multi-access key states naming
+    several textures (papery/fibrous, fibrous/stringy) are recorded as all of them.'
+- var_in: flower_anther_attachment
+  unit_in: .na
+  trait_name: flower_anther_attachment
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions and the Introduction. From each species
+    description, or the genus statement in the Introduction.'
+- var_in: flower_anther_dehiscence
+  unit_in: .na
+  trait_name: flower_anther_dehiscence
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: flower_colour
+  unit_in: .na
+  trait_name: flower_colour
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: flower_diameter
+  unit_in: mm
+  trait_name: flower_diameter
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions. The flower diameter.'
+- var_in: flower_fertile_stamens_count
+  unit_in: '{count}'
+  trait_name: flower_fertile_stamens_count
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: flower_hypanthium_length
+  unit_in: mm
+  trait_name: flower_hypanthium_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions and the dichotomous key.'
+- var_in: flower_petal_length
+  unit_in: mm
+  trait_name: flower_petal_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: flower_petal_shape
+  unit_in: .na
+  trait_name: flower_petal_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: flowering_time
+  unit_in: .na
+  trait_name: flowering_time
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the Flowering period statements.'
+- var_in: flowers_per_inflorescence
+  unit_in: '{count}/{count}'
+  trait_name: flowers_per_inflorescence
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions, the Notes and the dichotomous key.'
+- var_in: fruit_colour
+  unit_in: .na
+  trait_name: fruit_colour
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: fruit_fleshiness
+  unit_in: .na
+  trait_name: fruit_fleshiness
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions, the Affinities text and the dichotomous
+    key.'
+- var_in: fruit_length
+  unit_in: mm
+  trait_name: fruit_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions and the dichotomous key. The first
+    dimension of the fruit measurements, or dehisced fruit length from the dichotomous key
+    (entity measured).'
+- var_in: fruit_shape
+  unit_in: .na
+  trait_name: fruit_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: fruit_surface_hairs
+  unit_in: .na
+  trait_name: fruit_surface_hairs
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: fruit_type
+  unit_in: .na
+  trait_name: fruit_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the Introduction. From the genus statement in the Introduction.'
+- var_in: fruit_width
+  unit_in: mm
+  trait_name: fruit_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions and the dichotomous key. The second
+    dimension of the fruit measurements, or the fruit diameter in the dichotomous key.'
+- var_in: inflorescence_type
+  unit_in: .na
+  trait_name: inflorescence_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions and the dichotomous key.'
+- var_in: leaf_apex_shape
+  unit_in: .na
+  trait_name: leaf_apex_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions, the Affinities text and the multi-access
+    key.'
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions and the dichotomous key.'
+- var_in: leaf_discolority
+  unit_in: .na
+  trait_name: leaf_discolority
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions, the Affinities text and the dichotomous
+    key.'
+- var_in: leaf_hairs_adult_leaves
+  unit_in: .na
+  trait_name: leaf_hairs_adult_leaves
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions, the Affinities text and the dichotomous
+    key. Young leaves described as glabrescent are read as adult leaves glabrous.'
+- var_in: leaf_hairs_immature_leaves
+  unit_in: .na
+  trait_name: leaf_hairs_immature_leaves
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: leaf_length
+  unit_in: mm
+  trait_name: leaf_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions, the Affinities text and the dichotomous
+    key.'
+- var_in: leaf_length_to_width_ratio
+  unit_in: '{dimensionless}'
+  trait_name: leaf_length_to_width_ratio
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the Affinities text and the dichotomous key. Stated directly as how
+    many times longer than wide the leaves are.'
+- var_in: leaf_main_vein_count
+  unit_in: '{count}'
+  trait_name: leaf_main_vein_count
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions and the dichotomous key.'
+- var_in: leaf_margin_posture
+  unit_in: .na
+  trait_name: leaf_margin_posture
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions and the Affinities text.'
+- var_in: leaf_phyllotaxis
+  unit_in: .na
+  trait_name: leaf_phyllotaxis
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions and the Introduction. From each species
+    description, or the genus statement in the Introduction.'
+- var_in: leaf_shape
+  unit_in: .na
+  trait_name: leaf_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions and the Affinities text.'
+- var_in: leaf_surface_colour
+  unit_in: .na
+  trait_name: leaf_surface_colour
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions and the dichotomous key.'
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'The typical value, recorded for a flat-lamina leaf shape or leaves at least 3 mm
+    wide (trait_scoring_method = inferred).'
+- var_in: leaf_width
+  unit_in: mm
+  trait_name: leaf_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions and the dichotomous key.'
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'The typical value, recorded for a green-leaved plant with no parasitism or host
+    named (trait_scoring_method = inferred).'
+- var_in: pedicel_length
+  unit_in: mm
+  trait_name: pedicel_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions and the dichotomous key.'
+- var_in: petiole_length
+  unit_in: mm
+  trait_name: petiole_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the Distribution and habitat text. Soil, rock, forest and heath
+    habitats are terrestrial, swamps and swampy heath semiaquatic; where the text names no
+    habitat the typical value is recorded as trait_scoring_method = inferred.'
+- var_in: plant_height
+  unit_in: m
+  trait_name: plant_height
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'The typical value, recorded where leaves are described and nothing suggests
+    otherwise (trait_scoring_method = inferred).'
+- var_in: seed_colour
+  unit_in: .na
+  trait_name: seed_colour
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions and the Seed morphology section.'
+- var_in: seed_length
+  unit_in: mm
+  trait_name: seed_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: seed_shape
+  unit_in: .na
+  trait_name: seed_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions, the Introduction and the Seed morphology
+    section.'
+- var_in: seed_surface_texture
+  unit_in: .na
+  trait_name: seed_surface_texture
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions and the Seed morphology section.'
+- var_in: seed_width
+  unit_in: mm
+  trait_name: seed_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: stem_hairs
+  unit_in: .na
+  trait_name: stem_hairs
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the species descriptions.'
+- var_in: stem_shape
+  unit_in: .na
+  trait_name: stem_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: 'Scored from the Stem flanges section. Angular or triangular twigs, cited in the
+    Stem flanges section from earlier works.'
+substitutions:
+- trait_name: bark_colour
+  find: creamy
+  replace: white
+  match: word
+- trait_name: bark_texture
+  find: completely_smooth
+  replace: smooth
+  match: word
+- trait_name: bark_texture
+  find: longitudinally_fissured
+  replace: furrowed
+  match: word
+- trait_name: bark_texture
+  find: scaly
+  replace: flaky
+  match: word
+- trait_name: flower_anther_dehiscence
+  find: narrow_slits
+  replace: longitudinal_slit
+  match: word
+- trait_name: flower_colour
+  find: deep_pink
+  replace: pink
+  match: word
+- trait_name: flower_colour
+  find: pale_pink
+  replace: pink
+  match: word
+- trait_name: flower_colour
+  find: white
+  replace: white_cream
+  match: word
+- trait_name: fruit_fleshiness
+  find: succulent
+  replace: fleshy
+  match: word
+- trait_name: fruit_shape
+  find: 'globular-truncate'
+  replace: globoid
+  match: word
+- trait_name: fruit_shape
+  find: hemispherical
+  replace: hemispheric
+  match: word
+- trait_name: fruit_surface_hairs
+  find: pubescent
+  replace: hairy
+  match: word
+- trait_name: fruit_type
+  find: capsular
+  replace: capsule
+  match: word
+- trait_name: inflorescence_type
+  find: axillary_raceme
+  replace: 'raceme axillary'
+  match: word
+- trait_name: leaf_apex_shape
+  find: obtuse_or_minutely_retuse
+  replace: obtuse
+  match: word
+- trait_name: leaf_discolority
+  find: concolourous
+  replace: concolorous
+  match: word
+- trait_name: leaf_discolority
+  find: discolourous
+  replace: discolorous
+  match: word
+- trait_name: leaf_discolority
+  find: slightly_discolourous
+  replace: discolorous
+  match: word
+- trait_name: leaf_discolority
+  find: strongly_discolourous
+  replace: discolorous
+  match: word
+- trait_name: leaf_hairs_adult_leaves
+  find: 'densely_silky-pubescent'
+  replace: hairy
+  match: word
+- trait_name: leaf_hairs_adult_leaves
+  find: glabrescent
+  replace: glabrous
+  match: word
+- trait_name: leaf_hairs_adult_leaves
+  find: sparsely_pubescent
+  replace: hairy
+  match: word
+- trait_name: leaf_hairs_immature_leaves
+  find: appressed_indumentum
+  replace: hairy
+  match: word
+- trait_name: leaf_hairs_immature_leaves
+  find: long_marginal_hairs
+  replace: hairy
+  match: word
+- trait_name: leaf_hairs_immature_leaves
+  find: silky_appressed_hairs
+  replace: hairy
+  match: word
+- trait_name: leaf_hairs_immature_leaves
+  find: silky_pubescent
+  replace: hairy
+  match: word
+- trait_name: leaf_hairs_immature_leaves
+  find: sparse_long_hairs
+  replace: hairy
+  match: word
+- trait_name: leaf_margin_posture
+  find: not_recurved
+  replace: flat
+  match: word
+- trait_name: leaf_margin_posture
+  find: recurved
+  replace: revolute
+  match: word
+- trait_name: leaf_margin_posture
+  find: strongly_recurved
+  replace: revolute
+  match: word
+- trait_name: leaf_shape
+  find: broadly_elliptical
+  replace: widely_elliptical
+  match: word
+- trait_name: leaf_shape
+  find: 'narrow-lanceolate'
+  replace: narrowly_lanceolate
+  match: word
+- trait_name: leaf_surface_colour
+  find: 'mid-green'
+  replace: green
+  match: word
+- trait_name: leaf_surface_colour
+  find: 'pale_yellowish-green'
+  replace: green_yellow
+  match: word
+- trait_name: seed_colour
+  find: brown
+  replace: red_brown
+  match: word
+- trait_name: seed_colour
+  find: dark_brown
+  replace: red_brown
+  match: word
+- trait_name: seed_colour
+  find: light_brown
+  replace: red_brown
+  match: word
+- trait_name: seed_colour
+  find: pale_brown
+  replace: red_brown
+  match: word
+- trait_name: seed_colour
+  find: quite_black
+  replace: black
+  match: word
+- trait_name: seed_shape
+  find: elliptical
+  replace: ellipsoid
+  match: word
+- trait_name: seed_shape
+  find: linear
+  replace: ovoid_elongated
+  match: word
+- trait_name: seed_shape
+  find: obovoid
+  replace: ovoid
+  match: word
+- trait_name: seed_surface_texture
+  find: conspicuously_reticulate
+  replace: netted
+  match: word
+- trait_name: seed_surface_texture
+  find: reticulate
+  replace: netted
+  match: word
+- trait_name: seed_surface_texture
+  find: striate
+  replace: ribbed
+  match: word
+- trait_name: stem_hairs
+  find: sparsely_pubescent
+  replace: pubescent
+  match: word
+- trait_name: stem_hairs
+  find: virtually_glabrous
+  replace: subglabrous
+  match: word
+- trait_name: stem_shape
+  find: triangular
+  replace: angular
+  match: word
+taxonomic_updates: .na
+exclude_observations:
+- variable: taxon_name
+  find: Leptospermum javanicum, Leptospermum parviflorum, Leptospermum recurvum
+  reason: Non-Australian taxa (Malesia, New Guinea, Borneo and Sulawesi)
+questions:
+  question1: 'Multi-access key, Leaf apex: the state acute, prickly is printed 1,18,23,25.
+    Read as a misprint for 11 (L. microcarpum): 1 (L. pallidum) is also listed under
+    acute, not prickly and its description has no prickly wording, 11 is under no other
+    leaf apex state, and couplet 16 keys L. microcarpum as prickly. Scored for L.
+    microcarpum, not L. pallidum, with a note on each row. Confirm.'
+  question2: 'When a taxon has a character from several places only the highest-ranked
+    source is mapped: the taxon own text, then the multi-access key, then the dichotomous
+    key (all stay in data.csv). Confirm the order. The multi-access key ranks above the
+    dichotomous key because it scores each species singly, whereas most dichotomous leads
+    cover a group.'
+  question3: 'Stem flanges are one of the main diagnostic characters of the genus and are
+    scored for all 31 species (candidate stem_flanges, stem_flange_prominence,
+    stem_flange_extent). Consider a stem_flanges trait; stem_shape winged or angular is
+    not the same character.'
+  question4: 'Values with no level, mapped to the nearest: bark scaly -> flaky (Bean
+    separates flaky from scaly under L. variabile; Lim_2010 also maps scales to flaky),
+    seed shape linear -> ovoid_elongated (the elongate rule), seed striate -> ribbed and
+    reticulate -> netted (precedent across the repo), anthers opening by narrow slits ->
+    longitudinal_slit, not recurved margins -> flat, recurved margins -> revolute, creamy
+    bark -> white, triangular twigs -> angular. Check these.'
+  question5: 'L. petersonii leaf apex minutely retuse has no level in leaf_apex_shape and
+    goes to excluded_data as an unsupported value. The multi-access state obtuse or
+    minutely retuse is substituted to obtuse. Consider adding retuse to leaf_apex_shape.'
+  question6: 'Inequalities in the keys (Largest leaves <9 mm, 9--15 mm, >15 mm; Fruit
+    diameter <5 mm, >5 mm; Pedicels >8 mm; Leaves mostly >4 mm wide) are kept as *_class
+    candidates, not leaf_length, fruit_width or pedicel_length, because a bound is not a
+    measured value. They are the only leaf-length data for many taxa; say if you would
+    rather map them as maximum or minimum values.'
+  question7: 'Numbers that disagree within the paper, recorded as printed: L. madidum 22--70
+    mm leaf length and 2.5--5.0 mm fruit width against subsp. sativum 20--45 mm and
+    2.0--3.5 mm; L. venustum hypanthium 3--4 mm (description) against 3.5--4.0 mm (couplet
+    32). Categorical disagreements: L. amboinense narrowly elliptical leaves (description)
+    against lanceolate (Introduction), and sepals not persistent (description) against
+    both states (multi-access key); L. variabile bark flaky (Note) against papery or
+    fibrous (key).'
+  question8: 'Seed morphology group 1 (seeds and chaff identical, linear, striate) is stated
+    for all woody-fruited species. It is applied, as inferred_from_species_group, to L.
+    gregarium, L. wooroonooran, L. oreophilum and L. variabile, which couplet 23 calls
+    woody and which have no seed text of their own. L. recurvum (woody only by implication
+    in the Introduction) and L. petersonii (never called woody) are left without seed
+    values. Confirm.'
+  question9: 'The paper has no Methods section, so sampling_strategy quotes the
+    Introduction, the Seed morphology section and the Acknowledgements. Bean gave no
+    statement of how characters were scored in the keys.'
+  question10: 'L. brachyandrum hillside and creek-dwelling plants are alike in being
+    protected from fire, and Bean adds that this is perhaps a determinant of its
+    distribution. This is kept in habitat_description and habitat_terms; no fire response
+    is scored.'
