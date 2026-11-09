@@ -1035,26 +1035,51 @@ not the main checkout's: the user switches branches in the main checkout, and it
 - **Scope:** R.J. Chinnock (2007) "Eremophila and allied genera" (Rosenberg), the taxon accounts; photographed as `Eremophile 093-300.pdf`
   (book p. 93 + file page - 1 to file p. 52 = book p. 144, then + 93: **book p. 145 is missing** from every scan, the heading and opening
   of Myoporum degeneri), `Eremophile 301-500.pdf` (+ 300), `Eremophile 501-650.pdf` (+ 500), and `Eremophila 2.pdf`, 10 rescans placed by
-  their printed page number (one unnumbered, placed by word overlap: p. 346); the scan with more text is used (9 rescans). New dataset
-  beside Chinnock_2007 (25 traits from a spreadsheet). 251 species (Myoporum 30, Bontia, Pentacoelium, Diocirea 4, Glycocystis,
-  Calamphoreus, Eremophila 215) and 102 subspecies.
+  their printed page number (one unnumbered, placed by word overlap: p. 346) and merged with the main scan. New dataset
+  beside Chinnock_2007 (25 traits from a spreadsheet). 253 species (Myoporum 30, Bontia, Pentacoelium, Diocirea 4, Glycocystis,
+  Calamphoreus, Eremophila 215) and 104 subspecies.
 - **OCR** (`data_extra/Eremophila_ocr/scripts/page.py`, the Verticordia method at 240 dpi): two-column pages with inset maps, photos and
-  figures. Per-page gutter = the leftmost line start shared by 3+ lines (text wrapped beside a figure starts further right); right of the
-  gutter is right-column text, only a short piece far right is a key answer; a wide line is a merged two-column line when the crops'
-  lines end short of / start at the gutter, or when narrow lines of both columns are just above and below it (skewed pages). Running head
-  dropped, printed page number kept (pageno rows).
-- **Entries** (`entries.py` -> `data_extra/chinnock2007_profiles.csv`): headings "86. Eremophila metallicorum S. Moore, ..." and "3b. Subsp.
-  australe ..."; species numbering restarts per genus; heading numbers read on their own line ("52." / "64a.") are joined, a piece joined in
-  front ("(1861) 149. Eremophila bowmanii") split off, and E. occidens's lost "52." restored. Dropped: map axis labels (and their joins
-  "...... 120°"), map captions (whole or "Map 74." / "Distribution of" / name), photo captions ("Eremophila x. Flowering branches. place"),
-  figure legends ("SCALE:", "A, branching habit; B, ..."), plate pages. Parts: citations, Type (also "Type." and Holotype / Lectotype for
-  synonyms), description (first habit sentence after the last type citation, else the first sentence after its herbaria), and the labelled
-  sections DISTRIBUTION AND ECOLOGY (often split / scrambled, "DISTRIBUTION - 10° ECOLOGY AND"), CONSERVATION STATUS, DERIVATION OF EPITHET /
-  NAME, NOTES, SELECTED SPECIMENS / SPECIMENS EXAMINED. Typical subspecies have no type: all their text is the description.
+  figures. Gutter = the white space between 0.38 and 0.65 that the fewest narrow lines cross; column crops widened past the gutter and
+  filtered by word centre (duplicates removed in entries.py); three overlapping full-width bands for lines a pass drops. A wide line is a
+  merged two-column line when the crops' lines end short of / start at the gutter, or when narrow lines of both columns lie within 0.05
+  of it (then split by the left crop's word count). Tall garbled lines dropped against lines of their own kind (headings exempt). Do not
+  tighten the neighbour test to "a right neighbour starts at the gutter": real merged lines beside a map lost their split and one taxon's
+  distribution ran into the previous one (tried and reverted 2026-11-09; section blocks are handled in entries.py instead).
+- **Entries** (`entries.py` -> `data_extra/chinnock2007_profiles.csv`, `pages_used.csv`): headings "86. Eremophila metallicorum S. Moore, ..."
+  and "3b. Subsp. australe ..." (epithet read with a capital accepted, "197c. Subsp. Lanata"); rescans merged with the main scan line by
+  line; pieces of one visual line joined in x order. Dropped: keys (couplet numbers aligned and stepping 0/1), figure and plate pages,
+  legends, scale bars, photo captions, map axis labels.
+  - **Section and genus openings** (heading, Latin and English diagnoses, map, key to species) sit full width above the section's first
+    entry; on such a page the rows from the section start to the first heading are read line by line as full-width text (`sect_block`;
+    not running heads, which sit at y < 0.04 on either margin). Each entry's text is then cut at the first section marker after its labels
+    (`SECT_START`: section heading + author, "(Lecto)type species:", genus heading "3. Bontia L.", Latin "Frutices/Frutex ...", "Key to
+    species/subspecies", old genus names with authors "Duttonia F. Muell."). Before this, section text sat inside 6 descriptions
+    (E. campanulata "Leaves sessile, alternate to subopposite", E. pentaptera "Fruit dry, non-woody, 4-locular ...") and in notes.
+  - **Map captions** read into the text beside the map (~190 entries): `strip_caps` removes the cue ("Map 62", "Distribution of", "of
+    Distribution", "Ma 120.") with the name words right after it, then the name words it lacks within 20 words and before the next section
+    label, out of place: never "E. rigida", "subsp. australe", "Latin rigida", a synonym "Bontia clarkei (Oldfield ...)", or a sentence's
+    subject ("Map Eremophila praecox occurs on"; "Distribution of Eremophila longifolia is Eremophila longifolia widespread" keeps the first).
+    "See Map 5 (page 64)." stays. Map scale / axis scraps and Cyrillic OCR letters are dropped. Review every removal (diff) after a change:
+    the first versions cut real names in citations, derivations and notes.
+  - Description start, lost distribution label, common names, organ-size moves and habit normalisation as before; `FIX_TEXT` holds the
+    hand fixes checked against the page images (E. phyllopoda "Erect", E. cuneifolia misprint 9.0-24, E. latrobei subsp. latrobei's
+    scrambled label, E. rigens's legend scrap, ...). A figure reference without its number and a trailing section name are dropped.
+  - **One indumentum for several organs** ("... shrub 0.5-1.2 m tall with branches, leaves, pedicels and sepals clothed in a silvery-grey
+    simple tomentum", subspecies' "Branches and leaves velutinous."): copied into the Branches and Leaves sentences as an "indumentum" part
+    ("Branches ...; indumentum clothed in ...", before a petiole or leaf-base clause), so the parser reads only hairs from it (as plain
+    text it made leaf colour, "persistent" leaves and stems, "appressed" leaves, "simple" leaves and petiole hairs); stem_hairs reads the
+    indumentum part in Chinnock mode. 69 taxa; ~40 had no stem or leaf hairs, and subspecies had inherited the species' "glabrous hairy".
 - **Same parser, Chinnock mode** (`FOA_SOURCE=chinnock`): family Scrophulariaceae; Distribution and ecology -> distribution, its habitat
-  sentences -> habitat, its flowering sentences with months -> phenology; Notes -> notes. Not recovered: E. microtheca's description (lost
-  around a figure); 8 taxa without a distribution section.
-- Build check (`ignore/jobs/erem1/proc_erem.R`): 16,446 values, 354 taxa, 91 traits, nothing excluded.
+  sentences -> habitat, its flowering sentences with months -> phenology; Notes -> notes. `raw/vet_family.R`: leaf_compoundness simple for
+  every taxon from the family description (inferred_from_family; the book never says "simple").
+- **Metadata** (`ignore/jobs/erem1/make_meta.py --force`): non-Australian taxa (Bontia, Pentacoelium, extra-Australian Myoporum) under
+  `exclude_observations`; question1 asks for book p. 145 (missing from every scan: heading and opening of Myoporum degeneri).
+- **Checks** (`ignore/jobs/erem1/`): `qa.py` (sizes read independently from each description; known artefacts only), `compare.R` +
+  `compare2.R` + `compare_csv.py` (against Chinnock_2007; ~/Downloads/Chinnock_2007_vs_Chinnock_2007_2.csv), `proc_erem.R`
+  (dataset_process: 17,414 values, 339 taxa, 88 traits, only the metadata exclusions; 357 entries, 253 species, 104 subspecies).
+  Chinnock_2007's own errors found this way: every leaf_shape "elliptical", seed_shape "ellipsoid" for "oblong", and the sizes of
+  D. violacea, E. campanulata, caperata, decussata, dendritica, glabra, granitica, humilis, macmillaniana, oppositifolia, petrophila,
+  pinnatifida, rhegos, rotundifolia, M. cordifolium (book text checked).
 
 ## Every trait for every taxon (user 2026-10-30)
 

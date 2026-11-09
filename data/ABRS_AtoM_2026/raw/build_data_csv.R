@@ -955,7 +955,7 @@ if (chinnock_mode) {
               Habitat = map_chr(cn_sent(distribution_ecology), ~ na_if(paste(.x[str_detect(.x, regex(cn_hab, ignore_case = TRUE)) & !str_detect(.x, regex("\\bflower", ignore_case = TRUE))], collapse = " "), "")),
               Phenology = map_chr(cn_sent(distribution_ecology), ~ na_if(paste(.x[str_detect(.x, regex("\\bflower", ignore_case = TRUE)) & str_detect(.x, regex(cn_mon, ignore_case = TRUE))], collapse = " "), "")),
               Distribution = cn_txt(distribution_ecology), Notes = cn_txt(notes),
-              `Common Name` = NA_character_, Biostatus = NA_character_, Author = NA_character_, source_page = page, other_names = NA_character_)
+              `Common Name` = cn_txt(common_name), Biostatus = NA_character_, Author = NA_character_, source_page = page, other_names = NA_character_)
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
@@ -3632,7 +3632,8 @@ extract_one <- function(r, group_filter = TRUE) {
   # ---- stems, bark, underground organs
   stem <- unit_text(u, "stem", subj_re = "branchlet|branch|stem|twig|shoot|cane|axes|culm")
   stem_txt <- join_units(stem)
-  addc("stem_hairs", join_units(unit_text(u, "stem", subj_re = "branchlet|branch|stem|twig|shoot|cane")), hairs_dict %>% { .[. != "glandular_pubescent"] } %>% c("glandular-(?:pubescent|hairy|pilose|puberulous)|glandular hairs" = "hairy"),
+  # (Chinnock: an indumentum stated for the branches and leaves together is given to each as its "indumentum" part, entries.py share_hairs)
+  addc("stem_hairs", join_units(unit_text(u, "stem", parts = if (chinnock_mode) "indumentum" else NA, subj_re = "branchlet|branch|stem|twig|shoot|cane")), hairs_dict %>% { .[. != "glandular_pubescent"] } %>% c("glandular-(?:pubescent|hairy|pilose|puberulous)|glandular hairs" = "hairy"),
        prep_fun = function(x) str_remove_all(x, "\\b(?:when young|young parts?|at first|initially)\\b"))
   addc("stem_shape", join_units(unit_text(u, "stem", subj_re = "branchlet|branch|stem|twig")), stem_shape_dict)
   if (is.null(ht)) {

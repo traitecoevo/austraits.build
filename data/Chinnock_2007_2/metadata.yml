@@ -30,8 +30,8 @@ dataset:
           "flower_shape", "flower_structural_sex_type", "flower_tube_length", "flowers_per_inflorescence",
           "fruit_colour", "fruit_dehiscence", "fruit_fleshiness", "fruit_length",
           "fruit_shape", "fruit_surface", "fruit_surface_hairs", "fruit_surface_reflectivity",
-          "fruit_texture", "fruit_type", "fruit_width", "germination_cues",
-          "inflorescence_type", "juvenile_leaf_length", "juvenile_leaf_width", "leaf_adaxial_colour",
+          "fruit_texture", "fruit_type", "fruit_width", "fruiting_cues",
+          "germination_cues", "inflorescence_type", "juvenile_leaf_length", "leaf_adaxial_colour",
           "leaf_apex_shape", "leaf_arrangement", "leaf_attachment", "leaf_base_shape",
           "leaf_compoundness", "leaf_discolority", "leaf_glaucousness", "leaf_hairs_adult_leaves",
           "leaf_hairs_juvenile_leaves", "leaf_lamina_posture", "leaf_length", "leaf_lobation",
@@ -44,8 +44,8 @@ dataset:
           "plant_physical_defence_structures", "plant_succulence", "plant_width", "post_fire_recruitment",
           "seed_colour", "seed_length", "seed_shape", "seed_surface_texture",
           "seed_width", "sepal_fusion", "sex_type", "stem_branching_form",
-          "stem_constitution", "stem_growth_habit", "stem_hairs", "stem_length",
-          "stem_shape", "style_colour", "style_shape", "woodiness_detailed"
+          "stem_constitution", "stem_growth_habit", "stem_hairs", "stem_shape",
+          "style_colour", "style_shape", "woodiness_detailed"
         ),
         is.na(measurement_range) | measurement_range != "extreme"
       )
@@ -364,6 +364,15 @@ traits:
   methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
     maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
     parenthetical extremes are on measurement_range = extreme rows (not mapped).'
+- var_in: fruiting_cues
+  unit_in: .na
+  trait_name: flowering_cues
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from Phenology, Ecology, Notes or Habitat statements that fruiting follows rainfall, fire, floods or similar
+    (verbatim in value_description), recorded as flowering cues; hedged statements are recorded in the description only.
 - var_in: germination_cues
   unit_in: .na
   trait_name: germination_cues
@@ -391,17 +400,6 @@ traits:
   methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
     maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
     parenthetical extremes are on measurement_range = extreme rows (not mapped). Lengths of juvenile phase leaves, given in
-    the description of the juvenile leaves.'
-- var_in: juvenile_leaf_width
-  unit_in: mm
-  trait_name: leaf_width_juvenile_leaves
-  entity_type: species
-  value_type: value_type
-  basis_of_value: measurement
-  replicates: .na
-  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
-    maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
-    parenthetical extremes are on measurement_range = extreme rows (not mapped). Widths of juvenile phase leaves, given in
     the description of the juvenile leaves.'
 - var_in: leaf_adaxial_colour
   unit_in: .na
@@ -863,16 +861,6 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: Scored from the taxon description (verbatim source terms in value_description).
-- var_in: stem_length
-  unit_in: mm
-  trait_name: stem_length
-  entity_type: species
-  value_type: value_type
-  basis_of_value: measurement
-  replicates: .na
-  methods: 'Measurement given in the taxon description (verbatim in value_description): a range is recorded as minimum and
-    maximum values, a single measurement as a mean, a single count as a mode, "to X" as a maximum and "X or more" as a minimum;
-    parenthetical extremes are on measurement_range = extreme rows (not mapped).'
 - var_in: stem_shape
   unit_in: .na
   trait_name: stem_shape
@@ -978,5 +966,16 @@ substitutions:
   replace: mallee
   match: word
 taxonomic_updates: .na
-exclude_observations: .na
-questions: .na
+exclude_observations:
+- variable: taxon_name
+  find: Bontia daphnoides, Myoporum boninense subsp. boninense, Myoporum crassifolium, Myoporum degeneri, Myoporum laetum,
+    Myoporum mauritianum, Myoporum rapense, Myoporum rapense subsp. kermadecense, Myoporum rapense subsp. rapense, Myoporum
+    rimatarense, Myoporum sandwicense, Myoporum sandwicense subsp. lanaiense, Myoporum sandwicense subsp. sandwicense, Myoporum
+    stellatum, Myoporum stokesii, Myoporum tenuifolium, Myoporum wilderi, Pentacoelium bontioides
+  reason: excluding taxa not native to Australia (New Caledonia, Pacific islands, New Zealand, Mauritius, Caribbean, eastern
+    Asia)
+questions:
+  question1: Book page 145 is missing from the photographed scans (Eremophile 093-300.pdf runs from p. 144 to p. 146, and
+    the rescans in Eremophila 2.pdf do not include it). It holds the heading and the opening of the description of 24. Myoporum
+    degeneri (the end of 23b. M. sandwicense subsp. lanaiense may also be on it); M. degeneri's data here start partway through
+    its description, at the top of p. 146. Please photograph p. 145 so that it can be added.
