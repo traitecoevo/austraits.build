@@ -104,9 +104,16 @@ if (atrp_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra
 # crops and full-width bands; Verticordia_ocr/scripts/page.py), then split into entries and fields (entries.py -> verticordia_profiles.csv).
 verticordia_mode <- Sys.getenv("FOA_SOURCE") == "verticordia"
 if (verticordia_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/verticordia_profiles.csv"
+# Chinnock mode (env FOA_SOURCE=chinnock; user 2026-11-09): R.J. Chinnock (2007) "Eremophila and allied genera: a monograph of the plant
+# family Myoporaceae" (Rosenberg), the taxon accounts (Myoporum, Bontia, Pentacoelium, Diocirea, Glycocystis, Calamphoreus, Eremophila;
+# 251 species, 102 subspecies) into the long-format dataset Chinnock_2007_2 (beside Chinnock_2007, 25 traits from a spreadsheet). The
+# pages were photographed (three PDFs and a set of rescans; book p. 145 is missing) and OCR'd with Apple Vision (whole page, column
+# crops and full-width bands; Eremophila_ocr/scripts/page.py), then split into entries and fields (entries.py -> chinnock2007_profiles.csv).
+chinnock_mode <- Sys.getenv("FOA_SOURCE") == "chinnock"
+if (chinnock_mode) src <- "~/GitHub/austraits.build-data.scraping.scripts/data_extra/chinnock2007_profiles.csv"
 own_id <- if (euclid_mode) "CPBR_2026" else if (plantnet_mode) "NHNSW_2026" else if (wattle_mode) "WATTLE_2026" else if (ausgrass_mode) "AusGrass3_2026" else
   if (florabase_mode) c(brief = "WAH_2026_1", key = "WAH_2026_2", delta = "WAH_2026_3")[[fb_text]] else if (vicflora_mode) "RBGV_2026" else if (saflora_mode) "SAH_2026" else if (ntflora_mode) "NT_2026" else
-  if (cooper_mode) "Cooper_2004_2" else if (brophy_mode) "Brophy_2013" else if (atrp_mode) "ATRP_2026" else if (verticordia_mode) "George_2002" else NA_character_
+  if (cooper_mode) "Cooper_2004_2" else if (brophy_mode) "Brophy_2013" else if (atrp_mode) "ATRP_2026" else if (verticordia_mode) "George_2002" else if (chinnock_mode) "Chinnock_2007_2" else NA_character_
 # data.csv grew past GitHub's file-size limit as one dataset, so the extraction is written to several datasets by
 # family: Asteraceae, Fabaceae, Myrtaceae and Proteaceae each have their own, and the other families are split
 # alphabetically (A-M, N-Z). This script and its override / vetted CSVs live in ABRS_AtoM_2026/raw and build all of them.
@@ -118,7 +125,7 @@ own_dataset <- c(Asteraceae = "ABRS_Asteraceae_2026", Fabaceae = "ABRS_Fabaceae_
 # (ABRS_Myrtaceae_2026 and ABRS_AtoM_2026 converted from wide, user 2026-10-29: every dataset is now long)
 long_ids <- c("ABRS_Fabaceae_2026", "ABRS_NtoZ_2026", "ABRS_Proteaceae_2026", "ABRS_Asteraceae_2026", "ABRS_Myrtaceae_2026", "ABRS_AtoM_2026",
               "CPBR_2026", "NHNSW_2026", "WATTLE_2026", "AusGrass3_2026", "WAH_2026_1", "WAH_2026_2", "WAH_2026_3", "RBGV_2026", "SAH_2026", "NT_2026", "Cooper_2004_2",
-              "Brophy_2013", "ATRP_2026", "George_2002")
+              "Brophy_2013", "ATRP_2026", "George_2002", "Chinnock_2007_2")
 dataset_of <- function(fam) if (!is.na(own_id)) rep(own_id, length(fam)) else
   unname(ifelse(fam %in% names(own_dataset), own_dataset[fam], ifelse(substr(fam, 1, 1) <= "M", "ABRS_AtoM_2026", "ABRS_NtoZ_2026")))
 n_cores <- as.integer(Sys.getenv("FOA_CORES", "10"))
@@ -930,6 +937,25 @@ if (verticordia_mode) {
               Notes = vt_txt(paste(coalesce(distinguishing, ""), coalesce(related_species, ""))),
               `Common Name` = vt_txt(common_name), Biostatus = NA_character_, Author = NA_character_,
               source_page = page, other_names = vt_txt(other_names))
+  foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
+  for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
+}
+if (chinnock_mode) {
+  fams <- "Scrophulariaceae"; gens <- character(0)
+  cn_txt <- function(x) na_if(str_squish(coalesce(x, "")), "")
+  cn_sent <- function(x) str_split(coalesce(x, ""), "(?<=[a-z0-9)%]\\.)\\s+(?=[A-Z])")
+  # the Distribution and ecology section is the distribution; its sentences on soils, vegetation and situation are the habitat
+  # ("It occurs on red sandy loam at the base of a granite outcrop amongst Acacia, Melaleuca and Eucalyptus species"), and those on flowering
+  # with months the phenology ("Flowering occurs mainly from July to October")
+  cn_hab <- "\\b(?:grow|occurs? (?:on|in|amongst|along|with)|found (?:on|in|along)|soils?|sand|loam|clay|gravel|granite|laterit|limestone|calcareous|quartzite|rocky|outcrops?|woodland|shrubland|heath|mallee|mulga|spinifex|forest|grassland|creek|river|salt|saline|swamp|dunes?|plains?|slopes?|ridges?|hills?)\\b"
+  cn_mon <- "\\b(?:January|February|March|April|May|June|July|August|September|October|November|December|spring|summer|autumn|winter)\\b"
+  d_all <- d_all %>%
+    transmute(scientific_name = str_squish(taxon_name), rank, family = "Scrophulariaceae", url = NA_character_,
+              Description = cn_txt(description),
+              Habitat = map_chr(cn_sent(distribution_ecology), ~ na_if(paste(.x[str_detect(.x, regex(cn_hab, ignore_case = TRUE)) & !str_detect(.x, regex("\\bflower", ignore_case = TRUE))], collapse = " "), "")),
+              Phenology = map_chr(cn_sent(distribution_ecology), ~ na_if(paste(.x[str_detect(.x, regex("\\bflower", ignore_case = TRUE)) & str_detect(.x, regex(cn_mon, ignore_case = TRUE))], collapse = " "), "")),
+              Distribution = cn_txt(distribution_ecology), Notes = cn_txt(notes),
+              `Common Name` = NA_character_, Biostatus = NA_character_, Author = NA_character_, source_page = page, other_names = NA_character_)
   foa_cols <- names(read_csv("~/GitHub/austraits.build-data.scraping.scripts/data_extra/foa_profiles.csv", n_max = 0, show_col_types = FALSE))
   for (cc in setdiff(foa_cols, names(d_all))) d_all[[cc]] <- NA_character_
 }
@@ -6456,6 +6482,11 @@ if (Sys.getenv("FOA_FAMILIES") == "") {
         dir.create(file.path("data", id, "raw"), recursive = TRUE, showWarnings = FALSE)
         write_csv(bp_info, file.path("data", id, "raw", "taxon_info.csv"), na = "")
         df <- df %>% select(-foa_url) %>% left_join(bp_info %>% select(taxon_name, source_page), by = "taxon_name") %>% relocate(source_page, .after = taxon_name)
+      }
+      # (Chinnock_2007_2: the book page of each taxon's entry on its rows)
+      if (chinnock_mode) {
+        cn_info <- d_all %>% filter(scientific_name %in% df$taxon_name) %>% distinct(taxon_name = scientific_name, source_page)
+        df <- df %>% select(-foa_url) %>% left_join(cn_info, by = "taxon_name") %>% relocate(source_page, .after = taxon_name)
       }
       # (George_2002: the page of each taxon's entry (of the photographed PDF) on its rows; other names in raw/taxon_info.csv)
       if (verticordia_mode) {

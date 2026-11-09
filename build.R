@@ -297,6 +297,10 @@ Chinnock_2007_config <- dataset_configure("data/Chinnock_2007/metadata.yml", def
 Chinnock_2007_raw <- dataset_process("data/Chinnock_2007/data.csv", Chinnock_2007_config, schema, resource_metadata, unit_conversions)
 Chinnock_2007 <- dataset_update_taxonomy(Chinnock_2007_raw, taxon_list)
 
+Chinnock_2007_2_config <- dataset_configure("data/Chinnock_2007_2/metadata.yml", definitions)
+Chinnock_2007_2_raw <- dataset_process("data/Chinnock_2007_2/data.csv", Chinnock_2007_2_config, schema, resource_metadata, unit_conversions)
+Chinnock_2007_2 <- dataset_update_taxonomy(Chinnock_2007_2_raw, taxon_list)
+
 Choat_2006_config <- dataset_configure("data/Choat_2006/metadata.yml", definitions)
 Choat_2006_raw <- dataset_process("data/Choat_2006/data.csv", Choat_2006_config, schema, resource_metadata, unit_conversions)
 Choat_2006 <- dataset_update_taxonomy(Choat_2006_raw, taxon_list)
@@ -2062,6 +2066,7 @@ austraits_raw <- austraits::bind_databases(
   Cheesman_2020,
   Chen_2017,
   Chinnock_2007,
+  Chinnock_2007_2,
   Choat_2006,
   Choat_2012,
   Clarke_2009,

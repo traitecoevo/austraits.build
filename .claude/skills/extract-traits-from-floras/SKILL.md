@@ -1030,6 +1030,32 @@ not the main checkout's: the user switches branches in the main checkout, and it
 - Build check (`ignore/jobs/vert1/proc_vert.R`): 168 taxa, 56 traits, nothing excluded; 75 candidate traits (staminodes, hypanthium,
   sepal colour ...) not in traits.yml.
 
+## Book scans: Chinnock 2007, Eremophila and allied genera (Chinnock_2007_2, user 2026-11-09)
+
+- **Scope:** R.J. Chinnock (2007) "Eremophila and allied genera" (Rosenberg), the taxon accounts; photographed as `Eremophile 093-300.pdf`
+  (book p. 93 + file page - 1 to file p. 52 = book p. 144, then + 93: **book p. 145 is missing** from every scan, the heading and opening
+  of Myoporum degeneri), `Eremophile 301-500.pdf` (+ 300), `Eremophile 501-650.pdf` (+ 500), and `Eremophila 2.pdf`, 10 rescans placed by
+  their printed page number (one unnumbered, placed by word overlap: p. 346); the scan with more text is used (9 rescans). New dataset
+  beside Chinnock_2007 (25 traits from a spreadsheet). 251 species (Myoporum 30, Bontia, Pentacoelium, Diocirea 4, Glycocystis,
+  Calamphoreus, Eremophila 215) and 102 subspecies.
+- **OCR** (`data_extra/Eremophila_ocr/scripts/page.py`, the Verticordia method at 240 dpi): two-column pages with inset maps, photos and
+  figures. Per-page gutter = the leftmost line start shared by 3+ lines (text wrapped beside a figure starts further right); right of the
+  gutter is right-column text, only a short piece far right is a key answer; a wide line is a merged two-column line when the crops'
+  lines end short of / start at the gutter, or when narrow lines of both columns are just above and below it (skewed pages). Running head
+  dropped, printed page number kept (pageno rows).
+- **Entries** (`entries.py` -> `data_extra/chinnock2007_profiles.csv`): headings "86. Eremophila metallicorum S. Moore, ..." and "3b. Subsp.
+  australe ..."; species numbering restarts per genus; heading numbers read on their own line ("52." / "64a.") are joined, a piece joined in
+  front ("(1861) 149. Eremophila bowmanii") split off, and E. occidens's lost "52." restored. Dropped: map axis labels (and their joins
+  "...... 120°"), map captions (whole or "Map 74." / "Distribution of" / name), photo captions ("Eremophila x. Flowering branches. place"),
+  figure legends ("SCALE:", "A, branching habit; B, ..."), plate pages. Parts: citations, Type (also "Type." and Holotype / Lectotype for
+  synonyms), description (first habit sentence after the last type citation, else the first sentence after its herbaria), and the labelled
+  sections DISTRIBUTION AND ECOLOGY (often split / scrambled, "DISTRIBUTION - 10° ECOLOGY AND"), CONSERVATION STATUS, DERIVATION OF EPITHET /
+  NAME, NOTES, SELECTED SPECIMENS / SPECIMENS EXAMINED. Typical subspecies have no type: all their text is the description.
+- **Same parser, Chinnock mode** (`FOA_SOURCE=chinnock`): family Scrophulariaceae; Distribution and ecology -> distribution, its habitat
+  sentences -> habitat, its flowering sentences with months -> phenology; Notes -> notes. Not recovered: E. microtheca's description (lost
+  around a figure); 8 taxa without a distribution section.
+- Build check (`ignore/jobs/erem1/proc_erem.R`): 16,446 values, 354 taxa, 91 traits, nothing excluded.
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`
