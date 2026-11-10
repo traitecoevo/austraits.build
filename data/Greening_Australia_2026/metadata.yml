@@ -1,0 +1,135 @@
+source:
+  primary:
+    key: Greening_Australia_2026
+    bibtype: Online
+    author: Greening Australia
+    year: 2025
+    title: Greening Australia dataset from Australian Virtual Seed Bank
+    publisher: Australian Virtual Seed Bank
+    url: https://seedbank.ala.org.au
+contributors:
+  data_collectors:
+  - last_name: unknown
+    given_name: unknown
+    ORCID: unknown
+    affiliation: Greening Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        location_name = ifelse(
+          !is.na(`Decimal Latitude`),
+          paste0("seeds_collected_at_", `Decimal Latitude`, "_lat_and_", `Decimal Longitude`, "_long"),
+          NA
+        ),
+        basis_of_record = ifelse(Cultivated %in% c("Z", "G", "cultivated"), "captive_cultivated", "field"),
+        seed_weight = as.numeric(`Thousand Seed Weight`) / 1000,
+        seed_weight = ifelse(seed_weight > 0, seed_weight, NA),
+        gm_per_seed = ifelse(is.na(seed_weight) & as.numeric(`Seed/gm`) > 0, 1 / as.numeric(`Seed/gm`), NA),
+        seed_mass_replicates = as.character(round(
+          as.numeric(`Quantity (g)`) / dplyr::coalesce(seed_weight, gm_per_seed)
+        )),
+        seed_mass_replicates = dplyr::na_if(seed_mass_replicates, "0"),
+        measurement_remarks = ifelse(!is.na(Collector), paste0("Collector: ", Collector), NA)
+      ) %>%
+      filter(!is.na(`Scientific Name`))
+    '
+  collection_date: Collection Date
+  taxon_name: Scientific Name
+  location_name: location_name
+  description: Seed trait data from Greening Australia,
+    including seed mass of collected seeds and data on germination trials.
+  life_stage: adult
+  measurement_remarks: measurement_remarks
+  sampling_strategy: Greening Australia is a national, not-for-profit committed to restoring Australia's diverse landscapes and protecting biodiversity in ways that benefit communities, economies, and nature. With projects spanning the breadth of the country - from city suburbs to remote rural locations - GA apply a science-led, collaborative approach to deliver nature-based solutions addressing the twin crises of climate change and biodiversity loss. Greening Australia was established in 1982, in response to the serious impacts of tree decline on agriculture and the environment across Australia. Today, they remain dedicated to solving complex environmental problems through on-ground restoration at scale. By restoring Australia's diverse and iconic ecosystems, GA help create healthy, productive landscapes where people and nature can thrive.
+  original_file: Data downloaded from the Australian Virtual Seed Bank (https://seedbank.ala.org.au)
+    GraphQL API (https://events-databox.ala.org.au/graphql) on 10 Nov 2026, all records
+    for Greening Australia; see data/ANBG_2026/raw/AVSB_download.R and
+    data/ANBG_2026/raw/AVSB_split_by_seedbank.R. The Feb 2025 website download is
+    data/Greening_Australia_2025/data.csv in commit 245b581a.
+  notes: data.csv has one row per seed accession and one row per germination trial (with
+    the accession's taxon, locality and dates), distinguished by `Event Type`.
+identifiers:
+- var_in: Accession Number
+  identifier_type: catalogNumber
+  institution_code: Greening Australia
+locations:
+  seeds_collected_at_-33.606167_lat_and_150.734527_long:
+    latitude (deg): -33.606167
+    longitude (deg): 150.734527
+    locality: Growing wild in sub-dominant grass rows, RICHMOND
+    state: NSW
+  seeds_collected_at_-33.606167_lat_and_150.734528_long:
+    latitude (deg): -33.606167
+    longitude (deg): 150.734528
+    locality: Growing wild in sub-dominant grass rows, RICHMOND
+    state: NSW
+  seeds_collected_at_-33.833083_lat_and_150.865305_long:
+    latitude (deg): -33.833083
+    longitude (deg): 150.865305
+    locality: Chandos Rd, HORSLEY PARK
+    state: NSW
+  seeds_collected_at_-33.924028_lat_and_150.741139_long:
+    latitude (deg): -33.924028
+    longitude (deg): 150.741139
+    locality: 215 Badgerys Creek Rd, BRINGELLY
+    state: NSW
+contexts:
+- context_property: seed purity (%)
+  category: entity_context
+  var_in: Purity
+- context_property: storage seed bank
+  category: treatment_context
+  var_in: Storage Seed Bank
+traits:
+- var_in: gm_per_seed
+  unit_in: g
+  trait_name: seed_dry_mass
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: seed_mass_replicates
+  basis_of_record: basis_of_record
+  methods: The average number of seeds or fruits per gram of the accession. This may
+    be an estimate.
+- var_in: seed_weight
+  unit_in: g
+  trait_name: seed_dry_mass
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: seed_mass_replicates
+  basis_of_record: basis_of_record
+  methods: The mass of 1000 pure seeds or fruits.
+- var_in: Adjusted Germination %
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  basis_of_record: lab
+  methods: The proportion of seeds germinated, expressed as a percentage of the total
+    viable seeds tested.
+- var_in: Viability %
+  unit_in: '%'
+  trait_name: seed_viability
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  basis_of_record: lab
+  methods: The proportion of viable seeds in a germination test, determined by the
+    number of germinated seeds and those that appear viable from a post-germination
+    cut test.
+substitutions: .na
+taxonomic_updates:
+- find: Calotis
+  replace: Calotis sp. [Calotis; Greening_Australia_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+exclude_observations: .na
+questions: .na
