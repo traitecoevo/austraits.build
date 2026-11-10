@@ -43,7 +43,9 @@ dataset:
         plant_growth_substrate = ifelse(str_detect(plant_growth_form, "epiphyte"), "epiphyte", NA),
         plant_growth_form = str_replace(plant_growth_form, "epiphyte_", ""),
         plant_growth_form = str_replace(plant_growth_form, "epiphyte", "")  %>% str_squish(),
-        seedbank_longevity_class = propagule_longevity
+        seedbank_longevity_class = propagule_longevity,
+        bark_ribbon_type = if_else(str_detect(bark_morphology, "eucalypt_ribbonbark"), "consistent_ribboning", NA_character_),
+        bark_morphology = str_remove(bark_morphology, "eucalypt_ribbonbark") %>% str_squish() %>% na_if("")
       ) %>%
       move_values_to_new_trait(
         "plant_growth_form","stem_growth_habit",
@@ -61,7 +63,7 @@ dataset:
         mutate(observation_num = row_number()) %>%
       ungroup()
     '
-  collection_date: unknown/2020
+  collection_date: 2020
   taxon_name: Species_Name
   description: Compilation of trait data for Victorian plant species
   basis_of_record: literature field
@@ -318,6 +320,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: compilation from diverse sources and expert opinion
+- var_in: bark_ribbon_type
+  unit_in: .na
+  trait_name: bark_ribbon_type
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: compilation from diverse sources and expert opinion
 substitutions:
 - trait_name: plant_growth_form
   find: treelet
@@ -567,7 +577,7 @@ substitutions:
   replace: .na
 - trait_name: dispersers
   find: barochory exozoochory_mammal exozoochory_bird
-  replace: birds mammals
+  replace: mammals birds
 - trait_name: dispersers
   find: barochory hydrochory endozoochory_mammal endozoochory_bird
   replace: water mammals birds
@@ -591,7 +601,7 @@ substitutions:
   replace: mammals
 - trait_name: dispersers
   find: endozoochory_mammal endozoochory_bird
-  replace: birds mammals
+  replace: mammals birds
 - trait_name: dispersers
   find: exozoochory_bird
   replace: birds
@@ -603,19 +613,19 @@ substitutions:
   replace: mammals
 - trait_name: dispersers
   find: exozoochory_mammal exozoochory_bird
-  replace: birds mammals
+  replace: mammals birds
 - trait_name: dispersers
   find: hydrochory
   replace: water
 - trait_name: dispersers
   find: hydrochory anemochory exozoochory_mammal
-  replace: mammals wind water
+  replace: water wind mammals
 - trait_name: dispersers
   find: hydrochory exozoochory_bird
-  replace: birds water
+  replace: water birds
 - trait_name: dispersers
   find: hydrochory exozoochory_mammal
-  replace: mammals water
+  replace: water mammals
 - trait_name: dispersers
   find: invertebrate_insect
   replace: invertebrates

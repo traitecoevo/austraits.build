@@ -34,13 +34,16 @@ dataset:
   data_is_long_format: no
   custom_R_code:       '
     max_height <- data %>% 
-      select(species, tree_height, location) %>%
-      group_by(species, location) %>%
-        summarise(tree_height_max = max(tree_height)) %>%
-      ungroup();
+      dplyr::select(species, tree_height, location) %>%
+      dplyr::group_by(species, location) %>%
+        dplyr::summarise(tree_height_max = max(tree_height)) %>%
+      dplyr::ungroup();
 
     data %>%
-      bind_rows(max_height)
+      dplyr::mutate(
+        sapwood_density = replace(sapwood_density, as.character(tree) != "1", NA)
+      ) %>%
+      dplyr::bind_rows(max_height)
   '
   collection_date: 2009/2014
   taxon_name: species
@@ -62,7 +65,11 @@ dataset:
     sampled trees of these 10 species are also part of the first data set.
   original_file: Pfautsch_2016_Eucalyptus_vessel_anatomy_combined.xls
   notes: The two data sets have been combined to create this one comprehensive data
-    set.
+    set. Overlap with Dadswell_1972 was investigated (2026-10-15) - the duplicate check flagged 13 stem_vessel_density and stem_vessel_diameter
+    values matching Dadswell_1972 (18 shared species); each is a single-trait rounding
+    coincidence between independent samples, not a duplicate. Sapwood density (and
+    its standard deviation) is a species-by-site mean repeated on each tree row in
+    data.csv, so custom_R_code keeps it on the tree 1 row only.
 locations:
   31 Mile Brook:
     latitude (deg): -32.25
@@ -309,10 +316,10 @@ traits:
 - var_in: sapwood_density
   unit_in: g/cm3
   trait_name: wood_density
-  entity_type: individual
+  entity_type: population
   value_type: mean
   basis_of_value: measurement
-  replicates: 1
+  replicates: 3
   methods: Sapwood samples in the form of increment cores (12 mm diameter) and also
     as wedges (variable size) were collected from three individuals of each species
     and site between 2009 and 2014. Only mature, dominant trees without visible injuries
@@ -320,7 +327,7 @@ traits:
     using a motorised (TED-262R, Tanaka, Japan) TRECOR(R) (CSIRO, Australia) tree
     corer (Figure 3) or a hand operated increment corer (SUUNTO, Finland), while sapwood
     wedges were cut with a hand- or chainsaw (Figure 4). Following the extraction,
-    samples were kept fresh (on ice in the field, at 4ºC in the lab) in sealed tubes
+    samples were kept fresh (on ice in the field, at 4°C in the lab) in sealed tubes
     or plastic bags. ^p Fresh weight and volume of cubes of sapwood (size of cubes
     varied between 1 and 10 cm3, according to thickness of sapwood) from the outermost
     1 cm of sapwood were measured, before drying at 105 °C for 48h. Sapwood density
@@ -339,7 +346,7 @@ traits:
     using a motorised (TED-262R, Tanaka, Japan) TRECOR(R) (CSIRO, Australia) tree
     corer (Figure 3) or a hand operated increment corer (SUUNTO, Finland), while sapwood
     wedges were cut with a hand- or chainsaw (Figure 4). Following the extraction,
-    samples were kept fresh (on ice in the field, at 4ºC in the lab) in sealed tubes
+    samples were kept fresh (on ice in the field, at 4°C in the lab) in sealed tubes
     or plastic bags. ^p Fresh weight and volume of cubes of sapwood (size of cubes
     varied between 1 and 10 cm3, according to thickness of sapwood) from the outermost
     1 cm of sapwood were measured, before drying at 105 °C for 48h. Sapwood density
@@ -382,7 +389,7 @@ traits:
     using a motorised (TED-262R, Tanaka, Japan) TRECOR(R) (CSIRO, Australia) tree
     corer (Figure 3) or a hand operated increment corer (SUUNTO, Finland), while sapwood
     wedges were cut with a hand- or chainsaw (Figure 4). Following the extraction,
-    samples were kept fresh (on ice in the field, at 4ºC in the lab) in sealed tubes
+    samples were kept fresh (on ice in the field, at 4°C in the lab) in sealed tubes
     or plastic bags. ^p Fresh weight and volume of cubes of sapwood (size of cubes
     varied between 1 and 10 cm3, according to thickness of sapwood) from the outermost
     1 cm of sapwood were measured, before drying at 105 °C for 48h. Sapwood density
@@ -416,7 +423,7 @@ traits:
     using a motorised (TED-262R, Tanaka, Japan) TRECOR(R) (CSIRO, Australia) tree
     corer (Figure 3) or a hand operated increment corer (SUUNTO, Finland), while sapwood
     wedges were cut with a hand- or chainsaw (Figure 4). Following the extraction,
-    samples were kept fresh (on ice in the field, at 4ºC in the lab) in sealed tubes
+    samples were kept fresh (on ice in the field, at 4°C in the lab) in sealed tubes
     or plastic bags. ^p Fresh weight and volume of cubes of sapwood (size of cubes
     varied between 1 and 10 cm3, according to thickness of sapwood) from the outermost
     1 cm of sapwood were measured, before drying at 105 °C for 48h. Sapwood density

@@ -1,0 +1,907 @@
+source:
+  primary:
+    key: Wenk_2026
+    bibtype: Unpublished
+    year: 2026
+    author: Wenk, Elizabeth
+    title: 'Unpublished data: Gap-filling plant height and leaf dimension values from
+      floras and the taxonomic literature to create a near-complete trait layer for
+      Australian plant species, University of New South Wales, Australia'
+contributors:
+  data_collectors:
+  - last_name: Wenk
+    given_name: Elizabeth
+    ORCID: 0000-0001-5640-5910
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  - last_name: Mesaglio
+    given_name: Thomas
+    ORCID: 0000-0002-1096-6066
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  - last_name: Osmolovsky
+    given_name: Inna
+    ORCID: 0000-0001-7547-6482
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  - last_name: Stolper
+    given_name: Rebecca
+    ORCID: .na
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      filter(!str_detect(trait_value, "\\(")) |>
+      mutate(unit = case_when(
+        unit == "feet" ~ "ft",
+        unit == "foot" ~ "ft",
+        unit == "inch" ~ "in",
+        unit == "inches" ~ "in",
+        unit == "cn" ~ "cm",
+        unit == "xm" ~ "m",
+        unit == "jugate" ~ "{count} [jugate]",
+        unit == "leaflets" ~ "{count}",
+        unit == "foliate" ~ "{count}",
+        unit == "segments" ~ "{count} [segments]",
+        TRUE ~ unit
+      )) |>
+      mutate(
+        trait_value = ifelse(trait_name == "plant_growth_form", 
+          str_replace_all(trait_value, "mallett", "mallee"), trait_value),
+        trait_value = ifelse(trait_name == "woodiness_detailed", 
+          str_replace_all(trait_value, "soft_woody", "semi_woody"), trait_value),
+        trait_value = ifelse(trait_name == "stem_branching_form", 
+          str_replace_all(trait_value, "umbrageous", "spreading"), trait_value),
+        trait_value = ifelse(trait_name %in% c("stem_growth_habit", "leaf_shape"), 
+          str_replace_all(trait_value, "sub-", ""), trait_value), 
+        trait_value = ifelse(trait_name %in% c("stem_growth_habit", "leaf_shape") & !str_detect(trait_value, "submerged") & !str_detect(trait_value, "subterranean") & !str_detect(trait_value, "subulate"), 
+          str_replace_all(trait_value, "sub", ""), trait_value), 
+        trait_value = ifelse(trait_name %in% c("stem_growth_habit", "leaf_shape"), 
+          str_replace_all(trait_value, "semi-", ""), trait_value),
+        trait_value = ifelse(trait_name %in% c("stem_growth_habit", "leaf_shape"), 
+          str_replace_all(trait_value, "semi", ""), trait_value)
+      )
+  '
+  collection_date: 2025-08/2026-02
+  taxon_name: taxon_name
+  trait_name: trait_name
+  value: trait_value
+  description: Gap-filling plant height and leaf dimension values from floras and
+    the taxonomic literature to create a near-complete trait layer for Australian
+    plant species.
+  basis_of_record: literature
+  life_stage: adult
+  measurement_remarks: reference
+  sampling_strategy: Combination of AI and manual scoring from online floras and taxonomic
+    descriptions.
+  original_file: unknown
+  notes: unknown
+identifiers: .na
+locations: .na
+contexts:
+- context_property: plant part
+  category: entity_context
+  var_in: context
+- context_property: scoring method
+  category: method_context
+  var_in: method
+- context_property: scorer
+  category: method_context
+  var_in: scorer
+- context_property: leaf type
+  category: entity_context
+  var_in: leaf type
+- context_property: certainty qualifier
+  category: entity_context
+  var_in: certainty qualifier
+- context_property: commonness qualifier
+  category: entity_context
+  var_in: commonness qualifier
+- context_property: taxon or population this value scored from
+  category: entity_context
+  var_in: taxon or population this value scored from
+- context_property: plant organ measured
+  category: entity_context
+  var_in: plant organ measured
+- context_property: phenological stage
+  category: entity_context
+  var_in: phenological stage
+- context_property: measurement notes
+  category: entity_context
+  var_in: measurement notes
+- context_property: extent measured
+  category: entity_context
+  var_in: extent measured
+- context_property: plant age
+  category: entity_context
+  var_in: plant age
+- context_property: organ age
+  category: entity_context
+  var_in: organ age
+- context_property: sex
+  category: entity_context
+  var_in: sex
+- context_property: reference notes
+  category: entity_context
+  var_in: reference notes
+- context_property: plant_height notes
+  category: entity_context
+  var_in: plant_height notes
+- context_property: inflorescence type
+  category: entity_context
+  var_in: inflorescence type
+- context_property: compoundedness notes
+  category: entity_context
+  var_in: compoundedness notes
+- context_property: height value context
+  category: entity_context
+  var_in: height value context
+- context_property: branch type measured
+  category: entity_context
+  var_in: branch type measured
+- context_property: leaflet_count notes
+  category: entity_context
+  var_in: leaflet_count notes
+- context_property: growth form notes
+  category: entity_context
+  var_in: growth form notes
+- context_property: stem_growth_habit modifier
+  category: entity_context
+  var_in: stem_growth_habit modifier
+- context_property: plant_growth_substrate modifier
+  category: entity_context
+  var_in: plant_growth_substrate modifier
+- context_property: bud_bank_location notes
+  category: entity_context
+  var_in: bud_bank_location notes
+- context_property: clonal_spread_mechanism notes
+  category: entity_context
+  var_in: clonal_spread_mechanism notes
+- context_property: leaf notes
+  category: entity_context
+  var_in: leaf notes
+- context_property: leaf_type notes
+  category: entity_context
+  var_in: leaf_type notes
+- context_property: life_history notes
+  category: entity_context
+  var_in: life_history notes
+- context_property: plant_alternative_energy_and_nutrient_acquisition_strategy notes
+  category: entity_context
+  var_in: plant_alternative_energy_and_nutrient_acquisition_strategy notes
+- context_property: plant_growth_form notes
+  category: entity_context
+  var_in: plant_growth_form notes
+- context_property: plant_photosynthetic_organ notes
+  category: entity_context
+  var_in: plant_photosynthetic_organ notes
+- context_property: plant_physical_defence_structures notes
+  category: entity_context
+  var_in: plant_physical_defence_structures notes
+- context_property: plant_succulence notes
+  category: entity_context
+  var_in: plant_succulence notes
+- context_property: plant_width notes
+  category: entity_context
+  var_in: plant_width notes
+- context_property: post_fire_recruitment notes
+  category: entity_context
+  var_in: post_fire_recruitment notes
+- context_property: stem form notes
+  category: entity_context
+  var_in: stem form notes
+- context_property: stem_growth_habit notes
+  category: entity_context
+  var_in: stem_growth_habit notes
+- context_property: storage_organ notes
+  category: entity_context
+  var_in: storage_organ notes
+traits:
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: stem_branching_form
+  unit_in: .na
+  trait_name: stem_branching_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: stem_base_form
+  unit_in: .na
+  trait_name: stem_base_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: rhizome_form
+  unit_in: .na
+  trait_name: rhizome_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_height
+  unit_in: unit
+  trait_name: plant_height
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant_height_reproductive
+  unit_in: unit
+  trait_name: plant_height_reproductive
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf_length
+  unit_in: unit
+  trait_name: leaf_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf_width
+  unit_in: unit
+  trait_name: leaf_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: petiole_length
+  unit_in: unit
+  trait_name: petiole_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: stem_length
+  unit_in: unit
+  trait_name: stem_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant_height_type
+  unit_in: .na
+  trait_name: plant_height_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaflet_width
+  unit_in: unit
+  trait_name: leaflet_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaflet_length
+  unit_in: unit
+  trait_name: leaflet_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant_width
+  unit_in: unit
+  trait_name: plant_width
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_growth_form2
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: resprouting_capacity
+  unit_in: .na
+  trait_name: resprouting_capacity
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: post_fire_flowering
+  unit_in: .na
+  trait_name: post_fire_flowering
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: post_fire_recruitment
+  unit_in: .na
+  trait_name: post_fire_recruitment
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: seedling_establishment_conditions
+  unit_in: .na
+  trait_name: seedling_establishment_conditions
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_shape
+  unit_in: .na
+  trait_name: leaf_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_base_shape
+  unit_in: .na
+  trait_name: leaf_base_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_tip_shape
+  unit_in: .na
+  trait_name: leaf_tip_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_thickness
+  unit_in: unit
+  trait_name: leaf_thickness
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaflet_count
+  unit_in: unit
+  trait_name: leaflet_count
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: stem_diameter
+  unit_in: unit
+  trait_name: stem_diameter
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf_length_type
+  unit_in: .na
+  trait_name: leaf_length_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_photosynthetic_organ
+  unit_in: .na
+  trait_name: plant_photosynthetic_organ
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_climbing_mechanism
+  unit_in: .na
+  trait_name: plant_climbing_mechanism
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_length_to_width_ratio
+  unit_in: unit
+  trait_name: leaf_length_to_width_ratio
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant_diameter_breast_height
+  unit_in: unit
+  trait_name: plant_diameter_breast_height
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: root_length
+  unit_in: unit
+  trait_name: root_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: woodiness_detailed
+  unit_in: .na
+  trait_name: woodiness_detailed
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_succulence
+  unit_in: .na
+  trait_name: plant_succulence
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: life_history_ephemeral_class
+  unit_in: .na
+  trait_name: life_history_ephemeral_class
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: parasitic
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_phenology
+  unit_in: .na
+  trait_name: leaf_phenology
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_phenology
+  unit_in: .na
+  trait_name: leaf_phenology
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_phyllotaxis
+  unit_in: .na
+  trait_name: leaf_phyllotaxis
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_compoundness
+  unit_in: .na
+  trait_name: leaf_compoundness
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lamina_posture
+  unit_in: .na
+  trait_name: leaf_lamina_posture
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_heterogeneity
+  unit_in: .na
+  trait_name: leaf_heterogeneity
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_lifespan
+  unit_in: unit
+  trait_name: leaf_lifespan
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_margin
+  unit_in: .na
+  trait_name: leaf_margin
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_margin_posture
+  unit_in: .na
+  trait_name: leaf_margin_posture
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_pubescence
+  unit_in: .na
+  trait_name: leaf_pubescence
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: foliage_time
+  unit_in: .na
+  trait_name: foliage_time
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_alternative_energy_and_nutrient_acquisition_strategy
+  unit_in: .na
+  trait_name: plant_alternative_energy_and_nutrient_acquisition_strategy
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_type_by_resource_use
+  unit_in: .na
+  trait_name: plant_type_by_resource_use
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: root_system_type
+  unit_in: .na
+  trait_name: root_system_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: sex_type
+  unit_in: .na
+  trait_name: sex_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: bud_bank_location
+  unit_in: unit
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: clonal_spread_mechanism
+  unit_in: unit
+  trait_name: clonal_spread_mechanism
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: reproductive_maturity
+  unit_in: unit
+  trait_name: reproductive_maturity
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: petiole_shape
+  unit_in: .na
+  trait_name: petiole_shape
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: petiole_shape
+  unit_in: unit
+  trait_name: plant_height
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant_physical_defence_structures
+  unit_in: .na
+  trait_name: plant_physical_defence_structures
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_hairs_adult_leaves
+  unit_in: unit
+  trait_name: leaf_hairs_adult_leaves
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: storage_organ_diameter
+  unit_in: unit
+  trait_name: storage_organ_diameter
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: storage_organ_length
+  unit_in: unit
+  trait_name: storage_organ_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf_type
+  unit_in: .na
+  trait_name: leaf_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: plant_height_climbing_plant
+  unit_in: unit
+  trait_name: plant_height_climbing_plant
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant_height_epiphyte
+  unit_in: unit
+  trait_name: plant_height_epiphyte
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: leaf_length_to_stem_length_ratio
+  unit_in: cm/cm
+  trait_name: leaf_length_to_stem_length_ratio
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: plant_canopy_form
+  unit_in: .na
+  trait_name: plant_canopy_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: stem_flexibility
+  unit_in: .na
+  trait_name: stem_constitution
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: rhizome_form
+  unit_in: .na
+  trait_name: rhizome_form
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_glaucousness
+  unit_in: .na
+  trait_name: leaf_glaucousness
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: vegetative_reproduction_ability
+  unit_in: .na
+  trait_name: vegetative_reproduction_ability
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: inflorescence_length
+  unit_in: unit
+  trait_name: inflorescence_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+- var_in: peduncle_length
+  unit_in: unit
+  trait_name: peduncle_length
+  entity_type: species
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: .na
+  methods: unknown
+substitutions:
+- trait_name: stem_growth_habit
+  find: willowy
+  replace: pendulous
+- trait_name: leaf_shape
+  find: narrowly_cuneate
+  replace: obtriangular
+- trait_name: leaf_shape
+  find: narrowly_spathulate
+  replace: spathulate
+- trait_name: leaf_length_type
+  find: na_not_given_taxonomic_reference
+  replace: na_not_given_taxon_description
+- trait_name: leaf_length_type
+  find: na_not_given_any_ref
+  replace: na_not_given
+- trait_name: plant_height_type
+  find: na_not_given_taxonomic_referenc
+  replace: na_not_given_taxon_description
+- trait_name: plant_height_type
+  find: na_not_given_hybrid_origin
+  replace: na_not_given
+- trait_name: plant_height_type
+  find: na_not_given_any_reference
+  replace: na_not_given
+taxonomic_updates:
+- find: AAustrocallerya pilipes
+  replace: Austrocallerya pilipes
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Daviesia euryloba
+  replace: Daviesia eurylobos
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Guichenotia basivirida
+  replace: Guichenotia basiviridis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Hemigenia dulca
+  replace: Hemigenia dulcis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Leucopogon elegans subsp. elegans
+  replace: Leucopogon elegans var. elegans
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: variety
+- find: Pileanthus rubronitidus
+  replace: Pileanthus rubrinitidus
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Solanum octonum
+  replace: Solanum octona
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Stylidium perizostera
+  replace: Stylidium perizoster
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Stylidium planirosulum
+  replace: Stylidium planirosula
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Tarenna dallachiana subsp. dallachiana
+  replace: Tarenna dallachyana subsp. dallachyana
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: subspecies
+- find: Tarenna dallachiana subsp. expandens
+  replace: Tarenna dallachyana subsp. expandens
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: subspecies
+- find: Tecticornia mellaria
+  replace: Tecticornia mellarium
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Urodon sp. Galena (G.L.Keighery 14733)
+  replace: Urodon sp. Galena (G.J.Keighery 14733)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Westringia capitonia
+  replace: Westringia capitonis
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+- find: Eucalyptus foecunda subsp. foecunda
+  replace: Eucalyptus foecunda var. foecunda
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: variety
+- find: Eucalyptus uncinata subsp. uncinata
+  replace: Eucalyptus uncinata var. uncinata
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: variety
+- find: Planchonella sp. Mt. Lewis (B.Hyland 14048)
+  replace: Planchonella sp. (Mt Lewis B.P.Hyland 14048)
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-08-29)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions: .na

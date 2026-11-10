@@ -30,7 +30,7 @@ dataset:
     data %>% 
       mutate(
         across(c(`Root:Shoot ratio`), ~na_if(.x, 0)),
-        Date_plant_traits = Date_plant_traits %>% dmy(),
+        Date_plant_traits = util_format_collection_date(Date_plant_traits, "dmy"),
         entity_type_column = ifelse(is.na(Replicate),"population","individual"),
         value_type_column = ifelse(is.na(Replicate),"mean","raw"),
         root_dry_matter_content = coalesce(
@@ -42,7 +42,8 @@ dataset:
         specific_root_area = ifelse(
           !is.na(`Specific Root Area (SRA) (m2.kg-1)`),`Specific Root Area (SRA) (m2.kg-1)`*1000,
                 `Specific Root Area (SRA root surface area / dry mass) (mm2.g-1)`)
-      )
+      ) %>%
+      mutate(`Date_plant_traits` = coalesce(`Date_plant_traits`, "2008"))
   '
   collection_date: Date_plant_traits
   taxon_name: Species

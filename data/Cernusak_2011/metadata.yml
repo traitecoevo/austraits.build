@@ -26,11 +26,12 @@ dataset:
   custom_R_code:   '
     data %>%
       mutate(
-        Date = Date %>% dmy(),
+        Date = util_format_collection_date(Date, "dmy"),
         across(c(`Leaf area (mm2)`:`trans_at_Amax_mmol_m-2_s-1`), ~as.character(.x)),
         across(c(`Leaf area (mm2)`:`trans_at_Amax_mmol_m-2_s-1`), ~na_if(.x,"."))
       ) %>%
-      rename(measurement_remarks = context)
+      rename(measurement_remarks = context) %>%
+      mutate(`Date` = coalesce(`Date`, "2011"))
   '
   collection_date: Date
   taxon_name: Species

@@ -1,0 +1,478 @@
+source:
+  primary:
+    key: Johnson_1980
+    bibtype: Article
+    year: 1980
+    author: Colin T. Johnson
+    journal: Australian Journal of Botany
+    title: The leaf anatomy of Leptospermum Forst. (Myrtaceae)
+    volume: '28'
+    pages: 77--104
+    doi: 10.1071/BT9800077
+contributors:
+  data_collectors:
+  - last_name: Johnson
+    given_name: Colin T.
+    ORCID: .na.character
+    affiliation: Botany Department, University of the Western Cape, Bellville, Republic
+      of South Africa
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      dplyr::filter(trait %in% c("leaf_thickness", "leaf_cuticle_thickness", "leaf_cuticle_thickness_adaxial", "leaf_cuticle_thickness_abaxial", 
+      "leaf_epidermis_thickness", "leaf_epidermis_thickness_adaxial", "leaf_epidermis_thickness_abaxial", "leaf_guard_cell_length", 
+      "leaf_guard_cell_width", "leaf_hairs_adult_leaves", "leaf_hairs_immature_leaves", "leaf_stomatal_distribution", "leaf_stomatal_complex_type", 
+      "leaf_oil_gland_diameter")) |>
+      dplyr::mutate(
+        individual_id = dplyr::if_else(entity_type == "individual", voucher, NA_character_),
+        replicates = dplyr::case_when(entity_type == "individual" ~ "1", entity_type == "population" ~ as.character(n), TRUE ~ NA_character_),
+        voucher_L = dplyr::if_else(voucher != "" & !grepl("^Johnson 00", voucher), voucher, NA_character_),
+        voucher_UWC = dplyr::if_else(grepl("^Johnson 00", voucher), voucher, NA_character_),
+        source_rank = dplyr::case_when(grepl("^Table 1", source_section) ~ 1, grepl("^Table 2", source_section) ~ 2, grepl("^Specific", source_section) ~ 3, TRUE ~ 4),
+        gland_axis = dplyr::if_else(grepl("axis", context), context, NA_character_)
+      ) |>
+      dplyr::group_by(taxon_name, entity_type, voucher, trait, value_type, context) |>
+      dplyr::filter(source_rank == min(source_rank)) |>
+      dplyr::ungroup()
+  '
+  collection_date: 1980
+  taxon_name: taxon_name
+  trait_name: trait
+  value: trait_value_clean
+  location_name: location_name
+  entity_type: entity_type
+  individual_id: individual_id
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  description: Comparative leaf anatomy of 40 Leptospermum species, describing cuticle,
+    trichome, stomatal, epidermal, mesophyll, vascular bundle and secretory cavity
+    characters from herbarium specimens to assess their taxonomic value and correlations
+    with habitat.
+  sampling_strategy: Except for four specimens of L. laevigatum which I collected
+    in the field and deposited in the herbarium of the University of the Western Cape,
+    all material studied is from the Rijksherbarium, Leiden, the Netherlands. Collecting
+    data are given for all material studied. The leaves were taken from specimens
+    with flowers to provide for any further re-identification.
+  original_file: raw/trait_data.csv (extracted from the source PDF by Claude AI, Anthropic)
+  notes: data for additional traits, leaf_cuticle_ornamentation, leaf_epidermis_anticlinal_wall_form,
+    leaf_epidermis_anticlinal_wall_thickness_abaxial, leaf_epidermis_anticlinal_wall_thickness_adaxial,
+    leaf_epidermis_outer_periclinal_wall_shape, leaf_epidermis_outer_periclinal_wall_thickness_abaxial,
+    leaf_epidermis_outer_periclinal_wall_thickness_adaxial, leaf_hair_bases_persistent,
+    leaf_hair_length, leaf_hair_shape, leaf_midrib_outline, leaf_oil_gland_cuticle_ornamentation,
+    leaf_oil_gland_epithelial_cell_number, leaf_oil_gland_subepidermal_layer, leaf_papillae_height,
+    leaf_vascular_bundle_type, leaf_vascular_sclerenchyma_caps, stomatal_length_width_ratio,
+    stomatal_peristomal_rims, stomatal_subsidiary_cell_number. Several voucher numbers differ between Table 1, Table 2 and the species
+    descriptions (e.g. Constable 16298/16398, Evans 2723/2763, Hubbard 3618/3619,
+    Schodde 5105/5015, Constable 92186/92816, Constable 10968 vs Constable 8/49)
+identifiers:
+- var_in: voucher_L
+  identifier_type: recordNumber
+  institution_code: Rijksherbarium, Leiden (L)
+- var_in: voucher_UWC
+  identifier_type: recordNumber
+  institution_code: University of the Western Cape herbarium (UWC)
+locations:
+  Adams 1463 locality:
+    latitude (deg): -35.92059
+    longitude (deg): 150.05103
+    description: Collecting locality of herbarium specimen Adams 1463, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1521); Johnson (1980) gives only the state.
+  Aplin 2631 locality:
+    latitude (deg): -33.65896
+    longitude (deg): 122.90173
+    description: Collecting locality of herbarium specimen Aplin 2631, Western Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1528); Johnson (1980) gives only the state.
+  Ashby 3154 locality:
+    latitude (deg): -36.5
+    longitude (deg): 148.26667
+    description: Collecting locality of herbarium specimen Ashby 3154, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1561); Johnson (1980) gives only the state.
+  Ashby 3595 locality:
+    latitude (deg): -30.78055
+    longitude (deg): 117.86698
+    description: Collecting locality of herbarium specimen Ashby 3595, Western Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1586); Johnson (1980) gives only the state.
+  Boorman 14161 locality:
+    latitude (deg): -36.35
+    longitude (deg): 148.41667
+    description: Collecting locality of herbarium specimen Boorman 14161, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1573); Johnson (1980) gives only the state.
+  Boorman 14170 locality:
+    latitude (deg): -29.47892
+    longitude (deg): 150.54654
+    description: Collecting locality of herbarium specimen Boorman 14170, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1579); Johnson (1980) gives only the state.
+  Brass 19983 locality:
+    latitude (deg): -11.99815
+    longitude (deg): 142.49983
+    description: Collecting locality of herbarium specimen Brass 19983, Queensland.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1574); Johnson (1980) gives only the state.
+  Briggs 3064 locality:
+    latitude (deg): -32.00463
+    longitude (deg): 149.21933
+    description: Collecting locality of herbarium specimen Briggs 3064, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1594); Johnson (1980) gives only the state.
+  Carolin 1455 locality:
+    latitude (deg): -43.5852
+    longitude (deg): 146.8822
+    description: Collecting locality of herbarium specimen Carolin 1455, Tasmania.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1545); Johnson (1980) gives only the state.
+  Cheel 121544 locality:
+    latitude (deg): -35.59952
+    longitude (deg): 148.32041
+    description: Collecting locality of herbarium specimen Cheel 121544, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1522); Johnson (1980) gives only the state.
+  Constable 10968 locality:
+    latitude (deg): -33.28332
+    longitude (deg): 151.56757
+    description: Collecting locality of herbarium specimen Constable 10968, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1548); Johnson (1980) gives only the state.
+  Constable 16298 locality:
+    latitude (deg): -36.35
+    longitude (deg): 148.41667
+    description: Collecting locality of herbarium specimen Constable 16298, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1518); Johnson (1980) gives only the state.
+  Constable 19175 locality:
+    latitude (deg): -36.35
+    longitude (deg): 148.41667
+    description: Collecting locality of herbarium specimen Constable 19175, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1562); Johnson (1980) gives only the state.
+  Constable 7455 locality:
+    latitude (deg): -35.28102
+    longitude (deg): 150.16701
+    description: Collecting locality of herbarium specimen Constable 7455, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1583); Johnson (1980) gives only the state.
+  Constable 92186 locality:
+    latitude (deg): -33.62735
+    longitude (deg): 150.28544
+    description: Collecting locality of herbarium specimen Constable 92186, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1593); Johnson (1980) gives only the state.
+  Coveny 3672 locality:
+    latitude (deg): -35.16667
+    longitude (deg): 150.66667
+    description: Collecting locality of herbarium specimen Coveny 3672, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1550); Johnson (1980) gives only the state.
+  Coveny 3980 locality:
+    latitude (deg): -34.9
+    longitude (deg): 150.58333
+    description: Collecting locality of herbarium specimen Coveny 3980, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1526); Johnson (1980) gives only the state.
+  Darbyshire 151 locality:
+    latitude (deg): -35.3
+    longitude (deg): 148.81667
+    description: Collecting locality of herbarium specimen Darbyshire 151, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1572); Johnson (1980) gives only the state.
+  Darbyshire 88 locality:
+    latitude (deg): -35.25
+    longitude (deg): 148.9
+    description: Collecting locality of herbarium specimen Darbyshire 88, Australian Capital Territory.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1582); Johnson (1980) gives only the state.
+  Darbyshire 94 locality:
+    latitude (deg): -35.68333
+    longitude (deg): 149
+    description: Collecting locality of herbarium specimen Darbyshire 94, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1578); Johnson (1980) gives only the state.
+  Donner 958 locality:
+    latitude (deg): -35.44276
+    longitude (deg): 138.58412
+    description: Collecting locality of herbarium specimen Donner 958, South Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1560); Johnson (1980) gives only the state.
+  Eichler 16197 locality:
+    latitude (deg): -35.20856
+    longitude (deg): 139.12945
+    description: Collecting locality of herbarium specimen Eichler 16197, South Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1523); Johnson (1980) gives only the state.
+  Evans 2712 locality:
+    latitude (deg): -34.62019
+    longitude (deg): 150.67276
+    description: Collecting locality of herbarium specimen Evans 2712, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1558); Johnson (1980) gives only the state.
+  Evans 2723 locality:
+    latitude (deg): -33.72264
+    longitude (deg): 151.29583
+    description: Collecting locality of herbarium specimen Evans 2723, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1520); Johnson (1980) gives only the state.
+  Fell F672 locality:
+    latitude (deg): -34.76667
+    longitude (deg): 116.08333
+    description: Collecting locality of herbarium specimen Fell F672, Western Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1531); Johnson (1980) gives only the state.
+  Hoogland 10060 locality:
+    latitude (deg): -36.80819
+    longitude (deg): 144.23939
+    description: Collecting locality of herbarium specimen Hoogland 10060, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1577); Johnson (1980) gives only the state.
+  Hubbard 4748 locality:
+    latitude (deg): -27.57557
+    longitude (deg): 153.09339
+    description: Collecting locality of herbarium specimen Hubbard 4748, Queensland.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1543); Johnson (1980) gives only the state.
+  Hubbard 8637 locality:
+    latitude (deg): -36.35
+    longitude (deg): 148.41667
+    description: Collecting locality of herbarium specimen Hubbard 8637, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1581); Johnson (1980) gives only the state.
+  Kaspiew 1527 locality:
+    latitude (deg): -33.3246
+    longitude (deg): 115.63758
+    description: Collecting locality of herbarium specimen Kaspiew 1527, Western Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1525); Johnson (1980) gives only the state.
+  Kaspiew 19 locality:
+    latitude (deg): -35.13672
+    longitude (deg): 150.11395
+    description: Collecting locality of herbarium specimen Kaspiew 19, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1519); Johnson (1980) gives only the state.
+  Kraehnebuehl 933 locality:
+    latitude (deg): -38.0259
+    longitude (deg): 140.79069
+    description: Collecting locality of herbarium specimen Kraehnebuehl 933, South Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1559); Johnson (1980) gives only the state.
+  McKee 7495 locality:
+    latitude (deg): -35.2813
+    longitude (deg): 149.1292
+    description: Collecting locality of herbarium specimen McKee 7495, Australian Capital Territory.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1575); Johnson (1980) gives only the state.
+  Morrison locality:
+    latitude (deg): -31.88504
+    longitude (deg): 115.86788
+    description: Collecting locality of herbarium specimen Morrison, Western Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1592); Johnson (1980) gives only the state.
+  Pedley 1421 locality:
+    latitude (deg): -28.65361
+    longitude (deg): 151.94694
+    description: Collecting locality of herbarium specimen Pedley 1421, Queensland.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1571); Johnson (1980) gives only the state.
+  Pritzel 248 locality:
+    latitude (deg): -34.43451
+    longitude (deg): 117.93162
+    description: Collecting locality of herbarium specimen Pritzel 248, Western Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1524); Johnson (1980) gives only the state.
+  Schodde 5105 locality:
+    latitude (deg): -35.55464
+    longitude (deg): 150.37951
+    description: Collecting locality of herbarium specimen Schodde 5105, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1541); Johnson (1980) gives only the state.
+  Smith 11962 locality:
+    latitude (deg): -13.8089
+    longitude (deg): 143.21576
+    description: Collecting locality of herbarium specimen Smith 11962, Queensland.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1563); Johnson (1980) gives only the state.
+  Smith 12341 locality:
+    latitude (deg): -11.01667
+    longitude (deg): 142.05
+    description: Collecting locality of herbarium specimen Smith 12341, Queensland.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1530); Johnson (1980) gives only the state.
+  Walker 1223 locality:
+    latitude (deg): -35.35902
+    longitude (deg): 148.7145
+    description: Collecting locality of herbarium specimen Walker 1223, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1557); Johnson (1980) gives only the state.
+  Webb & White 2138 locality:
+    latitude (deg): -28.61237
+    longitude (deg): 153.39073
+    description: Collecting locality of herbarium specimen Webb & White 2138, New South Wales.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1569); Johnson (1980) gives only the state.
+  Whibley 841 locality:
+    latitude (deg): -35.29857
+    longitude (deg): 138.76162
+    description: Collecting locality of herbarium specimen Whibley 841, South Australia.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1576); Johnson (1980) gives only the state.
+  White 6234 locality:
+    latitude (deg): -28.1852
+    longitude (deg): 153.27745
+    description: Collecting locality of herbarium specimen White 6234, Queensland.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1580); Johnson (1980) gives only the state.
+  v. Balgooy 1451 locality:
+    latitude (deg): -17.29762
+    longitude (deg): 145.86658
+    description: Collecting locality of herbarium specimen v. Balgooy 1451, Queensland.
+    georeference remarks: Coordinates from Li et al. (2025, New Phytologist 248:107-124,
+      Table S1, SiteCode S267_1595); Johnson (1980) gives only the state.
+contexts:
+- context_property: oil gland measurement axis
+  category: method_context
+  var_in: gland_axis
+  values:
+  - find: long axis (oval gland)
+    value: long axis
+    description: Long axis of an oval oil gland.
+  - find: short axis (oval gland)
+    value: short axis
+    description: Short axis of an oval oil gland.
+traits:
+- var_in: leaf_thickness
+  unit_in: unit
+  trait_name: leaf_thickness
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Lamina thickness measured on permanent transverse microtome sections of
+    the central part of the lamina, mounted in euparal and stained with a safranin-haematoxylin
+    mixture. Values are averages for individual specimens and do not include the extremes.
+- var_in: leaf_cuticle_thickness
+  unit_in: unit
+  trait_name: leaf_cuticle_thickness
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Thickness of the cuticle (cuticle proper plus cuticular layer) measured
+    on transverse sections of the central part of the lamina, stained with Sudan IV
+    in 70% alcohol and counterstained with aqueous astra blue.
+- var_in: leaf_cuticle_thickness_adaxial
+  unit_in: unit
+  trait_name: leaf_cuticle_thickness_adaxial
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Thickness of the adaxial cuticle (cuticle proper plus cuticular layer)
+    measured on transverse sections of the central part of the lamina, stained with
+    Sudan IV in 70% alcohol and counterstained with aqueous astra blue.
+- var_in: leaf_cuticle_thickness_abaxial
+  unit_in: unit
+  trait_name: leaf_cuticle_thickness_abaxial
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Thickness of the abaxial cuticle (cuticle proper plus cuticular layer)
+    measured on transverse sections of the central part of the lamina, stained with
+    Sudan IV in 70% alcohol and counterstained with aqueous astra blue.
+- var_in: leaf_epidermis_thickness
+  unit_in: unit
+  trait_name: leaf_epidermis_thickness
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Height of the unspecialized epidermal cells measured in transverse sections
+    of the central part of the lamina; reported for both surfaces together unless
+    the adaxial and abaxial values differ considerably.
+- var_in: leaf_epidermis_thickness_adaxial
+  unit_in: unit
+  trait_name: leaf_epidermis_thickness_adaxial
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Height of the unspecialized adaxial epidermal cells measured in transverse
+    sections of the central part of the lamina.
+- var_in: leaf_epidermis_thickness_abaxial
+  unit_in: unit
+  trait_name: leaf_epidermis_thickness_abaxial
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Height of the unspecialized abaxial epidermal cells measured in transverse
+    sections of the central part of the lamina.
+- var_in: leaf_guard_cell_length
+  unit_in: unit
+  trait_name: leaf_guard_cell_length
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Length of the guard cell pair measured in surface view on cuticular macerations
+    (leaves boiled, left overnight in equal volumes of 30% hydrogen peroxide and glacial
+    acetic acid at 70 °C, stained with Sudan IV in 70% alcohol and mounted in glycerin
+    jelly).
+- var_in: leaf_guard_cell_width
+  unit_in: unit
+  trait_name: leaf_guard_cell_width
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Width of the guard cell pair measured in surface view on cuticular macerations
+    (leaves boiled, left overnight in equal volumes of 30% hydrogen peroxide and glacial
+    acetic acid at 70 °C, stained with Sudan IV in 70% alcohol and mounted in glycerin
+    jelly).
+- var_in: leaf_hairs_adult_leaves
+  unit_in: unit
+  trait_name: leaf_hairs_adult_leaves
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Presence of trichomes persisting on mature leaves, scored on the adaxial
+    and abaxial surfaces, margin and midrib from cuticular macerations, transverse
+    sections and scanning electron microscopy.
+- var_in: leaf_hairs_immature_leaves
+  unit_in: unit
+  trait_name: leaf_hairs_immature_leaves
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Young leaves of all species examined bear non-glandular, unicellular, appressed
+    hairs, which are normally shed during leaf development.
+- var_in: leaf_stomatal_distribution
+  unit_in: unit
+  trait_name: leaf_stomatal_distribution
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Presence of stomata on the adaxial and abaxial leaf surfaces scored on
+    cuticular macerations.
+- var_in: leaf_stomatal_complex_type
+  unit_in: unit
+  trait_name: leaf_stomatal_complex_type
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Stomatal type (anomocytic, cyclocytic or paracytic, or a mixture of or
+    intermediates between these in the same leaf) scored in surface view on cuticular
+    macerations.
+- var_in: leaf_oil_gland_diameter
+  unit_in: unit
+  trait_name: leaf_oil_gland_diameter
+  value_type: value_type
+  basis_of_value: measurement
+  replicates: replicates
+  methods: Diameter of the schizogenous secretory cavities (oil glands) measured in
+    transverse sections of the lamina; for oval glands the long and short axes are
+    given. Values are averages for individual specimens and do not include the extremes.
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations:
+- variable: taxon_name
+  find: Leptospermum recurvum
+  reason: Bornean species
+questions: .na
