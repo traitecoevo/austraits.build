@@ -10,7 +10,7 @@ library(readr)
 library(purrr)
 
 dl <- "ignore/AVSB_download"
-data_dir <- "../austraits.build-seedbank/data"
+data_dir <- "data"
 
 seed_banks <- c(
   "National Seed Bank" = "ANBG_2026",
@@ -132,6 +132,54 @@ all_rows <- bind_rows(accession_rows, trial_rows) |>
 lead_cols <- c("Event ID", "Event Type", "Parent Event ID", names(accession_labels)[-1],
                names(trial_labels), names(treatment_labels))
 
+# Germination pretreatments -> seed_germination_treatment values (space-delimited), by keyword.
+# Sterilising, removing fruit/endocarp/wings, plain water soaks and temperature regimes alone
+# have no matching value and stay NA. "none" is kept only when no other treatment is named.
+classify_pretreatment <- function(x) {
+  x0 <- stringr::str_to_lower(coalesce(x, ""))
+  has <- function(p) stringr::str_detect(x0, stringr::regex(p))
+  out <- lapply(seq_along(x0), \(i) character(0))
+  add <- function(cond, val) for (i in which(cond)) out[[i]] <<- c(out[[i]], val)
+  oven_warm <- has("(oven|incubat|room temp).*\\b(wk|wks|week|weeks|month)") & !has("(1[0-9]{2}|[6-9][0-9]) ?°?c")
+  cold_period <- has("(refrigerat|fridge|\\b[1-5] ?°?c\\b)[^;]*(for|x) ?[0-9]+ ?(d|day|wk|week|month)|(for|x) ?[0-9]+ ?(d|day|wk|week|month)[^;]*@ ?[0-5] ?°?c\\b") &
+    !has("stored at|surf|ster")
+  add(has("^\\s*(none|nil|0|n/a)\\b|no ?pre-?trea?t?ment|no pretreament|no treatment|not treatment"), "none")
+  add(has("scarif|\\bscar\\b|scalpel|\\bnic(k|ked)?\\b|\\bfile\\b|sandpaper|seed coat (removed|cracked|nick)|remov(e|ed) (the )?seed coat|chipp|testa (removed|nick)|endocarp scarified"), "scarify")
+  add(has("gibb?ere?ll?i?c|\\bga\\b|\\bga3?\\b|\\bga[ -]?3|pectinase|enzyme|hydrogen peroxide|h2o2|nitrate|kno3|ethylene|ethephon|karrikin|\\bkar1\\b|chemical treatment"), "chemical_treatment")
+  add(has("smoke|regen ?2000|kirstenbosch|kings park 1:10|butenolide"), "smoke")
+  add(has("boil|\\bbw\\b|\\bbw ?100|\\bhw\\b|hot water|hot h2o|water bath|9[0-9] ?°?c? (for|water)|\\b90c\\b|(soak|dip)[^,;]{0,20}(9[0-9]|100) ?°?c|imbib.*hot"), "imbibe_hot")
+  add((has("heat shock|dry heat|heat in|heat treat|\\bheated\\b|oven") & !oven_warm) | has("heat shock"), "heat")
+  add(has("leach"), "leaching")
+  add(has("cold strat|chill") | (cold_period & has("moist|wet|strat")), "stratification_cold")
+  add(cold_period & !has("moist|wet|strat|chill"), "cold")
+  add(has("warm strat") | (oven_warm & has("wet|moist")), "stratification_warm")
+  add(has("strat") & !has("cold strat|warm strat|chill") & !(cold_period & has("moist|wet|strat")), "stratification")
+  add(has("after.?ripen|room temperature.*(wk|week|month)|\\b(2[0-5]) ?°?c (ce )?room for .*(wk|week|month)") |
+        (oven_warm & !has("wet|moist|strat")), "after_ripening")
+  add(has("\\bdark\\b"), "dark")
+  add(has("\\blight\\b") & !has("light hours"), "light")
+  vapply(out, \(v) {
+    v <- unique(v)
+    if (length(v) > 1) v <- setdiff(v, "none")
+    if (length(v) == 0) NA_character_ else paste(sort(v), collapse = " ")
+  }, "")
+}
+
+# pretreatment text per seed bank: NSB records it inside the treatment remarks, Victoria
+# splits it across Treatment Pretreatment and Chemical
+pretreatment_text <- function(out, id) {
+  col <- function(nm) if (nm %in% names(out)) out[[nm]] else rep(NA_character_, nrow(out))
+  if (id == "ANBG_2026") {
+    stringr::str_match(col("Treatment Remarks"),
+                       "Pre-?treat?e?ment:\\s*(.*?)\\s*-(Temperature|Photoperiod|Other conditions|Comments)")[, 2]
+  } else if (id == "Victorian_Conservation_Seed_Bank_2026") {
+    ifelse(is.na(col("Treatment Pretreatment")) & is.na(col("Chemical")), NA,
+           paste(coalesce(col("Treatment Pretreatment"), ""), coalesce(col("Chemical"), ""), sep = " | "))
+  } else {
+    col("Treatment Pretreatment")
+  }
+}
+
 for (title in names(seed_banks)) {
   id <- seed_banks[[title]]
   out <- all_rows |>
@@ -146,6 +194,8 @@ for (title in names(seed_banks)) {
     )
   }
   out <- out |>
+    mutate(`Germination Treatment (mapped)` = ifelse(`Event Type` == "Trial",
+                                                     classify_pretreatment(pretreatment_text(out, id)), NA)) |>
     arrange(coalesce(`Parent Event ID`, `Event ID`), `Event Type`, `Event ID`) |>
     select(any_of(lead_cols), everything()) |>
     select(where(~ !all(is.na(.x))))

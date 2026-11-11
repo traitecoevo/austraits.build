@@ -1,13 +1,13 @@
-# Write the `locations:` block of each seed bank dataset's metadata.yml from its data.csv:
-# one location per coordinate pair, named as in custom_R_code
-# ("seeds_collected_at_<lat>_lat_and_<long>_long"). Accessions sharing coordinates but
-# recorded with different locality text have those localities joined with "; ".
-# Only the locations: section of metadata.yml is replaced.
+# Write each seed bank dataset's locations.csv (read via `locations: locations.csv` in
+# metadata.yml) from its data.csv: one location per coordinate pair, named as in
+# custom_R_code ("seeds_collected_at_<lat>_lat_and_<long>_long"). Accessions sharing
+# coordinates but recorded with different locality text have those localities joined
+# with "; ".
 
 library(dplyr)
 library(readr)
 
-data_dir <- "../austraits.build-seedbank/data"
+data_dir <- "data"
 dataset_ids <- c("ANBG_2026", "Australian_PlantBank_2026", "Brisbane_Botanic_Gardens_2026",
                  "Greening_Australia_2026", "SA_Seed_Conservation_Centre_2026",
                  "Tas_Seed_Conservation_Centre_2026", "Victorian_Conservation_Seed_Bank_2026",
@@ -38,48 +38,42 @@ territory_code <- function(lat, lon) {
 
 collapse_unique <- function(x) {
   x <- stringi::stri_trans_general(x, "Latin-ASCII")
+  x <- stringr::str_remove(x, "^~\\s*")
   x <- unique(stringr::str_squish(x[!is.na(x) & x != ""]))
   if (length(x) == 0) NA_character_ else paste(x, collapse = "; ")
 }
 
-locations_yaml <- function(id) {
+latitude_sign_errors <- c("CANB 916974.2", "CANB 916974.3", "CANB 916974.4", "CANB 916974.5")
+latitude_corrections <- c("CANB 960384.2" = "-35.8331")
+
+write_locations <- function(id) {
   data <- read_csv(file.path(data_dir, id, "data.csv"), col_types = cols(.default = "c"))
   extra <- intersect(names(site_properties), names(data))
   for (col in setdiff(c("Locality", "State"), names(data))) data[[col]] <- NA_character_
   locs <- data |>
     filter(!is.na(`Scientific Name`), !is.na(`Decimal Latitude`), !is.na(`Decimal Longitude`)) |>
+    # latitude errors, also corrected in that dataset's custom_R_code
+    mutate(`Decimal Latitude` = ifelse(`Accession Number` %in% latitude_sign_errors,
+                                       as.character(-abs(as.numeric(`Decimal Latitude`))),
+                                       `Decimal Latitude`),
+           `Decimal Latitude` = dplyr::coalesce(latitude_corrections[`Accession Number`], `Decimal Latitude`)) |>
     mutate(location_name = paste0("seeds_collected_at_", `Decimal Latitude`, "_lat_and_",
                                   `Decimal Longitude`, "_long")) |>
     summarise(
-      `latitude (deg)` = as.numeric(first(`Decimal Latitude`)),
-      `longitude (deg)` = as.numeric(first(`Decimal Longitude`)),
+      `latitude (deg)` = first(`Decimal Latitude`),
+      `longitude (deg)` = first(`Decimal Longitude`),
       locality = collapse_unique(Locality),
       across(all_of(extra), collapse_unique),
-      state = collapse_unique(coalesce(territory_code(`latitude (deg)`, `longitude (deg)`),
+      state = collapse_unique(coalesce(territory_code(as.numeric(`latitude (deg)`), as.numeric(`longitude (deg)`)),
                                        state_codes[State])),
       .by = location_name
     ) |>
     rename(any_of(setNames(names(site_properties), site_properties))) |>
+    select(where(~ !all(is.na(.x)))) |>
+    relocate(any_of("state"), .after = last_col()) |>
     arrange(location_name)
-  if (nrow(locs) == 0) return("locations: .na\n")
-  loc_list <- lapply(seq_len(nrow(locs)), \(i) {
-    row <- as.list(locs[i, -1])
-    row[!is.na(row)]
-  })
-  names(loc_list) <- locs$location_name
-  yaml::as.yaml(list(locations = loc_list), precision = 10, indent.mapping.sequence = TRUE)
+  write_csv(locs, file.path(data_dir, id, "locations.csv"), na = "")
+  message(id, ": ", nrow(locs), " locations")
 }
 
-replace_locations <- function(id) {
-  path <- file.path(data_dir, id, "metadata.yml")
-  lines <- readLines(path)
-  start <- grep("^locations:", lines)
-  end <- grep("^[a-z_]+:", lines)
-  end <- end[end > start][1] - 1
-  new <- strsplit(locations_yaml(id), "\n")[[1]]
-  writeLines(c(lines[seq_len(start - 1)], new, lines[(end + 1):length(lines)]), path)
-  message(id, ": ", sum(grepl("^  [^ ]", new)), " locations")
-}
-
-existing <- dataset_ids[file.exists(file.path(data_dir, dataset_ids, "metadata.yml"))]
-purrr::walk(existing, replace_locations)
+purrr::walk(dataset_ids, write_locations)

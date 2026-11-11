@@ -37,6 +37,10 @@ ANBG_2019_config <- dataset_configure("data/ANBG_2019/metadata.yml", definitions
 ANBG_2019_raw <- dataset_process("data/ANBG_2019/data.csv", ANBG_2019_config, schema, resource_metadata, unit_conversions)
 ANBG_2019 <- dataset_update_taxonomy(ANBG_2019_raw, taxon_list)
 
+ANBG_2026_config <- dataset_configure("data/ANBG_2026/metadata.yml", definitions)
+ANBG_2026_raw <- dataset_process("data/ANBG_2026/data.csv", ANBG_2026_config, schema, resource_metadata, unit_conversions)
+ANBG_2026 <- dataset_update_taxonomy(ANBG_2026_raw, taxon_list)
+
 Andrew_2022_config <- dataset_configure("data/Andrew_2022/metadata.yml", definitions)
 Andrew_2022_raw <- dataset_process("data/Andrew_2022/data.csv", Andrew_2022_config, schema, resource_metadata, unit_conversions)
 Andrew_2022 <- dataset_update_taxonomy(Andrew_2022_raw, taxon_list)
@@ -80,6 +84,10 @@ ATRP_2020 <- dataset_update_taxonomy(ATRP_2020_raw, taxon_list)
 Auld_2000_config <- dataset_configure("data/Auld_2000/metadata.yml", definitions)
 Auld_2000_raw <- dataset_process("data/Auld_2000/data.csv", Auld_2000_config, schema, resource_metadata, unit_conversions)
 Auld_2000 <- dataset_update_taxonomy(Auld_2000_raw, taxon_list)
+
+Australian_PlantBank_2026_config <- dataset_configure("data/Australian_PlantBank_2026/metadata.yml", definitions)
+Australian_PlantBank_2026_raw <- dataset_process("data/Australian_PlantBank_2026/data.csv", Australian_PlantBank_2026_config, schema, resource_metadata, unit_conversions)
+Australian_PlantBank_2026 <- dataset_update_taxonomy(Australian_PlantBank_2026_raw, taxon_list)
 
 AVH_2026_config <- dataset_configure("data/AVH_2026/metadata.yml", definitions)
 AVH_2026_raw <- dataset_process("data/AVH_2026/data.csv", AVH_2026_config, schema, resource_metadata, unit_conversions)
@@ -148,6 +156,10 @@ BRAIN_2007 <- dataset_update_taxonomy(BRAIN_2007_raw, taxon_list)
 Briggs_2010_config <- dataset_configure("data/Briggs_2010/metadata.yml", definitions)
 Briggs_2010_raw <- dataset_process("data/Briggs_2010/data.csv", Briggs_2010_config, schema, resource_metadata, unit_conversions)
 Briggs_2010 <- dataset_update_taxonomy(Briggs_2010_raw, taxon_list)
+
+Brisbane_Botanic_Gardens_2026_config <- dataset_configure("data/Brisbane_Botanic_Gardens_2026/metadata.yml", definitions)
+Brisbane_Botanic_Gardens_2026_raw <- dataset_process("data/Brisbane_Botanic_Gardens_2026/data.csv", Brisbane_Botanic_Gardens_2026_config, schema, resource_metadata, unit_conversions)
+Brisbane_Botanic_Gardens_2026 <- dataset_update_taxonomy(Brisbane_Botanic_Gardens_2026_raw, taxon_list)
 
 Britton_1994_config <- dataset_configure("data/Britton_1994/metadata.yml", definitions)
 Britton_1994_raw <- dataset_process("data/Britton_1994/data.csv", Britton_1994_config, schema, resource_metadata, unit_conversions)
@@ -372,6 +384,10 @@ Curran_2009 <- dataset_update_taxonomy(Curran_2009_raw, taxon_list)
 Curtis_2012_config <- dataset_configure("data/Curtis_2012/metadata.yml", definitions)
 Curtis_2012_raw <- dataset_process("data/Curtis_2012/data.csv", Curtis_2012_config, schema, resource_metadata, unit_conversions)
 Curtis_2012 <- dataset_update_taxonomy(Curtis_2012_raw, taxon_list)
+
+Darwin_Botanic_Gardens_2026_config <- dataset_configure("data/Darwin_Botanic_Gardens_2026/metadata.yml", definitions)
+Darwin_Botanic_Gardens_2026_raw <- dataset_process("data/Darwin_Botanic_Gardens_2026/data.csv", Darwin_Botanic_Gardens_2026_config, schema, resource_metadata, unit_conversions)
+Darwin_Botanic_Gardens_2026 <- dataset_update_taxonomy(Darwin_Botanic_Gardens_2026_raw, taxon_list)
 
 Davila_2002_config <- dataset_configure("data/Davila_2002/metadata.yml", definitions)
 Davila_2002_raw <- dataset_process("data/Davila_2002/data.csv", Davila_2002_config, schema, resource_metadata, unit_conversions)
@@ -624,6 +640,10 @@ GrassBase_2014 <- dataset_update_taxonomy(GrassBase_2014_raw, taxon_list)
 Gray_2019_config <- dataset_configure("data/Gray_2019/metadata.yml", definitions)
 Gray_2019_raw <- dataset_process("data/Gray_2019/data.csv", Gray_2019_config, schema, resource_metadata, unit_conversions)
 Gray_2019 <- dataset_update_taxonomy(Gray_2019_raw, taxon_list)
+
+Greening_Australia_2026_config <- dataset_configure("data/Greening_Australia_2026/metadata.yml", definitions)
+Greening_Australia_2026_raw <- dataset_process("data/Greening_Australia_2026/data.csv", Greening_Australia_2026_config, schema, resource_metadata, unit_conversions)
+Greening_Australia_2026 <- dataset_update_taxonomy(Greening_Australia_2026_raw, taxon_list)
 
 Grigg_2008_config <- dataset_configure("data/Grigg_2008/metadata.yml", definitions)
 Grigg_2008_raw <- dataset_process("data/Grigg_2008/data.csv", Grigg_2008_config, schema, resource_metadata, unit_conversions)
@@ -1429,6 +1449,10 @@ Rye_2015_config <- dataset_configure("data/Rye_2015/metadata.yml", definitions)
 Rye_2015_raw <- dataset_process("data/Rye_2015/data.csv", Rye_2015_config, schema, resource_metadata, unit_conversions)
 Rye_2015 <- dataset_update_taxonomy(Rye_2015_raw, taxon_list)
 
+SA_Seed_Conservation_Centre_2026_config <- dataset_configure("data/SA_Seed_Conservation_Centre_2026/metadata.yml", definitions)
+SA_Seed_Conservation_Centre_2026_raw <- dataset_process("data/SA_Seed_Conservation_Centre_2026/data.csv", SA_Seed_Conservation_Centre_2026_config, schema, resource_metadata, unit_conversions)
+SA_Seed_Conservation_Centre_2026 <- dataset_update_taxonomy(SA_Seed_Conservation_Centre_2026_raw, taxon_list)
+
 SAH_2014_config <- dataset_configure("data/SAH_2014/metadata.yml", definitions)
 SAH_2014_raw <- dataset_process("data/SAH_2014/data.csv", SAH_2014_config, schema, resource_metadata, unit_conversions)
 SAH_2014 <- dataset_update_taxonomy(SAH_2014_raw, taxon_list)
@@ -1613,6 +1637,10 @@ Sweedman_2006_config <- dataset_configure("data/Sweedman_2006/metadata.yml", def
 Sweedman_2006_raw <- dataset_process("data/Sweedman_2006/data.csv", Sweedman_2006_config, schema, resource_metadata, unit_conversions)
 Sweedman_2006 <- dataset_update_taxonomy(Sweedman_2006_raw, taxon_list)
 
+Tas_Seed_Conservation_Centre_2026_config <- dataset_configure("data/Tas_Seed_Conservation_Centre_2026/metadata.yml", definitions)
+Tas_Seed_Conservation_Centre_2026_raw <- dataset_process("data/Tas_Seed_Conservation_Centre_2026/data.csv", Tas_Seed_Conservation_Centre_2026_config, schema, resource_metadata, unit_conversions)
+Tas_Seed_Conservation_Centre_2026 <- dataset_update_taxonomy(Tas_Seed_Conservation_Centre_2026_raw, taxon_list)
+
 Taseski_2021_config <- dataset_configure("data/Taseski_2021/metadata.yml", definitions)
 Taseski_2021_raw <- dataset_process("data/Taseski_2021/data.csv", Taseski_2021_config, schema, resource_metadata, unit_conversions)
 Taseski_2021 <- dataset_update_taxonomy(Taseski_2021_raw, taxon_list)
@@ -1709,9 +1737,17 @@ Vesk_2019_config <- dataset_configure("data/Vesk_2019/metadata.yml", definitions
 Vesk_2019_raw <- dataset_process("data/Vesk_2019/data.csv", Vesk_2019_config, schema, resource_metadata, unit_conversions)
 Vesk_2019 <- dataset_update_taxonomy(Vesk_2019_raw, taxon_list)
 
+Victorian_Conservation_Seed_Bank_2026_config <- dataset_configure("data/Victorian_Conservation_Seed_Bank_2026/metadata.yml", definitions)
+Victorian_Conservation_Seed_Bank_2026_raw <- dataset_process("data/Victorian_Conservation_Seed_Bank_2026/data.csv", Victorian_Conservation_Seed_Bank_2026_config, schema, resource_metadata, unit_conversions)
+Victorian_Conservation_Seed_Bank_2026 <- dataset_update_taxonomy(Victorian_Conservation_Seed_Bank_2026_raw, taxon_list)
+
 Vlasveld_2018_config <- dataset_configure("data/Vlasveld_2018/metadata.yml", definitions)
 Vlasveld_2018_raw <- dataset_process("data/Vlasveld_2018/data.csv", Vlasveld_2018_config, schema, resource_metadata, unit_conversions)
 Vlasveld_2018 <- dataset_update_taxonomy(Vlasveld_2018_raw, taxon_list)
+
+WA_Seed_Centre_2026_config <- dataset_configure("data/WA_Seed_Centre_2026/metadata.yml", definitions)
+WA_Seed_Centre_2026_raw <- dataset_process("data/WA_Seed_Centre_2026/data.csv", WA_Seed_Centre_2026_config, schema, resource_metadata, unit_conversions)
+WA_Seed_Centre_2026 <- dataset_update_taxonomy(WA_Seed_Centre_2026_raw, taxon_list)
 
 WAH_1998_config <- dataset_configure("data/WAH_1998/metadata.yml", definitions)
 WAH_1998_raw <- dataset_process("data/WAH_1998/data.csv", WAH_1998_config, schema, resource_metadata, unit_conversions)
@@ -1901,6 +1937,7 @@ austraits_raw <- austraits::bind_databases(
   Ahrens_2019,
   Allen_2024,
   ANBG_2019,
+  ANBG_2026,
   Andrew_2022,
   Angevin_2011,
   Apgaua_2015,
@@ -1912,6 +1949,7 @@ austraits_raw <- austraits::bind_databases(
   Atkinson_2020_2,
   ATRP_2020,
   Auld_2000,
+  Australian_PlantBank_2026,
   AVH_2026,
   Baker_2019,
   Barrett_2009,
@@ -1929,6 +1967,7 @@ austraits_raw <- austraits::bind_databases(
   Bragg_2002,
   BRAIN_2007,
   Briggs_2010,
+  Brisbane_Botanic_Gardens_2026,
   Britton_1994,
   Brock_1993,
   Brodribb_2000,
@@ -1985,6 +2024,7 @@ austraits_raw <- austraits::bind_databases(
   Cunningham_1999,
   Curran_2009,
   Curtis_2012,
+  Darwin_Botanic_Gardens_2026,
   Davila_2002,
   Davila_2007,
   Davis_2026,
@@ -2048,6 +2088,7 @@ austraits_raw <- austraits::bind_databases(
   Gosper_2022,
   GrassBase_2014,
   Gray_2019,
+  Greening_Australia_2026,
   Grigg_2008,
   Groom_1997,
   Groom_2010,
@@ -2249,6 +2290,7 @@ austraits_raw <- austraits::bind_databases(
   Rye_2013_1,
   Rye_2013_2,
   Rye_2015,
+  SA_Seed_Conservation_Centre_2026,
   SAH_2014,
   SAH_2022,
   SAH_2023,
@@ -2295,6 +2337,7 @@ austraits_raw <- austraits::bind_databases(
   Stewart_1995,
   Stuart_2007,
   Sweedman_2006,
+  Tas_Seed_Conservation_Centre_2026,
   Taseski_2021,
   Taylor_2008,
   Tennakoon_1997,
@@ -2319,7 +2362,9 @@ austraits_raw <- austraits::bind_databases(
   Vesk_2004,
   Vesk_2007,
   Vesk_2019,
+  Victorian_Conservation_Seed_Bank_2026,
   Vlasveld_2018,
+  WA_Seed_Centre_2026,
   WAH_1998,
   WAH_2022_1,
   WAH_2022_2,

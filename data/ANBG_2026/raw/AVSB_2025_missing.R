@@ -17,7 +17,7 @@ library(readr)
 library(tidyr)
 
 dl <- "ignore/AVSB_download"
-data_dir <- "../austraits.build-seedbank/data"
+data_dir <- "data"
 
 seed_banks <- c(
   "National Seed Bank" = "ANBG_2026",
