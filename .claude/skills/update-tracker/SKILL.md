@@ -25,6 +25,11 @@ can't see git, so this skill does the scan and writes the results to its databas
 ## Steps
 
 Load `ArtifactData` with ToolSearch (`select:ArtifactData`) if it isn't loaded yet.
+If it doesn't exist, use the `Artifact` tool's `read_db`/`write_db` actions instead (`batch`
+writes take `file_path` entries). Its `list` output has no versions: write the listing with a
+dummy `version 0` per doc so the scanner can still detect deletions, strip `if_version` from the
+batch entries, and push only the docs whose content changed (compare with the dump, ignoring
+`scanned_at`) plus `meta/scan`.
 Use the session scratchpad as `$SP`.
 
 1. **Get the current versions.** Every write to an existing doc needs `if_version`.
@@ -64,3 +69,8 @@ Use the session scratchpad as `$SP`.
   legitimately unknown.
 - Reads git objects only: never check out branches or touch the working tree. The checked-out
   branch's uncommitted changes are read from disk and flagged "uncommitted".
+- **Stashes count too.** GitHub Desktop stashes a branch's uncommitted work when the user switches
+  away (`!!GitHub_Desktop<branch>`), so datasets that exist only in a stash are attributed to that
+  branch and flagged `uncommitted` + `stashed`. Before this rule, every scan run from another branch
+  deleted them (Anderegg_2020, Freeman_2017 etc., stashed on nutrients_physiology_2026-09; 2026-10-25).
+  If the scanner reports deletions, check `git stash list` before pushing them.

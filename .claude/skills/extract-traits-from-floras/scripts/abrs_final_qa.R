@@ -1,5 +1,6 @@
 suppressPackageStartupMessages({library(dplyr);library(stringr);library(readr)})
-n <- read_csv("data/ABRS_2026/data.csv", col_types = cols(.default = "c"))
+# the extraction is split across data/ABRS_*_2026/data.csv (by family); checked together
+n <- bind_rows(lapply(Sys.glob("data/ABRS_*_2026/data.csv"), read_csv, col_types = cols(.default = "c")))
 cat("rows", nrow(n), " taxa", n_distinct(n$taxon_name), " families", n_distinct(n$family), "\n")
 new <- n %>% filter(family %in% strsplit(readLines(file.path(Sys.getenv("S"), "fams.txt")), ",")[[1]])
 cat("new-family rows", nrow(new), " taxa", n_distinct(new$taxon_name), "\n"); print(new %>% group_by(family) %>% summarise(taxa = n_distinct(taxon_name), rows = n()))
