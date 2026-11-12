@@ -12,6 +12,65 @@ source:
     pages: 1205--1218
     doi: 10.1111/jbi.14375
     issn: 1365-2699
+  source:
+  - key: ABRS_2022
+    bibtype: Online
+    year: 2022
+    author: '{Australian Biological Resources Study}'
+    title: Flora of Australia, Australian Biological Resources Study, Canberra.
+    publisher: Department of Climate Change, Energy, the Environment and Water, Canberra.
+    url: http://www.ausflora.org.au
+    note: accessed on 14 September, 2022.
+  - key: CPBR_2022
+    bibtype: Online
+    author: '{Centre for Plant Biodiversity Research}'
+    title: 'EUCLID 2.0: Eucalypts of Australia'
+    year: 2022
+    url: http://apps.lucidcentral.org/euclid/text/intro/index.html
+  - key: NHNSW_2021
+    bibtype: Online
+    year: 2021
+    author: National Herbarium of New South Wales
+    title: The Plant Information Network System of The Royal Botanic Gardens and Domain
+      Trust Version 2.0.
+    url: https://plantnet.rbgsyd.nsw.gov.au/
+  - key: NHNSW_2022
+    bibtype: Online
+    year: 2022
+    author: National Herbarium of New South Wales
+    title: The Plant Information Network System of The Royal Botanic Gardens and Domain
+      Trust Version 2.0.
+    url: https://plantnet.rbgsyd.nsw.gov.au/
+    note: accessed on 6 May, 2022.
+  - key: NTH_2022
+    bibtype: Online
+    year: 2022
+    author: Department of Land Resource Management, Northern Territory of Australia
+    title: Northern Territory Flora Online
+    url: http://eflora.nt.gov.au/
+    note: accessed on 6 May, 2022.
+  - key: RBGV_2022
+    bibtype: Online
+    year: 2022
+    author: VicFlora
+    title: Flora of Victoria, Royal Botanic Gardens Victoria
+    url: https://vicflora.rbg.vic.gov.au/
+    note: accessed on 6 May, 2022.
+  - key: SAH_2022
+    bibtype: Online
+    year: 2022
+    author: State Herbarium of South Australia
+    title: eFlora of SA, Electronic Flora of South Australia
+    url: http://www.flora.sa.gov.au/
+    note: accessed on 6 May, 2022.
+  - key: WAH_2022_2
+    bibtype: Online
+    year: 2022
+    author: '{Western Australian Herbarium}'
+    title: Florabase—the Western Australian Flora.
+    publisher: Department of Biodiversity, Conservation and Attractions.
+    url: https://florabase.dpaw.wa.gov.au/
+    note: accessed on 14 September, 2022.
 contributors:
   data_collectors:
   - last_name: Stephens
@@ -24,7 +83,20 @@ dataset:
   data_is_long_format: yes
   custom_R_code: '
     data |>
-      generate_observation_numbers(taxon_name, region)
+      generate_observation_numbers(taxon_name, region) |>
+      mutate(
+        dataset_id = dplyr::case_when(
+          dataset_id == "eFlora_NT" ~ "NTH_2022",
+          dataset_id == "eFlora_SA" ~ "SAH_2022",
+          dataset_id %in% c("Florabase_WA", "FloraBase_WA") ~ "WAH_2022_2",
+          dataset_id == "PlantNET" ~ "NHNSW_2022",
+          dataset_id == "RBGSYD_2021" ~ "NHNSW_2021",
+          dataset_id == "VicFlora" ~ "RBGV_2022",
+          dataset_id == "Flora_Aus" ~ "ABRS_2022",
+          dataset_id == "EUCLID" ~ "CPBR_2022",
+          TRUE ~ dataset_id
+        )
+      )
   '
   collection_date: 2026/2026
   source_id: dataset_id

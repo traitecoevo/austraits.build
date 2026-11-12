@@ -38,6 +38,7 @@ dataset:
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "recurved", "revolute"), trait_value),
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "incurved", "involute"), trait_value),
         measurement_remarks = ifelse(is.na(category), NA, paste0("Trait value refers to ", category)),
+        measurement_remarks = ifelse(is.na(authors), measurement_remarks, ifelse(is.na(measurement_remarks), authors, paste0(measurement_remarks, "; ", authors))),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred"), flora_value, NA),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_species"), "inferred_from_species", inferred),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_genus"), "inferred_from_genus", inferred),
@@ -124,7 +125,7 @@ dataset:
     were inferred as possessing a trait value from a higher-level taxonomic description
     e.g. the fruit type of all taxa in the Adenanthos genus were scored as `achene`,
     which was mentioned only in the genus description.
-  source_id: authors
+  source_id: .na
   original_file: .na
   notes: .na
 locations: .na

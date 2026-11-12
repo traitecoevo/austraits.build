@@ -12,6 +12,7 @@ source:
     number: '10'
     pages: 1433--1448
     doi: 10.1002/ajb2.1538
+  source: sources.yml
   secondary:
   - key: Sauquet_2017
     bibtype: Article
@@ -201,7 +202,11 @@ dataset:
         source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ. 1984. A synopsis"), paste0(source_id, "_1", sep = ""), source_id)),
         source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "van Steenis CGGJ 1984 Sphenostemonaceae."), paste0(source_id, "_2", sep = ""), source_id)),
         source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Salvadoraceae. In"), paste0(source_id, "_1", sep = ""), source_id)),
-        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Kubitzki K, Bayer C , eds. 2003. The "), paste0(source_id, "_2", sep = ""), source_id))
+        source_id = ifelse(is.na(FullRef), source_id, ifelse(stringr::str_detect(FullRef, "Kubitzki K, Bayer C , eds. 2003. The "), paste0(source_id, "_2", sep = ""), source_id)),
+        source_id = stringr::str_replace(source_id, "^FloraBase_", "WAH_"),
+        source_id = stringr::str_replace(source_id, "^FloraOfAustralia_", "ABRS_"),
+        source_id = stringr::str_replace(source_id, "^RBGSYD_", "NHNSW_"),
+        source_id = stringr::str_replace(source_id, "^VicFlora_", "RBGV_")
       ) %>%
       arrange(source_id, Taxon, Character, trait_value) %>%
       group_by(source_id, Character, Taxon) %>%
