@@ -50,7 +50,10 @@ dataset:
       group_by(taxa, merged_ref) %>%
       mutate(across(c(planttype, maxdsm, phopath, salt_tolerance), replace_duplicates_with_NA)) %>% 
       ungroup() %>%
-      mutate(source_id = ifelse(source_id %in% c("Kew_2019", "unknown_2019"), NA_character_, source_id))
+      mutate(
+        source_id = ifelse(source_id %in% c("Kew_2019", "unknown_2019"), NA_character_, source_id),
+        source_id = dplyr::recode(source_id, Osmund_1974 = "Osmond_1974", Osmund_1980 = "Osmond_1980", Well_1983 = "Wells_1983")
+      )
   '
   collection_date: 2019
   taxon_name: taxa
