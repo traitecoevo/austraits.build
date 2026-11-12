@@ -188,6 +188,12 @@ source:
     number: '3'
     pages: 169--178
     doi: 10.2307/2389419
+  - key: Schortemeyer_2008
+    bibtype: Unpublished
+    year: 2008
+    author: M. Schortemeyer
+    title: 'Unpublished data: Leaf traits of species along the Northern Australian
+      Tropical Transect'
   - key: Turner_1983
     bibtype: Article
     year: '1983'
@@ -214,6 +220,13 @@ dataset:
     trait_cols <- names(data)[which(names(data) == "photosynthetic pathway"):ncol(data)];
     other_cols <- setdiff(trait_cols, wood_bark_cols);
     data <- data %>%
+      mutate(
+        AusTraits_key = dplyr::case_when(
+          AusTraits_key %in% c("Bennett_1996", "Bennett_1998", "Bennett_1999", "Bennett_2000") ~ "Bennett_1997",
+          AusTraits_key == "Schortemeyer_0000" ~ "Schortemeyer_2008",
+          TRUE ~ AusTraits_key
+        )
+      ) %>%
       group_by(name_original) %>%
         mutate(
           across(c(`GF`, `LfForm`,`LfType`,`DecEv`,`Nfixer`,`photosynthetic pathway`), replace_duplicates_with_NA),
