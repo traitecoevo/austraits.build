@@ -2,7 +2,7 @@
 ## traits.build reads from 2.3.0 (traits.build #296, PR #298): the dataset's
 ## own reference is `dataset:` (was `primary:`), keyed by its `dataset_id`;
 ## `source:` (was `original_source:` / `original_NN:`) lists the studies a
-## compilation's records were taken from; `secondary:` lists later publications
+## compilation's observations were taken from; `secondary:` lists later publications
 ## that re-used the data. `source` and `secondary` each hold a list of
 ## references, one `- key:` item per reference, unnumbered.
 ##
@@ -15,7 +15,7 @@
 ##   2. `moves`: references that `source_id` values point at are sources, not
 ##      secondary references, so are moved from `secondary` to `source`.
 ##   3. `rekeys`: the dataset's own reference takes the `dataset_id` as its key,
-##      since every record's `source_id` defaults to the `dataset_id`.
+##      since every observation's `source_id` defaults to the `dataset_id`.
 ##
 ## The other fixes in this migration (the NHNSW `source_id` mappings, values
 ## recoded to the keys they meant in Cornwell_2018, Togashi_2015, Wenk_2023_2
@@ -38,20 +38,20 @@
 suppressPackageStartupMessages(library(traits.build))
 
 # dataset_id -> keys moved from `secondary` to `source`: the references that the
-# dataset's `source_id` values point at, so records are taken from them
+# dataset's `source_id` values point at, so observations are taken from them
 # (traits.build #296 audit, 2026-10-20). "*" moves every `secondary` reference.
 moves <- list(
-  SPRAT_2025_2       = "*",   # 40 floras and databases gap-filled from, named per record
+  SPRAT_2025_2       = "*",   # 40 floras and databases gap-filled from, named per observation
   Togashi_2015       = "*",   # 28 published studies the compiled LA:SA values come from
-  Elliott_2026       = "*",   # 17 floral-visitor studies, named per record
+  Elliott_2026       = "*",   # 17 floral-visitor studies, named per observation
   Prendergast_2026_2 = "*",   # 11 of the compilation's sources that have entries
-  Cornwell_2018      = "*",   # 4 studies some records come from
+  Cornwell_2018      = "*",   # 4 studies some observations come from
   Bell_1995          = "Dixon_1995",
   Li_1997            = "Li_1993",
   Tsujii_2023        = "Tsujii_2023_2",
   Davis_2026         = "Phillips_2015",
   RadfordSmith_2024  = "Harden_2018",
-  Sauquet_2026       = "*",   # 27 pollination studies, named per record
+  Sauquet_2026       = "*",   # 27 pollination studies, named per observation
   Prendergast_2026_3 = "*"    # the 3 of the compilation's sources that have entries
 )
 
