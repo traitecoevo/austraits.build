@@ -7,6 +7,7 @@ source:
     title: Salt and water tolerance data from the Seed Information Database (SID)
       and Seed Bank Database
     url: http://data.kew.org/sid/
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Liu
@@ -48,7 +49,8 @@ dataset:
       ungroup() %>% 
       group_by(taxa, merged_ref) %>%
       mutate(across(c(planttype, maxdsm, phopath, salt_tolerance), replace_duplicates_with_NA)) %>% 
-      ungroup()
+      ungroup() %>%
+      mutate(source_id = ifelse(source_id %in% c("Kew_2019", "unknown_2019"), NA_character_, source_id))
   '
   collection_date: 2019
   taxon_name: taxa

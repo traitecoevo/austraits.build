@@ -7,6 +7,7 @@ source:
     title: Seed dispersal data from the Seed Information Database (SID) and Seed Bank
       Database
     url: http://data.kew.org/sid/
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Liu
@@ -51,7 +52,12 @@ dataset:
         measurement_remarks = stringr::str_replace(
             measurement_remarks, 
             "NOTES: NA; ", "")
-      ) 
+      ) %>%
+      mutate(
+        source_id = ifelse(!is.na(refdesc) & stringr::str_detect(refdesc, "Enright, N.J. and Ogden, J. 1995"), "Enright_1995_1", source_id),
+        source_id = ifelse(!is.na(refdesc) & stringr::str_detect(refdesc, "Enright, N.J. 1995. Conifers"), "Enright_1995_2", source_id),
+        source_id = ifelse(source_id %in% c("Kew_2019", "unknown_2019"), NA_character_, source_id)
+      )
   '
   collection_date: 2019
   taxon_name: SID taxa
