@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: NTH_2023
     bibtype: Online
     year: 2022
@@ -7,6 +7,7 @@ source:
     title: Northern Territory Flora Online
     url: http://eflora.nt.gov.au/
     note: accessed on 6 May, 2022.
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Coleman
@@ -31,6 +32,7 @@ dataset:
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "recurved", "revolute"), trait_value),
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "incurved", "involute"), trait_value),
         measurement_remarks = ifelse(is.na(category), NA, paste0("Trait value refers to ", category)),
+        measurement_remarks = ifelse(is.na(authors), measurement_remarks, ifelse(is.na(measurement_remarks), authors, paste0(measurement_remarks, "; ", authors))),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred"), flora_value, NA),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_species"), "inferred_from_species", inferred),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_genus"), "inferred_from_genus", inferred),
@@ -90,7 +92,28 @@ dataset:
       group_by(taxon_name, trait_name, entity_measured, value_type) %>%
         mutate(observation_number = row_number()) %>%
       ungroup() %>%
-      mutate(location_name = "Northern Territory")
+      mutate(location_name = "Northern Territory") |>
+      mutate(
+        source_id = {
+          works <- c(
+            Jessop_1981 = "Flora of Central Australia",
+            Cowie_2000 = "Supplementary Series Number 10",
+            Cowie_2011 = "Osterkamp Madsen, M\\., 2011, Floodplain Flora",
+            Short_2011 = "Short, P\\.S\\. & Cowie, I\\.D\\. \\(eds\\)",
+            Dunlop_1995 = "Dunlop, C\\.R\\., Leach, G\\.J\\. and Cowie, I\\.D\\.",
+            Short_2003 = "fern allies of the Northern Territory",
+            Albrecht_2007 = "Southern Region Checklist",
+            Cowie_2008 = "Threatened Plants on the Bradshaw",
+            Dixon_2004 = "ymnosperms of the Northern Territory",
+            Kerrigan_2003 = "(Kerrigan, R\\.|Northern Territory Government) 2003, Kakadu",
+            Kerrigan_2004 = "Kerrigan, R\\. 2004, Kakadu",
+            Cowie_2005 = "Cowie, I\\.D\\. 2005\\. Kakadu",
+            Wightman_2006 = "Mangroves of the Northern Territory"
+          );
+          hits <- sapply(works, function(w) stringr::str_detect(dplyr::coalesce(authors, ""), w));
+          ifelse(rowSums(hits) == 1, names(works)[max.col(hits)], NA_character_)
+        }
+      )
   '
   collection_date: 2022
   taxon_name: taxon_name
@@ -117,7 +140,7 @@ dataset:
     possible, unclassified taxa were inferred as possessing a trait value from a higher-level
     taxonomic description e.g. the fruit type of all taxa in the Adenanthos genus
     were scored as `achene`, which was mentioned only in the genus description.
-  source_id: authors
+  source_id: source_id
   original_file: .na
   notes: Data supplied by the Department of Land Resource Management, Northern Territory
     of Australia.

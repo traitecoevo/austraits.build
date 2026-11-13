@@ -94,6 +94,19 @@ geological unit the sites sit on (`Nabiac Pleistocene beach ridge barriers`)
 is `geology (parent material)`, not part of `locality`, which keeps only the
 place reference (`25 km south of Taree, lower north coast of New South
 Wales`) (Griffith_2015).
+Soil and rock go in their own properties too. "Jarrah forest on lateritic
+soils" is `description: Jarrah forest` plus `soil type: lateritic`. Granite
+outcrop shrubland is `description: open shrubland` plus `geology (parent
+material): granite` (Scaccabarozzi_2018).
+
+**A pooled (metapopulation) location always uses a real site's
+coordinates.** When values are pooled across named study sites, use the
+coordinates of the study site nearest their centroid, even when the sites are
+only 5-15 km apart. Write `georeference remarks: Sampling across multiple
+populations (<sites>); coordinates are those of <site>, the study site
+nearest their centroid`. The user: "coordinates that don't correspond to any
+site is not a good idea at all" (Scaccabarozzi_2018, 2020). A region centroid
+is only for regions whose individual sites the source doesn't give.
 
 **Reuse, don't paraphrase.** If the source already has a column whose values
 are exactly this -- a vegetation-class/community name, most often -- copy

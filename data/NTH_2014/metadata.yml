@@ -1,11 +1,12 @@
 source:
-  primary:
+  dataset:
     key: NTH_2014
     bibtype: Online
     author: '{Northern Territory Herbarium}'
     year: 2014
     url: http://www.lrm.nt.gov.au/plants-and-animals/herbarium/darwin_flora_online
     title: Flora of the Darwin Region Online
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Cowie
@@ -18,7 +19,28 @@ dataset:
   data_is_long_format: yes
   custom_R_code: '
     data %>%
-      mutate(location_name = "Darwin region")
+      mutate(location_name = "Darwin region") |>
+      mutate(
+        source_id = {
+          works <- c(
+            Jessop_1981 = "Flora of Central Australia",
+            Cowie_2000 = "Supplementary Series Number 10",
+            Cowie_2011 = "Osterkamp Madsen, M\\., 2011, Floodplain Flora",
+            Short_2011 = "Short, P\\.S\\. & Cowie, I\\.D\\. \\(eds\\)",
+            Dunlop_1995 = "Dunlop, C\\.R\\., Leach, G\\.J\\. and Cowie, I\\.D\\.",
+            Short_2003 = "fern allies of the Northern Territory",
+            Albrecht_2007 = "Southern Region Checklist",
+            Cowie_2008 = "Threatened Plants on the Bradshaw",
+            Dixon_2004 = "ymnosperms of the Northern Territory",
+            Kerrigan_2003 = "(Kerrigan, R\\.|Northern Territory Government) 2003, Kakadu",
+            Kerrigan_2004 = "Kerrigan, R\\. 2004, Kakadu",
+            Cowie_2005 = "Cowie, I\\.D\\. 2005\\. Kakadu",
+            Wightman_2006 = "Mangroves of the Northern Territory"
+          );
+          hits <- sapply(works, function(w) stringr::str_detect(dplyr::coalesce(authors, ""), w));
+          ifelse(rowSums(hits) == 1, names(works)[max.col(hits)], NA_character_)
+        }
+      )
   '
   collection_date: 2014
   taxon_name: original_name
@@ -30,7 +52,8 @@ dataset:
   basis_of_record: preserved_specimen
   life_stage: adult
   sampling_strategy: unknown
-  source_id: authors
+  measurement_remarks: authors
+  source_id: source_id
   original_file: NT_flora.xls
   notes: Request acknowledgment of "Northern Territory Herbarium"
 locations:

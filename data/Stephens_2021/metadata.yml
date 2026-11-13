@@ -1,10 +1,11 @@
 source:
-  primary:
+  dataset:
     key: Stephens_2021
     bibtype: Unpublished
     year: 2021
     author: Ruby Stephens
     title: 'Unpublished data: Flowering time data from TERN plots, Macquarie University.'
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Stephens
@@ -35,7 +36,37 @@ dataset:
       rename(original_dataset_id = dataset_id) %>%
       group_by(taxon_name, original_dataset_id) %>%
         distinct(value, .keep_all = TRUE) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(
+        original_dataset_id = dplyr::case_when(
+          original_dataset_id == "eFlora_NT" ~ "NTH_2021",
+          original_dataset_id == "eFlora_SA" ~ "SAH_2021",
+          original_dataset_id %in% c("Florabase_WA", "FloraBase_WA") ~ "WAH_2021",
+          original_dataset_id == "PlantNET" ~ "NHNSW_2021",
+          original_dataset_id == "VicFlora" ~ "RBGV_2021",
+          original_dataset_id == "Flora_Aus" ~ "ABRS_2021",
+          original_dataset_id == "EUCLID" ~ "CPBR_2021",
+          original_dataset_id == "Wikipedia" ~ "Wikipedia_2021",
+          stringr::str_starts(original_dataset_id, "Jeanes, J.A.") ~ "Jeanes_2015",
+          stringr::str_starts(original_dataset_id, "Johnson, R.W.") ~ "Johnson_2014",
+          stringr::str_starts(original_dataset_id, "Short, P.S.") ~ "Short_2014",
+          original_dataset_id == "Brown_Bettink_2019" ~ "Brown_2019",
+          original_dataset_id %in% c("HollisterThiele_2020", "Paczkowska_1995") ~ "WAH_2021",
+          original_dataset_id %in% c("Entwisle_1996", "Jeanes_1996", "Walsh_1996") ~ "RBGV_2021",
+          original_dataset_id == "Chappill_Wilkins_Crisp_2007" ~ "Chappill_2007",
+          original_dataset_id == "Chappill_Wilkins_Crisp_2008" ~ "Chappill_2008",
+          original_dataset_id == "Halford_Henderson_2008" ~ "Halford_2008",
+          original_dataset_id == "Halford_Harris_2012" ~ "Halford_2012",
+          original_dataset_id == "Hill_Johnson_1995" ~ "Hill_1995",
+          original_dataset_id == "Telfordetal_2014" ~ "Telford_2014",
+          original_dataset_id == "TrudgenRye_2010" ~ "Trudgen_2010",
+          original_dataset_id == "Wang_Bean_2017" ~ "Wang_2017",
+          original_dataset_id == "Wilkins_Whitlock_2016" ~ "Wilkins_2016",
+          original_dataset_id == "Rye_2015" ~ "Rye_2015_2",
+          original_dataset_id == "Short_2016" ~ "Short_2015",
+          TRUE ~ original_dataset_id
+        )
+      )
   '
   collection_date: 2020/2021
   taxon_name: taxon_name
