@@ -46,12 +46,16 @@ collapse_unique <- function(x) {
 latitude_sign_errors <- c("CANB 916974.2", "CANB 916974.3", "CANB 916974.4", "CANB 916974.5")
 latitude_corrections <- c("CANB 960384.2" = "-35.8331")
 
+# ANBG accessions collected outside Australia (no state), also filtered out in custom_R_code
+non_australian_accessions <- c("CBG 9710138.2", "CBG 9702921.2", "CANB 808433.2")
+
 write_locations <- function(id) {
   data <- read_csv(file.path(data_dir, id, "data.csv"), col_types = cols(.default = "c"))
   extra <- intersect(names(site_properties), names(data))
   for (col in setdiff(c("Locality", "State"), names(data))) data[[col]] <- NA_character_
   locs <- data |>
-    filter(!is.na(`Scientific Name`), !is.na(`Decimal Latitude`), !is.na(`Decimal Longitude`)) |>
+    filter(!is.na(`Scientific Name`), !is.na(`Decimal Latitude`), !is.na(`Decimal Longitude`),
+           !`Accession Number` %in% non_australian_accessions) |>
     # latitude errors, also corrected in that dataset's custom_R_code
     mutate(`Decimal Latitude` = ifelse(`Accession Number` %in% latitude_sign_errors,
                                        as.character(-abs(as.numeric(`Decimal Latitude`))),

@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: ANBG_2026
     bibtype: Online
     author: '{Australian National Botanic Gardens}'
@@ -70,7 +70,8 @@ dataset:
         )
       ) %>%
       filter(!is.na(`Scientific Name`)) %>%
-      filter(!(`Scientific Name` == "Azorella polaris" & Locality %in% "CULTIVATED: Dunedin Botanic Gardens."))
+      filter(!(`Scientific Name` == "Azorella polaris" & Locality %in% "CULTIVATED: Dunedin Botanic Gardens.")) %>%
+      filter(!`Accession Number` %in% c("CBG 9710138.2", "CBG 9702921.2", "CANB 808433.2"))
     '
   collection_date: collection_date
   taxon_name: Scientific Name
@@ -100,7 +101,10 @@ dataset:
     with `Data Version` = "2025 download" are values from the Feb 2025 download that are
     no longer in the Australian Virtual Seed Bank. The one Azorella polaris accession from
     a plant cultivated at Dunedin Botanic Gardens (NZ) is filtered out in custom_R_code;
-    the species' Macquarie Island accessions are kept. The latitude of Triplarina
+    the species' Macquarie Island accessions are kept. Three accessions collected outside
+    Australia are also filtered out, Cassinia leptophylla CBG 9710138.2 (Flagstaff, Dunedin,
+    NZ), Olearia semidentata CBG 9702921.2 (Chatham Island, NZ) and Lecanora CANB 808433.2
+    (Rarotonga, Cook Islands). The latitude of Triplarina
     nowraensis accession CANB 916974.2 (and its trial sub-lots .3 to .5) is given as
     34.89227 and is made negative in custom_R_code. The latitude of Leptospermum
     namadgiense accession CANB 960384.2 (Sentry Box Mountain, Namadgi National Park) is
@@ -670,14 +674,11 @@ taxonomic_updates:
   taxonomic_resolution: genus
 exclude_observations:
 - variable: taxon_name
-  find: Brachyglottis monroi, Cassinia leptophylla, Celmisia holosericea, Celmisia monroi, Dianella nigra, Olearia arborescens, Olearia coriacea, Olearia fragrantissima, Olearia semidentata, Pittosporum obcordatum
+  find: Brachyglottis monroi, Celmisia holosericea, Celmisia monroi, Dianella nigra, Olearia arborescens, Olearia coriacea, Olearia fragrantissima, Pittosporum obcordatum
   reason: non-native, non-naturalised NZ taxa
 - variable: taxon_name
   find: Calodendrum, Embothrium coccineum, Eucalyptus deglupta, Gymnosporia senegalensis
   reason: non-native, non-naturalised taxa
-- variable: taxon_name
-  find: Lecanora
-  reason: lichen
 - variable: taxon_name
   find: Ptychomnion aciculare
   reason: moss
