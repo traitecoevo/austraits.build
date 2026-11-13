@@ -126,12 +126,15 @@ dataset:
     "Walker, A.P."), NA_character_, .x))) |> filter(!if_all(c(Asat_area_micromol.m2.s,
     gsw_mmol.m2.s, CiCa, Vcmax25_micromol.m2.s, LMA_g.m2, LeafN_area_g.m2, LeafP_area_g.m2,
     PNUE, PPUE), is.na)) |> mutate(Species = str_replace(Species, " ssp.", " subsp.
-    ")) |> mutate(source_id = stringr::str_remove(source_id, ";.*$"), source_id = dplyr::recode(source_id,
-    Wright_2001 = "Wright_2001_b", Eamus_1999 = "Eamus_1999_2")) '
+    ")) |> mutate(measurement_remarks = ifelse(is.na(Reference.s.), NA_character_, paste0("Data source: ", Reference.s.)),
+    source_id = stringr::str_remove(source_id, ";.*$"), source_id = dplyr::recode(source_id,
+    Wright_2001 = "Wright_2001_b", Eamus_1999 = "Eamus_1999_2"), source_id = ifelse(source_id %in% c("Cernusak_unpub",
+    "Ellsworth_unpub", "Keitel_unpub"), NA_character_, source_id)) '
   collection_date: collection_date
   taxon_name: Species
   location_name: Site
   source_id: source_id
+  measurement_remarks: measurement_remarks
   description: Here we investigated the dependency of photosynthetic traits on climate
     and soil properties using a new Australia-wide trait dataset spanning 528 species
     from 67 sites.

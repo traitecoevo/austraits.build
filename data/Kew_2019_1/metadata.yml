@@ -77,7 +77,15 @@ dataset:
       group_by(taxa, merged_ref) %>%
       mutate(across(c(thousandseedweight, materialweigheddesc), replace_duplicates_with_NA)) %>%
       ungroup() %>%
-      mutate(original_dataset_id = ifelse(original_dataset_id %in% c("Kew_2019", "unknown_2019"), NA_character_, original_dataset_id))
+      mutate(
+        measurement_remarks = ifelse(
+          original_dataset_id %in% c("Kew_2019", "unknown_2019", "Juniper_2019", "JepsonHerbarium_2019", "Groom_2002"),
+          ifelse(is.na(refdesc),
+                 sub("(; )?REFERENCE: .*$", "", measurement_remarks),
+                 paste0(sub("REFERENCE: .*$", "", measurement_remarks), "REFERENCE: ", refdesc)),
+          measurement_remarks),
+        original_dataset_id = ifelse(original_dataset_id %in% c("Kew_2019", "unknown_2019", "Juniper_2019", "JepsonHerbarium_2019", "Groom_2002"), NA_character_, original_dataset_id)
+      )
     '
   collection_date: 2019
   taxon_name: taxa

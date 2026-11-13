@@ -225,7 +225,10 @@ dataset:
           AusTraits_key %in% c("Bennett_1996", "Bennett_1998", "Bennett_1999", "Bennett_2000") ~ "Bennett_1997",
           AusTraits_key == "Schortemeyer_0000" ~ "Schortemeyer_2008",
           TRUE ~ AusTraits_key
-        )
+        ),
+        context = ifelse(AusTraits_key %in% "Richards_2008_2",
+          ifelse(is.na(context), "A. Richards, unpublished data", paste0(context, "; A. Richards, unpublished data")), context),
+        AusTraits_key = ifelse(AusTraits_key %in% "Richards_2008_2", NA_character_, AusTraits_key)
       ) %>%
       group_by(name_original) %>%
         mutate(

@@ -112,30 +112,6 @@ source:
     title: Drought traits of Eucalyptus gomphocephala in Yalgorup National Park.
     institution: Edith Cowan University, Perth
     type: PhD
-  - key: Brodribb_unpub
-    bibtype: Unpublished
-    year: unknown
-    author: Tim J. Brodribb
-    title: 'Unpublished data: vulnerability of the xylem to drought-induced embolism,
-      contributed to the Choat et al. (2012) compilation'
-  - key: Cochard_unpub
-    bibtype: Unpublished
-    year: unknown
-    author: Hervé Cochard
-    title: 'Unpublished data: vulnerability of the xylem to drought-induced embolism,
-      contributed to the Choat et al. (2012) compilation'
-  - key: Mitchell_unpub
-    bibtype: Unpublished
-    year: unknown
-    author: Patrick J. Mitchell
-    title: 'Unpublished data: vulnerability of the xylem to drought-induced embolism,
-      contributed to the Choat et al. (2012) compilation'
-  - key: Poot_unpub
-    bibtype: Unpublished
-    year: unknown
-    author: Pieter Poot
-    title: 'Unpublished data: vulnerability of the xylem to drought-induced embolism,
-      contributed to the Choat et al. (2012) compilation'
 contributors:
   data_collectors:
   - last_name: Choat
@@ -147,7 +123,14 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        data_source = ifelse(source_id %in% c("Brodribb_unpub", "Cochard_unpub", "Mitchell_unpub", "Poot_unpub"), paste0("Data source: ", Reference), NA_character_),
+        midday_WP_min_notes = ifelse(is.na(data_source), midday_WP_min_notes, ifelse(is.na(midday_WP_min_notes), data_source, paste0(midday_WP_min_notes, "; ", data_source))),
+        source_id = ifelse(is.na(data_source), source_id, NA_character_)
+      )
+  '
   collection_date: 2012
   taxon_name: Species
   location_name: Location
@@ -155,6 +138,7 @@ dataset:
     of the transport system to drought-induced embolism for woody species worldwide;
     only Australian component included in AusTraits
   source_id: source_id
+  measurement_remarks: data_source
   basis_of_record: literature
   life_stage: adult
   sampling_strategy: The data set was compiled from published papers and unpublished

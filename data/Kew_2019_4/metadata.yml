@@ -45,7 +45,14 @@ dataset:
       group_by(taxa, source_id, oilmaterialdesc) %>% 
       mutate(obs = row_number()) %>%
       ungroup() %>%
-      mutate(source_id = ifelse(source_id %in% c("Kew_2019", "unknown_2019"), NA_character_, source_id))
+      mutate(
+        merged_ref = stringr::str_replace_all(merged_ref, c(
+          "ABG_2019" = "Seed Conservation Centre, Adelaide Botanic Garden",
+          "Doai_2019" = "Doai Van Nguyen, National Forest Seed Company, Hanoi, Vietnam",
+          "Kew_2019" = "RBG Kew, Wakehurst Place",
+          "unknown_2019" = "reference not given")),
+        source_id = ifelse(source_id %in% c("Kew_2019", "unknown_2019", "ABG_2019", "Doai_2019"), NA_character_, source_id)
+      )
   '
   collection_date: 2019
   taxon_name: taxa

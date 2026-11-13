@@ -39,16 +39,12 @@ dataset:
         serotiny = `Seed Bank`,
         source_id = str_replace_all(`Eco Source`, " (?=\\d{4})", "_"),
         source_id = stringr::str_trim(stringr::str_remove(source_id, "[,;].*$")),
+        measurement_remarks = ifelse(is.na(`Eco Source`), NA_character_, paste0("Source in the NT Ecological Attributes Database: ", `Eco Source`)),
         source_id = dplyr::case_when(
-          source_id %in% c("I.D. Cowie", "I.D.Cowie", "I.D.C") ~ "Cowie_unpub",
           source_id == "I.D. Cowie_2020" ~ "Cowie_2020",
           source_id %in% c("I.D. Cowie_2021", "cowie_2021") ~ "Cowie_2021",
           source_id == "JRS_2004" ~ "RussellSmith_2004",
-          source_id == "K.G.Brennan" ~ "Brennan_unpub",
-          source_id == "D. Lewis" ~ "Lewis_unpub",
-          source_id %in% c("KNP plots", "KNP") ~ "KakaduNP_unpub",
-          source_id == "Nitmiluk plots" ~ "NitmilukNP_unpub",
-          source_id == "Unknown" ~ "NTH_2011",
+          source_id %in% c("I.D. Cowie", "I.D.Cowie", "I.D.C", "K.G.Brennan", "D. Lewis", "KNP plots", "KNP", "Nitmiluk plots", "Unknown") ~ "NTH_2011",
           is.na(source_id) & (!is.na(`Fire Response Adult`) | !is.na(`Resprout Type`) | !is.na(`Seed Bank`)) ~ "NTH_2011",
           TRUE ~ source_id
         )
@@ -65,6 +61,7 @@ dataset:
   basis_of_record: literature field
   life_stage: adult
   source_id: source_id
+  measurement_remarks: measurement_remarks
   sampling_strategy: Site selection ^p We selected 385 sites from a database of Northern
     Territory quadrat-based vegetation surveys (NT government unpublished data). All
     of the included sites had floristic and environmental data that had been recorded
