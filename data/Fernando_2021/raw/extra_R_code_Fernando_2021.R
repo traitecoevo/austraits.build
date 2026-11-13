@@ -3,7 +3,7 @@
 #   - basis_of_record: all three studies sampled mature trees in situ at Hattah Lakes.
 #   - individual_id: the AJB study (Fernando_2021_2) resampled tree a (flooded, 2017-12-09)
 #     after floodwaters subsided (2018-07-13); tree b is a single never-flooded tree.
-#   - replicates: the source n where stated (Fernando_2018: 5 trees per location, 3 for
+#   - replicates: the source n where stated (Fernando_2018_2: 5 trees per location, 3 for
 #     phenolics); 15 trees (5 trees x sites H1-H3) for the pooled Fernando_2021 means;
 #     1 for the single-tree AJB samples (each a bulk of 10-20 leaves); blank for
 #     species-level descriptions.
