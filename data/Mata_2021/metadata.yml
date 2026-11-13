@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Mata_2021
     bibtype: Article
     author: Luis Mata and Alan N. Andersen and Alejandra Morán-Ordóñez and Amy K.
@@ -52,7 +52,9 @@ dataset:
           stringr::str_detect(species, stringr::regex("\\bsp\\.?\\b", ignore_case = TRUE)) ~ genus,
           TRUE ~ species
         )
-      )
+      ) |>
+      dplyr::group_by(vegspecies, site, `Flower visitor taxon name`, `Pollinator match value`) |>
+      dplyr::summarise(`Floral visitor individuals captured` = as.character(dplyr::n()), .groups = "drop")
   '
   collection_date: 2015-01/2015-03
   taxon_name: vegspecies
@@ -122,7 +124,11 @@ dataset:
     were derived from OpenStreetMap records. Where a plant genus-level `sp.` name
     (e.g. `Hakea sp.`) recurs across more than one distinct site, `vegspecies` is
     suffixed with that site (e.g. `Hakea sp. [Royal Park]`) so these are not conflated
-    as the same unidentified species.
+    as the same unidentified species. Each raw row is one insect specimen; custom_R_code
+    collapses the specimens of the same visitor taxon on the same plant species in the
+    same park (across survey dates, plots and morphospecies sharing a genus) to one
+    row, with the number of specimens as the context `floral visitor individuals captured
+    (count)`.
 identifiers: .na
 locations:
   Argyle Square:
@@ -219,6 +225,9 @@ contexts:
 - context_property: flower visitor taxon name
   category: entity_context
   var_in: Flower visitor taxon name
+- context_property: floral visitor individuals captured (count)
+  category: entity_context
+  var_in: Floral visitor individuals captured
 traits:
 - var_in: Pollinator match value
   unit_in: .na

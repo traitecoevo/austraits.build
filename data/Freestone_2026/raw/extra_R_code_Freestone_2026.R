@@ -1,7 +1,9 @@
 # Writes data/Freestone_2026/data.csv from raw/trait_data.csv, adding derived columns so
 # their values sit alongside the data. Run from the repo root.
 #   - source_id: values the paper cites from other studies (row notes start "Cites ...")
-#     take the original study as their source; everything else is Freestone_2026.
+#     take the original study as their source; everything else is Freestone_2026. A value
+#     citing two studies takes the first-named as its source_id, and keeps both keys in
+#     source_id_original (unmapped; empty for every other row).
 #   - collection_date: 2017/18 flowering season for this study; publication year for
 #     cited values.
 #   - pollination_treatment: the treatment named in the context string.
@@ -17,7 +19,7 @@ data <- read_csv("data/Freestone_2026/raw/trait_data.csv", col_types = cols(.def
 data <- data |>
   mutate(
     source_id = case_when(
-      str_detect(notes, "^Cites Bernhardt & Burns-Balogh 1986") ~ "Bernhardt_1986",
+      str_detect(notes, "^Cites Bernhardt & Burns-Balogh 1986") ~ "Bernhardt_1986_2",
       str_detect(notes, "^Cites Bates 1984a") ~ "Bates_1984",
       str_detect(notes, "^Cites Elliott & Ladd 2002") ~ "Elliott_2002",
       str_detect(notes, "^Cites Peakall 1987, 1989") ~ "Peakall_1987 Peakall_1989",
@@ -29,11 +31,14 @@ data <- data |>
     collection_date = case_when(
       source_id == "Freestone_2026" ~ "2017/2018",
       source_id == "Peakall_1987 Peakall_1989" ~ "1987/1989",
-      TRUE ~ str_extract(source_id, "[0-9]{4}$")
+      TRUE ~ str_extract(source_id, "(?<=_)[0-9]{4}")
     ),
+    source_id_original = ifelse(str_detect(source_id, " "), source_id, ""),
+    source_id = word(source_id, 1),
     pollination_treatment = str_trim(str_extract(context, "(?<=pollination treatment: )[^(;]+"))
   ) |>
   relocate(pollination_treatment, .after = context) |>
+  relocate(source_id_original, .after = source_id) |>
   rename(replicates = n)
 
 write_csv(data, "data/Freestone_2026/data.csv", na = "", eol = "\n")

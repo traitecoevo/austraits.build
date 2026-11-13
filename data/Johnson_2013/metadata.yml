@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Johnson_2013
     bibtype: Article
     year: '2013'
@@ -12,26 +12,7 @@ source:
     number: unknown
     pages: 141--149
     doi: 10.1093/aob/mct105
-  secondary_01:
-    key: Schneemilch_2011
-    bibtype: Article
-    year: '2011'
-    author: M. K. Schneemilch and C. Williams and M. Kokkinn
-    title: 'Floral visitation in the Australian native shrub genus Acrotriche (Ericaceae):
-      an abundance of ants'
-    journal: Australian Journal of Entomology
-    volume: '50'
-    pages: 130--138
-    doi: 10.1111/j.1440-6055.2010.00795.x
-  secondary_02:
-    key: Keighery_1996
-    bibtype: Article
-    year: '1996'
-    author: G. J. Keighery
-    title: Phytogeography, biology and conservation of Western Australian Epacridaceae
-    journal: Australian Journal of Botany
-    volume: '77'
-    pages: 347--356
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Johnson
@@ -108,6 +89,9 @@ dataset:
           as.character(collection_year_min),
           paste0(collection_year_min, "/", collection_year_max)),
         .groups = "drop"
+      ) %>%
+      dplyr::mutate(
+        source_id_mapped = ifelse(source_id %in% c("Keith_1999", "Hawkeswood_2002"), NA, source_id)
       )
     '
   collection_date: collection_date_derived
@@ -115,7 +99,7 @@ dataset:
   trait_name: trait_name_derived
   value: pollinator_vocab_match
   location_name: location_name_derived
-  source_id: source_id
+  source_id: source_id_mapped
   individual_id: .na
   description: To compile published and original field records of floral visitors
     to Australian epacrid (Ericaceae, Styphelioideae) species, together with floral
@@ -165,6 +149,10 @@ dataset:
     species. Epacris impressa is listed against both Randalls Bay Conservation Area
     and Huon Road in Table S1, and is arbitrarily linked to Huon Road; Richea scoparia
     is listed twice at Mt. Field National Park and linked to its representative coordinates.
+    source_id is mapped from source_id_mapped, a copy made in custom_R_code that leaves
+    out Keith_1999 (Keith and Ilowski 1999, Epacris stuartii recovery plan) and
+    Hawkeswood_2002, whose citations could not be confirmed; those observations cite
+    Johnson_2013, and source_id keeps the original keys.
   measurement_remarks: source
 identifiers: .na
 locations:
