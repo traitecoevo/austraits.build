@@ -206,7 +206,14 @@ dataset:
         source_id = stringr::str_replace(source_id, "^FloraBase_", "WAH_"),
         source_id = stringr::str_replace(source_id, "^FloraOfAustralia_", "ABRS_"),
         source_id = stringr::str_replace(source_id, "^RBGSYD_", "NHNSW_"),
-        source_id = stringr::str_replace(source_id, "^VicFlora_", "RBGV_")
+        source_id = stringr::str_replace(source_id, "^VicFlora_", "RBGV_"),
+        source_id = dplyr::coalesce(c(ASPA_2017 = "APSA_2017", PFAP_2013 = "PFAF_2013", MNFNFR_2013 = "MNHN_2013", Alina_2009 = "Ortan_2009",
+          Olof_1947 = "Selling_1947", Joan_1996 = "Nowicke_1996", Mats_1997 = "Gustafsson_1997", Nuri_2009 = "Pierce_2009",
+          IGERSHEIM_1998 = "Igersheim_1998", Taylor_2008 = "Taylor_2008_2", vonBalthazar_2008 = "Janka_2008", Hawkeswood_1983 = "Hawkeswood_1983_2")[source_id], source_id),
+        source_id = stringr::str_replace(source_id, "^D.vilaa_2016$", "DAvila_2016"),
+        source_id = ifelse(source_id == "Spach_1834", ifelse(stringr::str_detect(FullRef, "Atlas"), "Spach_1834_2", "Spach_1834_1"), source_id),
+        measurement_remarks = ifelse(source_id %in% c("RBGE_1998", "RBGE_2014", "Löfstrand_2014"), stringr::str_squish(FullRef), NA_character_),
+        source_id = ifelse(stringr::str_detect(source_id, "^unknown_") | source_id %in% c("RBGE_1998", "RBGE_2014", "Löfstrand_2014"), NA_character_, source_id)
       ) %>%
       arrange(source_id, Taxon, Character, trait_value) %>%
       group_by(source_id, Character, Taxon) %>%
@@ -219,6 +226,7 @@ dataset:
   trait_name: Character
   value: trait_value
   source_id: source_id
+  measurement_remarks: measurement_remarks
   individual_id: NDat
   description: Updated eFLOWER-792 dataset, exported from PROTEUS on 15 Feb 2021.
     This is the same list of 792 angiosperm species used in the first eFLOWER paper
