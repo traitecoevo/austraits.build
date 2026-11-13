@@ -1,11 +1,12 @@
 source:
-  primary:
+  dataset:
     key: Kew_2019_1
     bibtype: Online
     author: '{Royal Botanic Gardens Kew}'
     year: 2019
     title: Seed Information Database (SID) and Seed Bank Database
     url: http://data.kew.org/sid/
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Liu
@@ -40,6 +41,10 @@ dataset:
         original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "DFSC. 2000b. The Project"), paste0(original_dataset_id, "_2", sep = ""), original_dataset_id)),
         original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Vaughton, G. and Ramsey, M. 1998"), paste0(original_dataset_id, "_1", sep = ""), original_dataset_id)),
         original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Vaughton, G. 1998. Soil seed bank"), paste0(original_dataset_id, "_2", sep = ""), original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Burrows, C.J. 1995b"), "Burrows_1995_1", original_dataset_id)),
+        original_dataset_id = ifelse(is.na(refdesc), original_dataset_id, ifelse(stringr::str_detect(refdesc, "Burrows, C.J. 1995c"), "Burrows_1995_2", original_dataset_id)),
+        original_dataset_id = dplyr::recode(original_dataset_id, Moles_2003 = "Moles_2003_2", Thompson_1993 = "Thompson_1993_2", Thompson_2001 = "Thompson_2001_2",
+          Rodgers_1989 = "Rogers_1989", Gun_1999 = "Gunn_1999_2", CMGBSK_1992 = "CMGBSF_1992", Csonthos_2007 = "Csontos_2007"),
         measurement_remarks = paste0(
             "MATERIAL: ", materialweigheddesc, "; ",
             "NOTES: ", seedweightnotes, "; ",
@@ -71,7 +76,16 @@ dataset:
       ungroup() %>%
       group_by(taxa, merged_ref) %>%
       mutate(across(c(thousandseedweight, materialweigheddesc), replace_duplicates_with_NA)) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(
+        measurement_remarks = ifelse(
+          original_dataset_id %in% c("Kew_2019", "unknown_2019", "Juniper_2019", "JepsonHerbarium_2019", "Groom_2002"),
+          ifelse(is.na(refdesc),
+                 sub("(; )?REFERENCE: .*$", "", measurement_remarks),
+                 paste0(sub("REFERENCE: .*$", "", measurement_remarks), "REFERENCE: ", refdesc)),
+          measurement_remarks),
+        original_dataset_id = ifelse(original_dataset_id %in% c("Kew_2019", "unknown_2019", "Juniper_2019", "JepsonHerbarium_2019", "Groom_2002"), NA_character_, original_dataset_id)
+      )
     '
   collection_date: 2019
   taxon_name: taxa

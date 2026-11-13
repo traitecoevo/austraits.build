@@ -29,6 +29,10 @@ Ahrens_2019_config <- dataset_configure("data/Ahrens_2019/metadata.yml", definit
 Ahrens_2019_raw <- dataset_process("data/Ahrens_2019/data.csv", Ahrens_2019_config, schema, resource_metadata, unit_conversions)
 Ahrens_2019 <- dataset_update_taxonomy(Ahrens_2019_raw, taxon_list)
 
+Alam_2026_config <- dataset_configure("data/Alam_2026/metadata.yml", definitions)
+Alam_2026_raw <- dataset_process("data/Alam_2026/data.csv", Alam_2026_config, schema, resource_metadata, unit_conversions)
+Alam_2026 <- dataset_update_taxonomy(Alam_2026_raw, taxon_list)
+
 Allen_2024_config <- dataset_configure("data/Allen_2024/metadata.yml", definitions)
 Allen_2024_raw <- dataset_process("data/Allen_2024/data.csv", Allen_2024_config, schema, resource_metadata, unit_conversions)
 Allen_2024 <- dataset_update_taxonomy(Allen_2024_raw, taxon_list)
@@ -40,6 +44,10 @@ ANBG_2019 <- dataset_update_taxonomy(ANBG_2019_raw, taxon_list)
 Anderegg_2020_config <- dataset_configure("data/Anderegg_2020/metadata.yml", definitions)
 Anderegg_2020_raw <- dataset_process("data/Anderegg_2020/data.csv", Anderegg_2020_config, schema, resource_metadata, unit_conversions)
 Anderegg_2020 <- dataset_update_taxonomy(Anderegg_2020_raw, taxon_list)
+
+Anderson_1996_config <- dataset_configure("data/Anderson_1996/metadata.yml", definitions)
+Anderson_1996_raw <- dataset_process("data/Anderson_1996/data.csv", Anderson_1996_config, schema, resource_metadata, unit_conversions)
+Anderson_1996 <- dataset_update_taxonomy(Anderson_1996_raw, taxon_list)
 
 Andres_2024_config <- dataset_configure("data/Andres_2024/metadata.yml", definitions)
 Andres_2024_raw <- dataset_process("data/Andres_2024/data.csv", Andres_2024_config, schema, resource_metadata, unit_conversions)
@@ -265,6 +273,10 @@ Cheal_2017_config <- dataset_configure("data/Cheal_2017/metadata.yml", definitio
 Cheal_2017_raw <- dataset_process("data/Cheal_2017/data.csv", Cheal_2017_config, schema, resource_metadata, unit_conversions)
 Cheal_2017 <- dataset_update_taxonomy(Cheal_2017_raw, taxon_list)
 
+Cheesman_2017_config <- dataset_configure("data/Cheesman_2017/metadata.yml", definitions)
+Cheesman_2017_raw <- dataset_process("data/Cheesman_2017/data.csv", Cheesman_2017_config, schema, resource_metadata, unit_conversions)
+Cheesman_2017 <- dataset_update_taxonomy(Cheesman_2017_raw, taxon_list)
+
 Cheesman_2020_config <- dataset_configure("data/Cheesman_2020/metadata.yml", definitions)
 Cheesman_2020_raw <- dataset_process("data/Cheesman_2020/data.csv", Cheesman_2020_config, schema, resource_metadata, unit_conversions)
 Cheesman_2020 <- dataset_update_taxonomy(Cheesman_2020_raw, taxon_list)
@@ -288,6 +300,14 @@ Choat_2006 <- dataset_update_taxonomy(Choat_2006_raw, taxon_list)
 Choat_2012_config <- dataset_configure("data/Choat_2012/metadata.yml", definitions)
 Choat_2012_raw <- dataset_process("data/Choat_2012/data.csv", Choat_2012_config, schema, resource_metadata, unit_conversions)
 Choat_2012 <- dataset_update_taxonomy(Choat_2012_raw, taxon_list)
+
+Chu_2022_config <- dataset_configure("data/Chu_2022/metadata.yml", definitions)
+Chu_2022_raw <- dataset_process("data/Chu_2022/data.csv", Chu_2022_config, schema, resource_metadata, unit_conversions)
+Chu_2022 <- dataset_update_taxonomy(Chu_2022_raw, taxon_list)
+
+Chu_2025_config <- dataset_configure("data/Chu_2025/metadata.yml", definitions)
+Chu_2025_raw <- dataset_process("data/Chu_2025/data.csv", Chu_2025_config, schema, resource_metadata, unit_conversions)
+Chu_2025 <- dataset_update_taxonomy(Chu_2025_raw, taxon_list)
 
 Clarke_2009_config <- dataset_configure("data/Clarke_2009/metadata.yml", definitions)
 Clarke_2009_raw <- dataset_process("data/Clarke_2009/data.csv", Clarke_2009_config, schema, resource_metadata, unit_conversions)
@@ -609,14 +629,6 @@ Forster_1995_config <- dataset_configure("data/Forster_1995/metadata.yml", defin
 Forster_1995_raw <- dataset_process("data/Forster_1995/data.csv", Forster_1995_config, schema, resource_metadata, unit_conversions)
 Forster_1995 <- dataset_update_taxonomy(Forster_1995_raw, taxon_list)
 
-Freeman_2017_config <- dataset_configure("data/Freeman_2017/metadata.yml", definitions)
-Freeman_2017_raw <- dataset_process("data/Freeman_2017/data.csv", Freeman_2017_config, schema, resource_metadata, unit_conversions)
-Freeman_2017 <- dataset_update_taxonomy(Freeman_2017_raw, taxon_list)
-
-Freeman_2018_config <- dataset_configure("data/Freeman_2018/metadata.yml", definitions)
-Freeman_2018_raw <- dataset_process("data/Freeman_2018/data.csv", Freeman_2018_config, schema, resource_metadata, unit_conversions)
-Freeman_2018 <- dataset_update_taxonomy(Freeman_2018_raw, taxon_list)
-
 French_2017_config <- dataset_configure("data/French_2017/metadata.yml", definitions)
 French_2017_raw <- dataset_process("data/French_2017/data.csv", French_2017_config, schema, resource_metadata, unit_conversions)
 French_2017 <- dataset_update_taxonomy(French_2017_raw, taxon_list)
@@ -668,6 +680,10 @@ Ghannoum_2010 <- dataset_update_taxonomy(Ghannoum_2010_raw, taxon_list)
 Gille_2024_config <- dataset_configure("data/Gille_2024/metadata.yml", definitions)
 Gille_2024_raw <- dataset_process("data/Gille_2024/data.csv", Gille_2024_config, schema, resource_metadata, unit_conversions)
 Gille_2024 <- dataset_update_taxonomy(Gille_2024_raw, taxon_list)
+
+Givnish_2014_config <- dataset_configure("data/Givnish_2014/metadata.yml", definitions)
+Givnish_2014_raw <- dataset_process("data/Givnish_2014/data.csv", Givnish_2014_config, schema, resource_metadata, unit_conversions)
+Givnish_2014 <- dataset_update_taxonomy(Givnish_2014_raw, taxon_list)
 
 Goble_1981_config <- dataset_configure("data/Goble_1981/metadata.yml", definitions)
 Goble_1981_raw <- dataset_process("data/Goble_1981/data.csv", Goble_1981_config, schema, resource_metadata, unit_conversions)
@@ -2087,9 +2103,11 @@ austraits_raw <- austraits::bind_databases(
   ABRS_2022,
   ABRS_2023,
   Ahrens_2019,
+  Alam_2026,
   Allen_2024,
   ANBG_2019,
   Anderegg_2020,
+  Anderson_1996,
   Andres_2024,
   Andrew_2022,
   Angevin_2011,
@@ -2146,12 +2164,15 @@ austraits_raw <- austraits::bind_databases(
   Cernusak_2011,
   Chandler_2002,
   Cheal_2017,
+  Cheesman_2017,
   Cheesman_2020,
   Chen_2017,
   Chhajed_2024,
   Chinnock_2007,
   Choat_2006,
   Choat_2012,
+  Chu_2022,
+  Chu_2025,
   Clarke_2009,
   Clarke_2015,
   Coates_2024,
@@ -2232,8 +2253,6 @@ austraits_raw <- austraits::bind_databases(
   Ford_2024,
   Forster_1992,
   Forster_1995,
-  Freeman_2017,
-  Freeman_2018,
   French_2017,
   Fuller_2025,
   Funk_2016,
@@ -2247,6 +2266,7 @@ austraits_raw <- austraits::bind_databases(
   Geange_2020,
   Ghannoum_2010,
   Gille_2024,
+  Givnish_2014,
   Goble_1981,
   Gosper_1999,
   Gosper_2004,
@@ -2608,6 +2628,9 @@ git_SHA <- util_get_SHA()
 
 # Combine all the source into one resource
 austraits <- build_add_version(austraits_raw, version_number, git_SHA)
+
+# Post-build step: runs `post_build()` from R/post_build.R, if that file exists
+austraits <- build_post_process(austraits)
 
 # Save to file
 dir.create("export/data/curr", FALSE, TRUE)
