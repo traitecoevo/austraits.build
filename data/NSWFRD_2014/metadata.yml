@@ -44,7 +44,11 @@ dataset:
         growth_habit = ifelse(`Life form` == "P", "prostrate", NA),
         `Life form` = ifelse(`Life form` == "P", NA, `Life form`),
         storage_organ = ifelse(stringr::str_detect(`Resprout location`, "lignotuber"), "lignotuber", NA),
-        serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA)
+        serotiny = ifelse(stringr::str_detect(`Seed storage`, "serotinous"), "serotinous", NA),
+        germination_cues = dplyr::case_when(
+          `Germination cue` == "germ after rain" ~ "rain",
+          stringr::str_detect(`Germination cue`, "cooler times of the year") ~ "temperature_cool",
+          TRUE ~ NA_character_)
       ) %>%
       group_by(`Current Scientific Name`) %>%
         mutate(observation_num = row_number()) %>%
@@ -222,6 +226,17 @@ traits:
     (e.g. stratification, leaching) cue; a- indicates seed is adapted for given cue
     (ie hard seed coat adapted for heat cue). See original file in raw data folder
     for extensive reference list.
+  life_stage: seedling
+- var_in: germination_cues
+  unit_in: .na
+  trait_name: germination_cues
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Field observations in the "Germination cue" column (germination after rain;
+    quicker germination at cooler times of the year). All other values in that column
+    are germination test results and are recorded as seed_germination_treatment.
   life_stage: seedling
 - var_in: flowering_time_edited
   unit_in: .na
@@ -1922,10 +1937,10 @@ substitutions:
   replace: none
 - trait_name: seed_germination_treatment
   find: none required (1) / germination is quicker at cooler times of the year (93)
-  replace: none cold
+  replace: none
 - trait_name: seed_germination_treatment
   find: germ after rain
-  replace: rain
+  replace: .na
 - trait_name: seed_germination_treatment
   find: remove fruit
   replace: scarify
@@ -2214,13 +2229,9 @@ taxonomic_updates:
     to indicate a genus-level alignment with `APC accepted` genus (2022-11-10)
   taxonomic_resolution: genus
 - find: Pultenaea 'Girraween'
-  replace: Pultenaea sp. Girraween
-  reason: Maintaining phrase not in in APC (E. Wenk, 2023-11-03)
-  taxonomic_resolution: species
-- find: Pultenaea sp. Girraween
   replace: Pultenaea sp. Girraween NP (J.B.Williams NE71692)
-  reason: Exact match of the first two words of the taxon name to an APNI-listed canonical
-    name (2025-06-06)
+  reason: Phrase name not in APC; matched to the APNI phrase name (E. Wenk, 2023-11-03;
+    updated 2025-06-06)
   taxonomic_resolution: species
 - find: Rubus ?discolor
   replace: Rubus discolor
