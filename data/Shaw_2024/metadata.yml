@@ -12,6 +12,86 @@ source:
     number: '2'
     doi: 10.1111/aec.13489
     issn: 1442-9993
+  source:
+  - key: Bell_1993
+    bibtype: Article
+    year: 1993
+    author: David T. Bell and Julie A. Plummer and Susan K. Taylor
+    journal: The Botanical Review
+    title: Seed germination ecology in southwestern Western Australia
+    volume: 59
+    number: 1
+    pages: 24--73
+    doi: 10.1007/BF02856612
+  - key: Brundrett_1991
+    bibtype: Article
+    year: 1991
+    author: Mark Brundrett
+    journal: Advances in Ecological Research
+    title: Mycorrhizas in natural ecosystems
+    volume: 21
+    pages: 171--313
+    doi: 10.1016/S0065-2504(08)60099-9
+  - key: Brundrett_2008
+    bibtype: Online
+    year: 2008
+    author: Mark Brundrett
+    title: 'Mycorrhizal Associations: The Web Resource'
+    url: https://mycorrhizas.info
+  - key: Dinkelaker_1995
+    bibtype: Article
+    year: 1995
+    author: Barbara Dinkelaker and Christine Hengeler and Horst Marschner
+    journal: Botanica Acta
+    title: Distribution and function of proteoid roots and other root clusters
+    volume: 108
+    number: 3
+    pages: 183--200
+    doi: 10.1111/j.1438-8677.1995.tb00850.x
+  - key: Lamont_1982
+    bibtype: Article
+    year: 1982
+    author: Byron Lamont
+    journal: The Botanical Review
+    title: Mechanisms for enhancing nutrient uptake in plants, with particular reference
+      to mediterranean South Africa and Western Australia
+    volume: 48
+    number: 3
+    pages: 597--689
+    doi: 10.1007/BF02860714
+  - key: Lamont_1995
+    bibtype: Article
+    year: 1995
+    author: Byron B. Lamont and Adrienne Markey
+    journal: Australian Journal of Botany
+    title: Biogeography of fire-killed and resprouting Banksia species in south-western
+      Australia
+    volume: 43
+    number: 3
+    pages: 283--303
+    doi: 10.1071/BT9950283
+  - key: Pate_1985
+    bibtype: Article
+    year: 1985
+    author: John S. Pate and Nicole E. Casson and Jill Rullo and John Kuo
+    journal: Australian Journal of Plant Physiology
+    title: Biology of fire ephemerals of the sandplains of the kwongan of south-western
+      Australia
+    volume: 12
+    number: 6
+    pages: 641--655
+    doi: 10.1071/PP9850641
+  - key: Zemunik_2016
+    bibtype: Article
+    year: 2016
+    author: Graham Zemunik and Benjamin L. Turner and Hans Lambers and Etienne Laliberté
+    journal: Journal of Ecology
+    title: Increasing plant species diversity and extreme species turnover accompany
+      declining soil fertility along a long-term chronosequence in a biodiversity hotspot
+    volume: 104
+    number: 3
+    pages: 792--805
+    doi: 10.1111/1365-2745.12546
 contributors:
   data_collectors:
   - last_name: Shaw
@@ -28,7 +108,12 @@ dataset:
         location_name = "Murdoch University",
         emergence = stringr::str_remove(emergence, "\\s*\\(.*\\)"),
         emergence = ifelse(treatment == "negative control", emergence, NA)
-      )'
+      ) %>%
+      mutate(across(starts_with("source_id "),
+        ~ ifelse(is.na(.x), NA, paste("sources:", .x)), .names = "remarks {.col}")) %>%
+      mutate(across(starts_with("source_id "), ~ stringr::str_trim(stringr::str_remove(.x, ";.*")))) %>%
+      mutate(across(starts_with("source_id "),
+        ~ ifelse(.x %in% c("Veber_2016", "D’Agui_2017", "Maher_2009"), "Shaw_2024", .x)))'
   collection_date: 2016-10-23/2017-03-21
   taxon_name: Species
   location_name: location_name
@@ -89,7 +174,10 @@ dataset:
     the Phytophthora and Pythium species.
   original_file: data from manuscript and Supplementary Information
   notes: Since these data are from literature, some categorical values already in AusTraits
-    from other sources. See source_ID for overlap. Seed mass values are measured for this study.
+    from other sources. See source_ID for overlap. Each literature value's source_id is
+    the first source listed for it in data.csv (the full list is kept as measurement_remarks);
+    values whose first source is Veber_2016, D'Agui_2017 or Maher_2009, for which full
+    references have not been found, are attributed to Shaw_2024. Seed mass values are measured for this study.
     This dataset also has experimental data on seedling emergence and survival when
     inoculated with different Phytophthora strains (and Pythium irregulare), from
     Tables 3 and 4 of the manuscript; these are included in data.csv (columns treatment,
@@ -123,6 +211,7 @@ traits:
   replicates: .na
   life_stage: adult
   source_id: source_id Nutrient Acquisition and N-fixing species
+  measurement_remarks: remarks source_id Nutrient Acquisition and N-fixing species
   basis_of_record: literature
   methods: Sourced from literature
 - var_in: Secondary Nutrient acquisition strategy
@@ -134,6 +223,7 @@ traits:
   replicates: .na
   life_stage: adult
   source_id: source_id Nutrient Acquisition and N-fixing species
+  measurement_remarks: remarks source_id Nutrient Acquisition and N-fixing species
   basis_of_record: literature
   methods: From literature; see source_id.
 - var_in: N-fixing
@@ -145,6 +235,7 @@ traits:
   replicates: .na
   life_stage: adult
   source_id: source_id Nutrient Acquisition and N-fixing species
+  measurement_remarks: remarks source_id Nutrient Acquisition and N-fixing species
   basis_of_record: literature
   methods: From literature; see source_id.
 - var_in: Seed storage
@@ -156,6 +247,7 @@ traits:
   replicates: .na
   life_stage: adult
   source_id: source_id Seed storage
+  measurement_remarks: remarks source_id Seed storage
   basis_of_record: literature
   methods: From literature; see source_id.
 - var_in: Fire response
@@ -167,6 +259,7 @@ traits:
   replicates: .na
   life_stage: adult
   source_id: source_id Fire response
+  measurement_remarks: remarks source_id Fire response
   basis_of_record: literature
   methods: From literature; see source_id.
 - var_in: Individual seed (mg

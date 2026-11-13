@@ -12,10 +12,19 @@ names_new_aligned2 <- names_new_aligned %>%
   
 old_data <- (austraits %>% extract_dataset("Munroe_2019"))$traits %>% select(taxon_name, old_pathway = value) %>% distinct()
 
+# `source` is free text, often several citations; `source_id` is the key of the first
+# publication cited (Munroe_2024 where TERN's own analysis or inference comes first).
+# The mapping, with notes on the corrections, is in raw/source_id_lookup.csv
+source_lookup <- read_csv("data/Munroe_2024/raw/source_id_lookup.csv", col_types = cols(.default = "c")) %>%
+  select(source, source_id)
+
 raw_data_edited <- raw_data %>%
   left_join(names_new_aligned2, by = c("species_name")) %>%
   full_join(old_data, by = c("taxon_name")) %>%
   mutate(photosyntheticPathway_combined2 = ifelse(!stringr::str_to_lower(photosyntheticPathway_combined) == old_pathway | is.na(old_pathway), photosyntheticPathway_combined, NA)) %>%
   #select(speciesName, photosyntheticPathway_combined, source, species_name, taxon_name, old_pathway, photosyntheticPathway_combined2) %>%
+  left_join(source_lookup, by = "source") %>%
+  mutate(source_id = coalesce(source_id, "Munroe_2024")) %>%
+  relocate(source_id, .after = source) %>%
   write_csv("data/Munroe_2024/data.csv")
 
