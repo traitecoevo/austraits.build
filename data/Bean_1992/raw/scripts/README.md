@@ -4,7 +4,7 @@ Written for this dataset, so there is no other copy. Run from the repository roo
 
 | File | Writes | Origin |
 |---|---|---|
-| `make_trait_data.py` | `raw/trait_data.csv`, `data.csv` | Hand transcription of every clause of the paper, written in this folder (2026-11-09) |
+| `make_trait_data.py` | `raw/trait_data.csv`, `raw/Bean_1992_taxa.csv`, `data.csv` | Hand transcription of every clause of the paper, written in this folder (2026-11-09); per-taxon treatment type and first-description year added 2026-11-10 |
 | `make_vouchers.py` | `raw/Bean_1992_vouchers.csv` | Hand transcription of the type and specimen citations, written in this folder (2026-11-09) |
 | `make_meta.py` | `metadata.yml` | Generator written in this folder (2026-11-09). It reads `SUBS` from `make_trait_data.py` for the substitutions |
 

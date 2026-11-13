@@ -145,7 +145,13 @@ for t in mapped:
   replicates: .na""")
     out.append(fold("methods", methods(t)))
 out.append("""substitutions: .na
-taxonomic_updates: .na
+taxonomic_updates:
+- find: Leptospermum parviflorum
+  replace: Leptospermum madidum
+  reason: Misapplied name. Thompson's L. parviflorum (New Guinea, Kimberley, northern Northern Territory and
+    north Queensland) is in Australia L. madidum (Bean 1992); APC lists L. parviflorum as misapplied for
+    L. madidum and both its subspecies, so the species is used (2026-11-10)
+  taxonomic_resolution: species
 exclude_observations:
 - variable: taxon_name
   find: Leptospermum javanicum, Leptospermum recurvum
@@ -157,7 +163,7 @@ QUESTIONS = [
     "L. argenteum leaves are about 1/2 as wide as long (5--15 mm); no width is recorded.",
     "Fruit persistence (candidate fruit_persistence: long-persistent, tending to persist -> persistent; readily shed, not persisting, tardily deciduous -> deciduous) is not mapped to serotiny, because Thompson calls it a myth that all species hold their seed until fire and gives no serotiny per species. Say if persistent should be scored serotinous.",
     "Resprouting of L. myrsinoides and the seed viability of L. scoparium (in notes) are Thompson citing Burrell (1981, 1965); consider Burrell as a source_id or secondary reference.",
-    "Several names are not current APC names: L. parviflorum (APC: L. madidum subsp. sativum), L. petersonii subsp. lanceolatum (APC: L. amboinense), L. petersonii subsp. petersonii. L. javanicum and L. recurvum are excluded as non-Australian.",
+    "Names: L. parviflorum (misapplied in APC) is updated to L. madidum in taxonomic_updates; L. petersonii subsp. petersonii and subsp. lanceolatum were added to config/taxon_list.csv as synonyms of L. petersonii and L. amboinense. L. javanicum and L. recurvum are excluded as non-Australian.",
     "Leaf shapes with no level and left unmapped: very narrowly clavate and almost triquetrous (L. confertum); seed shape oblong.",
 ]
 out.append("questions:")

@@ -424,7 +424,10 @@ in another study is recorded through `source_id` (DeSmedt_2018).
 Use `notes:` to record anything a later curator should know about how
 `data.csv` was derived (disambiguated location names, derived/matched
 columns, judgement calls) -- especially anything already flagged in a prior
-step's chat report when converting the raw file.
+step's chat report when converting the raw file. For a taxon-description
+dataset, say that data.csv carries the unmapped per-taxon columns
+`treatment_type` and `original_concept_year` (see
+`extract-traits-from-taxon-description`), and give the counts by type.
 
 **Never annotate a field's own content with what kind of field it is or where
 it came from** -- e.g. don't append `(Materials and methods, verbatim)` or

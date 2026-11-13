@@ -138,6 +138,8 @@ out.append(fold("original_file", "Myrtaceae Leptospermum partial_revision Bean_1
 notes = ("data.csv is raw/trait_data.csv (a hand transcription of every clause of the paper, from the page images) with trait_scoring_method added from rank_scored_from "
          "(inferred_from_genus for the genus statement in the Introduction, inferred_from_species for subspecies silent on a character, inferred_from_species_group for a key lead or group statement "
          "covering several taxa, inferred for typical values stated only when atypical). Type and cited specimens are in raw/Bean_1992_vouchers.csv. "
+         "data.csv also carries two unmapped per-taxon columns from raw/Bean_1992_taxa.csv: treatment_type (2 new species, 2 new infra taxa, 4 revision, "
+         "25 not described, i.e. annotated list and keys only) and original_concept_year, the year of the earliest name for the taxon concept as cited in the paper. "
          "Six species are described in full (L. pallidum, L. madidum and its two subspecies, L. parviflorum, L. venustum, L. javanicum, L. amboinense); the rest are annotated with distribution and habitat "
          "and scored through the two keys. Each value is recorded in the source words (trait_value_raw, the clause; trait_value, the source terms) and mapped with substitutions. "
          "Several values are listed in text order; a commonness word splits a character onto rows (commonness_qualifier), and parenthetical extremes are on extreme_range rows, in data.csv but not mapped. "

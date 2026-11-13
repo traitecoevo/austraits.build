@@ -249,12 +249,16 @@ def extract(name, text, page, is_subsp):
             q = "often" if v.startswith("often") else ("usually" if v.startswith("usually") else "")
             add("stem_constitution", "the younger stems " + w, v, clean, ent="younger stems", q=q,
                 note="stout mapped to robust (ABRS_2026 stem_constitution dictionary)" if clean == "robust" else "")
+    hw = []
     for w, clean in [("straggling", "straggly"), ("rigid", "rigid"), ("robust", "robust"), ("slender", "slender")]:
         hm = re.search(r"\b" + w + r"\b", habit.split(" with ")[0].split(" from ")[0], re.I)
         if hm and not re.search(r"(?:younger|young) stems", habit[:hm.start()]):
             pre = habit[:hm.start()]
             q = "often" if re.search(r"\boften(?: very)? $", pre) else ("usually" if re.search(r"\busually\b[^,;]*$", pre) else "")
-            add("stem_constitution", habit, w, clean, q=q, note="from the habit clause")
+            hw.append((hm.start(), w, clean, q))
+    if hw:   # one row, in text order ("Straggling slender shrub")
+        hw.sort()
+        add("stem_constitution", habit, " ".join(w for _, w, _, _ in hw), " ".join(c for _, _, c, _ in hw), q=hw[0][3], note="from the habit clause")
     ang = re.search(r"(?:branch(?:ing|es)|spreading widely from each other)(?:[^;.°]|c\.)*?\d+°", text)
     if ang:
         st0 = ang.start()

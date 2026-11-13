@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bean_1992: writes raw/trait_data.csv and data.csv from the hand transcription below (vouchers: make_vouchers.py).
+"""Bean_1992: writes raw/trait_data.csv, raw/Bean_1992_taxa.csv and data.csv from the hand transcription below (vouchers: make_vouchers.py).
 
 Bean, A.R. (1992) The genus Leptospermum Forst. et Forst. f. (Myrtaceae) in northern Australia and Malesia.
 Austrobaileya 3(4): 643--659. The PDF is a BHL scan with a poor text layer, so every clause was read from the page
@@ -1292,7 +1292,61 @@ for tx in ALL_TAXA:
 
 rows.sort(key=lambda r0: (ALL_TAXA.index(r0["taxon_name"]), ))
 
-COLS = ["taxon_name", "entity_type", "rank_scored_from", "commonness_qualifier", "population_region", "entity_measured", "trait", "in_traits.yml",
+# ------------------------------------------------------------------ Treatment type and first-description year, per taxon
+# Vocabulary of the family-taxon-table skill, plus "not described" (annotated list and keys only). Years only as cited in
+# the paper's own nomenclature and synonymy.
+ND, REV, NEW, NEWI = "not described", "revision", "new species", "new infra taxa"
+AL = "Annotated list: type, distribution and habitat."
+TAXA = [
+    (NAME[1], NEW, 1992, "sp. nov., this paper", "The Species, p.645", ""),
+    (MAD, REV, 1920, "earliest: replaced synonym Agonis longifolia C. White & Francis 1920", "The Species, p.645",
+     "nom. nov., with description, for the illegitimate L. longifolium (C. White & Francis) S.T. Blake 1958 (later homonym of L. longifolium Cunn. 1841)."),
+    (MAD1, NEWI, 1920, "autonym; holds the type of Agonis longifolia C. White & Francis 1920 (Endeavour River)", "The Species, p.646",
+     "Autonym created with subsp. sativum; brief description."),
+    (MAD2, NEWI, 1992, "subsp. nov., this paper", "The Species, p.646", "Brief description."),
+    (NAME[3], ND, 1860, "earliest: basionym Kunzea brachyandra F. Muell. 1860", "The Species, p.647", AL),
+    (NAME[4], REV, 1907, "Valeton 1907", "The Species, p.647", "Described in full; circumscription narrowed to New Guinea."),
+    (NAME[5], ND, 1989, "J. Thompson 1989", "The Species, p.647", AL),
+    (NAME[6], ND, 1900, "Bailey 1900", "The Species, p.648", AL),
+    (NAME[7], ND, 1842, "Schauer 1842", "The Species, p.648", AL),
+    (NAME[8], ND, 1920, "earliest: replaced synonym Agonis elliptica C. White & Francis 1920 (same type); L. whitei Cheel 1932", "The Species, p.648", AL),
+    (NAME[9], ND, 1790, "earliest: basionym Melaleuca trinervia Smith 1790", "The Species, p.648", AL),
+    (NAME[10], ND, 1989, "J. Thompson 1989", "The Species, p.648", AL),
+    (NAME[11], ND, 1923, "Cheel 1923", "The Species, p.648", AL),
+    (NAME[12], ND, 1855, "F. Muell. 1855", "The Species, p.649", AL),
+    (NAME[13], ND, 1989, "J. Thompson 1989", "The Species, p.649", AL),
+    (NAME[14], ND, 1848, "Lindley 1848", "The Species, p.649", AL),
+    (NAME[15], ND, 1797, "Smith 1797", "The Species, p.649", AL),
+    (NAME[16], NEW, 1992, "sp. nov., this paper", "The Species, p.649", ""),
+    (NAME[17], ND, 1932, "Cheel 1932", "The Species, p.650", AL),
+    (NAME[18], ND, 1788, "Gaertner 1788", "The Species, p.650", AL),
+    (NAME[19], ND, 1906, "R. Baker & H.G. Smith 1906", "The Species, p.650", AL),
+    (NAME[20], ND, 1989, "J. Thompson 1989", "The Species, p.650", AL),
+    (NAME[21], ND, 1796, "Salisb. 1796 (synonym L. flavescens Smith 1797)", "The Species, p.651", AL),
+    (NAME[22], ND, 1989, "J. Thompson 1989", "The Species, p.651", AL),
+    (NAME[23], ND, 1989, "J. Thompson 1989", "The Species, p.651", AL),
+    (NAME[24], ND, 1947, "C. White 1947", "The Species, p.651", AL),
+    (NAME[25], ND, 1797, "Smith 1797", "The Species, p.651", AL),
+    (NAME[26], ND, 1852, "J.D. Hook 1852", "The Species, p.652", AL + " Borneo and Sulawesi."),
+    (NAME[27], REV, 1823, "earliest: heterotypic synonym Glaphyria nitida Jack 1823; L. javanicum Blume 1826", "The Species, p.652",
+     "Described in full; circumscription narrowed. Malesia and Burma."),
+    (NAME[28], ND, 1889, "Bailey 1889", "The Species, p.653", AL),
+    (NAME[29], REV, 1826, "Blume 1826; synonyms L. annae Stein 1885, L. flavescens var. angustifolia Ridley 1922, L. petersonii subsp. lanceolatum J. Thompson 1989",
+     "The Species, p.653", "Reinstated at species level, with description."),
+    (NAME[30], ND, 1905, "Bailey 1905", "The Species, p.654", AL),
+    (NAME[31], ND, 1989, "J. Thompson 1989", "The Species, p.654", AL),
+]
+assert sorted(t[0] for t in TAXA) == sorted(ALL_TAXA)
+TCOLS = ["taxon_name", "treatment_type", "original_concept_year", "original_concept_basis", "source_section", "notes"]
+with open(DS / "raw" / "Bean_1992_taxa.csv", "w", newline="") as f:
+    w = csv.writer(f)
+    w.writerow(TCOLS)
+    w.writerows(TAXA)
+TT = {t[0]: (t[1], str(t[2]) if t[2] else "") for t in TAXA}
+for r0 in rows:
+    r0["treatment_type"], r0["original_concept_year"] = TT[r0["taxon_name"]]
+
+COLS = ["taxon_name", "treatment_type", "original_concept_year", "entity_type", "rank_scored_from", "commonness_qualifier", "population_region", "entity_measured", "trait", "in_traits.yml",
         "trait_value_raw", "trait_value", "trait_value_clean", "value_type", "unit", "source_section", "notes"]
 with open(DS / "raw" / "trait_data.csv", "w", newline="") as f:
     w = csv.DictWriter(f, COLS)

@@ -1,0 +1,190 @@
+source:
+  dataset:
+    key: Wenk_2026
+    bibtype: Unpublished
+    year: 2026
+    author: Elizabeth Wenk
+    title: 'Unpublished data: Growth form, woodiness, life history, stem growth habit
+      and growth substrate of Australian plant taxa, scored from the taxonomic literature,
+      floras and online resources, University of New South Wales'
+  source: sources.yml
+contributors:
+  data_collectors:
+  - last_name: Wenk
+    given_name: Elizabeth
+    ORCID: 0000-0001-5640-5910
+    affiliation: Evolution & Ecology Research Centre, School of Biological, Earth,
+      and Environmental Sciences, UNSW Sydney, Australia
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      dplyr::group_by(taxon_name, trait_name, source_id, commonness_qualifier, scoring_method) |>
+      dplyr::mutate(value = paste(unique(value), collapse = " ")) |>
+      dplyr::ungroup() |>
+      dplyr::distinct(
+        taxon_name, trait_name, source_id, commonness_qualifier, scoring_method, value,
+        .keep_all = TRUE
+      )
+    '
+  collection_date: '2026'
+  source_id: source_id
+  taxon_name: taxon_name
+  trait_name: trait_name
+  value: value
+  description: To fill the remaining gaps in plant growth form, woodiness, life history,
+    stem growth habit and growth substrate for Australian plant taxa, mostly infraspecific
+    taxa, recently described species and naturalised species, by scoring them from
+    their taxonomic descriptions.
+  basis_of_record: preserved_specimen
+  life_stage: adult
+  sampling_strategy: Taxa without plant growth form or woodiness values in AusTraits
+    were scored from their taxon descriptions. For each taxon, the most recent taxonomic
+    description was located through the references in the Australian Plant Census
+    (APC) and the Australian Plant Name Index (APNI), or by a full-text search of
+    a library of taxonomic journal articles, Flora of Australia volumes, regional
+    floras and other books. The habit text of each description (extracted from the
+    PDF, by OCR for scanned works, or from the web page) was read and scored for plant
+    growth form, woodiness, life history, stem growth habit and growth substrate.
+    Naturalised species without an Australian description were scored from online
+    floras and web profiles (Flora of China, Flora of New Zealand, Useful Tropical
+    Plants, Pacific Island Ecosystems at Risk, eFlora of India, Plants of the World
+    Online, Wikipedia). Values a description did not state were inferred, and every
+    row records how its value was scored (trait scoring method). Woodiness and life
+    history were mostly inferred from the plant growth form, and a terrestrial growth
+    substrate was assumed when no substrate was stated. Subspecies, varieties and
+    forms whose own description was silent on a trait took the value of their species,
+    from the species' own description or from the AusTraits flora datasets (Flora
+    of Australia, PlantNET, Florabase, VicFlora, Flora of South Australia, FloraNT,
+    AusGrass3, Australian Tropical Rainforest Plants), which are then that row's source.
+    Where no description could be found, Cyperaceae and Poaceae were provisionally
+    scored as graminoids from the family value. Growth form values from Wenk_2022
+    that were re-checked against the literature and web resources are included with
+    their sources.
+  original_file: Compiled by E. Wenk in 2026 from the taxon descriptions library (taxon_descriptions,
+    UNSW OneDrive), the AusTraits flora datasets and online floras.
+  notes: The source of each value is in source_id. Values copied from a species to
+    its infraspecific taxa cite the flora dataset or publication the species value
+    came from; rows with no description of their own (values inferred from a copied
+    growth form or life history) cite the same taxon's plant growth form source. The
+    216 provisional family values (value_source = curator ruling (family value, provisional))
+    have no source_id and cite this dataset. The candidate trait root_woodiness (woody
+    rootstock, 36 rows) is not yet in traits.yml and is unmapped. The verbatim habit
+    text scored for each row (habit_text), the scoring notes, the name used in the
+    source, the source citation, PDF file and page, and the web page URL are kept
+    in data.csv but are not mapped. Several values of one trait for one taxon from the
+    same source (separate rows in data.csv) are combined by custom_R_code into one
+    space-delimited value, in data.csv row order. Values of the batch read by hand on 13 Nov 2026 that had been entered
+    under the wrong trait (life history under plant_growth_substrate, stem growth habit
+    under woodiness_detailed) were moved to the right trait by fix_misplaced_values.py.
+    source_id was appended to data.csv by build_source_id.py, which also
+    builds sources.yml (scripts in data_for_GitHub_repos/austraits.build/Wenk_2026_raw/scripts,
+    UNSW OneDrive; see the README there).
+identifiers: .na
+locations: .na
+contexts:
+- context_property: commonness qualifier
+  category: entity_context
+  var_in: commonness_qualifier
+- context_property: trait scoring method
+  category: method_context
+  var_in: scoring_method
+  values:
+  - value: stated in description
+    description: The value is stated in the taxon's own description in a journal
+      article, flora or book.
+  - value: stated in source
+    description: The value is stated in an online flora, web profile or other source
+      for the taxon.
+  - value: stated in source (Wenk_2022 re-check)
+    description: The value is stated in a source consulted when re-checking a plant
+      growth form value from Wenk_2022.
+  - value: inferred_from_growth_form
+    description: The value is inferred from the plant growth form scored for the
+      taxon.
+  - value: inferred_from_life_history
+    description: The plant growth form is inferred from the life history scored for
+      the taxon.
+  - value: inferred (no substrate stated)
+    description: A terrestrial growth substrate is assumed because the description
+      states no substrate.
+  - value: inferred_from_species
+    description: The infraspecific taxon's own description is silent on the trait,
+      so the value of its species is used.
+  - value: inferred_from_genus
+    description: The value is taken from the genus description.
+  - value: inferred_from_family
+    description: No description of the taxon was found and the value is the one
+      shared by the family; provisional.
+  - find: inferred_from_infraspecific_taxa
+    value: inferred_from_infraspecific_taxon
+    description: The value is taken from the descriptions of the taxon's subspecies
+      or varieties.
+  - value: inferred_from_infraspecific_taxon
+    description: The value is taken from the descriptions of the taxon's subspecies
+      or varieties.
+  - find: inferred from description
+    value: inferred (curator)
+    description: The trait is not named in the source; the value was scored by the
+      curator from the description (e.g. corms described = geophyte).
+  - value: inferred (curator)
+    description: The trait is not named in the source; the value was scored by the
+      curator from the description (e.g. corms described = geophyte).
+traits:
+- var_in: plant_growth_form
+  unit_in: .na
+  trait_name: plant_growth_form
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the habit text of the taxon description. All large monocots
+    and ferns with a trunk and elevated leaf canopy are scored palmoid, and large
+    monocots without a trunk basal_large; for Xanthorrhoea, trunk none = basal_large,
+    trunk present = palmoid, and trunk none or up to a given height = both. Where
+    the growth form is not named, it was scored from the description (e.g. bulb or
+    corm = geophyte) or inferred from the life history. Where no description was found,
+    Cyperaceae and Poaceae were provisionally scored graminoid.
+- var_in: woodiness_detailed
+  unit_in: .na
+  trait_name: woodiness_detailed
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Mostly inferred from the plant growth form (e.g. herb = herbaceous, shrub
+    and tree = woody); scored from the description where woodiness is stated.
+- var_in: life_history
+  unit_in: .na
+  trait_name: life_history
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the description where it states annual, biennial or perennial,
+    and otherwise inferred from the plant growth form (e.g. shrubs and trees are perennial).
+- var_in: stem_growth_habit
+  unit_in: .na
+  trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the habit terms in the description (e.g. erect, prostrate,
+    decumbent, climbing); several terms are recorded as separate rows or values in
+    the order of the text.
+- var_in: plant_growth_substrate
+  unit_in: .na
+  trait_name: plant_growth_substrate
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Scored from the description where a substrate is stated (epiphyte, lithophyte,
+    aquatic, semiaquatic); terrestrial is assumed when no substrate is stated.
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions: .na

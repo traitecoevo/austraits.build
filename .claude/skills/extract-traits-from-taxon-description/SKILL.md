@@ -46,15 +46,54 @@ Read the whole paper. Every part can hold characters:
 | Phenology | `flowering_time`, `fruiting_time` (12-char y/n), peak as an extra row |
 | Distribution & habitat | substrate, soil, vegetation, elevation, rainfall, associated species |
 | Conservation status / Etymology | listing status; etymology can name the substrate ("Jurassic dolerite") |
-| Notes | comparisons (skip), within-species variation by subpopulation (keep, with `population_region`) |
+| Materials and methods | how parts were measured (dried vs reconstituted material): quote it in `sampling_strategy` |
+| Notes | comparisons (see below), within-species variation by subpopulation (keep, with `population_region`) |
 | Figure captions | habit words ("wiry subshrub") and confirmations ("petals not overlapping") |
 
-Skip pure comparisons ("much hairier than H. basaltica"). They can't be scored for either taxon.
+Skip pure comparisons ("much hairier than H. basaltica"). They can't be scored for either taxon. But
+a comparison that **states the other taxon's own value** is that taxon's data: "the prostrate habit
+(erect for S. tephropelina)", "obovate leaves (versus linear for S. glabella)", "pedicels 10--24 mm
+long (1--10 mm long for S. tephropelina)" give rows for S. tephropelina / S. glabella, with
+`source_section` "Affinities". Score the mirror value for the described taxon from its description,
+not from the comparison (Bean_2018). Characters a note reads off an image of another taxon (Bean_2018:
+*Stemodia* sp. Tanami from the Flora NT website) are scored too, with the image named in `notes`.
+
+**BHL scans:** the text layer often runs words together or garbles digits ("37-4.5 mm" for 3.7--4.5,
+"07-1.4", "debate" for deltate). Read the descriptions, keys and specimen lists from page images
+(`pdftoppm -r 120 -gray -png`), and use the text layer only to check the transcription afterwards.
+
+## Taxon treatment and first-description year (every taxon, user 2026-11-10)
+
+Every taxon in the dataset gets two per-taxon fields: what kind of treatment the paper gives it, and
+the year the taxon concept was first described. Use the vocabulary of the `family-taxon-table` skill
+(user-level, `~/.claude/skills/family-taxon-table/`), restated here:
+
+| `treatment_type` | when |
+|---|---|
+| `new species` | sp. nov.; also a comb./stat. nov. raising a taxon to species rank with a full description (note it) |
+| `new infra taxa` | subsp./var./f. nov., including the autonym when the paper describes it |
+| `new name (without a description)` | nom. nov., comb. nov. or stat. nov. with no description (diagnostic notes or comparisons only) |
+| `revision` | an existing taxon described or redescribed, including reinstated taxa and a nom./comb. nov. that does get a description (note "nom. nov., with description") |
+| `not described` | in the dataset only through keys, comparisons, notes or an annotated list (distribution and habitat only). family-taxon-table leaves these taxa out; datasets keep them because their key characters are data |
+
+`original_concept_year`: the year of the earliest validly published name for the same concept, under
+any name, **as cited in this paper's** nomenclature and synonymy (accepted name, basionym or replaced
+synonym, heterotypic synonyms). Ignore misapplied names, pro parte and doubtful synonyms, nom. nud. and
+phrase names. Illegitimate but validly published names count (flag them). A new taxon with no earlier
+name gets the paper's year. If the paper does not give the author's year (key-only taxa usually), leave
+it blank: never fill it from outside knowledge. Record the basis ("earliest: heterotypic synonym
+Glaphyria nitida Jack 1823").
+
+Write them to `raw/<Surname_Year>_taxa.csv` (one row per taxon: `taxon_name, treatment_type,
+original_concept_year, original_concept_basis, source_section, notes`), and have the script join
+`treatment_type` and `original_concept_year` onto every row of `raw/trait_data.csv` and `data.csv`,
+right after `taxon_name`. They are unmapped columns; metadata.yml `notes` says so. Report the counts by
+type and every new taxon whose year differs from the paper's year.
 
 ## Columns of `raw/trait_data.csv`
 
 ```
-taxon_name,entity_type,rank_scored_from,commonness_qualifier,population_region,entity_measured,trait,in_traits.yml,trait_value_raw,trait_value,trait_value_clean,value_type,unit,source_section,notes
+taxon_name,treatment_type,original_concept_year,entity_type,rank_scored_from,commonness_qualifier,population_region,entity_measured,trait,in_traits.yml,trait_value_raw,trait_value,trait_value_clean,value_type,unit,source_section,notes
 ```
 
 - `entity_type` is `species` throughout (a taxonomic description, numbers included).
@@ -123,6 +162,27 @@ taxon_name,entity_type,rank_scored_from,commonness_qualifier,population_region,e
   `seed_length`, noted.
 - `trait_value_raw` is the clause the value came from, so one clause feeds several rows. Use `x`
   for the multiplication sign and `+/-` for ±.
+- "Leaves 2.4--4 times longer than broad" → `leaf_length_to_width_ratio`. A part measured against
+  another part ("bracteoles 0.3--0.6 times as long as sepals") → a candidate
+  `<organ>_to_<organ>_length_ratio`.
+- **Description and key disagree** (Bean_2018: "Prostrate shrub ... with woody stems" in the
+  description, "Prostrate forb" in the key): record both on their own rows, let `source_rank` map the
+  description, and raise a `questions:` entry.
+
+## Papers scored mostly through keys (Bean_1992)
+
+A partial revision can describe only a few taxa in full and leave the rest to an annotated list plus keys. The keys then hold
+the data, so transcribe them as tables and let the script assign values to taxa (`data/Bean_1992/raw/scripts/make_trait_data.py`).
+
+- **Multi-access key:** one row per taxon and character, with the states it is listed under in text order in one cell. Check that
+  every taxon appears under each character: a gap usually means a misprint (Bean_1992 prints 1 for 11). Fix it only with
+  evidence, with a note on the rows and a `questions:` entry.
+- **Dichotomous key:** follow the printed couplet numbers. A lead covering one taxon is that taxon's own value; a lead covering
+  several is `rank_scored_from: species_group`. A taxon reached by two paths gets one row per value, naming both couplets.
+- **Numbers in a group lead are not copied** ("fruits 4--7 mm in diameter" above four species). They go in a `<trait>_class`
+  candidate, as do bounds on any lead ("Largest leaves <9 mm", "Pedicels >8 mm"): a bound is not a measured value.
+- **Several sources for one character:** keep them all in data.csv. custom_R_code maps only the best one per taxon, trait, region
+  and part measured: own text, then multi-access key, then dichotomous key (`source_rank`, confirm the order with the user).
 
 ## `raw/<Surname_Year>_vouchers.csv`
 
@@ -152,7 +212,12 @@ taxon_name,specimen_status,institution_code,catalog_number,collector,record_numb
 ## Report back
 
 - Files written, row counts per taxon, numbers of mapped and candidate traits (list the candidates).
+- Each taxon's `treatment_type` and `original_concept_year`, with the counts by type.
 - Numbered judgement calls and questions (they become `questionN:` entries in metadata.yml later):
   conflicts between description, diagnosis, key and notes; mappings to check; values left out.
-- Don't write metadata.yml, substitutions or data.csv. That comes later
-  (`convert-raw-data-file-into-data-csv`, `fill-metadata-yml`).
+- metadata.yml, substitutions and data.csv are only written when the request is to build the
+  dataset (now the usual request). Then follow `data/Bean_2018/raw/scripts/` (one paper, one new
+  species) or `data/Bean_1992/raw/scripts/` (a partial revision scored mostly from keys):
+  `make_trait_data.py` writes trait_data.csv, the taxa file and data.csv, `make_vouchers.py` the
+  vouchers, `make_meta.py` metadata.yml (substitutions from the script's `SUBS` map), then run
+  `dataset_process` and `dataset_test`, and add the dataset's lines to `build.R`.

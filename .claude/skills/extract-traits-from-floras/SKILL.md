@@ -34,6 +34,10 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   `data/<id>/raw/build_data_csv.R`, which reads the source and writes `data/<id>/data.csv`.
   The build never runs it; it exists for provenance and re-extraction. Irregular sentences
   that regex can't parse go in a small override CSV in `raw/` (e.g. `habitat_overrides.csv`).
+- **Copy the dataset's own scripts into `data/<id>/raw/scripts/`** (user 2026-11-09, for tracing): the scraper / OCR / text readers
+  from the scraping repo (`data_extra/<source>/scripts`), and the job's metadata generator, vetting and check scripts
+  (`ignore/jobs/<job>/`: make_meta.py, vet.py, eco_cand.py, proc / final_qa / compare scripts; not one-off debug or diff scripts),
+  with a README.md giving each file's origin path. Refresh the copies whenever a script changes, before committing the dataset.
   Source typos are fixed explicitly at the top of the script, with a comment
   (e.g. a reversed range "20–15 mm" → "15–20 mm").
 - **Pair every categorical trait.** Write `<trait>_description` (the verbatim source phrase)

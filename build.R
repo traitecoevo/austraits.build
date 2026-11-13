@@ -133,6 +133,10 @@ Bean_1997_config <- dataset_configure("data/Bean_1997/metadata.yml", definitions
 Bean_1997_raw <- dataset_process("data/Bean_1997/data.csv", Bean_1997_config, schema, resource_metadata, unit_conversions)
 Bean_1997 <- dataset_update_taxonomy(Bean_1997_raw, taxon_list)
 
+Bean_2018_config <- dataset_configure("data/Bean_2018/metadata.yml", definitions)
+Bean_2018_raw <- dataset_process("data/Bean_2018/data.csv", Bean_2018_config, schema, resource_metadata, unit_conversions)
+Bean_2018 <- dataset_update_taxonomy(Bean_2018_raw, taxon_list)
+
 Bebawi_2015_config <- dataset_configure("data/Bebawi_2015/metadata.yml", definitions)
 Bebawi_2015_raw <- dataset_process("data/Bebawi_2015/data.csv", Bebawi_2015_config, schema, resource_metadata, unit_conversions)
 Bebawi_2015 <- dataset_update_taxonomy(Bebawi_2015_raw, taxon_list)
@@ -1013,10 +1017,6 @@ Li_2019_config <- dataset_configure("data/Li_2019/metadata.yml", definitions)
 Li_2019_raw <- dataset_process("data/Li_2019/data.csv", Li_2019_config, schema, resource_metadata, unit_conversions)
 Li_2019 <- dataset_update_taxonomy(Li_2019_raw, taxon_list)
 
-Lim_2010_config <- dataset_configure("data/Lim_2010/metadata.yml", definitions)
-Lim_2010_raw <- dataset_process("data/Lim_2010/data.csv", Lim_2010_config, schema, resource_metadata, unit_conversions)
-Lim_2010 <- dataset_update_taxonomy(Lim_2010_raw, taxon_list)
-
 Lim_2017_config <- dataset_configure("data/Lim_2017/metadata.yml", definitions)
 Lim_2017_raw <- dataset_process("data/Lim_2017/data.csv", Lim_2017_config, schema, resource_metadata, unit_conversions)
 Lim_2017 <- dataset_update_taxonomy(Lim_2017_raw, taxon_list)
@@ -1245,6 +1245,10 @@ NSWFRD_2014_config <- dataset_configure("data/NSWFRD_2014/metadata.yml", definit
 NSWFRD_2014_raw <- dataset_process("data/NSWFRD_2014/data.csv", NSWFRD_2014_config, schema, resource_metadata, unit_conversions)
 NSWFRD_2014 <- dataset_update_taxonomy(NSWFRD_2014_raw, taxon_list)
 
+NT_2026_config <- dataset_configure("data/NT_2026/metadata.yml", definitions)
+NT_2026_raw <- dataset_process("data/NT_2026/data.csv", NT_2026_config, schema, resource_metadata, unit_conversions)
+NT_2026 <- dataset_update_taxonomy(NT_2026_raw, taxon_list)
+
 NTH_2014_config <- dataset_configure("data/NTH_2014/metadata.yml", definitions)
 NTH_2014_raw <- dataset_process("data/NTH_2014/data.csv", NTH_2014_config, schema, resource_metadata, unit_conversions)
 NTH_2014 <- dataset_update_taxonomy(NTH_2014_raw, taxon_list)
@@ -1256,10 +1260,6 @@ NTH_2022 <- dataset_update_taxonomy(NTH_2022_raw, taxon_list)
 NTH_2023_config <- dataset_configure("data/NTH_2023/metadata.yml", definitions)
 NTH_2023_raw <- dataset_process("data/NTH_2023/data.csv", NTH_2023_config, schema, resource_metadata, unit_conversions)
 NTH_2023 <- dataset_update_taxonomy(NTH_2023_raw, taxon_list)
-
-NT_2026_config <- dataset_configure("data/NT_2026/metadata.yml", definitions)
-NT_2026_raw <- dataset_process("data/NT_2026/data.csv", NT_2026_config, schema, resource_metadata, unit_conversions)
-NT_2026 <- dataset_update_taxonomy(NT_2026_raw, taxon_list)
 
 OGrady_1999_config <- dataset_configure("data/OGrady_1999/metadata.yml", definitions)
 OGrady_1999_raw <- dataset_process("data/OGrady_1999/data.csv", OGrady_1999_config, schema, resource_metadata, unit_conversions)
@@ -1713,6 +1713,10 @@ Thomas_2017_config <- dataset_configure("data/Thomas_2017/metadata.yml", definit
 Thomas_2017_raw <- dataset_process("data/Thomas_2017/data.csv", Thomas_2017_config, schema, resource_metadata, unit_conversions)
 Thomas_2017 <- dataset_update_taxonomy(Thomas_2017_raw, taxon_list)
 
+Thompson_1989_config <- dataset_configure("data/Thompson_1989/metadata.yml", definitions)
+Thompson_1989_raw <- dataset_process("data/Thompson_1989/data.csv", Thompson_1989_config, schema, resource_metadata, unit_conversions)
+Thompson_1989 <- dataset_update_taxonomy(Thompson_1989_raw, taxon_list)
+
 Thompson_2001_config <- dataset_configure("data/Thompson_2001/metadata.yml", definitions)
 Thompson_2001_raw <- dataset_process("data/Thompson_2001/data.csv", Thompson_2001_config, schema, resource_metadata, unit_conversions)
 Thompson_2001 <- dataset_update_taxonomy(Thompson_2001_raw, taxon_list)
@@ -2033,6 +2037,7 @@ austraits_raw <- austraits::bind_databases(
   Barrett_2009,
   Bean_1992,
   Bean_1997,
+  Bean_2018,
   Bebawi_2015,
   Bell_1995,
   Benwell_2024,
@@ -2253,7 +2258,6 @@ austraits_raw <- austraits::bind_databases(
   Li_1997,
   Li_2018,
   Li_2019,
-  Lim_2010,
   Lim_2017,
   Liu_2023,
   Lord_1997,
@@ -2311,10 +2315,10 @@ austraits_raw <- austraits::bind_databases(
   Niinemets_2009,
   Nolan_2022,
   NSWFRD_2014,
+  NT_2026,
   NTH_2014,
   NTH_2022,
   NTH_2023,
-  NT_2026,
   OGrady_1999,
   OGrady_2006,
   OGrady_2009,
@@ -2428,6 +2432,7 @@ austraits_raw <- austraits::bind_databases(
   Taylor_2008,
   Tennakoon_1997,
   Thomas_2017,
+  Thompson_1989,
   Thompson_2001,
   TMAG_2009,
   Tng_2013,
