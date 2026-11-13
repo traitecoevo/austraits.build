@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Prendergast_2026_2
     bibtype: Misc
     type: unpublished
@@ -7,114 +7,7 @@ source:
     author: Kit Prendergast and Melinda Pickup
     title: A database of Australian plant-flower visitor interactions, compiled from
       published and unpublished sources
-  secondary_01:
-    key: Prendergast_2023_1
-    bibtype: Report
-    type: Unpublished survey report
-    year: 2023
-    author: Kit Prendergast
-    title: DBCA Jarrah Forest Native Bee Report
-    institution: Department of Biodiversity, Conservation and Attractions (DBCA),
-      Western Australia
-    place: Kensington, WA
-  secondary_02:
-    key: Prendergast_2021_2
-    bibtype: Report
-    type: Unpublished survey report
-    year: 2021
-    author: Kit Prendergast
-    title: 'DBCA Perth Hills Native Bee Report: Chandler Forest Block, South of Wungong
-      Dam post-mining rehabilitation areas'
-    institution: Department of Biodiversity, Conservation and Attractions (DBCA),
-      Western Australia
-  secondary_03:
-    key: Prendergast_2020_1
-    bibtype: Report
-    type: Survey report
-    year: 2020
-    author: Kit Prendergast
-    title: Native Bee Survey of Lake Claremont
-    institution: Friends of Lake Claremont
-    url: https://friendsoflakeclaremont.org/?p=4771
-  secondary_04:
-    key: Prendergast_2022_3
-    bibtype: Report
-    type: Unpublished survey report
-    year: 2022
-    author: Kit Prendergast
-    title: DBCA Jarrah Forest Native Bee Report
-    institution: Department of Biodiversity, Conservation and Attractions (DBCA),
-      Western Australia
-  secondary_05:
-    key: Prendergast_2021_3
-    bibtype: Report
-    type: Report
-    year: 2021
-    author: Kit Prendergast
-    title: City of Bayswater Native Bee Surveys November - February 2020/21
-    institution: City of Bayswater
-    url: https://www.bayswater.wa.gov.au/CityOfBayswater/files/35/3511fbd7-0d69-4cd5-8841-f59888917161.pdf
-  secondary_06:
-    key: Batley_2012
-    bibtype: Article
-    year: 2012
-    author: Michael Batley and Terry F. Houston
-    journal: Records of the Australian Museum
-    title: 'Revision of the Australian bee genus Trichocolletes Cockerell (Hymenoptera:
-      Colletidae: Paracolletini)'
-    volume: '64'
-    pages: 1--50
-    doi: 10.3853/j.0067-1975.64.2012.1589
-    publisher: Australian Museum
-  secondary_07:
-    key: Prendergast_2022_4
-    bibtype: Report
-    type: Unpublished survey report
-    year: 2022
-    author: Kit Prendergast
-    title: Native Bees at Walyarta Reserve 18th-20th Oct 2022
-    institution: unknown
-    place: Broome, WA
-  secondary_08:
-    key: Prendergast_2020_2
-    bibtype: Thesis
-    year: 2020
-    author: Kit Prendergast
-    title: Urban native bee assemblages and the impact of the introduced European
-      honeybee on plant-pollinator networks in the southwest Australian biodiversity
-      hotspot
-    institution: Curtin University
-    type: PhD
-    url: https://espace.curtin.edu.au/handle/20.500.11937/84948
-  secondary_09:
-    key: Anderson_1988
-    bibtype: Article
-    year: 1988
-    author: Gregory J. Anderson and David Symon
-    journal: Annals of the Missouri Botanical Garden
-    title: Insect foragers on Solanum flowers in Australia
-    volume: '75'
-    pages: 842--852
-    doi: 10.2307/2399372
-  secondary_10:
-    key: Prendergast_2024_3
-    bibtype: Report
-    type: Unpublished survey report
-    year: 2024
-    author: Kit Prendergast
-    title: 'The Biodiversity of Native Bees at City of Melville Greenspaces, November
-      2024: Survey and Report prepared for the City of Melville'
-    institution: City of Melville
-    place: Winthrop, WA
-  secondary_11:
-    key: Prendergast_2022_1
-    bibtype: Report
-    type: Unpublished survey report
-    year: 2022
-    author: Kit Prendergast and F. Jackson
-    title: Preliminary Native bee diversity surveys in the Purnululu National Park
-    institution: Department of Biodiversity, Conservation and Attractions (DBCA),
-      Western Australia
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Prendergast
@@ -194,6 +87,17 @@ dataset:
           ),
           stringr::str_extract(source_id, "[0-9]{4}$"),
           "2025"
+        )
+      ) |>
+      mutate(
+        source_id = dplyr::case_when(
+          stringr::str_starts(source_id, "GreyLit_") | source_id %in% c("Prendergast_pers_obs", "Knowles_2017", "unknown_S75", "Walker_2010") ~ NA_character_,
+          stringr::str_detect(Reference, "20th-21st July 2021") ~ "Prendergast_2021_7",
+          source_id == "Prendergast_2022_2" ~ "Prendergast_2022_7",
+          source_id %in% c("Prendergast_2017", "Prendergast_2018", "Prendergast_2021_4", "Prendergast_2021_5", "Prendergast_2021_6",
+            "Prendergast_2021_8", "Prendergast_2022_1", "Prendergast_2022_3", "Prendergast_2022_4", "Prendergast_2022_5",
+            "Prendergast_2023_1", "Prendergast_2023_2", "Prendergast_2024_3") ~ NA_character_,
+          TRUE ~ source_id
         )
       )
   '
