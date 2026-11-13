@@ -1873,6 +1873,10 @@ Wenk_2025_config <- dataset_configure("data/Wenk_2025/metadata.yml", definitions
 Wenk_2025_raw <- dataset_process("data/Wenk_2025/data.csv", Wenk_2025_config, schema, resource_metadata, unit_conversions)
 Wenk_2025 <- dataset_update_taxonomy(Wenk_2025_raw, taxon_list)
 
+Wenk_2026_config <- dataset_configure("data/Wenk_2026/metadata.yml", definitions)
+Wenk_2026_raw <- dataset_process("data/Wenk_2026/data.csv", Wenk_2026_config, schema, resource_metadata, unit_conversions)
+Wenk_2026 <- dataset_update_taxonomy(Wenk_2026_raw, taxon_list)
+
 Westerband_2023_config <- dataset_configure("data/Westerband_2023/metadata.yml", definitions)
 Westerband_2023_raw <- dataset_process("data/Westerband_2023/data.csv", Westerband_2023_config, schema, resource_metadata, unit_conversions)
 Westerband_2023 <- dataset_update_taxonomy(Westerband_2023_raw, taxon_list)
@@ -2472,6 +2476,7 @@ austraits_raw <- austraits::bind_databases(
   Wenk_2023,
   Wenk_2023_2,
   Wenk_2025,
+  Wenk_2026,
   Westerband_2023,
   Westman_1977,
   Westoby_2003,
