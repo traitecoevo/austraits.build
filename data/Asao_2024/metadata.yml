@@ -54,6 +54,12 @@ dataset:
      data %>% 
       filter(stringr::str_starts(Country, "Australia")) %>%
       mutate(
+        Date = dplyr::case_when(
+          grepl("^[0-9]{5}$", Date) ~ as.character(as.Date(suppressWarnings(as.numeric(Date)), origin = "1899-12-30")),
+          Date == "12-Aug" ~ "2012-08",
+          Date == "12-Mar" ~ "2012-03",
+          TRUE ~ Date
+        ),
         across(c(LeafPm, Glucose_m, Fructose_m, Sucrose_m, Glucose_a, Fructose_a, Sucrose_a, AP_sat, LeafPa, `N:P`), ~ifelse(is.nan(.x), NA, .x)),
         duplicate_site = Site %in% c("CTC1"), 
         partial_duplicate_site = Site %in% c("RobCk-TERN", "Warra-TERN-AW", "Warra-TERN-SV", "Warra-TERN_FT"), 
@@ -153,6 +159,10 @@ dataset:
   notes: custom_R_code restricts the dataset to the Australian sites only (Country
     starting with "Australia") and blanks out specific trait columns that are already
     published in AusTraits under a different dataset_id; overlap identified is documented in a file in the raw data folder (Asao_2024_identifying_duplicate_data.csv).
+    custom_R_code also converts the Date column, which mixes Excel serial dates (converted
+    to yyyy-mm-dd) with the month-year values '12-Aug' (RobCk-TERN) and '12-Mar' (Warra-TERN
+    plots), read as August 2012 and March 2012, the months Bloomfield_2018 sampled Robson
+    Creek and Warra.
     The site CTC1 (Daintree Rainforest Observatory) duplicates Weerasinghe_2014, including
     its NSC traits, so all trait columns except the individual sugars (glucose, fructose,
     sucrose), which Weerasinghe_2014 did not report, are set to NA there. The sites RobCk-TERN
