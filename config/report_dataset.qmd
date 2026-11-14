@@ -69,7 +69,7 @@ util_get_SHA_link <- function(...) {
 
 ```{r, message=FALSE, warning=FALSE, results="hide"}
 library(traits.build)
-library(austraits)
+library(traits.use)
 
 # Parameters are only available as `params$name`, so unpack the ones this
 # document uses by bare name. The database arrives as a path to a temp `.rds`
@@ -217,7 +217,7 @@ The following people are listed as data collectors in this study:
 
 ```{r, results='asis'}
 metadata$contributors$data_collectors %>%
-  austraits::convert_list_to_df2() %>%
+  traits.use::convert_list_to_df2() %>%
   my_kable_styling()
 ```
 
@@ -240,7 +240,7 @@ Primary citation:
 
 ```{r, results='asis'}
 metadata$source$primary %>%
-  austraits::convert_list_to_df1() %>%
+  traits.use::convert_list_to_df1() %>%
   my_kable_styling()
 ```
 
@@ -251,7 +251,7 @@ if (n > 1) {
 
   for (i in 2:n) {
     metadata$source[[i]] %>%
-    austraits::convert_list_to_df1() %>%
+    traits.use::convert_list_to_df1() %>%
     my_kable_styling() %>%
     cat()
     writeLines("\n\n")
@@ -274,7 +274,7 @@ The dataset-level metadata we have mapped in is as follows:
 
 ```{r, results='asis'}
 metadata$dataset %>%
-  austraits::convert_list_to_df1() %>%
+  traits.use::convert_list_to_df1() %>%
   my_kable_styling()
 ```
 
@@ -284,7 +284,7 @@ new_question("(section `dataset`) Can you provide more detailed information for 
 
 ```{r, results='asis'}
 missing <- metadata$dataset %>%
-  austraits::convert_list_to_df1() %>%
+  traits.use::convert_list_to_df1() %>%
   filter(value == "unknown") %>%
   pull(key)
 
@@ -510,7 +510,7 @@ if (length(context_properties) > 0) {
 
       if (!is.null(metadata_context_entry) && !is.null(metadata_context_entry$values)) {
         find_value_table <- metadata_context_entry$values %>%
-          austraits::convert_list_to_df2() %>%
+          traits.use::convert_list_to_df2() %>%
           dplyr::select(dplyr::any_of(c("find", "value")))
 
         # If none of this context property's `values` entries in metadata.yml
@@ -596,7 +596,7 @@ writeLines(
 writeLines("")
 
 if (nrow(data_study$identifiers) > 0) {
-  identifiers_meta <- metadata$identifiers %>% austraits::convert_list_to_df2()
+  identifiers_meta <- metadata$identifiers %>% traits.use::convert_list_to_df2()
   if (!"institution_code" %in% names(identifiers_meta)) {
     identifiers_meta$institution_code <- NA_character_
   }
@@ -693,7 +693,7 @@ if (nrow(subset(data_study$excluded_data, error != "Missing value")) > 0) {
 
   if (nrow(subset(data_study$excluded_data, error == "Observation excluded in metadata")) > 0) {
     metadata$exclude_observations %>%
-      austraits::convert_list_to_df2() %>%
+      traits.use::convert_list_to_df2() %>%
       my_kable_styling() %>%
       writeLines()
   }
@@ -736,7 +736,7 @@ define_variable <- function(var, schema) {
     writeLines("Possible values are:")
 
     schema$value_type$values %>%
-      austraits::convert_list_to_df1()  %>%
+      traits.use::convert_list_to_df1()  %>%
       my_kable_styling() %>%
       writeLines()
     }
@@ -778,7 +778,7 @@ for (trait in traits_numeric) {
   # over several rows, as `util_traits_to_df()` does inside the package
   transforms <- metadata$traits %>%
     lapply(function(x) { x[["omit_values"]] <- NULL; x }) %>%
-    austraits::convert_list_to_df2() %>%
+    traits.use::convert_list_to_df2() %>%
     filter(trait_name == trait)
 
   elements <- definitions[[trait]]
@@ -832,7 +832,7 @@ if (nrow(filter(data_study$excluded_data, error == "Value out of allowable range
     filter(trait_name == trait) %>%
     mutate(value = as.numeric(value))
 
-  print(plot_trait_distribution_jitter(plot_data_numeric, trait, "dataset_id", highlight = dataset_id, hide_ids = TRUE))
+  print(traits.build::plot_trait_distribution_jitter(plot_data_numeric, trait, "dataset_id", highlight = dataset_id, hide_ids = TRUE))
 
   writeLines(c(""))
 
@@ -908,8 +908,8 @@ embed_plot <- function(plot, height, width = 10, dpi = 96) {
 if (length(traits_categorical) > 0) {
   # join family onto the traits tables once, up front, rather than
   # repeating the (expensive, whole-of-AusTraits) join for every trait
-  austraits_with_family <- (austraits |> austraits::join_taxa(vars = "family"))$traits
-  data_study_with_family <- (data_study |> austraits::join_taxa(vars = "family"))$traits
+  austraits_with_family <- (austraits |> traits.use::join_taxa(vars = "family"))$traits
+  data_study_with_family <- (data_study |> traits.use::join_taxa(vars = "family"))$traits
 }
 
 for (trait in traits_categorical) {
@@ -918,12 +918,12 @@ for (trait in traits_categorical) {
   # over several rows, as `util_traits_to_df()` does inside the package
   transforms <- metadata$traits %>%
     lapply(function(x) { x[["omit_values"]] <- NULL; x }) %>%
-    austraits::convert_list_to_df2() %>%
+    traits.use::convert_list_to_df2() %>%
     filter(trait_name == trait)
   if (is.na(metadata$substitutions[1])) {
     substitutions_for_trait <- tibble
   } else {
-    substitutions_for_trait <- metadata$substitutions %>% austraits::convert_list_to_df2() %>% filter(trait_name == trait)
+    substitutions_for_trait <- metadata$substitutions %>% traits.use::convert_list_to_df2() %>% filter(trait_name == trait)
   }
 
   data_trait_study <- data_study$traits %>%
@@ -978,8 +978,8 @@ for (trait in traits_categorical) {
   n_families_study <- plot_data_study %>% dplyr::distinct(family) %>% nrow()
   n_families_all <- plot_data_all %>% dplyr::distinct(family) %>% nrow()
 
-  plot_study <- plot_categorical_trait_distribution(plot_data_study, trait, family_count = 50)
-  plot_all <- plot_categorical_trait_distribution(plot_data_all, trait, family_count = 50)
+  plot_study <- traits.build::plot_categorical_trait_distribution(plot_data_study, trait, family_count = 50)
+  plot_all <- traits.build::plot_categorical_trait_distribution(plot_data_all, trait, family_count = 50)
 
   # Align the study plot's trait-value (x-axis) categories and order with
   # the AusTraits-wide plot, so the same value sits in the same x position
@@ -1036,7 +1036,7 @@ for (trait in traits_monthly_presence) {
   # Drop `omit_values`, as for categorical traits above
   transforms <- metadata$traits %>%
     lapply(function(x) { x[["omit_values"]] <- NULL; x }) %>%
-    austraits::convert_list_to_df2() %>%
+    traits.use::convert_list_to_df2() %>%
     filter(trait_name == trait)
 
   elements <- definitions[[trait]]
@@ -1072,7 +1072,7 @@ The table below shows all taxa in this study, where possible using the name alig
 
 ```{r, results='asis'}
 schema$austraits$elements$taxa$elements %>%
-  austraits::convert_list_to_df1() %>%
+  traits.use::convert_list_to_df1() %>%
   my_kable_styling()
 ```
 
