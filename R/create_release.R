@@ -6,6 +6,9 @@
 #'
 #' The steps around this function are in `RELEASING.md`.
 #'
+#' The flattened database, as rds and parquet, is written by `post_export()` in
+#' `R/post_export.R`, which `traits.build::build_post_export()` runs.
+#'
 #' @param austraits AusTraits database object
 #' @param v_prev previous release version (e.g. "7.0.0"). If given, `scripts/news.Rmd` is
 #'   rendered into the export folder, comparing against
@@ -22,6 +25,9 @@ create_release <- function(austraits, v_prev= NULL) {
   # RDS file
   filename <- sprintf(I("%s/austraits-%s.rds"), export_dir, version_number)
   saveRDS(austraits, filename)
+
+  # flattened database, as rds and parquet
+  traits.build::build_post_export(austraits, export_dir)
 
   # dictionary_target:
   rmarkdown::render(
@@ -47,21 +53,6 @@ create_release <- function(austraits, v_prev= NULL) {
       params = list(v_prev = v_prev, v_curr = version_number),
     )
   }
-
-  # flattened database
-  austraits_flattened <-
-    austraits |>
-    austraits::flatten_database()
-
-  filename <- sprintf("%s/austraits-%s-flattened.rds", export_dir, version_number)
-
-  austraits_flattened |>
-    saveRDS(filename)
-
-  filename <- sprintf("%s/austraits-%s-flattened.parquet", export_dir, version_number)
-
-  austraits_flattened |>
-    arrow::write_parquet(filename)
 
   # Go to directory and zip
   # remove existing file
