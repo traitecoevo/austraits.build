@@ -49,7 +49,12 @@ dataset:
         `Leaf_Area_cm2` = ifelse(`Spp Name` == "Acacia dealbata", NA, `Leaf_Area_cm2`),
         `Plant_height_(m)` = ifelse(`Spp Name` == "Boronia nana", NA, `Plant_height_(m)`),
         `Plant_height_(m)` = ifelse(`Spp Name` == "Diplarrena moraea", NA, `Plant_height_(m)`)
-      )
+      ) %>%
+      mutate(`seed_mass_unique_values` = ifelse(
+        paste(`Spp Name`, `seed_mass_unique_values`) %in% c(
+          "Wahlenbergia gracilis 0.000267"
+        ),
+        NA, `seed_mass_unique_values`))
     '
   collection_date: 2015/2015
   taxon_name: Spp Name
@@ -77,6 +82,9 @@ dataset:
     Tame 2001 are not included as secondary references, because AusTraits includes
     references that supercede these. Excluded values for plant_height for Boronia
     nana and Diplarrena moraea in custom_R_code.
+    1 seed_dry_mass value set to NA in custom_R_code as an outlier against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations: .na
 contexts: .na
 traits:

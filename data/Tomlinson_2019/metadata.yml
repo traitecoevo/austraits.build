@@ -27,7 +27,18 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
+  custom_R_code: '
+    data %>%
+      mutate(
+        A_placeholder = !is.na(A_nmol_CO2_per_g_s) & A_nmol_CO2_per_g_s == 1,
+        gs_placeholder = !is.na(gs_mmol_H2O_per_m2_s) & (gs_mmol_H2O_per_m2_s >= 10000 | gs_mmol_H2O_per_m2_s == 1)
+      ) %>%
+      mutate(
+        across(c(A_nmol_CO2_per_g_s, photosynthetic_rate_per_area_saturated, WUE_intrinsic), ~ifelse(A_placeholder, NA, .x)),
+        across(c(gs_mmol_H2O_per_m2_s, WUE_intrinsic), ~ifelse(gs_placeholder, NA, .x))
+      ) %>%
+      select(-A_placeholder, -gs_placeholder)
+  '
   collection_date: 2008/2010
   taxon_name: Species
   location_name: Seed location
@@ -145,6 +156,15 @@ dataset:
     so data users may find this an important covariate. Additional traits measured
     on these same species is available under Tomlinson_2013, including leaf_area,
     leaf_mass_fraction, and stem_mass_fraction.
+    In 15 rows A_nmol_CO2_per_g_s and PWUE are exactly 1 (the next-lowest A is 4.1),
+    a placeholder; leaf_photosynthetic_rate_per_dry_mass_saturated, the derived
+    leaf_photosynthetic_rate_per_area_saturated and leaf_water_use_efficiency_intrinsic
+    are set to NA for these rows in custom_R_code. Stomatal conductances of 10000 and
+    1 mmol/m2/s (two Eucalyptus erythrophloia plants; the next-lowest value is 6.7)
+    are also set to NA. The PWUE column
+    is not mapped to a trait; the paper defines PWUE as Aa/gs (intrinsic water-use
+    efficiency, already mapped from WUE_intrinsic), and the supplied PWUE values are
+    a transformed copy of it (1 + Aa/gs, range 1.00-1.38); E. Wenk 2026-11-14.
 locations:
   Byfield:
     climate description: humid
@@ -426,7 +446,7 @@ traits:
     in seedlings, so data users may find this an important covariate.
 - var_in: PWUE_umol_CO2_per_mmol_H2O
   unit_in: umol{CO2}/mmol{H2O}
-  trait_name: leaf_water_use_efficiency_instantaneous
+  trait_name: .na
   entity_type: individual
   value_type: raw
   basis_of_value: measurement

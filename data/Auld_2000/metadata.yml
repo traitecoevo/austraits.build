@@ -25,7 +25,12 @@ dataset:
       mutate(
         `Seed weight (mg)` = stringr::str_extract(`Seed weight (mg)`, "[:digit:]+\\.[:digit:]+"),
         `Proportion viable` = stringr::str_extract(`Proportion viable`, "[:digit:]+\\.[:digit:]+")
-      )
+      ) %>%
+      mutate(`Seed weight (mg)` = ifelse(
+        paste(`Species`, `Seed weight (mg)`) %in% c(
+          "Kunzea ambigua 0.58", "Kunzea capitata 1.06"
+        ),
+        NA, `Seed weight (mg)`))
   '
   collection_date: 1990/1992
   taxon_name: Species
@@ -48,7 +53,9 @@ dataset:
     seeds were collected opportunistically from as many individuals as possible and
     pooled within each species. Sites were located to the north or south of Sydney.
   original_file: none, transcribed from manuscript
-  notes: none
+  notes: 2 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Site 1, KCNP:
     latitude (deg): -33.654

@@ -27,7 +27,12 @@ dataset:
       mutate(
         across(c("Seed mass (mg)"), ~na_if(.x,0)),
         site_name = "western Victoria"
-      )
+      ) %>%
+      mutate(`Seed mass (mg)` = ifelse(
+        paste(`Scientific Name`, `Seed mass (mg)`) %in% c(
+          "Chrysocephalum apiculatum 0.8"
+        ),
+        NA, `Seed mass (mg)`))
   '
   collection_date: 2009/2009
   taxon_name: Scientific Name
@@ -51,7 +56,10 @@ dataset:
   notes: Flowering period and flowering start times were derived from herbarium records
     (Royal Botanic Gardens Board, Melbourne, MELISR database, 20 January 2009). Only
     Victorian records in close proximity to the study region from an altitude less
-    than 400 m a.s.l. were used. (But this data isn't in AusTraits)
+    than 400 m a.s.l. were used. (But this data isn't in AusTraits).
+    1 seed_dry_mass value set to NA in custom_R_code as an outlier against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   western Victoria:
     latitude (deg): .na
