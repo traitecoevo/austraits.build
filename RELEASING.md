@@ -14,7 +14,7 @@ Briefly, AusTraits depends upon:
 
 -   Information for traits configuration file: [`APD`](https://github.com/traitecoevo/APD)
 
-The sections below are in the order to do them. Each uses the output of the ones before: the APD release feeds `config/traits.yml`; `traits.build` depends on `austraits`; the taxon list is rebuilt by building AusTraits with the new `traits.build`; and the austraits.build release comes last.
+The sections below are in the order to do them. Each uses the output of the ones before: the APD release feeds `config/traits.yml`; `traits.build` depends on `traits.use`; the taxon list is rebuilt by building AusTraits with the new `traits.build`; and the austraits.build release comes last.
 
 This document is the release procedure for austraits.build, and covers the order of steps across repos and the hiccups we've hit. Detailed instructions for the other repos live with each repo:
 
@@ -151,12 +151,12 @@ Do this on its own branch, after the `traits.build` release, so the builds below
 
 ### Generate a new version of `config/taxon_list.csv`
 
-1.  Install the `austraits` and `traits.build` releases from sections 2 and 3, and the current `APCalign`. As the first commit on this branch, update `DESCRIPTION`:
+1.  Install the `traits.use` and `traits.build` releases from sections 2 and 3, and the current `APCalign`. As the first commit on this branch, update `DESCRIPTION`:
 
     -   Depends lists the new traits.build (e.g. `traits.build (>= 2.3.0)`)
-    -   Remotes points at its tag (e.g. `traitecoevo/traits.build@v2.3.0`)
+    -   Remotes points at its tag (e.g. `traitecoevo/traits.build@v2.3.0`), and at the `traits.use` release tag rather than its default branch
 
-    CI installs traits.build from Remotes, so without this it checks the taxon list against the previous release of traits.build.
+    CI installs traits.build and traits.use from Remotes, so without this it checks the taxon list against the previous release of traits.build.
 
 2.  Regenerate `build.R` so it builds every dataset in `data/`, then check none are missing:
 
