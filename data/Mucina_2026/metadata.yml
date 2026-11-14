@@ -1,0 +1,298 @@
+source:
+  dataset:
+    key: Mucina_2026
+    bibtype: Unpublished
+    year: 2026
+    author: Ladislav Mucina
+    title: 'Unpublished dataset: Kwongan Trait Database (Kwongan TDB 2.0), including
+      unpublished observations of kwongan species.'
+  source:
+  - key: FloraBase_2026
+    bibtype: Online
+    year: 2026
+    author: '{Western Australian Herbarium}'
+    title: Florabase—the Western Australian Flora.
+    publisher: Department of Biodiversity, Conservation and Attractions.
+    url: https://florabase.dpaw.wa.gov.au/
+contributors:
+  data_collectors:
+  - last_name: Mucina
+    given_name: Ladislav
+    ORCID: 0000-0003-0317-8886
+    affiliation: Murdoch University, Perth, Western Australia, Australia
+    additional_role: contact
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: yes
+  custom_R_code: '
+    data |>
+      tidyr::separate_rows(source_id, sep = " ") |>
+      dplyr::mutate(trait = stringr::str_extract(`Trait:State`, "^[^:]+")) |>
+      dplyr::group_by(`Taxon Name`, trait, source_id) |>
+      dplyr::summarise(
+        value = paste(unique(`Trait:State`), collapse = " "),
+        .groups = "drop"
+      ) |>
+      dplyr::mutate(
+        location_name = "Kwongan",
+        basis_of_record = dplyr::if_else(source_id == "Mucina_2026", "field", "literature")
+      )
+    '
+  collection_date: '2026'
+  source_id: source_id
+  taxon_name: Taxon Name
+  trait_name: trait
+  value: value
+  location_name: location_name
+  description: Species-level trait database for the kwongan (sandplain shrubland and
+    heathland) flora of south-western Australia, compiled to document the functional
+    traits of this flora.
+  basis_of_record: basis_of_record
+  life_stage: adult
+  sampling_strategy: Placeholder text, to be replaced by a description from L. Mucina.
+    Traits were scored at species level for the kwongan flora of south-western Australia,
+    using the species descriptions in FloraBase, the online flora of the Western Australian
+    Herbarium, supplemented by the unpublished field observations of L. Mucina.
+  original_file: Kwongan TDB 2.0 Parasitism Detailed DONE LM11-10 to AusTraits 26-10.xlsx;
+    trait codes and definitions in Kwongan TDB 2.0 A_Traits List & Codes 21-10-2026
+    to AusTraits 26-10.xlsx
+  notes: data.csv is the xlsx file's single sheet, with its three columns unchanged
+    and a source_id column appended that recodes the Source codes as space-delimited
+    reference keys ([001] = FloraBase_2026, [LM] = Mucina_2026). custom_R_code splits
+    each row citing several sources into one record per source, so each value is linked
+    to the source that reports it, with basis_of_record field for Mucina_2026 and
+    literature for the other sources. Each parasitic taxon has two rows in the source
+    file (holo- or hemiparasitism, plus root or stem parasitism); the values a source
+    gives for a taxon are combined into one space-delimited value. The trait codes
+    file describes the full Kwongan TDB 2.0 trait system; only parasitism is included
+    so far.
+identifiers: .na
+locations:
+  Kwongan:
+    latitude (deg): -31.4063
+    longitude (deg): 117.7646
+    description: Kwongan (sandplain shrubland and heathland) of south-western Western
+      Australia.
+    georeference remarks: Coordinates given as Durokoppin Nature Reserve, a kwongan
+      remnant near the centre of the kwongan region, which extends from Kalbarri through
+      the northern sandplains and wheatbelt to the Fitzgerald River and Esperance
+      sandplains.
+    state: WA
+contexts: .na
+traits:
+- var_in: Paras
+  unit_in: .na
+  trait_name: parasitic
+  entity_type: metapopulation
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Parasitism (holoparasitism, hemiparasitism, root parasite, stem parasite,
+    non-parasitic) scored for each taxon from FloraBase species descriptions and the
+    unpublished field observations of L. Mucina.
+substitutions:
+- trait_name: parasitic
+  find: paras:holo
+  replace: holoparasitic
+  match: word
+- trait_name: parasitic
+  find: paras:hemi
+  replace: hemiparasitic
+  match: word
+- trait_name: parasitic
+  find: paras:root
+  replace: root_parasitic
+  match: word
+- trait_name: parasitic
+  find: paras:stem
+  replace: stem_parasitic
+  match: word
+- trait_name: parasitic
+  find: paras:none
+  replace: not_parasitic
+  match: word
+taxonomic_updates:
+- find: Acanthocarpus sp. Ajana (C.A. Gardner 8596)
+  replace: Acanthocarpus sp. Ajana (C.A.Gardner 8596)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Anigozanthos viridis subsp. Cataby (S.D. Hopper 1786)
+  replace: Anigozanthos viridis subsp. Cataby (S.D.Hopper 1786)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: subspecies
+- find: Calandrinia sp. Kenwick (G.J. Keighery 10905)
+  replace: Calandrinia sp. Kenwick (G.J.Keighery 10905)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Darwinia sp. Watheroo (I.R. McGill 20)
+  replace: Darwinia sp. Watheroo (I.R.McGill 20)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Eryngium pinnatifidum subsp. palustre (G.J. Keighery 13459)
+  replace: Eryngium pinnatifidum subsp. Palustre (G.J.Keighery 13459)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: subspecies
+- find: Goodenia pulchella subsp. Coastal Plain A (M. Hislop 634)
+  replace: Goodenia pulchella subsp. Coastal Plain A (M.Hislop 634)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: subspecies
+- find: Hemiandra sp. Eneabba (H. Demarz 3687)
+  replace: Hemiandra sp. Eneabba (H.Demarz 3687)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Lepidosperma sp. P1 small head (M.D. Tindale 166A)
+  replace: Lepidosperma sp. P1 small head (M.D.Tindale 166A)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Coujinup (M.A. Burgman 1085)
+  replace: Leucopogon sp. Coujinup (M.A.Burgman 1085)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Leucopogon sp. Northern ciliate (R. Davis 3393)
+  replace: Leucopogon sp. Northern ciliate (R.Davis 3393)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Microcorys sp. Coomallo (L. Haegi 2677)
+  replace: Microcorys sp. Coomallo (L.Haegi 2677)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Olearia sp. Kennedy Range (G. Byrne 66)
+  replace: Olearia sp. Kennedy Range (G.Byrne 66)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Platysace sp. Eneabba (R. Hnatiuk 770001)
+  replace: Platysace sp. Eneabba (R.Hnatiuk 770001)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Scaevola repens subsp. Northern Sandplains (R.J. Cranfield & P.J. Spencer
+    8445)
+  replace: Scaevola repens subsp. Northern Sandplains (R.J.Cranfield & P.J.Spencer
+    8445)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: subspecies
+- find: Schoenus sesquispiculus
+  replace: Schoenus sesquispicula
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Schoenus sp. A3 ciliate sheaths (K.R. Newbey 9402)
+  replace: Schoenus sp. A3 Ciliate Sheaths (K.R.Newbey 9402)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Schoenus sp. Eneabba (F. Obbens & C. Godden I154)
+  replace: Schoenus sp. Eneabba (F.Obbens & C.Godden I154)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Schoenus sp. smooth culms (K.R. Newbey 7823)
+  replace: Schoenus sp. smooth culms (Newbey 7823)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Scholtzia sp. Wongonderrah (M.E. & M.R. Trudgen MET 12000)
+  replace: Scholtzia sp. Wongonderrah (M.E.& M.R.Trudgen MET 12000)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Tricoryne sp. Eneabba (E.A. Griffin 1200)
+  replace: Tricoryne sp. Eneabba (E.A.Griffin 1200)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Xanthorrhoea sp. Lesueur (G.J. Keighery 16404)
+  replace: Xanthorrhoea sp. Lesueur (G.J.Keighery 16404)
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Apium prostratum subsp. prostratum var. prostratum
+  replace: Apium prostratum subsp. prostratum
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: subspecies
+- find: Banksia dallanneyi subsp. dallanneyi var. dallanneyi
+  replace: Banksia dallanneyi subsp. dallanneyi
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: subspecies
+- find: Cotula bipinnata agg.
+  replace: Cotula bipinnata
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: species
+- find: Eryngium pinnatifidum subsp. pinnatifidum
+  replace: Eryngium pinnatifidum
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: species
+- find: Hibbertia acerosa agg.
+  replace: Hibbertia acerosa
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: species
+- find: Hibbertia crassifolia agg.
+  replace: Hibbertia crassifolia
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: species
+- find: Hibbertia huegelii agg.
+  replace: Hibbertia huegelii
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: species
+- find: Hibbertia spicata agg.
+  replace: Hibbertia spicata
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: species
+- find: Lysimachia arvensis agg.
+  replace: Lysimachia arvensis
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: species
+- find: Pterostylis nana agg.
+  replace: Pterostylis nana
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: species
+- find: Schoenus subflavus subsp. subflavus
+  replace: Schoenus subflavus
+  reason: Exact match of the first two words of the taxon name to an APC-accepted
+    canonical name (2026-10-28)
+  taxonomic_resolution: species
+- find: Pigea sp. Hill River (E.M. Bennett 2252)
+  replace: Pigea sp. Hill River (E.M.Bennett 2252)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+- find: Styphelia sp. Mid West (J.S. Beard 7388)
+  replace: Styphelia sp. Mid West (J.S.Beard  7388)
+  reason: Fuzzy match of taxon name to an APNI-listed canonical name once punctuation
+    and filler words are removed (2026-10-28)
+  taxonomic_resolution: species
+exclude_observations: .na
+questions:
+  question1: Two records (Anthobolus foveolatus, Paras:Hemi and Paras:Root) cite source
+    [002], which is not identified in the files supplied. Its source_id is the placeholder
+    unknown_002 until the reference is known.
+  question2: sampling_strategy and methods are a summary, as no written description
+    of how Kwongan TDB 2.0 was compiled was supplied. I can add a few senteneces that
+    you write, or use my own generic description of how traits were scored.
+  question3: Pterostylis dilatata is listed twice in the parasitism file (rows 1034
+    and 1035), with identical values for the trait and source columns (Paras:None,
+    source [001]); it has been collapsed into a single record. Was the second row
+    meant to be a different taxon?
