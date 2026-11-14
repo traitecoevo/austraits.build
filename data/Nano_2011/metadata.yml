@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Nano_2011
     bibtype: Article
     year: 2011
@@ -10,22 +10,15 @@ source:
     volume: 212
     pages: 2095--2110
     doi: 10.1007/s11258-011-9988-x
-  original_01:
-    key: Crowley_2007
-    author: G. Crowley, M. Gardener, M. Marrinan
-    year: 2007
+  source: sources.yml
+  secondary:
+  - key: Crowley_2007
     bibtype: Online
+    year: 2007
+    author: G. Crowley, M. Gardener, M. Marrinan
     title: Tropical savannas fire response database
     publisher: Tropical Savannas Cooperative Research Centre, Darwin
     url: www.landmanager.org.au
-  original_02:
-    key: NTH_2011
-    author: Northern Territory Herbarium
-    year: 2011
-    bibtype: Online
-    title: Northern Territory Ecological Attributes Database
-    publisher: Northern Territory Government
-    url: http://eflora.nt.gov.au/home
 contributors:
   data_collectors:
   - last_name: Nano
@@ -44,11 +37,21 @@ dataset:
         seedling_establishment_conditions = if_else(`Propagule persistence` == "P+", "establish_post_fire", NA_character_),
         fire_time_from_fire_to_flowering = if_else(`Propagule persistence` == "P+", "--120", NA_character_),
         serotiny = `Seed Bank`,
-        source_id = str_replace_all(`Eco Source`, " (?=\\d{4})", "_")
+        source_id = str_replace_all(`Eco Source`, " (?=\\d{4})", "_"),
+        source_id = stringr::str_trim(stringr::str_remove(source_id, "[,;].*$")),
+        measurement_remarks = ifelse(is.na(`Eco Source`), NA_character_, paste0("Source in the NT Ecological Attributes Database: ", `Eco Source`)),
+        source_id = dplyr::case_when(
+          source_id == "I.D. Cowie_2020" ~ "Cowie_2020",
+          source_id %in% c("I.D. Cowie_2021", "cowie_2021") ~ "Cowie_2021",
+          source_id == "JRS_2004" ~ "RussellSmith_2004",
+          source_id %in% c("I.D. Cowie", "I.D.Cowie", "I.D.C", "K.G.Brennan", "D. Lewis", "KNP plots", "KNP", "Nitmiluk plots", "Unknown") ~ "NTH_2011",
+          is.na(source_id) & (!is.na(`Fire Response Adult`) | !is.na(`Resprout Type`) | !is.na(`Seed Bank`)) ~ "NTH_2011",
+          TRUE ~ source_id
+        )
       )  %>%
       filter(str_detect(original_name, " "))
     '
-  collection_date: unknown/2011
+  collection_date: 2011
   taxon_name: original_name
   description: Study examining how resprouting and propagule persistence are associated
     with grassland and shrubland habitats and whether landscape gradients of aridity,
@@ -58,6 +61,7 @@ dataset:
   basis_of_record: literature field
   life_stage: adult
   source_id: source_id
+  measurement_remarks: measurement_remarks
   sampling_strategy: Site selection ^p We selected 385 sites from a database of Northern
     Territory quadrat-based vegetation surveys (NT government unpublished data). All
     of the included sites had floristic and environmental data that had been recorded

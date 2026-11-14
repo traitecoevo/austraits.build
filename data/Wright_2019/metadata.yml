@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Wright_2019
     bibtype: Article
     year: '2018'
@@ -31,8 +31,8 @@ dataset:
         date_by_month = ifelse(sample_date %in% c("2011-05", "2010-09"), sample_date, NA),
         date_by_month = ifelse(is.na(date_WD), date_by_month, NA),
         new_date = ifelse(sample_date %in% c("2011-05", "2010-09"), NA, sample_date),
-        new_date = new_date %>% mdy(quiet=TRUE) %>% as.character(),
-        date_WD = date_WD %>% dmy(quiet=TRUE) %>% as.character(),
+        new_date = util_format_collection_date(new_date, "mdy"),
+        date_WD = util_format_collection_date(date_WD, "dmy"),
         date_merged = coalesce(new_date, date_WD, as.character(date_by_month)),
         individual = paste(Species, site_name, age, Rep, sep = "_")
       ) %>%
@@ -103,6 +103,7 @@ locations:
       nutrients: mean (and standard deviation) nutrient concentrations in eight soil
       samples (0-20 cm depth) collected in September 2010 were as follows: total C
       = 2.7% (1.8), total N = 0.093% (0.074), total P = 72.7 mg kg_1 (22.6).'
+    state: NT
 contexts:
 - context_property: sampling season
   category: temporal_context

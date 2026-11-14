@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: NTH_2022
     bibtype: Online
     year: 2022
@@ -7,6 +7,7 @@ source:
     title: Northern Territory Flora Online
     url: http://eflora.nt.gov.au/
     note: accessed on 6 May, 2022.
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Coleman
@@ -34,10 +35,33 @@ dataset:
           woodiness_a = ifelse(all(!is.na(woodiness_a)), paste(woodiness_a, collapse = " "), woodiness_a),
           across(c(`plant_growth_form_a`, `stem_growth_habit_a`, `woodiness_a`), replace_duplicates_with_NA)
         ) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(location_name = "Northern Territory") |>
+      mutate(
+        source_id = {
+          works <- c(
+            Jessop_1981 = "Flora of Central Australia",
+            Cowie_2000 = "Supplementary Series Number 10",
+            Cowie_2011 = "Osterkamp Madsen, M\\., 2011, Floodplain Flora",
+            Short_2011 = "Short, P\\.S\\. & Cowie, I\\.D\\. \\(eds\\)",
+            Dunlop_1995 = "Dunlop, C\\.R\\., Leach, G\\.J\\. and Cowie, I\\.D\\.",
+            Short_2003 = "fern allies of the Northern Territory",
+            Albrecht_2007 = "Southern Region Checklist",
+            Cowie_2008 = "Threatened Plants on the Bradshaw",
+            Dixon_2004 = "ymnosperms of the Northern Territory",
+            Kerrigan_2003 = "(Kerrigan, R\\.|Northern Territory Government) 2003, Kakadu",
+            Kerrigan_2004 = "Kerrigan, R\\. 2004, Kakadu",
+            Cowie_2005 = "Cowie, I\\.D\\. 2005\\. Kakadu",
+            Wightman_2006 = "Mangroves of the Northern Territory"
+          );
+          hits <- sapply(works, function(w) stringr::str_detect(dplyr::coalesce(authors, ""), w));
+          ifelse(rowSums(hits) == 1, names(works)[max.col(hits)], NA_character_)
+        }
+      )
   '
-  collection_date: unknown/2022
+  collection_date: 2022
   taxon_name: taxon_name
+  location_name: location_name
   description: Plant growth form data extracted from the NT Flora Online
   basis_of_record: literature
   life_stage: adult
@@ -60,11 +84,17 @@ dataset:
     mentioned only in the genus description. Specific to the plant_growth_form trait,
     any taxon without a growth form and that was described as annual, biennial or
     perennial was inferred as herbaceous.
-  source_id: authors
+  measurement_remarks: authors
+  source_id: source_id
   original_file: .na
   notes: Data supplied by the Department of Land Resource Management, Northern Territory
     of Australia.
-locations: .na
+locations:
+  Northern Territory:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Taxa described in Northern Territory Flora Online; no specific collection locations.
+    state: NT
 contexts: .na
 traits:
 - var_in: life_history_a

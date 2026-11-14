@@ -439,3 +439,31 @@ check_new_taxa_accepted <- function(database, current_study, resources) {
   new_taxa
   
 }
+
+#' Generate sequential observation numbers within groups
+#'
+#' A common processing pattern when a dataset does not already indicate which
+#' observation within a group (e.g. per individual/tree/plot) a row represents.
+#' Numbers rows sequentially (1, 2, 3, ...) within the groups defined by one or
+#' more grouping variables, and returns the data ungrouped.
+#' The unique observation numbers can then be added as a context_property, 
+#' required for the dataset to be able to pivot wider.
+#'
+#' @param data data frame
+#' @param ... one or more (unquoted) variable names to group by, e.g. `Tree`,
+#'   or `Tree, Plot`
+#'
+#' @return data frame with an added `observation_num` column, ungrouped
+#'
+#' @examples
+#' \dontrun{
+#' data <- read_csv("data/Example_2026/data.csv")
+#' data %>% generate_observation_numbers(Tree)
+#' data %>% generate_observation_numbers(Tree, Plot)
+#' }
+generate_observation_numbers <- function(data, ...) {
+  data %>%
+    dplyr::group_by(...) %>%
+    dplyr::mutate(observation_number = dplyr::row_number()) %>%
+    dplyr::ungroup()
+}

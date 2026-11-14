@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Choat_2012
     bibtype: Article
     year: '2012'
@@ -15,8 +15,8 @@ source:
     number: '7426'
     pages: 752--755
     doi: 10.1038/nature11688
-  original_01:
-    key: Choat_2005
+  source:
+  - key: Choat_2005
     bibtype: Article
     year: '2005'
     author: Brendan Choat and Marilyn C. Ball and Jon G. Luly and Joseph A. M. Holtum
@@ -27,8 +27,7 @@ source:
     number: '3'
     pages: 305--311
     doi: 10.1007/s00468-004-0392-1
-  original_02:
-    key: Brodribb_2009
+  - key: Brodribb_2009
     bibtype: Article
     year: '2009'
     author: Tim J. Brodribb and Herve Cochard
@@ -39,8 +38,7 @@ source:
     number: '1'
     pages: 575--584
     doi: 10.1104/pp.108.129783
-  original_03:
-    key: Burgess_2007
+  - key: Burgess_2007
     bibtype: Article
     year: '2007'
     author: Stephen S. O. Burgess and Todd E. Dawson
@@ -51,8 +49,7 @@ source:
     number: '3'
     pages: 626--636
     doi: 10.1111/j.1469-8137.2007.02017.x
-  original_04:
-    key: Canham_2009
+  - key: Canham_2009
     bibtype: Article
     year: '2009'
     author: Caroline A. Canham and Raymond H. Froend and William D. Stock
@@ -63,8 +60,7 @@ source:
     number: '1'
     pages: 64--72
     doi: 10.1111/j.1365-3040.2008.01904.x
-  original_05:
-    key: Froend_2006
+  - key: Froend_2006
     bibtype: Article
     year: '2006'
     author: R. H. Froend and P. L. Drake
@@ -76,8 +72,7 @@ source:
     number: '2'
     pages: 173--179
     doi: 10.1071/bt05081
-  original_06:
-    key: Hacke_2007
+  - key: Hacke_2007
     bibtype: Article
     year: '2007'
     author: U. G. Hacke and J. S. Sperry and T. S. Feild and Y. Sano and E. H. Sikkema
@@ -89,8 +84,7 @@ source:
     number: '8'
     pages: 1113--1126
     doi: 10.1086/520724
-  original_07:
-    key: Rice_2004
+  - key: Rice_2004
     bibtype: Article
     year: '2004'
     author: Kevin J. Rice and Steven L. Matzner and William Byer and Joel R. Brown
@@ -101,8 +95,7 @@ source:
     number: '2'
     pages: 190--198
     doi: 10.1007/s00442-004-1503-9
-  original_08:
-    key: Sperry_2007
+  - key: Sperry_2007
     bibtype: Article
     year: '2007'
     author: J. S. Sperry and U. G. Hacke and T. S. Feild and Y. Sano and E. H. Sikkema
@@ -112,8 +105,7 @@ source:
     number: '8'
     pages: 1127--1139
     doi: 10.1086/520726
-  original_09:
-    key: Drake_2007
+  - key: Drake_2007
     bibtype: Thesis
     year: '2007'
     author: P.L. Drake
@@ -131,14 +123,22 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: .na
-  collection_date: unknown/2012
+  custom_R_code: '
+    data %>%
+      mutate(
+        data_source = ifelse(source_id %in% c("Brodribb_unpub", "Cochard_unpub", "Mitchell_unpub", "Poot_unpub"), paste0("Data source: ", Reference), NA_character_),
+        midday_WP_min_notes = ifelse(is.na(data_source), midday_WP_min_notes, ifelse(is.na(midday_WP_min_notes), data_source, paste0(midday_WP_min_notes, "; ", data_source))),
+        source_id = ifelse(is.na(data_source), source_id, NA_character_)
+      )
+  '
+  collection_date: 2012
   taxon_name: Species
   location_name: Location
   description: Compilation of published and unpublished data on the vulnerability
     of the transport system to drought-induced embolism for woody species worldwide;
     only Australian component included in AusTraits
   source_id: source_id
+  measurement_remarks: data_source
   basis_of_record: literature
   life_stage: adult
   sampling_strategy: The data set was compiled from published papers and unpublished
@@ -204,6 +204,7 @@ locations:
     PET (mm/yr): 1434.0
     aridity index (MAP/PET): 0.2615
     reference: Mitchell et al. unpublished
+    state: WA
   Hobart:
     latitude (deg): -42.905
     longitude (deg): 147.3247
@@ -215,6 +216,7 @@ locations:
     PET (mm/yr): 913.0
     aridity index (MAP/PET): 0.7349
     reference: Cochard et al. unpublished
+    state: Tas
   Julimar forest, Western Australia:
     latitude (deg): -31.4
     longitude (deg): 116.3167
@@ -226,6 +228,7 @@ locations:
     PET (mm/yr): 1465.0
     aridity index (MAP/PET): 0.4778
     reference: Poot P, Veneklaas EJ. unpublished
+    state: WA
   Macquarie U:
     latitude (deg): -33.7712
     longitude (deg): 151.1132
@@ -239,6 +242,7 @@ locations:
     reference: 'Hacke UG, Sperry JS, Field TS, Sano Y, Sikkema H, Pittermann J. 2007.
       Water transport in vesselless angiosperms: conducting efficiency and cavitation
       safety. International Journal of Plant Sciences 168: 1113-1126.'
+    state: NSW
   Many Peaks Range, Queensland:
     latitude (deg): -19.1833
     longitude (deg): 145.75
@@ -252,6 +256,7 @@ locations:
     reference: 'Choat B, Ball MC,  Luly JG, Holtum JAM. 2005. Hydraulic architecture
       of deciduous and evergreen dry rainforest tree species from north-eastern Australia.
       Trees - Structure and Function 19: 305-311.'
+    state: Qld
   New South Wales:
     latitude (deg): -29.2497
     longitude (deg): 152.124
@@ -265,6 +270,7 @@ locations:
     reference: 'Sperry JS, Hacke UG, Field TS, Sano Y, Sikkema EH. 2007. Hydraulic
       consequences of vessel evolution in angiosperms. International Journal of Plant
       Sciences 168: 1127-1139.'
+    state: NSW
   North Queensland:
     latitude (deg): -16.5227
     longitude (deg): 145.2657
@@ -278,6 +284,7 @@ locations:
     reference: 'Hacke UG, Sperry JS, Field TS, Sano Y, Sikkema H, Pittermann J. 2007.
       Water transport in vesselless angiosperms: conducting efficiency and cavitation
       safety. International Journal of Plant Sciences 168: 1113-1126.'
+    state: Qld
   Northern New SW:
     latitude (deg): -29.213
     longitude (deg): 152.1168
@@ -291,6 +298,7 @@ locations:
     reference: 'Hacke UG, Sperry JS, Field TS, Sano Y, Sikkema H, Pittermann J. 2007.
       Water transport in vesselless angiosperms: conducting efficiency and cavitation
       safety. International Journal of Plant Sciences 168: 1113-1126.'
+    state: NSW
   Pemberton-Manjimup, Western Australia:
     latitude (deg): -34.0
     longitude (deg): 116.0
@@ -303,6 +311,7 @@ locations:
     aridity index (MAP/PET): 0.9608
     reference: 'Burgess SSO, Dawson TE. 2006. Predicting the limits to tree height
       using statistical regressions of leaf traits. New Phytologist 174: 626-636.'
+    state: WA
   Queensland:
     latitude (deg): -16.8993
     longitude (deg): 145.7507
@@ -316,6 +325,7 @@ locations:
     reference: 'Sperry JS, Hacke UG, Field TS, Sano Y, Sikkema EH. 2007. Hydraulic
       consequences of vessel evolution in angiosperms. International Journal of Plant
       Sciences 168: 1127-1139.'
+    state: Qld
   Ravenswood, Queensland:
     latitude (deg): -20.1
     longitude (deg): 146.8833
@@ -329,6 +339,7 @@ locations:
     reference: 'Rice KJ, Matzner SL, Byer W, Brown JR. 2004. Patterns of tree dieback
       in Queensland, Australia: the importance of drought stress and the role of resistance
       to cavitation. Oecologia 139: 190-198.'
+    state: Qld
   Swan Coastal Plain(Yalgorup N.P.), Western Australia:
     latitude (deg): -32.9
     longitude (deg): 115.69
@@ -341,6 +352,7 @@ locations:
     aridity index (MAP/PET): 0.6564
     reference: Drake PL. 2007. Drought traits of Eucalyptus gomphocephala in Yalgorup
       National Park.  PhD Thesis, Edith Cowan University, Perth.
+    state: WA
   Swan Coastal Plain, Western Australia:
     latitude (deg): -31.75
     longitude (deg): 115.95
@@ -354,6 +366,7 @@ locations:
     reference: 'Froend RH, Drake PL. 2006.  Defining phreatophyte responses to reduced
       water availability: preliminary investigations on the use of xylem vulnerability
       in Banksia woodland species. Australian Journal of Botany 54: 173-179.'
+    state: WA
   Tasmania:
     latitude (deg): -42.9053
     longitude (deg): 147.324
@@ -366,6 +379,7 @@ locations:
     aridity index (MAP/PET): 0.7349
     reference: 'Brodribb TJ, Cochard H. 2009. Hydraulic failure defines the recovery
       and point of death in water-stressed conifers. Plant physiology 149: 575-84.'
+    state: Tas
   Western Australia:
     latitude (deg): -27.6547
     longitude (deg): 114.3199
@@ -377,6 +391,7 @@ locations:
     PET (mm/yr): 1582.0
     aridity index (MAP/PET): 0.2285
     reference: Brodribb unpublished
+    state: WA
 contexts: .na
 traits:
 - var_in: WP_50_loss_Mpa

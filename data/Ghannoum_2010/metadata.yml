@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Ghannoum_2010
     bibtype: Article
     year: '2010'
@@ -38,12 +38,13 @@ dataset:
     data %>% 
       mutate(
         site = "University of Western Sydney",
-        Date = Date %>% dmy(),
+        Date = util_format_collection_date(Date, "dmy"),
         leaf_area_ratio = coalesce(`LAR (m2 kg-1)`,`LAR m2 kg-1)`),
         Potnum = ifelse(is.na(Potnum),paste0("x", row_number()), Potnum),
         remove = ifelse(Potnum == 30 & Time.x == 49320, "flag", "keep")
       ) %>%
-      filter(remove == "keep")
+      filter(remove == "keep") %>%
+      mutate(`Date` = coalesce(`Date`, "2010"))
   '
   collection_date: Date
   taxon_name: Species
@@ -129,6 +130,7 @@ locations:
     latitude (deg): -33.61
     longitude (deg): 150.7407
     description: naturally sun-lit and C/T-controlled glasshouse
+    state: NSW
 contexts:
 - context_property: age at measurement or harvest
   category: treatment_context

@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Cernusak_2011
     bibtype: Article
     year: '2011'
@@ -26,11 +26,12 @@ dataset:
   custom_R_code:   '
     data %>%
       mutate(
-        Date = Date %>% dmy(),
+        Date = util_format_collection_date(Date, "dmy"),
         across(c(`Leaf area (mm2)`:`trans_at_Amax_mmol_m-2_s-1`), ~as.character(.x)),
         across(c(`Leaf area (mm2)`:`trans_at_Amax_mmol_m-2_s-1`), ~na_if(.x,"."))
       ) %>%
-      rename(measurement_remarks = context)
+      rename(measurement_remarks = context) %>%
+      mutate(`Date` = coalesce(`Date`, "2011"))
   '
   collection_date: Date
   taxon_name: Species
@@ -66,6 +67,7 @@ locations:
     precipitation, MAP (mm): 1532.0
     temperature, MAT (C): 27.0
     description: eucalypt-dominated savannas
+    state: NT
   Boulia:
     latitude (deg): -22.994
     longitude (deg): 139.945
@@ -73,6 +75,7 @@ locations:
     precipitation, MAP (mm): 291.0
     temperature, MAT (C): 24.9
     description: Acacia-dominated shrublands
+    state: Qld
   Daly River:
     latitude (deg): -14.159
     longitude (deg): 131.388
@@ -80,6 +83,7 @@ locations:
     precipitation, MAP (mm): 1170.0
     temperature, MAT (C): 27.2
     description: eucalypt-dominated savannas
+    state: NT
   Dry Creek:
     latitude (deg): -15.259
     longitude (deg): 132.371
@@ -87,6 +91,7 @@ locations:
     precipitation, MAP (mm): 958.0
     temperature, MAT (C): 27.1
     description: eucalypt-dominated savannas
+    state: NT
   Howard Springs:
     latitude (deg): -12.485
     longitude (deg): 131.146
@@ -94,6 +99,7 @@ locations:
     precipitation, MAP (mm): 1714.0
     temperature, MAT (C): 27.8
     description: eucalypt-dominated savannas
+    state: NT
   Sturt Plains:
     latitude (deg): -17.133
     longitude (deg): 133.329
@@ -103,6 +109,7 @@ locations:
     description: low woodland dominated by Acacia cowleana, Eucalyptus dichromophloia,
       and Lysophyllum cunninghamii; transition from eucalypt-dominated savannas to
       acacia-dominated shrublands
+    state: NT
 contexts: .na
 traits:
 - var_in: Leaf area (mm2)
