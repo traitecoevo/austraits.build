@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: NTH_2025
     bibtype: Online
     year: 2022
@@ -22,7 +22,6 @@ dataset:
         species = stringr::str_replace(`Taxon Name`, "[:alpha:]+\\s", ""),
         across(c(1:42), ~if_else(.x == "-", NA, .x)),
         clonal_spread_mechanism = `Vegetative Spread`,
-        fruit_fleshiness = `Diaspore Morphology`,
         location_name = "Northern Territory"
       )
   '
@@ -36,9 +35,12 @@ dataset:
   original_file: ecological_attributes.csv, in raw data folder, from a download from
     the NT herbarium
   notes: none
-identifier: .na
+identifiers: .na
 locations:
   Northern Territory:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Ecological attributes of taxa in Northern Territory Flora Online; no specific collection locations.
     state: NT
 contexts:
 - context_property: endemicity
@@ -144,7 +146,7 @@ traits:
   methods: unknown
 - var_in: Mass Recruitment
   unit_in: .na
-  trait_name: recruitment_intensity
+  trait_name: recruitment_pattern
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -208,7 +210,7 @@ traits:
   methods: unknown
 - var_in: Pollen Transfer
   unit_in: .na
-  trait_name: pollination_system
+  trait_name: flower_visitor
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -238,14 +240,6 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: Presence Defence Structures
-  unit_in: .na
-  trait_name: plant_physical_defence
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
 - var_in: Response To Grazing
   unit_in: .na
   trait_name: .na
@@ -257,14 +251,6 @@ traits:
 - var_in: Resprout Type
   unit_in: .na
   trait_name: bud_bank_location
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
-- var_in: Resurrection
-  unit_in: .na
-  trait_name: resurrection_ability
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -369,12 +355,6 @@ substitutions:
 - trait_name: dispersal_appendage
   find: winged, plumed, feathered, woolly
   replace: wing_or_plume
-- trait_name: fruit_fleshiness
-  find: drupe, berry (attractive/succulent)
-  replace: fleshy
-- trait_name: fruit_fleshiness
-  find: winged, plumed, feathered, woolly
-  replace: .na.character
 - trait_name: leaf_phenology
   find: annual aerial parts
   replace: deciduous
@@ -473,18 +453,18 @@ substitutions:
 - trait_name: plant_growth_substrate
   find: 'y'
   replace: epiphyte
-- trait_name: pollination_system
+- trait_name: flower_visitor
   find: bee (buzz)
   replace: bee
-- trait_name: recruitment_intensity
+- trait_name: recruitment_pattern
   find: 'no'
-  replace: mass_recruitment_not_exhibited
-- trait_name: recruitment_intensity
+  replace: mass_recruitment_absent
+- trait_name: recruitment_pattern
   find: variable
   replace: recruitment_intensity_variable
-- trait_name: recruitment_intensity
+- trait_name: recruitment_pattern
   find: 'yes'
-  replace: mass_recruitment_exhibited
+  replace: mass_recruitment
 - trait_name: resprouting_capacity
   find: faculative resprouter
   replace: partial_resprouting
@@ -3768,7 +3748,7 @@ taxonomic_updates:
   reason: Exact match of taxon name to an APC-accepted scientific name (including
     authorship) (2025-01-29)
   taxonomic_resolution: species
-- find: Camonea umbellata (L.) A.R.Sim�es & Staples
+- find: Camonea umbellata (L.) A.R.Simões & Staples
   replace: Camonea umbellata
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
@@ -5102,7 +5082,7 @@ taxonomic_updates:
   reason: Exact match of taxon name to an APC-accepted scientific name (including
     authorship) (2025-01-29)
   taxonomic_resolution: species
-- find: Croton arnhemicus M�ll.Arg.
+- find: Croton arnhemicus Müll.Arg.
   replace: Croton arnhemicus
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
@@ -6368,22 +6348,22 @@ taxonomic_updates:
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
   taxonomic_resolution: species
-- find: Distimake davenportii (F.Muell.) A.R.Sim�es & Staples
+- find: Distimake davenportii (F.Muell.) A.R.Simões & Staples
   replace: Distimake davenportii
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
   taxonomic_resolution: species
-- find: Distimake dissectus (Jacq.) A.R.Sim�es & Staples
+- find: Distimake dissectus (Jacq.) A.R.Simões & Staples
   replace: Distimake dissectus
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
   taxonomic_resolution: species
-- find: Distimake kimberleyensis (R.W.Johnson) A.R.Sim�es & Staples
+- find: Distimake kimberleyensis (R.W.Johnson) A.R.Simões & Staples
   replace: Distimake kimberleyensis
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
   taxonomic_resolution: species
-- find: Distimake quinatus (R.Br.) A.R.Sim�es & Staples
+- find: Distimake quinatus (R.Br.) A.R.Simões & Staples
   replace: Distimake quinatus
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
@@ -8206,7 +8186,7 @@ taxonomic_updates:
   reason: Exact match of taxon name to an APC-accepted scientific name (including
     authorship) (2025-01-29)
   taxonomic_resolution: species
-- find: Excoecaria parvifolia M�ll.Arg.
+- find: Excoecaria parvifolia Müll.Arg.
   replace: Excoecaria parvifolia
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
@@ -11819,7 +11799,7 @@ taxonomic_updates:
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
   taxonomic_resolution: species
-- find: Macaranga tanarius (L.) M�ll.Arg.
+- find: Macaranga tanarius (L.) Müll.Arg.
   replace: Macaranga tanarius
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
@@ -12044,12 +12024,12 @@ taxonomic_updates:
   reason: Exact match of taxon name to an APC-accepted scientific name (including
     authorship) (2025-01-29)
   taxonomic_resolution: species
-- find: Mallotus nesophilus M�ll.Arg.
+- find: Mallotus nesophilus Müll.Arg.
   replace: Mallotus nesophilus
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
   taxonomic_resolution: species
-- find: Mallotus philippensis (Lam.) M�ll.Arg.
+- find: Mallotus philippensis (Lam.) Müll.Arg.
   replace: Mallotus philippensis
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
@@ -16908,7 +16888,7 @@ taxonomic_updates:
   reason: Exact match of the first two words of the taxon name to an APNI-listed canonical
     name (2025-01-29)
   taxonomic_resolution: species
-- find: Synostemon ditassoides (M�ll.Arg.) I.Telford & Pruesapan
+- find: Synostemon ditassoides (Müll.Arg.) I.Telford & Pruesapan
   replace: Synostemon ditassoides
   reason: Exact match of the first two words of the taxon name to an APNI-listed canonical
     name (2025-01-29)
@@ -16968,7 +16948,7 @@ taxonomic_updates:
   reason: Exact match of taxon name to an APC-known scientific name (including authorship)
     (2025-01-29)
   taxonomic_resolution: species
-- find: Synostemon rhytidospermus (F.Muell. ex M�ll.Arg.) I.Telford & Pruesapan
+- find: Synostemon rhytidospermus (F.Muell. ex Müll.Arg.) I.Telford & Pruesapan
   replace: Synostemon rhytidospermus
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2025-01-29)
@@ -16978,7 +16958,7 @@ taxonomic_updates:
   reason: Exact match of taxon name to an APC-known scientific name (including authorship)
     (2025-01-29)
   taxonomic_resolution: species
-- find: Synostemon rigidulus (F.Muell. ex M�ll.Arg.) I.Telford & Pruesapan
+- find: Synostemon rigidulus (F.Muell. ex Müll.Arg.) I.Telford & Pruesapan
   replace: Synostemon rigidulus
   reason: Exact match of the first two words of the taxon name to an APNI-listed canonical
     name (2025-01-29)
@@ -16998,7 +16978,7 @@ taxonomic_updates:
   reason: Exact match of the first word of the taxon name to an APC-accepted genus
     (2025-01-29)
   taxonomic_resolution: genus
-- find: Synostemon stenocladus (M�ll.Arg.) I.Telford & Pruesapan
+- find: Synostemon stenocladus (Müll.Arg.) I.Telford & Pruesapan
   replace: Synostemon stenocladus
   reason: Exact match of the first two words of the taxon name to an APNI-listed canonical
     name (2025-01-29)
