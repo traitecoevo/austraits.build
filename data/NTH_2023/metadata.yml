@@ -142,6 +142,14 @@ dataset:
           "Suriana maritima|leaf_width|maximum||5000" = 5, "Suriana maritima|leaf_width|minimum||1800" = 1.8
         )[.flora_key], `trait_value`)
       ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, "", `trait_value`, sep = "|"),
+        `trait_value` = ifelse(.flora_key %in% c(
+          "Paraceterach muelleri|leaf_length|maximum||2.5", "Paraceterach muelleri|leaf_length|minimum||1.2",
+          "Paraceterach muelleri|leaf_width|maximum||0.45", "Paraceterach muelleri|leaf_width|minimum||0.3"
+        ), NA, `trait_value`)
+      ) %>%
       select(-.flora_key)
   '
   collection_date: 2022
@@ -179,7 +187,7 @@ dataset:
     corrected where the source text gives the right value (mostly unit slips such as
     mm for m), and 1 set to NA where it does not; E. Wenk 2026-11-14.
     A further check of the source text found more values with the same kinds of errors
-    that were not flagged as outliers - 3 corrected and 3 set to NA in custom_R_code;
+    that were not flagged as outliers - 3 corrected and 7 set to NA in custom_R_code;
     E. Wenk 2026-11-14.
 locations:
   Northern Territory:
