@@ -18,6 +18,7 @@ dataset:
   data_is_long_format: no
   custom_R_code:        '
     data %>%
+      filter(is.na(omit_duplicate)) %>%
       group_by(species) %>%
         mutate(observation_number = row_number()) %>%
       ungroup()
@@ -31,7 +32,11 @@ dataset:
   sampling_strategy: herbarium study
   original_file: SID_australia.xls
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons licesne. Data not to be used for Commercial Purposes.
+    Commons licesne. Data not to be used for Commercial Purposes. Seed masses identical
+    to a Kew_2019_1 value for the same taxon (the later, complete Kew Seed Information
+    Database download) are flagged in the data.csv column omit_duplicate and excluded
+    by custom_R_code (27 rows, mostly taxa whose names have since changed, such as
+    Commersonia species now in Androcalva).
 locations: .na
 contexts:
 - context_property: replicate observations
