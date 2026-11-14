@@ -6,7 +6,7 @@
 # exports into the release directory:
 #
 #   austraits-<version>-flattened.rds      one wide table, from
-#                                          `austraits::flatten_database()`
+#                                          `traits.use::flatten_database()`
 #   austraits-<version>-flattened.parquet  the same table as parquet
 #
 # They are written here, at release, rather than in a `post_build()` step,
@@ -19,7 +19,7 @@ post_export <- function(database, path) {
 
   version_number <- database$build_info$version
 
-  flattened <- austraits::flatten_database(database)
+  flattened <- traits.use::flatten_database(database)
 
   saveRDS(flattened, file.path(path, sprintf("austraits-%s-flattened.rds", version_number)))
   arrow::write_parquet(flattened, file.path(path, sprintf("austraits-%s-flattened.parquet", version_number)))

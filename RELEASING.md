@@ -8,7 +8,7 @@ Briefly, AusTraits depends upon:
 
 -   Workflow to build AusTraits: [`traits.build`](https://github.com/traitecoevo/traits.build)
 
--   Functions required by `traits.build`: [`austraits`](https://github.com/traitecoevo/austraits)
+-   Functions required by `traits.build`: [`traits.use`](https://github.com/traitecoevo/traits.use) (formerly the [`austraits`](https://github.com/traitecoevo/austraits) package)
 
 -   Information for taxonomic configuration file: [`APCalign`](https://github.com/traitecoevo/APCalign)
 
@@ -76,13 +76,13 @@ These are manual uploads; nothing deposits automatically.
 
 -   APD v2.1.1 and v2.1.2 were never deposited on Zenodo, because we assumed the GitHub integration handled it. It doesn't.
 
-## 2. Update austraits
+## 2. Update traits.use
 
-The R package `austraits` includes functions to wrangle and explore traits.build databases. Some of these functions are also used by the `traits.build` workflow, including `austraits::bind_databases` and util functions to convert between yml lists and dataframes.
+The R package `traits.use` includes functions to wrangle and explore traits.build databases. Some of these functions are also used by the `traits.build` workflow, including `traits.use::bind_databases` and util functions to convert between yml lists and dataframes.
 
-`austraits` functions need to be tweaked if any changes are made to the `traits.build` output format.
+`traits.use` functions need to be tweaked if any changes are made to the `traits.build` output format.
 
-If such changes have been made, ensure `austraits`, `traits.build` and `austraits.build` are all on their respective branches with such changes implemented and test that all functions/workflows function as expected and austraits.build builds as expected.
+If such changes have been made, ensure `traits.use`, `traits.build` and `austraits.build` are all on their respective branches with such changes implemented and test that all functions/workflows function as expected and austraits.build builds as expected.
 
 ### Files to update for a release
 
@@ -98,7 +98,7 @@ If such changes have been made, ensure `austraits`, `traits.build` and `austrait
 
 6.  Bump the version number in `DESCRIPTION` to x.x.x.9000, merge into `develop`.
 
-7.  The vignette (`vignettes/austraits.Rmd.orig`, precomputed into `austraits.Rmd`) requires further changes after the `austraits.build` release to ensure it includes the newest release in its list of Zenodo doi's (section 5, step 12).
+7.  The AusTraits-specific `austraits` package (`load_austraits()`, the AusTraits vignette) sits on top of `traits.use`. Its vignette (`vignettes/austraits.Rmd.orig`, precomputed into `austraits.Rmd`) requires further changes after the `austraits.build` release to ensure it includes the newest release in its list of Zenodo doi's (section 5, step 12).
 
 ## 3. Update traits.build
 
@@ -118,8 +118,8 @@ If such changes have been made, ensure `austraits`, `traits.build` and `austrait
     DESCRIPTION edits
 
     -   Update version number
-    -   Ensure the proper version of `austraits` is listed under Depends
-    -   Ensure the proper version of `austraits` is listed under Remotes (e.g. `traitecoevo/austraits`)
+    -   Ensure the proper version of `traits.use` is listed under Depends
+    -   Ensure the proper version of `traits.use` is listed under Remotes (e.g. `traitecoevo/traits.use`)
 
     NEWS updates
 
