@@ -10,6 +10,19 @@ source:
     number: '1'
     pages: 184--196
     doi: 10.1111/j.1469-8137.2011.03663.x
+  source:
+  - key: Drechsler_1999
+    bibtype: Article
+    year: '1999'
+    author: Martin Drechsler and Byron B. Lamont and Mark A. Burgman and H. Resit
+      Akçakaya and Edward T. F. Witkowski and Y. Supriyadi
+    journal: Biological Conservation
+    title: Modelling the persistence of an apparently immortal Banksia species after
+      fire and land clearing
+    volume: '88'
+    number: '2'
+    pages: 249--259
+    doi: 10.1016/S0006-3207(98)00102-5
 contributors:
   data_collectors:
   - last_name: He
@@ -24,12 +37,10 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:   '
-    data %>%
-      mutate(storage_organ = ifelse(str_detect(bud_bank_location, "lignotuber"), "lignotuber", NA))
-  '
-  collection_date: 2011
-  taxon_name: taxon
+  custom_R_code: .na
+  collection_date: collection_date
+  taxon_name: taxon_name
+  source_id: source_id
   description: The study generated a dated phylogeny for the iconic Australian genus
     Banksia, and reconstructed the evolutionary/chronological position of five putatively
     fire-related traits.
@@ -51,18 +62,44 @@ dataset:
     clonal (vegetative reproduction via rhizomes or root suckers after fire, minimal
     seed production) and nonclonal (no vegetative reproduction, recovery via epicormic
     and/or lignotuberous buds and/or seeds after fire) taxa.
-  original_file: none, transcribed from manuscript
-  notes: none, transcribed from manuscript
+  original_file: raw/trait_data.csv (extracted from the source PDF, Figs 1-4 tip states
+    and Discussion); data.csv written from it by raw/extra_R_code_He_2011.R
+  notes: Tip states were read from the phylogenies, Fig. 1 tip labels (growth form
+    and fire response), and tip branch colours in Fig. 2 (serotiny), Fig. 3 (dead
+    floret retention) and Fig. 4 (dead leaf retention); taxon names for the numbered
+    varieties and subspecies follow Supporting Information Notes S1. A dual-colour
+    tip branch (both states in the crown species) is scored as both values. Fig. 1
+    tip label NC(K,L) (B. ashbyi, B. violacea), not defined in the legend, is scored
+    as both fire-killed and lignotuberous resprouting. The two outgroup taxa (Musgravea
+    heterophylla, Macadamia integrifolia) are included. Candidate traits not yet in
+    traits.yml are dead_floret_retention, dead_leaf_retention, follicle_opening_fraction
+    and seed_release_cues. Drought and post-fire plant mortality and seedling counts
+    and mortality for two B. hookeriana populations are also in data.csv. Additional
+    traits,
+  additional_traits: Additional traits for future mapping include, dead leaf retention,
+    floret retention
+identifiers: .na
 locations: .na
-contexts: .na
+contexts:
+- context_property: fire history
+  category: plot_context
+  var_in: fire_history
+  values:
+  - find: burnt 2007, after severe drought 2006-07
+    value: burnt 2 years ago, after a severe drought in 2006-07
+    description: population burnt in 2007, 2 years before sampling, at the end of
+      a severe drought in 2006-07
+  - find: unburnt, after severe drought 2006-07
+    value: unburnt, after a severe drought in 2006-07
+    description: unburnt population, sampled 2 years after a severe drought in 2006-07
 traits:
-- var_in: bud_bank_location
-  unit_in: .na.character
-  trait_name: bud_bank_location
+- var_in: clonal_spread_mechanism
+  unit_in: .na
+  trait_name: clonal_spread_mechanism
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
-  replicates: .na.character
+  replicates: .na
   methods: Clonality may be viewed as the ultimate whole-plant adaptation to fire
     [most vulnerable to being burnt (ground-hugging), best protected budbank (soil),
     least seed production, survives the most fire-cycles]. Consequently, growth form
@@ -72,87 +109,171 @@ traits:
     Traits for all Banksia taxa, five Dryandra species and the outgroup were collated
     from the literature (Taylor & Hopper, 1988; George, 1996; Collins et al., 2008;
     Western Australian Herbarium, 2009) and our own fieldwork (dead leaf retention
-    has not been recognized previously).
-- var_in: storage_organ
-  unit_in: .na.character
-  trait_name: storage_organ
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na.character
-  methods: Clonality may be viewed as the ultimate whole-plant adaptation to fire
-    [most vulnerable to being burnt (ground-hugging), best protected budbank (soil),
-    least seed production, survives the most fire-cycles]. Consequently, growth form
-    was partitioned into clonal (vegetative reproduction via rhizomes or root suckers
-    after fire, minimal seed production) and nonclonal (no vegetative reproduction,
-    recovery via epicormic and/or lignotuberous buds and/or seeds after fire) taxa.
-    Traits for all Banksia taxa, five Dryandra species and the outgroup were collated
-    from the literature (Taylor & Hopper, 1988; George, 1996; Collins et al., 2008;
-    Western Australian Herbarium, 2009) and our own fieldwork (dead leaf retention
-    has not been recognized previously).
+    has not been recognized previously). Traits for individual species are provided
+    in the accompanying figures. ^p Fig. 1 legend, NC, Non-clonal; C, Clonal; C(RH),
+    Resprouting from rhizomes; C(RS), Resprouting from root suckers. ^p Values are
+    the growth form and clonal organ given in each taxon's Fig. 1 tip label.
 - var_in: resprouting_capacity
-  unit_in: .na.character
+  unit_in: .na
   trait_name: resprouting_capacity
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
-  replicates: .na.character
-  methods: Study species were categorized according to their whole-plant response
-    to fire, that is, resprouting or its opposing state, fire-killed.  Traits for
-    all Banksia taxa, five Dryandra species and the outgroup were collated from the
-    literature (Taylor & Hopper, 1988; George, 1996; Collins et al., 2008; Western
-    Australian Herbarium, 2009) and our own fieldwork (dead leaf retention has not
-    been recognized previously).
+  replicates: .na
+  methods: Study species were first categorized according to their whole-plant response
+    to fire, that is, resprouting or its opposing state, fire-killed. Traits for all
+    Banksia taxa, five Dryandra species and the outgroup were collated from the literature
+    (Taylor & Hopper, 1988; George, 1996; Collins et al., 2008; Western Australian
+    Herbarium, 2009) and our own fieldwork (dead leaf retention has not been recognized
+    previously). Traits for individual species are provided in the accompanying figures.
+    ^p Fig. 1 legend, NC(K), Fire-killed; NC(E), Resprouting from epicormic buds;
+    NC(L), Resprouting lignotuber; NC(E,L), Resprouting from epicormic buds or lignotuber;
+    C(RH), Resprouting from rhizomes; C(RS), Resprouting from root suckers. ^p Values
+    are the fire response given in each taxon's Fig. 1 tip label.
+- var_in: bud_bank_location
+  unit_in: .na
+  trait_name: bud_bank_location
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Study species were first categorized according to their whole-plant response
+    to fire, that is, resprouting or its opposing state, fire-killed. [...] growth
+    form was partitioned into clonal (vegetative reproduction via rhizomes or root
+    suckers after fire, minimal seed production) and nonclonal (no vegetative reproduction,
+    recovery via epicormic and/or lignotuberous buds and/or seeds after fire) taxa.
+    Traits for individual species are provided in the accompanying figures. ^p Fig.
+    1 legend, NC(K), Fire-killed; NC(E), Resprouting from epicormic buds; NC(L), Resprouting
+    lignotuber; NC(E,L), Resprouting from epicormic buds or lignotuber; C(RH), Resprouting
+    from rhizomes; C(RS), Resprouting from root suckers. ^p Values are the resprouting
+    bud location given in each taxon's Fig. 1 tip label.
+- var_in: storage_organ
+  unit_in: .na
+  trait_name: storage_organ
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Consequently, growth form was partitioned into clonal (vegetative reproduction
+    via rhizomes or root suckers after fire, minimal seed production) and nonclonal
+    (no vegetative reproduction, recovery via epicormic and/or lignotuberous buds
+    and/or seeds after fire) taxa. Traits for individual species are provided in the
+    accompanying figures. ^p Fig. 1 legend, NC(L), Resprouting lignotuber; NC(E,L),
+    Resprouting from epicormic buds or lignotuber. ^p Records the taxa whose Fig.
+    1 tip label includes a lignotuber.
 - var_in: serotiny
-  unit_in: .na.character
+  unit_in: .na
   trait_name: serotiny
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
-  replicates: .na.character
-  methods: Taxa were classified as either retaining at least some of their seeds in
-    the cones for several years or more (serotinous; Lamont et al., 1991) or releasing
+  replicates: .na
+  methods: Taxa were then classified as either retaining at least some of their seeds
+    in the cones for several years or more (serotinous; Lamont et al., 1991) or releasing
     all of their seeds at maturity (nonserotinous). Traits for all Banksia taxa, five
     Dryandra species and the outgroup were collated from the literature (Taylor &
     Hopper, 1988; George, 1996; Collins et al., 2008; Western Australian Herbarium,
     2009) and our own fieldwork (dead leaf retention has not been recognized previously).
-- var_in: floret retainment
+    Traits for individual species are provided in the accompanying figures. ^p Values
+    are the serotiny state shown by each taxon's tip branch colour in Fig. 2.
+- var_in: post_fire_recruitment
   unit_in: .na
-  trait_name: .na
-  entity_type: species
+  trait_name: post_fire_recruitment
+  entity_type: population
   value_type: mode
   basis_of_value: expert_score
-  replicates: .na.character
-  methods: Taxa were grouped into those that retained at least some of their dead
-    florets around the mature fruits, those whose mantle of dead florets was so thick
-    and dense that the fruits were concealed (the involucral bracts serve this purpose
-    in Dryandra), and those that shed their spent florets immediately. Traits for
-    all Banksia taxa, five Dryandra species and the outgroup were collated from the
-    literature (Taylor & Hopper, 1988; George, 1996; Collins et al., 2008; Western
-    Australian Herbarium, 2009) and our own fieldwork (dead leaf retention has not
-    been recognized previously).
-- var_in: leaf retainment
-  unit_in: .na
-  trait_name: .na
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
-  replicates: .na.character
-  methods: Species were separated into those that retained at least some of their
-    dead leaves on the parent stem and those that shed them once dead. Traits for
-    all Banksia taxa, five Dryandra species and the outgroup were collated from the
-    literature (Taylor & Hopper, 1988; George, 1996; Collins et al., 2008; Western
-    Australian Herbarium, 2009) and our own fieldwork (dead leaf retention has not
-    been recognized previously).
+  replicates: .na
+  basis_of_record: field
+  methods: In this regard, we observed 15% of follicles open 2 yr after severe drought
+    in 2006-07 in a population of Banksia hookeriana (serotinous, and retaining its
+    dead leaves and florets) with 120 plants (97% dead), and the six seedlings had
+    all died by 2009. By contrast, a nearby population that was burnt in 2007, and
+    thus experienced the same drought, had 100% follicles open among 117 plants (100%
+    dead) with 117 seedlings (3% dead). [...] leaving fire by far the more effective
+    cue in seed release and seedling recruitment. ^p Seedling recruitment after the
+    2007 fire in the burnt population.
+- var_in: lifespan
+  unit_in: a
+  trait_name: lifespan
+  entity_type: population
+  value_type: mean
+  basis_of_value: unknown
+  replicates: unknown
+  methods: The extreme longevity of clonal banksias (e.g. 1000 yr for B. candolleana,
+    T. He and B. Lamont, unpublished data; 500 yr for B. goodii, Drechsler et al.,
+    1999) attests to their success in surviving recurrent fire and drought. ^p Values
+    are the estimated longevity of clones.
 substitutions:
 - trait_name: bud_bank_location
-  find: epicormic_buds lignotuber
-  replace: epicormic_buds basal_buds
+  find: fire_killed
+  replace: none
 - trait_name: bud_bank_location
-  find: lignotuber
-  replace: basal_buds
-taxonomic_updates: .na
+  find: fire_killed resprouting_lignotuber
+  replace: basal_stem_buds none
+- trait_name: bud_bank_location
+  find: resprouting_from_epicormic_buds
+  replace: epicormic_buds
+- trait_name: bud_bank_location
+  find: resprouting_from_epicormic_buds_or_lignotuber
+  replace: basal_stem_buds epicormic_buds
+- trait_name: bud_bank_location
+  find: resprouting_from_rhizomes
+  replace: rhizome
+- trait_name: bud_bank_location
+  find: resprouting_from_root_suckers
+  replace: bud-bearing_root
+- trait_name: bud_bank_location
+  find: resprouting_lignotuber
+  replace: basal_stem_buds
+- trait_name: clonal_spread_mechanism
+  find: clonal_rhizomes
+  replace: rhizome
+- trait_name: clonal_spread_mechanism
+  find: clonal_root_suckers
+  replace: root_buds
+- trait_name: resprouting_capacity
+  find: fire_killed resprouting_lignotuber
+  replace: fire_killed resprouts
+- trait_name: resprouting_capacity
+  find: resprouting_from_epicormic_buds
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: resprouting_from_epicormic_buds_or_lignotuber
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: resprouting_from_rhizomes
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: resprouting_from_root_suckers
+  replace: resprouts
+- trait_name: resprouting_capacity
+  find: resprouting_lignotuber
+  replace: resprouts
+- trait_name: serotiny
+  find: non_serotinous
+  replace: not_serotinous
+- trait_name: storage_organ
+  find: fire_killed resprouting_lignotuber
+  replace: lignotuber
+- trait_name: storage_organ
+  find: resprouting_from_epicormic_buds_or_lignotuber
+  replace: lignotuber
+- trait_name: storage_organ
+  find: resprouting_lignotuber
+  replace: lignotuber
+taxonomic_updates:
+- find: Banksia nutans var. cemuella
+  replace: Banksia nutans var. cernuella
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-07)
+  taxonomic_resolution: variety
+- find: Banksia sphaerocarpa subsp. dolichostyla
+  replace: Banksia sphaerocarpa var. dolichostyla
+  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
+    and filler words are removed (2026-11-07)
+  taxonomic_resolution: variety
 exclude_observations: .na
 questions:
-  additional_traits: Additional traits for future mapping include, dead leaf retention,
-    floret retention
+  question1: In Fig. 1, B. ashbyi and B. violacea are labelled NC(K,L), which is not
+    in the legend. Does this mean that some plants or populations are killed by fire
+    while others resprout from a lignotuber?
