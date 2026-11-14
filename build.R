@@ -2374,6 +2374,9 @@ git_SHA <- util_get_SHA()
 # Combine all the source into one resource
 austraits <- build_add_version(austraits_raw, version_number, git_SHA)
 
+# Post-build step: runs `post_build()` from R/post_build.R, if that file exists
+austraits <- build_post_process(austraits)
+
 # Save to file
 dir.create("export/data/curr", FALSE, TRUE)
 saveRDS(austraits, "export/data/curr/austraits.rds")
