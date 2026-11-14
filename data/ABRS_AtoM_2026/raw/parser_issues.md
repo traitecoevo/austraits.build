@@ -85,6 +85,13 @@ Found as values above the traits.yml maximum (100 mm):
 - *Grevillea costata* (ABRS_Proteaceae_2026), `fruiting_cues` description only: "Regenerates from basal shoots and
   possibly lignotuber after floods" is resprouting after floods, not a fruiting cue.
 
+## 4b. Commonness qualifier attached to the wrong term
+
+- *Hibbertia ambita* (ABRS_AtoM_2026), `plant_growth_form = shrub` with commonness qualifier `rarely`, from "Erect to
+  (rarely) sprawling shrubs": the parenthetical "(rarely)" qualifies *sprawling* (stem_growth_habit), not the growth form.
+  As the taxon's only growth form record it was dropped by the NVIS crosswalk; scored meanwhile in Wenk_2026 (2026-11-13).
+  A "(rarely)" / "(sometimes)" inside an "X to (q) Y" habit phrase should qualify only Y.
+
 ## 5. Draft values and names that differ from traits.yml (optional clean-up)
 
 The parser writes several draft trait names and values that metadata.yml currently renames or substitutes (listed in
