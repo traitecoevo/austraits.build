@@ -124,6 +124,20 @@ dataset:
           "Zieria arborescens|leaf_length|minimum||50000" = 50
         )[.flora_key], `trait_value`)
       ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, "", `trait_value`, sep = "|"),
+        `trait_value` = ifelse(.flora_key %in% c(
+          "Psoralea arborea|leaf_length|maximum||30", "Psoralea arborea|leaf_length|minimum||25",
+          "Psoralea arborea|leaf_width|maximum||45", "Psoralea pinnata|leaf_length|maximum||25",
+          "Psoralea pinnata|leaf_width|maximum||50"
+        ), NA, `trait_value`),
+        `trait_value` = ifelse(.flora_key %in% names(c(
+          "Senecio spathulatus|plant_height|maximum||0.5" = 500
+        )), c(
+          "Senecio spathulatus|plant_height|maximum||0.5" = 500
+        )[.flora_key], `trait_value`)
+      ) %>%
       select(-.flora_key)
     '
   collection_date: 2022
@@ -158,6 +172,9 @@ dataset:
     parsing errors or unit typos in the source text are fixed in custom_R_code - 7
     corrected where the source text gives the right value (mostly unit slips such as
     mm for m), and 8 set to NA where it does not; E. Wenk 2026-11-14.
+    A further check of the source text found more values with the same kinds of errors
+    that were not flagged as outliers - 1 corrected and 5 set to NA in custom_R_code;
+    E. Wenk 2026-11-14.
 locations:
   New South Wales:
     latitude (deg): .na

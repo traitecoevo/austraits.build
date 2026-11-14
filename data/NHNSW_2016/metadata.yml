@@ -19,14 +19,7 @@ dataset:
   data_is_long_format: yes
   custom_R_code: '
     data %>%
-      mutate(location_name = "New South Wales") %>%
-      mutate(
-        .flora_key = paste(`original_name`, `trait_name`, "", `unit`, `value`, sep = "|"),
-        `value` = ifelse(.flora_key %in% c(
-          "Glycine tabacina|leaf_area||mm2|12513", "Jasminum didymum subsp lineare|leaf_area||mm2|18879"
-        ), NA, `value`)
-      ) %>%
-      select(-.flora_key)
+      mutate(location_name = "New South Wales")
   '
   collection_date: 2010
   taxon_name: original_name
@@ -42,10 +35,10 @@ dataset:
   notes: Request acknowledgement of "National Herbarium of NSW and PLantNET". Processed
     by James Lawson. Variable leaf size has been excluded, as this is duplcated with
     other data from PLantNET in `RBGSYD_2014`.
-    After outlier checks against other AusTraits datasets (at least 50-fold from the
-    same species, or 100-fold from the genus), flora-derived numeric values that were
-    parsing errors or unit typos in the source text are fixed in custom_R_code - 2 set
-    to NA where it does not; E. Wenk 2026-11-14.
+    leaf_area is no longer mapped (E. Wenk 2026-11-14); against 37 taxa shared with other
+    AusTraits datasets it ran a median 4.5-fold high (a quarter over 9.5-fold), and one
+    value was repeated across Jasminum didymum and its subspecies. Leaf dimensions for
+    these taxa come from the re-scraped PlantNET data in NHNSW_2023.
 locations:
   New South Wales:
     latitude (deg): .na
@@ -72,7 +65,7 @@ traits:
   methods: expert observation or opinion, from herbarium specimens
 - var_in: leaf_area
   unit_in: unit
-  trait_name: leaf_area
+  trait_name: .na
   entity_type: species
   value_type: mean
   basis_of_value: measurement

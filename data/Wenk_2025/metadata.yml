@@ -141,6 +141,18 @@ dataset:
           "Triplarina calophylla|leaf_width|minimum|m|1.4" = 0.0014
         )[.flora_key], `trait_value`)
       ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, `unit`, `trait_value`, sep = "|"),
+        `trait_value` = ifelse(.flora_key %in% c(
+          "Rubus gunnianus|plant_height|minimum|mm|1", "Siloxerus pygmaeus|plant_height|maximum|mm|0"
+        ), NA, `trait_value`),
+        `trait_value` = ifelse(.flora_key %in% names(c(
+          "Erica afra|leaf_length|maximum|m|13" = 0.013, "Erica afra|leaf_length|minimum|m|5" = 0.005
+        )), c(
+          "Erica afra|leaf_length|maximum|m|13" = 0.013, "Erica afra|leaf_length|minimum|m|5" = 0.005
+        )[.flora_key], `trait_value`)
+      ) %>%
       select(-.flora_key)
   '
   collection_date: 2025-08/2026-02
@@ -162,6 +174,9 @@ dataset:
     corrected where the source text gives the right value (mostly unit slips such as
     mm for m), and 21 set to NA where it does not; E. Wenk 2026-11-14. The unit typo
     "xm" is now read as cm rather than m (Blechnum hindii fronds 20-40 cm, not m).
+    A further check of the source text found more values with the same kinds of errors
+    that were not flagged as outliers - 2 corrected and 2 set to NA in custom_R_code;
+    E. Wenk 2026-11-14.
 identifiers: .na
 locations: .na
 contexts:

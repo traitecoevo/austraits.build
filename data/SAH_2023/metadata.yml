@@ -115,6 +115,15 @@ dataset:
           "Fumaria parviflora|plant_height|maximum||2" = 1000
         )[.flora_key], `trait_value`)
       ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, "", `trait_value`, sep = "|"),
+        `trait_value` = ifelse(.flora_key %in% names(c(
+          "Bromus rubens|plant_height|maximum||40" = 400, "Bromus rubens|plant_height|minimum||15" = 150
+        )), c(
+          "Bromus rubens|plant_height|maximum||40" = 400, "Bromus rubens|plant_height|minimum||15" = 150
+        )[.flora_key], `trait_value`)
+      ) %>%
       select(-.flora_key)
     '
   collection_date: 2022
@@ -150,6 +159,9 @@ dataset:
     parsing errors or unit typos in the source text are fixed in custom_R_code - 3
     corrected where the source text gives the right value (mostly unit slips such as
     mm for m), and 4 set to NA where it does not; E. Wenk 2026-11-14.
+    A further check of the source text found more values with the same kinds of errors
+    that were not flagged as outliers - 2 corrected in custom_R_code; E. Wenk
+    2026-11-14.
 locations:
   South Australia:
     latitude (deg): .na

@@ -59,7 +59,22 @@ dataset:
           "Alisma lanceolatum|plant_height|maximum||0.015" = 1.5
         )[.flora_key], `height_final`)
       ) %>%
-      select(-.flora_key)
+      select(-.flora_key) %>%
+      mutate(
+        .wm = stringr::str_match_all(sub("^[^_]*_[^_]*_[^_]*_", "", identifier),
+          stringr::regex("([0-9][0-9.]*)(?:\\s*-\\s*([0-9][0-9.]*))?\\s*(mm|cm|dm|metres?|meters?|m|ft|feet|in)\\.?\\s*(wide|across|in diam|diam\\.?|diameter|in width|width|deep|below|broad|girth|dbh)\\b",
+            ignore_case = TRUE)),
+        .width_as_height = grepl("^plant_height", trait_name) & purrr::map2_lgl(.wm, suppressWarnings(as.numeric(height_final)),
+          function(mm, h) {
+            if (is.na(h) || nrow(mm) == 0) return(FALSE);
+            f <- c(mm = 0.001, cm = 0.01, dm = 0.1, m = 1, metre = 1, metres = 1, meter = 1, meters = 1,
+              ft = 0.3048, feet = 0.3048, `in` = 0.0254)[tolower(mm[, 4])];
+            v <- c(as.numeric(mm[, 2]) * f, as.numeric(mm[, 3]) * f);
+            any(abs(v - h) <= 1e-6 + 1e-3 * h, na.rm = TRUE)
+          }),
+        height_final = ifelse(.width_as_height, NA, height_final)
+      ) %>%
+      select(-.wm, -.width_as_height)
   '
   collection_date: eventDate
   taxon_name: scientificName
@@ -106,7 +121,10 @@ dataset:
     same species, or 100-fold from the genus), flora-derived numeric values that were
     parsing errors or unit typos in the source text are fixed in custom_R_code - 1
     corrected where the source text gives the right value (mostly unit slips such as
-    mm for m), and 26 set to NA where it does not; E. Wenk 2026-11-14.
+    mm for m), and 26 set to NA where it does not; E. Wenk 2026-11-14. Plant heights
+    that equal a number the label text gives as a width, diameter, depth or DBH (e.g.
+    "1.5 m wide", "80cm across", "12 m. dbh") are also set to NA by a rule in custom_R_code,
+    as the parser took a width or girth as height (about 380 values in the 2026 data).
 identifiers:
 - var_in: recordID
   identifier_type: recordID
