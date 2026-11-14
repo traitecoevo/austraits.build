@@ -43,7 +43,18 @@ dataset:
         plant_code = ifelse(is.na(plant_code),"population",plant_code),
         plant_code = ifelse(row_number() %in% c("8393","6768","7525"), paste0(plant_code,"b"), plant_code),
         individual_id = paste(`Species`, `site`, `Modern/Historic`, plant_code, sep = "_")
-      )
+      ) %>%
+      mutate(`Mass (g)` = ifelse(
+        paste(`Species`, `Mass (g)`) %in% c(
+          "Allocasuarina littoralis 1e-04", "Allocasuarina littoralis 2e-04", "Allocasuarina nana 5e-05",
+          "Callistemon sieberi 4e-04", "Callistemon sieberi 5e-04", "Callistemon sieberi 6e-04",
+          "Callistemon sieberi 7e-04", "Callistemon sieberi 8e-04", "Callistemon sieberi 9e-04",
+          "Callistemon sieberi 0.001", "Callistemon sieberi 0.0011", "Callistemon sieberi 0.0012",
+          "Eucalyptus crebra 0.0029", "Eucalyptus crebra 0.0031", "Eucalyptus crebra 0.0035",
+          "Melaleuca gibbosa 0.001", "Melaleuca quinquenervia 7e-04", "Melaleuca quinquenervia 8e-04",
+          "Melaleuca quinquenervia 0.0012", "Vittadinia cuneata 1e-04"
+        ),
+        NA, `Mass (g)`))
   '
   collection_date: Date Collected
   taxon_name: Species
@@ -117,6 +128,18 @@ dataset:
   notes: Dates that specifiy a collection month, instead of date, 16-Dec, 14-Nov,
     16-Nov, 8-Nov, are rekeyed as having occurred on the first of the month, so that
     all cells have the same formatting. That is 16-Dec becomes 01-December-2016.
+    61 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
+    TO REVISIT (2026-11-14) - seed masses for small-seeded Myrtaceae are 2-7x heavier
+    than in other AusTraits datasets, while large-seeded Corymbia (C. eximia, C. gummifera)
+    match. Eucalyptus crebra (1.7-3.5 mg here) compares with 0.19 mg (Ooi_2007, 100
+    seeds) and 0.24-0.58 mg (Kew_2019_1); 3 E. crebra values are set to NA as outliers,
+    the other 6 are kept for now. Other examples are E. obliqua 4.6x, E. pauciflora
+    4.2x, Melaleuca quinquenervia 6.4x and M. gibbosa 5.1x. The methods say only filled
+    seeds were weighed, on a balance reading to 0.1 mg, which does not explain values
+    near 2 mg. Check against the source and the seed mass data on the seedbank_datasets
+    branch.
 locations:
   site_at_26.4500_S_and_150.6500_E:
     latitude (deg): -26.45

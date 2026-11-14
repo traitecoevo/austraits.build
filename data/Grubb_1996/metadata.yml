@@ -42,7 +42,12 @@ dataset:
       group_by(name_original) %>%
         mutate(across(c(growth_form, dispersal_syndrome), replace_duplicates_with_NA)) %>%
         mutate(observation_number = row_number()) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(`seed_mass (mg)` = ifelse(
+        paste(`name_original`, `seed_mass (mg)`) %in% c(
+          "Melicope elleryana 33"
+        ),
+        NA, `seed_mass (mg)`))
   '
   collection_date: 1992/1995
   taxon_name: name_original
@@ -65,7 +70,9 @@ dataset:
     ayerage, 4 'dry months' per year). Most of the species collected are found on
     a variety of soils derived from basalt, granite or nutrient-poor metamorphics.
   original_file: FD_CC_traits.xls
-  notes: none
+  notes: 1 seed_dry_mass value set to NA in custom_R_code as an outlier against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   northeastern Queensland:
     latitude (deg): .na

@@ -38,24 +38,70 @@ dataset:
         `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(12981:13080), 0.001, `SEED WEIGHT multiplier`),
         `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14527:14547), 0.01, `SEED WEIGHT multiplier`),
         `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(7175), 0.01, `SEED WEIGHT multiplier`),
-        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(9425,9479:9503,12664), 0.001, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(9425,9479:9502,12664), 0.001, `SEED WEIGHT multiplier`),
         `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14257), 0.0001, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(SPECIES %in% c("Angophora bakeri", "Angophora costata", "Angophora floribunda", "Angophora melanoxylon"), 1000, `SEED WEIGHT multiplier`),
         `notes for edited & omitted values` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503),
         "outlier for species, removed by E. Wenk, 2021-10-27", ""), `notes for edited & omitted values` =
         ifelse(row_number() %in% c(12981:13080),
         "divide 1000 to fit within range of other AusTraits observations of species & other Leptospermum in this study",
         `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(7175),
         "seed mass divided by 10^2, E. Wenk 2021-10-27", `notes for edited & omitted values`),
-        `notes for edited & omitted values` = ifelse(row_number() %in% c(9425,9479:9503,12664),
+        `notes for edited & omitted values` = ifelse(row_number() %in% c(9425,9479:9502,12664),
         "seed mass divided by 10^3, E. Wenk 2021-10-27", `notes for edited & omitted values`),
         `notes for edited & omitted values` = ifelse(row_number() %in% c(14257),
-        "seed mass divided by 10^4, E. Wenk 2021-10-27", `notes for edited & omitted values`)) %>% 
+        "seed mass divided by 10^4, E. Wenk 2021-10-27", `notes for edited & omitted values`),
+        `notes for edited & omitted values` = ifelse(SPECIES %in% c("Angophora bakeri", "Angophora costata", "Angophora floribunda", "Angophora melanoxylon"),
+        "seed mass multiplied by 10^3 (recorded in g, not mg; all other Angophora seed masses are 4-36 mg), E. Wenk 2026-11-14", `notes for edited & omitted values`)) %>%
       mutate(
-        `SEED WEIGHT mg` = ifelse(as.character(`SEED WEIGHT multiplier`) == "outlier",NA,`SEED WEIGHT mg`),
-        `SEED WEIGHT mg` = ifelse(is.na(`SEED WEIGHT multiplier`),
-            `SEED WEIGHT mg`,`SEED WEIGHT mg`*as.numeric(`SEED WEIGHT multiplier`))
+        `SEED WEIGHT mg` = `SEED WEIGHT mg` * `SEED WEIGHT multiplier`
         ) %>%
-      mutate(`DATE OF COLLECTION` = coalesce(`DATE OF COLLECTION`, "2007"))
+      mutate(`DATE OF COLLECTION` = coalesce(`DATE OF COLLECTION`, "2007")) %>%
+      mutate(`SEED WEIGHT mg` = ifelse(
+        paste(`SPECIES`, `SEED WEIGHT mg`) %in% c(
+          "Austrostipa ramosissima 0.0192", "Austrostipa ramosissima 0.021", "Austrostipa ramosissima 0.0302",
+          "Austrostipa ramosissima 0.0339", "Eucalyptus capitellata 0.117",
+          "Trachymene incisa var incisa 0.0365", "Trachymene incisa var incisa 0.044",
+          "Trachymene incisa var incisa 0.0445", "Trachymene incisa var incisa 0.0465",
+          "Trachymene incisa var incisa 0.0505", "Trachymene incisa var incisa 0.0565",
+          "Trachymene incisa var incisa 0.0575", "Trachymene incisa var incisa 0.074",
+          "Trachymene incisa var incisa 0.075", "Trachymene incisa var incisa 0.0755",
+          "Trachymene incisa var incisa 0.076", "Trachymene incisa var incisa 0.083",
+          "Trachymene incisa var incisa 0.0845", "Trachymene incisa var incisa 0.0865",
+          "Trachymene incisa var incisa 0.087", "Trachymene incisa var incisa 0.0895",
+          "Trachymene incisa var incisa 0.0905", "Trachymene incisa var incisa 0.0915",
+          "Trachymene incisa var incisa 0.0925", "Trachymene incisa var incisa 0.094",
+          "Trachymene incisa var incisa 0.096", "Trachymene incisa var incisa 0.0965",
+          "Trachymene incisa var incisa 0.0975", "Trachymene incisa var incisa 0.0985",
+          "Trachymene incisa var incisa 0.0995", "Trachymene incisa var incisa 0.1",
+          "Trachymene incisa var incisa 0.1005", "Trachymene incisa var incisa 0.1015",
+          "Trachymene incisa var incisa 0.102", "Trachymene incisa var incisa 0.1025",
+          "Trachymene incisa var incisa 0.104", "Trachymene incisa var incisa 0.105",
+          "Trachymene incisa var incisa 0.1055", "Trachymene incisa var incisa 0.1065",
+          "Trachymene incisa var incisa 0.107", "Trachymene incisa var incisa 0.1075",
+          "Trachymene incisa var incisa 0.108", "Trachymene incisa var incisa 0.1085",
+          "Trachymene incisa var incisa 0.109", "Trachymene incisa var incisa 0.1095",
+          "Trachymene incisa var incisa 0.11", "Trachymene incisa var incisa 0.1105",
+          "Trachymene incisa var incisa 0.111", "Trachymene incisa var incisa 0.112",
+          "Trachymene incisa var incisa 0.1125", "Trachymene incisa var incisa 0.1135",
+          "Trachymene incisa var incisa 0.114", "Trachymene incisa var incisa 0.1145",
+          "Trachymene incisa var incisa 0.115", "Trachymene incisa var incisa 0.1155",
+          "Trachymene incisa var incisa 0.116", "Trachymene incisa var incisa 0.1165",
+          "Trachymene incisa var incisa 0.117", "Trachymene incisa var incisa 0.1175",
+          "Trachymene incisa var incisa 0.1185", "Trachymene incisa var incisa 0.119",
+          "Trachymene incisa var incisa 0.1195", "Trachymene incisa var incisa 0.12",
+          "Trachymene incisa var incisa 0.1215", "Trachymene incisa var incisa 0.122",
+          "Trachymene incisa var incisa 0.1225", "Trachymene incisa var incisa 0.123",
+          "Trachymene incisa var incisa 0.1235", "Trachymene incisa var incisa 0.124",
+          "Trachymene incisa var incisa 0.1245", "Trachymene incisa var incisa 0.1265",
+          "Trachymene incisa var incisa 0.129", "Trachymene incisa var incisa 0.1325",
+          "Trachymene incisa var incisa 0.133", "Trachymene incisa var incisa 0.1335",
+          "Trachymene incisa var incisa 0.134", "Trachymene incisa var incisa 0.1345",
+          "Trachymene incisa var incisa 0.1355", "Trachymene incisa var incisa 0.136",
+          "Trachymene incisa var incisa 0.1375", "Trachymene incisa var incisa 0.138",
+          "Trachymene incisa var incisa 0.1385", "Trachymene incisa var incisa 0.139"
+        ),
+        NA, `SEED WEIGHT mg`))
   '
   collection_date: DATE OF COLLECTION
   taxon_name: SPECIES
@@ -70,6 +116,21 @@ dataset:
   notes: Note from data processor - To fill in missing location details on sites,
     coordinates of the town or NP have been included where possible. These coordinates
     are not exact and were sourced from NationalMap.
+    105 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus), including the whole Trachymene incisa subsp. incisa
+    lot from Myall Lakes, which is about 10-fold lighter than the four other datasets
+    for this species; E. Wenk 2026-11-14.
+    TO REVISIT (2026-11-14) - the Trachymene incisa subsp. incisa lot (Myall Lakes,
+    23/05/75, 100 seeds, median 0.108 mg, range 0.037-0.139 mg) is set to NA because
+    Kew_2019_1 (0.99, 1.24 mg), Davila_2002 (1.05-1.29 mg), Jagdish_2020 (1.07 mg,
+    fresh) and ANBG_2019 (0.93 mg) all report about 1 mg. It may be a decimal error
+    (other lots in this dataset are already corrected by powers of ten), in which
+    case multiplying by 10 would restore it (median 1.08 mg). The 12 low Eucalyptus
+    crebra values (Coonabarabran, 0.056-0.094 mg) are still flagged, but only because
+    Everingham_2020 E. crebra values (1.7-2.6 mg) may themselves be too heavy; Kew_2019_1
+    gives 0.24-0.58 mg. Recheck both against the seed mass data on the seedbank_datasets
+    branch.
 locations:
   10 miles south of Pelaw Main on Road to Morriset:
     longitude (deg): .na.real

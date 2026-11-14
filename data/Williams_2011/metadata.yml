@@ -104,7 +104,12 @@ dataset:
         c("11","12"),
         c("succulent","succulent_stems"),
         c("11","12")
-      )
+      ) %>%
+      mutate(`Seed Mass_filtered` = ifelse(
+        paste(`Species`, `Seed Mass_filtered`) %in% c(
+          "Empodisma minus 0.001", "Eucalyptus obliqua 9.3", "Glossodia major 0.001"
+        ),
+        NA, `Seed Mass_filtered`))
     '
   collection_date: 2011/2013
   taxon_name: Species
@@ -124,6 +129,9 @@ dataset:
     from Macquarie University labs, Leishman_1992 and Hughes_1992 in particular) have
     been filtered out. Excluded seed masses for Aphanes australiana, Dianella tasmanica,
     and Patersonia sericea in custom_R_code.
+    3 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   grows in Adelaide:
     latitude (deg): NA

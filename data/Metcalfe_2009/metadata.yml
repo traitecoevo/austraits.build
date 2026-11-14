@@ -63,7 +63,12 @@ dataset:
       move_values_to_new_trait(
         "Growth_form", "stem_growth_habit", "scrambler", "scrambler", "climber"
       ) %>%      
-      mutate(across(c(Fruit_type, Growth_form), ~na_if(.x,"")))
+      mutate(across(c(Fruit_type, Growth_form), ~na_if(.x,""))) %>%
+      mutate(`Seed_mass_filtered` = ifelse(
+        paste(`species_name`, `Seed_mass_filtered`) %in% c(
+          "Triumfetta rhomboidea 0.95"
+        ),
+        NA, `Seed_mass_filtered`))
 '
   collection_date: 2005/2005
   taxon_name: species_name
@@ -93,6 +98,9 @@ dataset:
     to the site name of the first site where it is present, by sequentially cycling
     through sites number 1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.2, 5.2. However the presence/absence
     data shows that most species are present on more than one site.
+    1 seed_dry_mass value set to NA in custom_R_code as an outlier against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Harney's:
     site code: 1.1
