@@ -65,28 +65,24 @@ dataset:
           str_replace_all(trait_value, "semi", ""), trait_value)
       ) %>%
       mutate(
+        unit = ifelse(taxon_name == "Samolus sp. Fortescue Marsh (A.Markey & R.Coppen FM 9702)" &
+          trait_name %in% c("leaf_length", "leaf_width") & unit == "mm", "cm", unit),
+        unit = ifelse(taxon_name == "Brachychiton rupestris" & trait_name %in% c("leaf_length", "leaf_width") &
+          unit == "mm" & grepl("Australian Tropical Herbarium", reference), "cm", unit),
+        unit = ifelse(taxon_name == "Fraxinus angustifolia subsp. oxycarpa" & trait_name == "plant_height" &
+          unit == "cm", "m", unit),
+        unit = ifelse(taxon_name == "Darwinia polycephala" & trait_name == "leaf_length" & unit == "m", "cm", unit),
+        .lowrie99 = taxon_name == "Drosera sulphurea" & trait_name == "leaf_length" &
+          grepl("Lowrie, Allen 1999", reference) & trait_value %in% c("40", "60"),
+        trait_value = ifelse(.lowrie99, c("40" = "3", "60" = "5")[trait_value], trait_value)
+      ) %>%
+      (function(d) bind_rows(d, d %>% filter(.lowrie99) %>%
+        mutate(trait_name = "leaf_width", unit = "mm", trait_value = ifelse(value_type == "minimum", "0.4", "0.6")))) %>%
+      select(-.lowrie99) %>%
+      mutate(
         .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, `unit`, `trait_value`, sep = "|"),
-        `trait_value` = ifelse(.flora_key %in% c(
-          "Atractocarpus sessilis|leaf_length|maximum|mm|2", "Cucumis umbellatus|leaf_length|minimum|mm|0.1",
-          "Darwinia polycephala|leaf_length|maximum|m|2.3", "Darwinia polycephala|leaf_length|minimum|m|2",
-          "Drosera paradoxa|petiole_length|maximum|mm|0.15", "Drosera sulphurea|leaf_length|minimum|cm|40",
-          "Fraxinus angustifolia subsp. oxycarpa|plant_height|maximum|cm|20",
-          "Lavandula canariensis|leaf_length|maximum|m|3", "Nymphoides astoniae|petiole_length|maximum|mm|1",
-          "Opuntia polyacantha var. hystricina|plant_height|minimum|cm|1",
-          "Pinus durangensis|leaf_length|maximum|mm|0.9", "Pinus durangensis|leaf_length|minimum|mm|0.8",
-          "Rhododendron viriosum|leaf_length|maximum|mm|1", "Rubus gunnianus|plant_height|maximum|mm|10",
-          "Samolus sp. Fortescue Marsh (A.Markey & R.Coppen FM 9702)|leaf_length|maximum|mm|0.15",
-          "Samolus sp. Fortescue Marsh (A.Markey & R.Coppen FM 9702)|leaf_length|maximum|mm|0.21",
-          "Samolus sp. Fortescue Marsh (A.Markey & R.Coppen FM 9702)|leaf_length|minimum|mm|0.1",
-          "Samolus sp. Fortescue Marsh (A.Markey & R.Coppen FM 9702)|leaf_width|maximum|mm|0.09",
-          "Schoenus pygmaeus|plant_height|minimum|mm|1",
-          "Tephrosia brachyodon var. longifolia|plant_height|maximum|m|65",
-          "Tetratheca spenceri|leaf_width|maximum|mm|0.04"
-        ), NA, `trait_value`),
         `trait_value` = ifelse(.flora_key %in% names(c(
           "Arthropodium dyeri|leaf_width|maximum|m|2" = 0.002,
-          "Brachychiton rupestris|leaf_width|maximum|mm|2" = 20,
-          "Brachychiton rupestris|leaf_width|minimum|mm|0.4" = 4,
           "Calothamnus quadrifidus subsp. petraeus|plant_height|maximum|mm|2.5" = 2500,
           "Cerastium semidecandrum|leaf_width|maximum|m|5" = 0.005,
           "Cerastium semidecandrum|leaf_width|minimum|m|1" = 0.001,
@@ -113,8 +109,6 @@ dataset:
           "Triplarina calophylla|leaf_width|minimum|m|1.4" = 0.0014
         )), c(
           "Arthropodium dyeri|leaf_width|maximum|m|2" = 0.002,
-          "Brachychiton rupestris|leaf_width|maximum|mm|2" = 20,
-          "Brachychiton rupestris|leaf_width|minimum|mm|0.4" = 4,
           "Calothamnus quadrifidus subsp. petraeus|plant_height|maximum|mm|2.5" = 2500,
           "Cerastium semidecandrum|leaf_width|maximum|m|5" = 0.005,
           "Cerastium semidecandrum|leaf_width|minimum|m|1" = 0.001,
@@ -144,9 +138,6 @@ dataset:
       select(-.flora_key) %>%
       mutate(
         .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, `unit`, `trait_value`, sep = "|"),
-        `trait_value` = ifelse(.flora_key %in% c(
-          "Rubus gunnianus|plant_height|minimum|mm|1", "Siloxerus pygmaeus|plant_height|maximum|mm|0"
-        ), NA, `trait_value`),
         `trait_value` = ifelse(.flora_key %in% names(c(
           "Erica afra|leaf_length|maximum|m|13" = 0.013, "Erica afra|leaf_length|minimum|m|5" = 0.005
         )), c(
@@ -170,13 +161,29 @@ dataset:
   original_file: unknown
   notes: After outlier checks against other AusTraits datasets (at least 50-fold from the
     same species, or 100-fold from the genus), flora-derived numeric values that were
-    parsing errors or unit typos in the source text are fixed in custom_R_code - 27
-    corrected where the source text gives the right value (mostly unit slips such as
-    mm for m), and 21 set to NA where it does not; E. Wenk 2026-11-14. The unit typo
-    "xm" is now read as cm rather than m (Blechnum hindii fronds 20-40 cm, not m).
-    A further check of the source text found more values with the same kinds of errors
-    that were not flagged as outliers - 2 corrected and 2 set to NA in custom_R_code;
-    E. Wenk 2026-11-14.
+    parsing errors or unit typos in the source text are corrected in custom_R_code where
+    the source text gives the right value (25 values, mostly unit slips such as mm for
+    m), E. Wenk 2026-11-14, and a further 2 unflagged values (Erica afra leaf length, m
+    to mm). The unit typo "xm" is read as cm rather than m (Blechnum hindii fronds 20-40
+    cm). Units entered wrongly for whole taxa are relabelled in custom_R_code (E. Wenk
+    2026-11-15) - Samolus sp. Fortescue Marsh leaf dimensions mm to cm (Markey 2025),
+    Brachychiton rupestris leaf length and width from the Australian Tropical Herbarium
+    mm to cm, Fraxinus angustifolia subsp. oxycarpa height cm to m, and Darwinia
+    polycephala leaf length m to cm (Gardner 1925). Drosera sulphurea leaf length from
+    Lowrie (1999), entered as 40-60 cm, is corrected to 3-5 cm and the leaf width in the
+    same text (0.4-0.6 mm) added. Values checked against the source text by E. Wenk
+    (2026-11-15) are edited directly in data.csv - Opuntia polyacantha var. hystricina
+    height (Jepson, stems generally < 0.5 m); Atractocarpus sessilis and Rhododendron
+    viriosum leaf length and width (ATRP, mm to cm, maxima 22 and 11 cm); Lavandula
+    canariensis leaf length (3 m to 3 cm); Pinus durangensis leaf length and width
+    swapped (needles 15-20 cm x 0.8-0.9 mm); Tetratheca spenceri scale-leaf length and
+    width (1.2-2.7 x 0.3-0.4 mm); Drosera paradoxa position-qualified petiole widths
+    (Lowrie 1997) removed from petiole_length; a duplicate set of Cucumis umbellatus
+    leaf dimensions entered in mm instead of cm removed; Siloxerus pygmaeus 0 mm height
+    and stem length removed (almost stemless); Tephrosia brachyodon var. longifolia leaf
+    lengths entered as plant height (45-65 m) removed. Values first suspected but
+    confirmed by the source text are retained - Nymphoides astoniae true petiole 0.2-1
+    mm, Rubus gunnianus vertical stems 1-10 mm, and Schoenus pygmaeus culms 1-7 mm.
 identifiers: .na
 locations: .na
 contexts:
