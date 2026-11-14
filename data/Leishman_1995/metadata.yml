@@ -46,6 +46,7 @@ dataset:
     data %>% 
       mutate(
         across(c(`Height (cm)_filtered`,`Seed mass (mg)_filtered`), ~na_if(.x, 0)),
+        `Seed mass (mg)_filtered` = ifelse(is.na(seed_mass_omit_duplicate), `Seed mass (mg)_filtered`, NA),
         dispersal_appendage = NA,
         dispersers = NA,
         fruit_fleshiness = NA,
@@ -95,7 +96,14 @@ dataset:
     on plant height, growth form and perenniality was added, from Beadle et al. (1982)
     and Fairlie & Moore (1989).
   original_file: Leishman syd LHS (ian version for Tom Jan 2008).xls
-  notes: none
+  notes: The Sydney seed masses are mostly those of Leishman_1993 rounded to 1 decimal
+    place. Seed masses already in AusTraits from Leishman_1993 are flagged in the
+    data.csv column seed_mass_omit_duplicate and excluded by custom_R_code (262
+    rows; each equals the Leishman_1993 value for the same taxon once rounded to
+    1 decimal place). Six seed masses that differ from Leishman_1993 by more than
+    rounding are kept (Banksia ericifolia, Banksia oblongifolia, Caesia parviflora,
+    Comesperma sphaerocarpum, Correa reflexa, Pimelea latifolia). Other traits are
+    unaffected.
 locations:
   Sydney:
     latitude (deg): .na
