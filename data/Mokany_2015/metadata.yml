@@ -46,6 +46,7 @@ dataset:
       mutate(
         across(c(plant_height_unique_values), ~na_if(.x, 0)),
         plant_height_unique_values = ifelse(is.na(plant_height_omit_duplicate), plant_height_unique_values, NA),
+        seed_mass_unique_values = ifelse(is.na(seed_mass_omit_duplicate), seed_mass_unique_values, NA),
         leaflet_area = ifelse(`Spp Name` == "Acacia dealbata", `Leaf_Area_cm2`, NA),
         `Leaf_Area_cm2` = ifelse(`Spp Name` == "Acacia dealbata", NA, `Leaf_Area_cm2`),
         `Plant_height_(m)` = ifelse(`Spp Name` == "Boronia nana", NA, `Plant_height_(m)`),
@@ -81,7 +82,11 @@ dataset:
     (2010) are in AusTraits as McGlone_2015; heights matching a McGlone_2015 value
     for the same taxon, at the precision of the less precise value, are flagged in
     the data.csv column plant_height_omit_duplicate and excluded by custom_R_code
-    (194 rows).
+    (194 rows). Seed masses that equal a Kew_2019_1 value for the same taxon once
+    rounded to the precision of the less precise value (mostly to 3 significant
+    figures), which the filter for identical values missed, are likewise flagged in
+    the data.csv column seed_mass_omit_duplicate and excluded (118 rows; values with
+    a single significant figure are kept).
 locations: .na
 contexts: .na
 traits:
