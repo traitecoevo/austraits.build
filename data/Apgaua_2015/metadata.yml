@@ -33,7 +33,13 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:        data %>% mutate(vessel_diameter = 2*sqrt(`Vessel Area (um2)`/3.14159))
+  custom_R_code: '
+    data %>%
+      mutate(
+        vessel_diameter = 2*sqrt(`Vessel Area (um2)`/3.14159),
+        `Theoretical Specific Conductivity (kg s-1 MPa-1)` = `Theoretical Specific Conductivity (kg s-1 MPa-1)` * 16
+      )
+  '
   collection_date: 2014-06/2015-03
   taxon_name: Species
   location_name: Study site
@@ -60,7 +66,13 @@ dataset:
   original_file: Apgaua et al. 2015.xls
   notes: Another researcher has data on Huber Value, predawn water potential, and
     midday water potential reported in the study. These data have not yet been merged
-    into AusTraits.
+    into AusTraits. Theoretical specific conductivity is multiplied by 16 in custom_R_code
+    (E. Wenk 2026-11-14). Recalculating it with the Hagen-Poiseuille equation from
+    each row's vessel area and density reproduces the supplied values (to within 0.2%
+    for 80% of rows) only when vessel radius is used in place of diameter, an error
+    of 2^4 = 16. The corrected values (median about 35 kg/m/MPa/s) are within 1-4
+    fold of Apgaua_2017 for the same species and site; they remain lower because they
+    are based on mean, not hydraulically weighted, vessel diameter.
 locations:
   Daintree Rainforest Observatory:
     latitude (deg): -16.1055556
