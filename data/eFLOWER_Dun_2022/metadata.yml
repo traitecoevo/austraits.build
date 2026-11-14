@@ -27,6 +27,7 @@ dataset:
   data_is_long_format: yes
   custom_R_code:     '
     data %>%
+      filter(is.na(omit_duplicate)) %>%
       group_by(Taxon, Character) %>%
         mutate(replicate_observation = row_number()) %>%
       ungroup()
@@ -48,7 +49,12 @@ dataset:
     all taxa, but, in total >30,000 floral trait values were scored.
   original_file: qry_Lily_Data_AusTraits_2023-05-18.csv, archived in the raw data
     folder
-  notes: none
+  notes: Both this dataset and eFLOWER_2021 are exports from the PROTEUS database.
+    Records already in eFLOWER_2021 (same PROTEUS record number, NDat) are flagged in
+    the data.csv column omit_duplicate and excluded by custom_R_code (1546 rows, for
+    52 taxa scored in both exports, mostly by the original eFLOWER scorers). Records
+    for those taxa that are not in eFLOWER_2021, including those scored by Lily Dun,
+    are kept.
 locations: .na
 contexts:
 - context_property: replicate observations
