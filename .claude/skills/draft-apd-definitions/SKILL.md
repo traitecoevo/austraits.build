@@ -85,6 +85,9 @@ A <trait class> [TO:...] which is the <quality> [PATO:...] of <structure> [PO:..
 - Use the right class, not a near-miss: stipule PO:0020041 (not spine stipule PO:0025174);
   3-D shape PATO:0002266 (not 3-D extent PATO:0001710); intramarginal vein PO:0025520.
 - Prefer a class's primary ID over an `alt_id` (style is PO:0009074; PO:0006469 is an alt_id).
+- In the description you may tag just the word you need from a multi-word label (`short
+  [PATO:0000574]`, `distribution [PATO:0000060]`); the four metadata fields always use the full
+  label (`decreased length, short`, `spatial pattern, distribution`).
 - Never hand over `[XX]` placeholders; if no published class exists, leave the word untagged
   and tell the user.
 - Say what is measured precisely enough to reproduce: at anthesis, mature, fully expanded,
@@ -139,7 +142,9 @@ lower-cased. So a synonym list must:
   survive), or list one term under two levels;
 - be spelt as the data spell it (parsers emit `reddish_brown`, not `reddish-brown`).
 
-Run `python3 scripts/check_synonyms.py FILE` (works on traits.yml or the review file).
+Run `python3 scripts/check_synonyms.py FILE` (works on traits.yml or the review file). It also
+reports trait entries that appear twice -- YAML loaders silently keep the last copy, so run it
+after every merge into traits.yml (merging develop into a branch has duplicated whole blocks).
 
 ## 8. The four metadata fields
 
@@ -149,7 +154,7 @@ Run `python3 scripts/check_synonyms.py FILE` (works on traits.yml or the review 
   Separate terms with `; ` (not commas).
 - `keywords`: every term a label in `published_classes.csv`, `APD_glossary.csv` or
   `APD_trait_hierarchy.csv` (labels can contain "; " or ", ", e.g. `ratio; proportion`,
-  `whorl, floral whorl`). Use the exact label (`plant ovary` not `ovary`, `secondary leaf
+  `whorl, floral whorl`). Always the full label, never one part of it. Use the exact label (`plant ovary` not `ovary`, `secondary leaf
   vein` not `secondary vein`). Reproductive traits carry `reproduction`.
 - `trait_group`: the full chain from `APD_trait_hierarchy.csv`, most specific first, e.g.
   `perianth morphology trait; floral organ morphology trait; reproductive shoot system
@@ -192,6 +197,7 @@ don't create worktrees.
 
 - [ ] No `[XX]`, `YYY` only in `entity_URI`
 - [ ] `check.py` and `check_synonyms.py` clean; file parses as YAML
+- [ ] Run both checks on the WHOLE traits.yml (every trait, not only new ones) before a release
 - [ ] Name, label and description agree (organ, quality, units)
 - [ ] Each new trait placed after its closest develop sibling
 - [ ] Renames/level changes propagated to datasets, or listed for the user
