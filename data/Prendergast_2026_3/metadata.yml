@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Prendergast_2026_3
     bibtype: Article
     year: 2026
@@ -9,37 +9,7 @@ source:
     volume: '1'
     issue: Summer
     pages: 12--13
-  secondary_01:
-    key: WAMuseum_2025
-    bibtype: Misc
-    type: Museum collection database
-    year: 2025
-    author: Western Australian Museum
-    title: WA Museum Entomological Collection registered specimen database
-    institution: Western Australian Museum
-  secondary_02:
-    key: Bernhardt_1987
-    bibtype: Article
-    year: 1987
-    author: Peter Bernhardt
-    journal: Annals of the Missouri Botanical Garden
-    title: A comparison of the diversity, density, and foraging behavior of bees and
-      wasps on Australian Acacia
-    volume: '74'
-    pages: 42--50
-    doi: 10.2307/2399260
-  secondary_03:
-    key: Martínez-Bauer_2015
-    bibtype: Article
-    year: 2015
-    author: Angelica E. Martinez-Bauer and Gonzalo C. Martinez and Dan J. Murphy and
-      Martin Burd
-    journal: Oecologia
-    title: 'Multitasking in a plant-ant interaction: how does Acacia myrtifolia manage
-      both ants and pollinators?'
-    volume: '178'
-    pages: 461--471
-    doi: 10.1007/s00442-014-3215-0
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Prendergast
@@ -122,7 +92,24 @@ dataset:
           source_id == "Williams_1983" & `Plant scientific name` == "Acacia longifolia" & `Animal species binomial name` == "Diphucrania (=syn. Cesseis) sp. No.4" ~ "2",
           TRUE ~ NA_character_
         )
-      )
+      ) |>
+      mutate(
+        source_id = dplyr::case_when(
+          stringr::str_starts(source_id, "GreyLit_") | source_id %in% c("Prendergast_pers_obs", "unknown_S44", "ASGAP_2007", "Rodriguez_2022", "BrougVielle_2024") ~ NA_character_,
+          source_id == "unknown_S109" ~ "Prescott_1999",
+          stringr::str_detect(Reference, "20th-21st July 2021") ~ "Prendergast_2021_7",
+          source_id %in% c("Prendergast_2022_3", "Prendergast_2022_4", "Prendergast_2023_1", "Prendergast_2023_3",
+            "Prendergast_2024_1", "Prendergast_2025_1") ~ NA_character_,
+          source_id == "MWMoncur_1989" ~ "Moncur_1989",
+          source_id == "MichelleRGibson_2011" ~ "Gibson_2011",
+          source_id %in% c("Hussey_2002_1", "Hussey_2002_2") ~ "Hussey_2002",
+          source_id == "JamesBDorey_2021" ~ "Dorey_2021",
+          source_id == "Paton_1976" ~ "Ford_1976",
+          source_id == "vanderMoezel_1987" ~ "vanderMoezel_1987_2",
+          TRUE ~ source_id
+        )
+      ) |>
+      dplyr::filter(Dataset_ID != "S122")
   '
   collection_date: Date
   collection_date_format: dmy my y

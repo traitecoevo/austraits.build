@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: NHNSW_2023
     bibtype: Online
     year: 2023
@@ -98,10 +98,12 @@ dataset:
       mutate(entity_measured = ifelse(is.na(entity_measured), "unknown", entity_measured)) %>%
       group_by(taxon_name, trait_name, entity_measured, value_type) %>%
         mutate(observation_number = row_number()) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(location_name = "New South Wales")
     '
   collection_date: 2022
   taxon_name: taxon_name
+  location_name: location_name
   trait_name: trait_name
   value: trait_value
   measurement_remarks: measurement_remarks
@@ -124,10 +126,15 @@ dataset:
     possible, unclassified taxa were inferred as possessing a trait value from a higher-level
     taxonomic description e.g. the fruit type of all taxa in the Adenanthos genus
     were scored as `achene`, which was mentioned only in the genus description.
-  source_id: authors
+  source_id: .na
   original_file: .na
   notes: .na
-locations: .na
+locations:
+  New South Wales:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Taxa described in PlantNET; no specific collection locations.
+    state: NSW
 contexts:
 - context_property: trait scoring method
   category: method_context
@@ -489,7 +496,7 @@ substitutions:
   replace: toothed
 - trait_name: leaf_margin
   find: entire toothed_erose
-  replace: toothed entire
+  replace: entire toothed
 - trait_name: leaf_margin
   find: toothed toothed_erose
   replace: toothed

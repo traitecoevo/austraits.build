@@ -1,6 +1,6 @@
 # AusTraits' export step.
 #
-# No build runs this. `create_release()` in `scripts/release.Rmd` calls
+# No build runs this. `create_release()` in `R/create_release.R` calls
 # `traits.build::build_post_export(austraits, export_dir)`, which sources this
 # file and runs `post_export()` on the built database, writing the flattened
 # exports into the release directory:
