@@ -33,7 +33,8 @@ dataset:
         n_fixer = stringr::str_extract(strategy, "[Nn]itrogen fixer"),
         roots = stringr::str_replace(strategy, ", Nitrogen fixer", ""),
         collection.date = util_format_collection_date(collection.date, "dmy"),
-        across(c(`Mo_mature`), ~na_if(.x, 0))
+        across(c(`Mo_mature`), ~na_if(.x, 0)),
+        area = area / count
       ) %>%
       group_by(species) %>%
         mutate(across(c(`growthform`,`n_fixer`,`roots`), replace_duplicates_with_NA)) %>%
@@ -838,7 +839,9 @@ traits:
     in the field by cutting entire shoots. Shoots were kept hydrated until leaves
     were scanned. Software was used to measured leaf area. Leaves were weighed fresh
     and dry to calculate leaf dry matter content. Replicates for each measurement
-    are in the raw data file in the column "count"
+    are in the raw data file in the column "count". The raw `area` column is the
+    total area of the `count` leaves scanned together; leaf area per leaf is calculated
+    as `area` / `count`.
 - var_in: sla
   unit_in: mm2/mg
   trait_name: leaf_mass_per_area
