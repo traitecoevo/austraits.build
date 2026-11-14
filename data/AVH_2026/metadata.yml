@@ -30,7 +30,36 @@ dataset:
       value_type = str_replace(value_type, "min", "minimum")
       ) |>
       generate_observation_numbers(scientificName, trait_name, location_name) |>
-      mutate(`eventDate` = coalesce(util_format_collection_date(`eventDate`, timezone = "Australia/Sydney"), "2026"))
+      mutate(`eventDate` = coalesce(util_format_collection_date(`eventDate`, timezone = "Australia/Sydney"), "2026")) %>%
+      mutate(
+        .flora_key = paste(`scientificName`, `trait_name`, `value_type`, "", `height_final`, sep = "|"),
+        `height_final` = ifelse(.flora_key %in% c(
+          "Acacia baueri subsp. aspera|plant_height|maximum||0.02",
+          "Acacia cremiflora|plant_height|maximum||0.018", "Acacia hemsleyi|plant_height|maximum||0.03",
+          "Acacia salicina|plant_height|maximum||0.0762", "Acrotriche divaricata|plant_height|minimum||75",
+          "Acrotriche leucocarpa|plant_height|minimum||75", "Albizia procera|plant_height|maximum||0.1524",
+          "Astroloma pallidum|plant_height|maximum||0.01", "Banksia repens|plant_height|maximum||0.02",
+          "Brassica oleracea|plant_height|maximum||0.01",
+          "Bryophyllum x houghtonii|plant_height|maximum||0.01",
+          "Cajanus pubescens|plant_height|maximum||0.001",
+          "Chrysanthemoides monilifera subsp. rotundata|plant_height|maximum||0.02",
+          "Derris rubrocalyx subsp. rubrocalyx|plant_height|maximum||0.2",
+          "Derris rubrocalyx|plant_height|maximum||0.1", "Diplarrena moraea|plant_height|maximum||0.15",
+          "Eragrostis dielsii|plant_height|maximum||0.01", "Ficus obliqua|plant_height|maximum||0.8",
+          "Galium aparine|plant_height|maximum||0.02", "Hibbertia sulcata|plant_height|maximum||0.002",
+          "Larsenaikia suffruticosa|plant_height|maximum||0.04",
+          "Lepidosperma laterale|plant_height|maximum||0.01",
+          "Nymphoides parvifolia|plant_height|maximum||0.001", "Pimelea altior|plant_height|maximum||0.02",
+          "Tristaniopsis laurina|plant_height|maximum||0.012",
+          "Wahlenbergia stricta subsp. stricta|plant_height|maximum||0.01"
+        ), NA, `height_final`),
+        `height_final` = ifelse(.flora_key %in% names(c(
+          "Alisma lanceolatum|plant_height|maximum||0.015" = 1.5
+        )), c(
+          "Alisma lanceolatum|plant_height|maximum||0.015" = 1.5
+        )[.flora_key], `height_final`)
+      ) %>%
+      select(-.flora_key)
   '
   collection_date: eventDate
   taxon_name: scientificName
@@ -73,6 +102,11 @@ dataset:
   notes: Most columns removed before upload to GitHub due to file size. Contact AusTraits
     curators for more information - or use the recordID's to link back to full AVH
     information.
+    After outlier checks against other AusTraits datasets (at least 50-fold from the
+    same species, or 100-fold from the genus), flora-derived numeric values that were
+    parsing errors or unit typos in the source text are fixed in custom_R_code - 1
+    corrected where the source text gives the right value (mostly unit slips such as
+    mm for m), and 26 set to NA where it does not; E. Wenk 2026-11-14.
 identifiers:
 - var_in: recordID
   identifier_type: recordID

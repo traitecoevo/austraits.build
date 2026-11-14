@@ -116,7 +116,22 @@ dataset:
       group_by(taxon_name, trait_name, entity_measured, value_type) %>%
         mutate(observation_number = row_number()) %>%
       ungroup() %>%
-      mutate(location_name = "Victoria")
+      mutate(location_name = "Victoria") %>%
+      mutate(
+        .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, "", `trait_value`, sep = "|"),
+        `trait_value` = ifelse(.flora_key %in% c(
+          "Cheilanthes distans|leaf_length|maximum||3", "Cheilanthes lasiophylla|leaf_length|maximum||2",
+          "Triglochin striata|fruit_length|maximum||180"
+        ), NA, `trait_value`),
+        `trait_value` = ifelse(.flora_key %in% names(c(
+          "Aristida calycina var. praealta|plant_height|maximum||9" = 900,
+          "Poa orba|leaf_width|maximum||1500" = 1.5, "Poa orba|leaf_width|minimum||800" = 0.8
+        )), c(
+          "Aristida calycina var. praealta|plant_height|maximum||9" = 900,
+          "Poa orba|leaf_width|maximum||1500" = 1.5, "Poa orba|leaf_width|minimum||800" = 0.8
+        )[.flora_key], `trait_value`)
+      ) %>%
+      select(-.flora_key)
   '
   collection_date: 2022
   taxon_name: taxon_name
@@ -149,6 +164,11 @@ dataset:
   notes: The text in VicFlora is provided under copyright by the Royal Botanic Gardens
     Board, but is published here under a Creative Commons Attribution 4.0 international
     licence (CC BY 4.0).
+    After outlier checks against other AusTraits datasets (at least 50-fold from the
+    same species, or 100-fold from the genus), flora-derived numeric values that were
+    parsing errors or unit typos in the source text are fixed in custom_R_code - 3
+    corrected where the source text gives the right value (mostly unit slips such as
+    mm for m), and 3 set to NA where it does not; E. Wenk 2026-11-14.
 locations:
   Victoria:
     latitude (deg): .na
