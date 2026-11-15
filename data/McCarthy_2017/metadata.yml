@@ -43,7 +43,13 @@ dataset:
         Value = mean(Value),
         replicates = sum(replicates)
       ) %>% ungroup() %>%
-      dplyr::filter(!is.na(Species))    
+      dplyr::filter(!is.na(Species)) %>%
+      mutate(`Value` = ifelse(
+        `Trait` == "seed.mass" & paste(`Species`, `Value`) %in% c(
+          "Acronychia imperforata 0.132421739130435", "Acronychia imperforata 0.159066666666667",
+          "Acronychia imperforata 0.175744444444444", "Acronychia imperforata 0.229742857142857"
+        ),
+        NA, `Value`))
   '
   collection_date: 2015/2017
   taxon_name: Species
@@ -103,7 +109,9 @@ dataset:
     records across the 1,100 sites for maximum height, specific leaf area, wood density
     and seed mass, respectively.
   original_file: in raw data folder
-  notes: .na
+  notes: 4 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Bania:
     latitude (deg): .na.real

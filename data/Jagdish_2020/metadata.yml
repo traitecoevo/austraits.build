@@ -26,7 +26,12 @@ dataset:
     data %>% 
       group_by(Species) %>%
         mutate(across(c(`Seed mass (g)`),replace_duplicates_with_NA)) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(`Seed mass (g)` = ifelse(
+        paste(`Species`, `Seed mass (g)`) %in% c(
+          "Petrophile pulchella 0.000259"
+        ),
+        NA, `Seed mass (g)`))
   '
   collection_date: 2020-02/2020-04
   taxon_name: Species
@@ -46,7 +51,9 @@ dataset:
     across individuals and within individuals (i.e. from numerous branches) to ensure
     samples were reflective of true wild type characteristics (Meyer and Monsen, 1993).
   original_file: AusTraits.xls submitted by author and archived in raw data folder
-  notes: none
+  notes: 1 seed_dry_mass value set to NA in custom_R_code as an outlier against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Bald Rock National Park (site_at_-28.8527_S_and_152.0401_E):
     latitude (deg): -28.8527
