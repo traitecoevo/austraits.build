@@ -25,13 +25,9 @@ dataset:
   custom_R_code: '
     data |>
       dplyr::filter(trait != "leaf_mass_per_area") |>
-      dplyr::bind_rows(
-        data |>
-          dplyr::filter(trait == "stem_water_content_per_fresh_mass") |>
-          dplyr::mutate(
-            trait = "stem_dry_matter_content",
-            trait_value = 1000 - 10 * trait_value
-          )
+      dplyr::mutate(
+        trait_value = dplyr::if_else(trait == "stem_water_content_per_fresh_mass", 1000 - 10 * trait_value, trait_value),
+        trait = dplyr::if_else(trait == "stem_water_content_per_fresh_mass", "stem_dry_matter_content", trait)
       )
     '
   collection_date: 2015-04
@@ -250,19 +246,6 @@ traits:
     a laboratory standard (Chemwipe cellulose) between batches were within ±0.4‰ (1SD)
     for δ18Ocellulose. ^p All values are reported as average of three replicate trees
     at each station ±1 SD. ^p Cellulose extracted from bark-stripped branch sections.
-- var_in: stem_water_content_per_fresh_mass
-  unit_in: '%'
-  trait_name: stem_water_content_per_fresh_mass
-  entity_type: population
-  value_type: mean
-  basis_of_value: measurement
-  replicates: 3
-  methods: Source water held within thawed branch tissue was allowed to equilibrate
-    within vials for 24 h before being split into three subsections and repeatedly
-    analysed for δ18OH2O and δ2HH2O using Microwave Extraction-Isotope Ratio Infrared
-    Spectroscopy described by Munksgaard et al. (2014). ^p All values are reported
-    as average of three replicate trees at each station ±1 SD. ^p Water extracted
-    from bark-stripped branch sections, as % of wet mass.
 - var_in: stem_dry_matter_content
   unit_in: mg/g
   trait_name: stem_dry_matter_content
