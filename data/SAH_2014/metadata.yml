@@ -19,7 +19,15 @@ dataset:
   data_is_long_format: yes
   custom_R_code: '
     data %>%
-      mutate(location_name = "South Australia")
+      mutate(location_name = "South Australia") %>%
+      mutate(
+        .flora_key = paste(`original_name`, `trait_name`, `value_type`, `unit`, `value`, sep = "|"),
+        `value` = ifelse(.flora_key %in% c(
+          "Lepidosperma semiteres|leaf_length|maximum|mm|1.5",
+          "Lepidosperma semiteres|leaf_length|minimum|mm|1"
+        ), NA, `value`)
+      ) %>%
+      select(-.flora_key)
   '
   collection_date: 1986
   taxon_name: original_name
@@ -37,6 +45,10 @@ dataset:
   notes: Request acknowledgement of "State Herbarium of South Australia"; Eucalyptus
     porosa `leaf_width` value has been modified from 25 cm to 2.5, due to likely typo,
     in custom_R_code.
+    After outlier checks against other AusTraits datasets (at least 50-fold from the
+    same species, or 100-fold from the genus), flora-derived numeric values that were
+    parsing errors or unit typos in the source text are fixed in custom_R_code - 2 set
+    to NA where it does not; E. Wenk 2026-11-14.
 locations:
   South Australia:
     latitude (deg): .na
