@@ -88,7 +88,36 @@ dataset:
       distinct(source, taxon_name, trait_name, category, trait_value, units, value_type, inferred, .keep_all = TRUE) %>%
       group_by(taxon_name, trait_name, entity_measured, value_type) %>%
         mutate(observation_number = row_number()) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(
+        .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, "", `trait_value`, sep = "|"),
+        `trait_value` = ifelse(.flora_key %in% c(
+          "Acrostichum speciosum|leaf_length|maximum||5", "Cheilanthes contigua|leaf_length|maximum||0.5",
+          "Einadia hastata|plant_height|maximum||1.5", "Endiandra palmerstonii|fruit_length|maximum||0.25",
+          "Endiandra palmerstonii|fruit_length|minimum||0.1", "Grevillea wilsonii|leaf_width|maximum||600",
+          "Grevillea wilsonii|leaf_width|minimum||400",
+          "Osteocarpum acropterum var. deminutum|plant_height|maximum||2",
+          "Pteris pacifica|leaf_length|maximum||13", "Pteris pacifica|leaf_width|maximum||0.5"
+        ), NA, `trait_value`),
+        `trait_value` = ifelse(.flora_key %in% names(c(
+          "Acacia insolita subsp. insolita|plant_height|maximum||6" = 600,
+          "Acacia insolita subsp. insolita|plant_height|minimum||3" = 300,
+          "Achyranthes bidentata|leaf_length|maximum||1.00E+05" = 100,
+          "Achyranthes bidentata|leaf_length|minimum||25000" = 25,
+          "Anthobolus leptomerioides|plant_height|maximum||2.5" = 2500,
+          "Avicennia integra|plant_height|maximum||7" = 7000,
+          "Avicennia integra|plant_height|minimum||2" = 2000
+        )), c(
+          "Acacia insolita subsp. insolita|plant_height|maximum||6" = 600,
+          "Acacia insolita subsp. insolita|plant_height|minimum||3" = 300,
+          "Achyranthes bidentata|leaf_length|maximum||1.00E+05" = 100,
+          "Achyranthes bidentata|leaf_length|minimum||25000" = 25,
+          "Anthobolus leptomerioides|plant_height|maximum||2.5" = 2500,
+          "Avicennia integra|plant_height|maximum||7" = 7000,
+          "Avicennia integra|plant_height|minimum||2" = 2000
+        )[.flora_key], `trait_value`)
+      ) %>%
+      select(-.flora_key)
     '
   collection_date: 2022
   taxon_name: taxon_name
@@ -117,7 +146,11 @@ dataset:
     all taxa in the Adenanthos genus were scored as `achene`, which was mentioned
     only in the genus description.
   original_file: .na
-  notes: .na
+  notes: After outlier checks against other AusTraits datasets (at least 50-fold from the
+    same species, or 100-fold from the genus), flora-derived numeric values that were
+    parsing errors or unit typos in the source text are fixed in custom_R_code - 7
+    corrected where the source text gives the right value (mostly unit slips such as
+    mm for m), and 10 set to NA where it does not; E. Wenk 2026-11-14.
 locations: .na
 contexts:
 - context_property: trait scoring method
