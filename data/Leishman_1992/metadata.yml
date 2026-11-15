@@ -32,7 +32,14 @@ dataset:
         parasitic = ifelse(`growth form`=="root parasite","root_parasitic", parasitic),
         across(c(`height (cm)_filtered`,`leaf area (mm2)`,`seed mass (mg)`,
         `diaspore weight (mg)`), ~na_if(.x, 0))
-      )
+      ) %>%
+      mutate(`seed mass (mg)` = ifelse(
+        paste(`SPECIES`, `seed mass (mg)`) %in% c(
+          "Chenopodium rhadinostachyum 0.0028", "Eremophila bignoniiflora 0.013", "Eremophila glabra 1.93",
+          "Eremophila sturtii 0.15", "Eryngium rostratum 0.062", "Muehlenbeckia cunninghamii 0.015",
+          "Stipa nitida 0.03", "Swainsona microphylla 0.017"
+        ),
+        NA, `seed mass (mg)`))
   '
   collection_date: 1996/1996
   taxon_name: SPECIES
@@ -71,7 +78,10 @@ dataset:
     basis SWT, oven-dry seed weight (mg) SWTCL oven-dry diaspore weight put into Baker's
     half-log classes (14) LOGSWT, log10(SWT) SD, dispersal mode MU, mucilaginous GM,
     seed germinability PH, physiology FM, fire mortality PA, palatability SP, spines
-    present SC, secondary compounds
+    present SC, secondary compounds.
+    8 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Louth:
     longitude (deg): 145.1333
