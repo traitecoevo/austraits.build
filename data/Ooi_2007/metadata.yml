@@ -38,24 +38,34 @@ dataset:
         `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(12981:13080), 0.001, `SEED WEIGHT multiplier`),
         `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14527:14547), 0.01, `SEED WEIGHT multiplier`),
         `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(7175), 0.01, `SEED WEIGHT multiplier`),
-        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(9425,9479:9503,12664), 0.001, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(9425,9479:9502,12664), 0.001, `SEED WEIGHT multiplier`),
         `SEED WEIGHT multiplier` = ifelse(row_number() %in% c(14257), 0.0001, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(SPECIES %in% c("Angophora bakeri", "Angophora costata", "Angophora floribunda", "Angophora melanoxylon"), 1000, `SEED WEIGHT multiplier`),
+        `SEED WEIGHT multiplier` = ifelse(SPECIES == "Trachymene incisa var incisa" & SITE == "Myall Lakes", 10, `SEED WEIGHT multiplier`),
         `notes for edited & omitted values` = ifelse(row_number() %in% c(4603, 4673, 8936, 12050, 12283, 12576, 14503),
         "outlier for species, removed by E. Wenk, 2021-10-27", ""), `notes for edited & omitted values` =
         ifelse(row_number() %in% c(12981:13080),
         "divide 1000 to fit within range of other AusTraits observations of species & other Leptospermum in this study",
         `notes for edited & omitted values`), `notes for edited & omitted values` = ifelse(row_number() %in% c(7175),
         "seed mass divided by 10^2, E. Wenk 2021-10-27", `notes for edited & omitted values`),
-        `notes for edited & omitted values` = ifelse(row_number() %in% c(9425,9479:9503,12664),
+        `notes for edited & omitted values` = ifelse(row_number() %in% c(9425,9479:9502,12664),
         "seed mass divided by 10^3, E. Wenk 2021-10-27", `notes for edited & omitted values`),
         `notes for edited & omitted values` = ifelse(row_number() %in% c(14257),
-        "seed mass divided by 10^4, E. Wenk 2021-10-27", `notes for edited & omitted values`)) %>% 
+        "seed mass divided by 10^4, E. Wenk 2021-10-27", `notes for edited & omitted values`),
+        `notes for edited & omitted values` = ifelse(SPECIES %in% c("Angophora bakeri", "Angophora costata", "Angophora floribunda", "Angophora melanoxylon"),
+        "seed mass multiplied by 10^3 (recorded in g, not mg; all other Angophora seed masses are 4-36 mg), E. Wenk 2026-11-14", `notes for edited & omitted values`),
+        `notes for edited & omitted values` = ifelse(SPECIES == "Trachymene incisa var incisa" & SITE == "Myall Lakes",
+        "seed mass multiplied by 10 (about 10-fold below all other datasets for this species), E. Wenk 2026-11-15", `notes for edited & omitted values`)) %>%
       mutate(
-        `SEED WEIGHT mg` = ifelse(as.character(`SEED WEIGHT multiplier`) == "outlier",NA,`SEED WEIGHT mg`),
-        `SEED WEIGHT mg` = ifelse(is.na(`SEED WEIGHT multiplier`),
-            `SEED WEIGHT mg`,`SEED WEIGHT mg`*as.numeric(`SEED WEIGHT multiplier`))
+        `SEED WEIGHT mg` = `SEED WEIGHT mg` * `SEED WEIGHT multiplier`
         ) %>%
-      mutate(`DATE OF COLLECTION` = coalesce(`DATE OF COLLECTION`, "2007"))
+      mutate(`DATE OF COLLECTION` = coalesce(`DATE OF COLLECTION`, "2007")) %>%
+      mutate(`SEED WEIGHT mg` = ifelse(
+        paste(`SPECIES`, `SEED WEIGHT mg`) %in% c(
+          "Austrostipa ramosissima 0.0192", "Austrostipa ramosissima 0.021", "Austrostipa ramosissima 0.0302",
+          "Austrostipa ramosissima 0.0339", "Eucalyptus capitellata 0.117"
+        ),
+        NA, `SEED WEIGHT mg`))
   '
   collection_date: DATE OF COLLECTION
   taxon_name: SPECIES
@@ -70,6 +80,17 @@ dataset:
   notes: Note from data processor - To fill in missing location details on sites,
     coordinates of the town or NP have been included where possible. These coordinates
     are not exact and were sourced from NationalMap.
+    5 seed_dry_mass values set to NA in custom_R_code as outliers against other AusTraits
+    datasets (at least 10-fold from the median for the same species, or 100-fold for
+    the same genus); E. Wenk 2026-11-14. The Trachymene incisa subsp. incisa lot from
+    Myall Lakes (23/05/75, 100 seeds, median 0.108 mg) is multiplied by 10 in custom_R_code,
+    as a decimal error like those already corrected for other lots in this dataset;
+    Kew_2019_1 (0.99, 1.24 mg), Davila_2002 (1.05-1.29 mg), Jagdish_2020 (1.07 mg,
+    fresh) and ANBG_2019 (0.93 mg) all report about 1 mg (E. Wenk 2026-11-15).
+    TO REVISIT (2026-11-14) - the 12 low Eucalyptus crebra values (Coonabarabran,
+    0.056-0.094 mg) are still flagged, but only because Everingham_2020 E. crebra values
+    (1.7-2.6 mg) may themselves be too heavy; Kew_2019_1 gives 0.24-0.58 mg. Recheck
+    against the seed mass data on the seedbank_datasets branch.
 locations:
   10 miles south of Pelaw Main on Road to Morriset:
     longitude (deg): .na.real

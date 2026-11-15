@@ -34,7 +34,8 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:        data %>% mutate(Taxa = str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
+  custom_R_code: '
+    data %>% mutate(Taxa = str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
     %>% mutate(site_name = "Yarrawonga") %>% mutate(str_replace(Taxa,"Austrodanthonia","Rytidosperma"))
     %>% mutate(across(c("Plant height max (m)","plant height min (m)","Leaf size (cm^2)"),
     ~na_if(.x,0))) %>% replace_na(list(Tree = 0, Gram = 0, Forb=0, Annual=0, Biennial=0,
@@ -55,7 +56,13 @@ dataset:
     %>% na_if(""), life_history = stringr::str_squish(life_history) %>% na_if(""),
     growth_habit = stringr::str_squish(growth_habit) %>% na_if(""), aquatic_terrestrial_detailed
     = stringr::str_squish(aquatic_terrestrial_detailed) %>% na_if(""), dispersal_syndrome
-    = stringr::str_squish(dispersal_syndrome) %>% na_if(""))
+    = stringr::str_squish(dispersal_syndrome) %>% na_if("")) %>%
+      mutate(`Seed mass (g)` = ifelse(
+        paste(`Taxa`, `Seed mass (g)`) %in% c(
+          "Oxalis perennans 6.6", "Pseudognaphalium luteoalbum 0.1", "Triglochin procera 1"
+        ),
+        NA, `Seed mass (g)`))
+  '
   collection_date: 2012/2012
   taxon_name: Taxa
   location_name: site_name
@@ -113,7 +120,10 @@ dataset:
   notes: There are a few species whose seed masses are almost certainly in grams (instead
     of mg), as their seed mass values are on the order of 10^3 smaller than other
     AusTraits entries. These values have been manually adjusted in AusTraits, 15-02-2022,
-    E Wenk
+    E Wenk.
+    3 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Yarrawonga:
     longitude (deg): 145.99973

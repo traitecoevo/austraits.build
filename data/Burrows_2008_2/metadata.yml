@@ -26,6 +26,11 @@ dataset:
   data_is_long_format: no
   custom_R_code: '
     data %>%
+      mutate(
+        across(c(`Response To Fire`, `Time Until First Flowering`, `Months Until Peak Flowering`, `Months To Flowering Decline`),
+          ~ ifelse(get(paste(dplyr::cur_column(), "Auth")) %in% c("Neil Burrows", "NBD", "N", "Grant Wardell-Johnson"), .x, NA)),
+        Longevity = NA
+      ) %>%
       group_by(`Updated Species name`) %>%
         mutate(
         across(c(`Response To Fire`, `Time Until First Flowering`, `Months Until Peak Flowering`,
@@ -68,7 +73,15 @@ dataset:
     types represented in the Walpole-Nornalup National Park (see Wardell-Johnson et
     al. 1989).
   original_file: File from DBCA in raw data folder.
-  notes: Raw data file from DBCA associated with study. There is also data from the paper for this study under the dataset_id `Burrows_2008`. It is linked to locations, but includes data just for a few species.
+  notes: Raw data file from DBCA associated with study. There is also data from the
+    paper for this study under the dataset_id `Burrows_2008`. It is linked to locations,
+    but includes data just for a few species. The DBCA file is the Plant Ecological
+    Attributes database, the source of Burrows_2020, and includes values attributed
+    to other researchers. Only values attributed to the study authors Neil Burrows
+    (including the abbreviations NBD and N) and Grant Wardell-Johnson are kept here;
+    custom_R_code removes the others, and Burrows_2020 holds them and omits the values
+    kept here. Longevity (life_history) has no authority in the file and is removed;
+    it is in Burrows_2020.
 identifiers: .na
 locations:
   southwest Western Australia:
