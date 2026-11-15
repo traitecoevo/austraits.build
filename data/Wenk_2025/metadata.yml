@@ -144,7 +144,8 @@ dataset:
           "Erica afra|leaf_length|maximum|m|13" = 0.013, "Erica afra|leaf_length|minimum|m|5" = 0.005
         )[.flora_key], `trait_value`)
       ) %>%
-      select(-.flora_key)
+      select(-.flora_key) |>
+      generate_observation_numbers(taxon_name, trait_name, source_id)
   '
   collection_date: 2025-08/2026-02
   taxon_name: taxon_name
@@ -156,6 +157,7 @@ dataset:
   basis_of_record: literature
   life_stage: adult
   measurement_remarks: reference
+  source_id: source_id
   sampling_strategy: Combination of AI and manual scoring from online floras and taxonomic
     descriptions.
   original_file: unknown
@@ -187,9 +189,9 @@ dataset:
 identifiers: .na
 locations: .na
 contexts:
-- context_property: plant part
-  category: entity_context
-  var_in: context
+- context_property: replicate observations
+  category: temporal_context
+  var_in: observation_number
 - context_property: scoring method
   category: method_context
   var_in: method
@@ -433,14 +435,6 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: plant_growth_form2
-  unit_in: .na
-  trait_name: plant_growth_form
-  entity_type: species
-  value_type: value_type
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
 - var_in: resprouting_capacity
   unit_in: .na
   trait_name: resprouting_capacity
@@ -491,7 +485,7 @@ traits:
   methods: unknown
 - var_in: leaf_tip_shape
   unit_in: .na
-  trait_name: leaf_tip_shape
+  trait_name: leaf_apex_shape
   entity_type: species
   value_type: value_type
   basis_of_value: expert_score
@@ -563,7 +557,7 @@ traits:
   methods: unknown
 - var_in: root_length
   unit_in: unit
-  trait_name: root_length
+  trait_name: .na
   entity_type: species
   value_type: value_type
   basis_of_value: measurement
@@ -617,14 +611,6 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf_phenology
-  unit_in: .na
-  trait_name: leaf_phenology
-  entity_type: species
-  value_type: value_type
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
 - var_in: leaf_phyllotaxis
   unit_in: .na
   trait_name: leaf_phyllotaxis
@@ -649,14 +635,6 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf_heterogeneity
-  unit_in: .na
-  trait_name: leaf_heterogeneity
-  entity_type: species
-  value_type: value_type
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
 - var_in: leaf_lifespan
   unit_in: unit
   trait_name: leaf_lifespan
@@ -665,25 +643,9 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: leaf_margin
-  unit_in: .na
-  trait_name: leaf_margin
-  entity_type: species
-  value_type: value_type
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
 - var_in: leaf_margin_posture
   unit_in: .na
   trait_name: leaf_margin_posture
-  entity_type: species
-  value_type: value_type
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
-- var_in: leaf_pubescence
-  unit_in: .na
-  trait_name: leaf_pubescence
   entity_type: species
   value_type: value_type
   basis_of_value: expert_score
@@ -759,14 +721,6 @@ traits:
   entity_type: species
   value_type: value_type
   basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
-- var_in: petiole_shape
-  unit_in: unit
-  trait_name: plant_height
-  entity_type: species
-  value_type: value_type
-  basis_of_value: measurement
   replicates: .na
   methods: unknown
 - var_in: plant_physical_defence_structures
@@ -857,14 +811,6 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
-- var_in: rhizome_form
-  unit_in: .na
-  trait_name: rhizome_form
-  entity_type: species
-  value_type: value_type
-  basis_of_value: expert_score
-  replicates: .na
-  methods: unknown
 - var_in: leaf_glaucousness
   unit_in: .na
   trait_name: leaf_glaucousness
@@ -907,21 +853,6 @@ substitutions:
 - trait_name: leaf_shape
   find: narrowly_spathulate
   replace: spathulate
-- trait_name: leaf_length_type
-  find: na_not_given_taxonomic_reference
-  replace: na_not_given_taxon_description
-- trait_name: leaf_length_type
-  find: na_not_given_any_ref
-  replace: na_not_given
-- trait_name: plant_height_type
-  find: na_not_given_taxonomic_referenc
-  replace: na_not_given_taxon_description
-- trait_name: plant_height_type
-  find: na_not_given_hybrid_origin
-  replace: na_not_given
-- trait_name: plant_height_type
-  find: na_not_given_any_reference
-  replace: na_not_given
 taxonomic_updates:
 - find: AAustrocallerya pilipes
   replace: Austrocallerya pilipes

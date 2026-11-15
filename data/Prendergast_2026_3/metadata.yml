@@ -81,6 +81,9 @@ dataset:
       ) |>
       mutate(
         Date = dplyr::case_when(
+          is.na(Date) & !is.na(Year) ~ stringr::str_replace(Year, " - ", "/"),
+          is.na(Date) & stringr::str_detect(source_id, "[0-9]{4}") ~ stringr::str_extract(source_id, "[0-9]{4}"),
+          is.na(Date) ~ "2026",
           !Date %in% YEARLESS_DATES ~ Date,
           stringr::str_detect(Year, "^[0-9]{4}$") ~ paste(Date, Year),
           !is.na(Year) ~ stringr::str_replace(Year, " - ", "/"),
