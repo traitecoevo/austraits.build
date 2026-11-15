@@ -31,7 +31,49 @@ dataset:
         parasitic = ifelse(`growth form`=="parasitic","parasitic", NA),
         plant_photosynthetic_organ = ifelse(`leaf shape`=="articles","cladode", NA),
         across(c(`min leaf length (mm)`,`max leaf length (mm)`,`max leaf width (mm)`,`min leaf width (mm)`), ~na_if(.x, 0))
-      )
+      ) %>%
+      mutate(
+        .flora_key = paste(`binomial`, `max height (m)`, sep = "|"),
+        `max height (m)` = ifelse(.flora_key %in% c(
+          "Kennedia macrophylla|50", "Kennedia prostrata|6"
+        ), NA, `max height (m)`)
+      ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`binomial`, `max leaf length (mm)`, sep = "|"),
+        `max leaf length (mm)` = ifelse(.flora_key %in% c(
+          "Anarthria scabra|1", "Kennedia macrophylla|35", "Kennedia prostrata|6"
+        ), NA, `max leaf length (mm)`),
+        `max leaf length (mm)` = ifelse(.flora_key %in% names(c(
+          "Typha domingensis|2" = 2000
+        )), c(
+          "Typha domingensis|2" = 2000
+        )[.flora_key], `max leaf length (mm)`)
+      ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`binomial`, `max leaf width (mm)`, sep = "|"),
+        `max leaf width (mm)` = ifelse(.flora_key %in% c(
+          "Gastrolobium confertum|0.5", "Isolepis fluitans|100", "Isolepis inundata|150",
+          "Isolepis producta|100"
+        ), NA, `max leaf width (mm)`)
+      ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`binomial`, `min leaf length (mm)`, sep = "|"),
+        `min leaf length (mm)` = ifelse(.flora_key %in% c(
+          "Anarthria scabra|1", "Kennedia macrophylla|85", "Kennedia prostrata|80", "Typha domingensis|2"
+        ), NA, `min leaf length (mm)`)
+      ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`binomial`, `min leaf width (mm)`, sep = "|"),
+        `min leaf width (mm)` = ifelse(.flora_key %in% c(
+          "Gastrolobium confertum|0.2", "Isolepis fluitans|20", "Isolepis producta|20",
+          "Kennedia macrophylla|75", "Kennedia prostrata|52"
+        ), NA, `min leaf width (mm)`)
+      ) %>%
+      select(-.flora_key)
   '
   collection_date: 2014/2014
   taxon_name: binomial
@@ -40,7 +82,11 @@ dataset:
   life_stage: adult
   sampling_strategy: unknown
   original_file: flora of the SW.xls
-  notes: none
+  notes: After outlier checks against other AusTraits datasets (at least 50-fold from the
+    same species, or 100-fold from the genus), flora-derived numeric values that were
+    parsing errors or unit typos in the source text are fixed in custom_R_code - 1
+    corrected where the source text gives the right value (mostly unit slips such as
+    mm for m), and 18 set to NA where it does not; E. Wenk 2026-11-14.
 locations: .na
 contexts: .na
 traits:

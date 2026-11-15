@@ -33,7 +33,12 @@ dataset:
         c("erect rosette", "flat rosette", "erect leafy", "cushion"),
         c("rosette", "rosette", "erect", "cushion-forming"),
         c("erect rosette", "flat rosette", "erect leafy", "cushion")
-      ) 
+      ) %>%
+      mutate(`Seed mass (mg)_filtered` = ifelse(
+        paste(`Scientific Name`, `Seed mass (mg)_filtered`) %in% c(
+          "Cheilanthes austrotenuifolia 0.81"
+        ),
+        NA, `Seed mass (mg)_filtered`))
   '
   collection_date: 2010/2010
   taxon_name: Scientific Name
@@ -50,7 +55,9 @@ dataset:
     database.xls" extracted. Original copy of the excel file located in Google Drive
     in the folder "Morgan_2011_1 Morgan_2011_2 Morgan_2014 Angevin_2010 Briggs_2010
     Cross_2011 Lunt_2012 Roberts_2006 Scott_2010"
-  notes: none
+  notes: 1 seed_dry_mass value set to NA in custom_R_code as an outlier against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Woohlpooer State Forest:
     latitude (deg): -37.33

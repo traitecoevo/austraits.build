@@ -99,7 +99,19 @@ dataset:
       mutate(observation_num = dplyr::row_number()) %>%
     ungroup() %>%
     mutate(value = ifelse(row_number() %in% c(303), 0.4340, value)) %>%
-      mutate(`gathering_date` = coalesce(`gathering_date`, "2018"))
+      mutate(`gathering_date` = coalesce(`gathering_date`, "2018")) %>%
+      mutate(`value` = ifelse(
+        `trait` == "Seed Sample" & paste(`species_name`, `value`) %in% c(
+          "Agrostis muelleriana 1.3848", "Asperula conferta 0.0601", "Carex hebes 0.086",
+          "Celmisia costiniana 87.8507", "Craspedia lamicola 0.0478", "Cynoglossum australe 0.1574",
+          "Epilobium gunnianum 1.08", "Eucalyptus gillii 0.0624",
+          "Eucalyptus pauciflora subsp. niphophila 9.225", "Gonocarpus tetragynus 0.034",
+          "Luzula acutifolia subsp. nana 0.0258", "Neopaxia australasica 0.0049", "Oreomyrrhis ciliata 0.1",
+          "Owenia acidula 19.95", "Ranunculus acrophilus 0.1", "Richea continentis 0.56",
+          "Scaevola collaris 167.5444", "Sida goniocarpa 2675", "Stemodia 2.561", "Themeda triandra 39",
+          "Wahlenbergia ceracea 0.8807"
+        ),
+        NA, `value`))
   '
   collection_date: gathering_date
   taxon_name: species_name
@@ -137,7 +149,10 @@ dataset:
   original_file: 4 files in raw data folder
   notes: There are a few species whose seed masses are almost certainly incorrect.
     They've been compared to other AusTraits entries. These values have been manually
-    adjusted in AusTraits, 15-02-2022, E Wenk
+    adjusted in AusTraits, 15-02-2022, E Wenk.
+    21 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Adelaide Botanic Gardens.:
     latitude (deg): .na.real

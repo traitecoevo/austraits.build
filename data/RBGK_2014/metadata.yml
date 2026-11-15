@@ -20,7 +20,14 @@ dataset:
     data %>%
       group_by(species) %>%
         mutate(observation_number = row_number()) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(`seed_mass` = ifelse(
+        paste(`species`, `seed_mass`) %in% c(
+          "Agonis flexuosa 119.07", "Glossodia major 0.176", "Sida platycalyx 1304.4",
+          "Tetragonia tetragonioides 34.5528", "Triumfetta longipedunculata 505.3140097",
+          "Triumfetta marsupiata 668.1437126", "Triumfetta rupestris 244.12"
+        ),
+        NA, `seed_mass`))
   '
   collection_date: 2014
   taxon_name: species
@@ -32,6 +39,9 @@ dataset:
   original_file: SID_australia.xls
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
     Commons licesne. Data not to be used for Commercial Purposes.
+    7 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations: .na
 contexts:
 - context_property: replicate observations

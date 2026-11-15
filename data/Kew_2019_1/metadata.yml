@@ -64,11 +64,11 @@ dataset:
           stringr::str_detect(seedweightnotes, "mean weight of 20 dry seeds|Dired seed") ~ "Weight refers to dry mass of mature seed.",
           stringr::str_detect(seedweightnotes, "dry weight") & stringr::str_detect(seedweightnotes, "SE=") ~ "Weight refers to dry mass of mature seed.",
           seedweightnotes %in% c("Dry weight", "Dry weight.", "dry", "Weight refers to seed dry mass", "Seed dry-weight.") ~ "Weight refers to dry mass of mature seed.",
-          TRUE ~ "Weight probably refers to dry mass (see measurement remarks)."),
-        thousandseedweight = ifelse(taxa == "Angophora bakeri", thousandseedweight/1000, thousandseedweight)
-
+          TRUE ~ "Weight probably refers to dry mass (see measurement remarks).")
       ) %>%
       filter(!original_dataset_id %in% c("Jurado_1991", "Moles_2000", "Milberg_1998", "Bell_1995")) %>%
+      filter(!(family == "MYRTACEAE" & !stringr::str_detect(taxa, "^Syzygium") &
+        original_dataset_id %in% c("Turnbull_1987", "FAO_1975", "vonCarlowitz_1991", "ForestService_1974", "Cromarty_1982", "Felfoldi_1980", "Foster_1985"))) %>%
       filter(is.na(omit_duplicate)) %>%
       arrange(taxa, materialweigheddesc, thousandseedweight, original_dataset_id) %>%
       group_by(taxa, materialweigheddesc, thousandseedweight, seedweightnotes, weightprecision) %>%
@@ -85,7 +85,22 @@ dataset:
                  paste0(sub("REFERENCE: .*$", "", measurement_remarks), "REFERENCE: ", refdesc)),
           measurement_remarks),
         original_dataset_id = ifelse(original_dataset_id %in% c("Kew_2019", "unknown_2019", "Juniper_2019", "JepsonHerbarium_2019", "Groom_2002"), NA_character_, original_dataset_id)
-      )
+      ) %>%
+      mutate(`thousandseedweight` = ifelse(
+        paste(`taxa`, `thousandseedweight`) %in% c(
+          "Atriplex holocarpa 31.52", "Atriplex semibaccata 22.2", "Baeckea frutescens 8.1874194",
+          "Baeckea gunniana 1.383", "Calotis cuneifolia 0.068", "Chthonocephalus pseudevax 0.406",
+          "Clematis aristata 0.295", "Coronidium scorpioides 1.88644", "Elaeocarpus grandis 17.07",
+          "Eucalyptus baxteri 17.5", "Eucalyptus dealbata 6.6408", "Eucalyptus socialis 833.3",
+          "Ficus benjamina 25", "Isopogon cuneatus 1540.666667", "Lobelia gibbosa 0.00184",
+          "Melaleuca laxiflora 16.3584", "Piper umbellatum 0.0924", "Piper umbellatum 0.1376",
+          "Plectranthus parviflorus 0.024", "Podocarpus elatus 1610", "Podolepis canescens 4.7216",
+          "Solanum petrophilum 219.124", "Stylidium petiolare 0.0014", "Syncarpia glomulifera 5.7736",
+          "Tetragonia tetragonoides 76.9", "Tetragonia tetragonoides 77", "Tetratheca angulata 31600",
+          "Tribulus terrestris 1.3", "Tribulus terrestris 1.6", "Tribulus terrestris 2.467",
+          "Tripogon loliiformis 0.7732", "Triumfetta parviflora 1.7308"
+        ),
+        NA, `thousandseedweight`))
     '
   collection_date: 2019
   taxon_name: taxa
@@ -98,11 +113,18 @@ dataset:
   original_file: in raw data folder
   measurement_remarks: merged_ref
   notes: Data provided for inclusion in AusTraits and subsequent reuse under a Creative
-    Commons license. Data not to be used for Commercial Purposes. Seed weight for Angophora
-    bakeri divided by 1000 in custom_R_code due to extreme outlier. Values from Bell
-    et al. (1995) are filtered out because they are in Bell_1995; eight seed masses
-    cited to Bell et al. (1999) repeat Bell et al. (1995) Table 1 values (same means
-    and standard errors, rounded) and are flagged in the omit_duplicate column.
+    Commons license. Data not to be used for Commercial Purposes. Seed masses for
+    Myrtaceae (except Syzygium) cited to forestry seed manuals (Turnbull 1987, FAO
+    1975, von Carlowitz 1991, Forest Service 1974, Cromarty 1982, Felfoldi 1980, Foster
+    1985) are filtered out in custom_R_code; they are systematically ~5-7x heavier
+    than other AusTraits values for the same species, consistent with mass per viable
+    seed in seed lots that include chaff (austraits.build issue 522). Values from
+    Bell et al. (1995) are filtered out because they are in Bell_1995; eight seed
+    masses cited to Bell et al. (1999) repeat Bell et al. (1995) Table 1 values (same
+    means and standard errors, rounded) and are flagged in the omit_duplicate column.
+    32 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations: .na
 contexts:
 - context_property: seed mass method
