@@ -54,11 +54,7 @@ dataset:
         )
       ) |>
       generate_observation_numbers(`Plant scientific name`, location_name) |>
-      mutate(Date = util_format_collection_date(Date, "dmy")) |>
-      dplyr::mutate(
-        Date = stringr::str_replace(Date, "^([0-9]{4}-[0-9]{2})-15$", "\\1"),
-        Date = dplyr::if_else(is.na(Date) | Date == "", "1997", Date)
-      )
+      mutate(Date = util_format_collection_date(Date, "dmy"), Date = dplyr::if_else(is.na(Date), "1997", Date))
   '
   collection_date: Date
   taxon_name: Plant scientific name

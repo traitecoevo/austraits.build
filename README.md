@@ -8,7 +8,7 @@
 
 ![](inst/figures/logo.png)
 
-AusTraits is a transformative database, containing measurements on the traits of Australia’s plant species, standardised from hundreds of disconnected primary sources. So far, data have been assembled \> 300 distinct sources, describing > 500 plant traits for > 25k taxa. The dataset and approach is documented in detail in the following publication
+AusTraits is a transformative database, containing measurements on the traits of Australia’s plant species, standardised from hundreds of disconnected primary sources. So far, data have been assembled from > 450 distinct sources, describing > 500 plant traits for > 25k taxa. The dataset and approach is documented in detail in the following publication
 
 > Falster D, Gallagher R, Wenk, E et al. (2021) AusTraits, a curated plant trait database for the Australian flora. Scientific Data 8: 254. DOI: [10.1038/s41597-021-01006-6](http://doi.org/10.1038/s41597-021-01006-6)
 
@@ -18,11 +18,20 @@ AusTraits is continually evolving, as new datasets are contributed. As such, the
 
 ## Accessing data
 
-Those interested in simply using data from AusTraits, should visit download the compiled resource from the versioned releases archived on Zenodo at DOI: [10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417).
+Those interested in simply using data from AusTraits should download the compiled resource from the versioned releases archived on Zenodo at DOI: [10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417).
+
+In R, the [`austraits`](https://traitecoevo.github.io/austraits/) package loads a release by version number:
+
+```r
+remotes::install_github("traitecoevo/austraits")
+austraits <- austraits::load_austraits(version = "7.0.0")
+```
+
+Its functions to filter, join, reshape and plot the data come from [`traits.use`](https://traitecoevo.github.io/traits.use/), which works on any `traits.build` database.
 
 Users will want to read up on the [database structure, described in the `traits.build` manual](https://traitecoevo.github.io/traits.build-book/content/database_structure.html).
 
-Definitions for the traits are described the AusTraits Plant Dictionary (APD), at
+Definitions for the traits are described in the AusTraits Plant Dictionary (APD), at
 
 - Formalised vocabulary at <http://w3id.org/APD/>
 
@@ -48,7 +57,7 @@ This repository (`austraits.build`) contains the raw data to compile AusTraits f
 
 ![](inst/figures/Workflow.png)
 
-We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise > 400 different sources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
+We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise > 450 different sources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
 
 A publication describes the `traits.build` workflow:
 > Wenk EH, Bal P, Coleman D, Gallagher RG, Yang S, Falster DS, (2024) Traits.build: A data model, workflow and R package for building harmonised ecological trait databases. *Ecological Informatics* 83: 102773. DOI: [10.1016/j.ecoinf.2024.102773](https://doi.org/10.1016/j.ecoinf.2024.102773)
@@ -57,11 +66,10 @@ To build the database follows these steps
 
 ***Install `traits.build`***
 
-The first step is to install a copy of [traits.build](https://github.com/traitecoevo/traits.build/), and [traits.use](https://github.com/traitecoevo/traits.use/), which the build uses to combine datasets: 
+The first step is to install a copy of [traits.build](https://github.com/traitecoevo/traits.build/). This installs its `develop` branch, which is what this repository builds with, together with [traits.use](https://github.com/traitecoevo/traits.use/), which `traits.build` depends on:
 
-```{r, eval=FALSE, echo=TRUE}
+```r
 remotes::install_github("traitecoevo/traits.build", quick = TRUE)
-remotes::install_github("traitecoevo/traits.use", quick = TRUE)
 ```
 ***Clone repository***
 
@@ -99,7 +107,7 @@ We'd love for you to contribute to the projects. Below are some ways you can con
 - Contributing new data
 - Improving data quality and reporting errors 
 - Improving documentation
-- Development of `traits.build`` workflow
+- Development of the `traits.build` workflow
 
 For details on on how to contribute, please see the file [CONTRIBUTING.md](https://github.com/traitecoevo/austraits.build/blob/develop/.github/CONTRIBUTING.md)
 
@@ -143,9 +151,9 @@ This work received investment ([TD044](https://doi.org/10.47486/TD044),
 - A UNSW Research Infrastructure Grant to Falster, and
 - A grant from Macquarie University to Gallagher.
 
-**Recognition**: Many people have contributed to AusTraits. A list of contributors  is provided on the on Zenodo at DOI:
+**Recognition**: Many people have contributed to AusTraits. A list of contributors is provided on Zenodo at DOI:
     [10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417).
 
 Further information about the AusTraits project is available at the project website [austraits.org](https://austraits.org).
 
-**Resuse**: At this stage, only the compiled AusTraits dataset is available for reuse, via Zenodo. The raw data sources provided in this repository are not available for reuse in their current form, without further discussion from data contributors.
+**Reuse**: At this stage, only the compiled AusTraits dataset is available for reuse, via Zenodo. The raw data sources provided in this repository are not available for reuse in their current form, without further discussion from data contributors.

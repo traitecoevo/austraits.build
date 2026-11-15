@@ -46,6 +46,13 @@ dataset:
         dispersal_unit = case_when(
           `Response To Fire` == "10" ~ "spore"
         )
+      ) %>%
+      mutate(
+        across(c(`Response To Fire`, seed_storage_location, bud_bank_location),
+          ~ ifelse(is.na(fire_response_omit_duplicate), .x, NA)),
+        `Months Until First Flowering` = ifelse(is.na(first_flowering_omit_duplicate), `Months Until First Flowering`, NA),
+        `Months Until Peak Flowering` = ifelse(is.na(peak_flowering_omit_duplicate), `Months Until Peak Flowering`, NA),
+        `Months To Flowering Decline` = ifelse(is.na(flowering_decline_omit_duplicate), `Months To Flowering Decline`, NA)
       )
   '
   collection_date: 2020
@@ -57,7 +64,16 @@ dataset:
   life_stage: adult
   sampling_strategy: unknown
   original_file: Plant_Ecological_Attributes_Burrows_202002.xls in raw data folder
-  notes: none
+  notes: Burrows_2008_2 is drawn from the same Plant Ecological Attributes database
+    file and holds the values attributed to Neil Burrows and Grant Wardell-Johnson
+    (the authors of Burrows et al. 2008). Those values are flagged here in the data.csv
+    columns fire_response_omit_duplicate, first_flowering_omit_duplicate,
+    peak_flowering_omit_duplicate and flowering_decline_omit_duplicate and excluded
+    by custom_R_code (761 fire responses, which supply resprouting_capacity,
+    seedbank_location and bud_bank_location, and 710, 24 and 18 times to first, peak
+    and declining flowering). reproductive_maturity and dispersal_unit, which
+    Burrows_2008_2 does not include, are derived before the flagged values are removed,
+    so are kept for all taxa.
 locations:
   Western Australia:
     description: unknown locations in Western Australia

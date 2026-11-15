@@ -126,6 +126,7 @@ dataset:
   custom_R_code: '
     data %>%
       mutate(
+        midday_WP_min = ifelse(is.na(midday_WP_omit_duplicate), midday_WP_min, NA),
         data_source = ifelse(source_id %in% c("Brodribb_unpub", "Cochard_unpub", "Mitchell_unpub", "Poot_unpub"), paste0("Data source: ", Reference), NA_character_),
         midday_WP_min_notes = ifelse(is.na(data_source), midday_WP_min_notes, ifelse(is.na(midday_WP_min_notes), data_source, paste0(midday_WP_min_notes, "; ", data_source))),
         source_id = ifelse(is.na(data_source), source_id, NA_character_)
@@ -191,7 +192,12 @@ dataset:
     that no bias was introduced by combining leaf and stem WPmin data (analysis of
     covariance (ANCOVA) interaction term, F1,112 = 0.944, P = 0.333).
   original_file: 41586_2012_BFnature11688_MOESM527_ESM.xls
-  notes: none
+  notes: Six midday water potentials from Corrigin Water Reserve (cited as Mitchell et
+    al. unpublished) are the Mitchell_2008 values rounded to 2 decimal places; they
+    are flagged in the data.csv column midday_WP_omit_duplicate and excluded by
+    custom_R_code. The other Corrigin values (water potentials at 50% and 88% loss
+    of conductivity, safety margins, and the Isopogon gardneri midday water potential,
+    which differs from Mitchell_2008) are kept.
 locations:
   Corrigin Water Reserve, Western Australia:
     latitude (deg): -32.3167
