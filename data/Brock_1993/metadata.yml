@@ -30,7 +30,25 @@ dataset:
         leaf_lobation = ifelse(`leaf shape` == "lobed","lobed",NA),
         across(c("leaf length max (cm)", "leaf length min (cm)",
                       "leaf width max (cm)", "leaf width min (cm)"), ~na_if(.x,0)) 
-      )
+      ) %>%
+      mutate(
+        .flora_key = paste(`binomial`, `leaf length max (cm)`, sep = "|"),
+        `leaf length max (cm)` = ifelse(.flora_key %in% names(c(
+          "Pandanus aquaticus|1.8" = 180
+        )), c(
+          "Pandanus aquaticus|1.8" = 180
+        )[.flora_key], `leaf length max (cm)`)
+      ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`binomial`, `leaf length min (cm)`, sep = "|"),
+        `leaf length min (cm)` = ifelse(.flora_key %in% names(c(
+          "Pandanus aquaticus|1.2" = 120
+        )), c(
+          "Pandanus aquaticus|1.2" = 120
+        )[.flora_key], `leaf length min (cm)`)
+      ) %>%
+      select(-.flora_key)
   '
   collection_date: 1993
   taxon_name: binomial
@@ -39,7 +57,11 @@ dataset:
   life_stage: adult
   sampling_strategy: unknown
   original_file: flora Northern Aust.xls
-  notes: none
+  notes: After outlier checks against other AusTraits datasets (at least 50-fold from the
+    same species, or 100-fold from the genus), flora-derived numeric values that were
+    parsing errors or unit typos in the source text are fixed in custom_R_code - 2
+    corrected where the source text gives the right value (mostly unit slips such as
+    mm for m); E. Wenk 2026-11-14.
 locations: .na
 contexts: .na
 traits:

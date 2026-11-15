@@ -27,6 +27,7 @@ dataset:
   data_is_long_format: yes
   custom_R_code:     '
     data %>%
+      filter(is.na(omit_duplicate)) %>%
       group_by(Taxon, Character) %>%
         mutate(replicate_observation = row_number()) %>%
       ungroup()
@@ -48,7 +49,12 @@ dataset:
     all taxa, but, in total >30,000 floral trait values were scored.
   original_file: qry_Lily_Data_AusTraits_2023-05-18.csv, archived in the raw data
     folder
-  notes: none
+  notes: Both this dataset and eFLOWER_2021 are exports from the PROTEUS database.
+    Records already in eFLOWER_2021 (same PROTEUS record number, NDat) are flagged in
+    the data.csv column omit_duplicate and excluded by custom_R_code (1546 rows, for
+    52 taxa scored in both exports, mostly by the original eFLOWER scorers). Records
+    for those taxa that are not in eFLOWER_2021, including those scored by Lily Dun,
+    are kept.
 locations: .na
 contexts:
 - context_property: replicate observations
@@ -585,26 +591,6 @@ traits:
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
-  replicates: .na
-  methods: Degree of ovary fusion expressed as a fraction of the total length of the
-    ovary (from the floral base to the apex of the ovary). Fusion of styles and stigmas
-    is not taken into account here. Not applicable when there is a single carpel.
-- var_in: 403. Fusion of ovaries (C1)_min
-  unit_in: '{dimensionless}'
-  trait_name: flower_ovary_fusion
-  entity_type: species
-  value_type: minimum
-  basis_of_value: measurement
-  replicates: .na
-  methods: Degree of ovary fusion expressed as a fraction of the total length of the
-    ovary (from the floral base to the apex of the ovary). Fusion of styles and stigmas
-    is not taken into account here. Not applicable when there is a single carpel.
-- var_in: 403. Fusion of ovaries (C1)_max
-  unit_in: '{dimensionless}'
-  trait_name: flower_ovary_fusion
-  entity_type: species
-  value_type: maximum
-  basis_of_value: measurement
   replicates: .na
   methods: Degree of ovary fusion expressed as a fraction of the total length of the
     ovary (from the floral base to the apex of the ovary). Fusion of styles and stigmas

@@ -1104,7 +1104,7 @@ not the main checkout's: the user switches branches in the main checkout, and it
   wording ("extrafloral nectaries", "nectar-secreting glands").
 - **Also ungated (batch 2):** from Fabaceae, inflorescences per axil, flower heads per inflorescence, peduncle diameter, stamen
   length, calyx tube and lobe length, fruit stipe length and wing width, seed orientation in the fruit, seed height from the
-  thickness, `habitat_geology`; from ferns, `rhizome_form` and (outside ferns, leaf clauses only) `leaf_heterogeneity`; from
+  thickness, `habitat_geology`; from ferns, `rhizome_form` and (outside ferns, leaf clauses only) `leaf_heterophylly`; from
   Asteraceae, `inflorescence_count` (outside Asteraceae only with "per stem / plant / scape / culm": Acacia "heads 1 or 2 per
   axil" is per axil); from Poaceae, stem / culm `internode_length`. Kept in their mode: Acacia raceme axes and spike widths, the
   papilionaceous standard / wing / keel rows, pleurogram, standard flare, pappus counts, habit-sentence suckering (vetted elsewhere).
@@ -1528,7 +1528,7 @@ leaflets**; record which division each size/count belongs to (Wenk_2025 contexts
 - **Frond traits**: `leaf_lamina_division` (1-pinnate → pinnately_compound, 2-pinnate →
   bipinnate, 3-pinnate → tripinnate, pinnatifid, bipinnatifid, trifoliate, palmatifid →
   palmately_lobed; "3-pinnatifid" and "4-pinnate" have no level, so flag); expand "2–3-pinnate"
-  to both degrees; `leaf_compoundness`; dimorphic / monomorphic fronds → `leaf_heterogeneity`
+  to both degrees; `leaf_compoundness`; dimorphic / monomorphic fronds → `leaf_heterophylly`
   anisophyllous / isophyllous; tufted / crowded / scattered → `leaf_arrangement`. Map every
   apex term in the phrase ("apex acute to acuminate" → `acute acuminate`).
 - **Growth form** is definitional by family: fern, lycophyte (Lycopodiaceae, Selaginellaceae,
