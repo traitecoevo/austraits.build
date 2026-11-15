@@ -26,8 +26,9 @@ contributors:
 dataset:
   data_is_long_format: no
   custom_R_code:        '
-    data %>% 
+    data %>%
       mutate(
+        `seed mass (mg)` = ifelse(is.na(seed_mass_omit_duplicate), `seed mass (mg)`, NA),
         remarks_for_SLA = ifelse(!(is.na(`SLA (mm2/mg)`)),
           "data from Gallagher littoral rainforest survey (data source 15)",NA),
         remarks_for_SLA = ifelse(!(is.na(SLA_from_TRY)),
@@ -88,7 +89,11 @@ dataset:
   notes: The raw data file was filtered to only include Australian species. Data sourced
     from TRY was only used if it added a new species x trait combination to AusTraits
     (just two instances for SLA, none for leaf area). Seed mass values estimated from
-    seed dimensions were also excluded.
+    seed dimensions were also excluded. Seed masses already in AusTraits from their
+    original source are flagged in the data.csv column seed_mass_omit_duplicate with
+    the dataset holding them and excluded by custom_R_code (8 of the 9 seed masses;
+    5 equal Leishman_1993 values rounded to 2 decimal places and 3 are identical to
+    Leishman_1992 values).
 locations: .na
 contexts: .na
 traits:
