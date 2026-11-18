@@ -32,3 +32,6 @@ character_values %>%
   mutate(omit_duplicate = ifelse(
     NDat %in% read_csv("data/eFLOWER_2021/data.csv")$NDat, "eFLOWER_2021", NA_character_)) %>%
   write_csv("data/eFLOWER_Dun_2022/data.csv")
+
+# Give each record the key of its source and write the references (#888)
+source("data/eFLOWER_Dun_2022/raw/add_source_id.R")
