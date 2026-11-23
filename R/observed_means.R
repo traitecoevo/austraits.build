@@ -31,49 +31,66 @@
 # value (`value_mode`) and the count of every value (`value_count`).
 #
 # Subspecies, varieties and forms are rolled up to their species; genus-level
-# names keep their own rows.
+# names and hybrid formulae keep their own rows.
+#
+# Monthly-presence traits (`flowering_time`, `fruiting_time`: a 12-letter y/n
+# string per record) are summarised like any categorical trait, so
+# `value_mode` is the most frequent whole string, not a month-by-month
+# summary.
 
 #' Traits the observed means are computed for.
 #'
-#' The data portal's core traits, plus `leaf_N_per_area`, `leaf_P_per_area`
-#' and `woodiness`, which austraits-means needs. A starting list rather than a
-#' settled scope: add a trait here to give it an observed mean. Every name
+#' The data portal's core traits; the traits the AusTraits API summarises for
+#' the ALA (`ord` in austraits-api's `API.build/dataset_prep.R`), so that both
+#' can serve these means rather than computing their own (austraits-api#16);
+#' and `leaf_N_per_area`, `leaf_P_per_area` and `woodiness`, which
+#' austraits-means needs. `pollination_system`, on both lists, waits for the
+#' APD 3.0.0 `traits.yml` (#898). `leaf_delta13C` has no rows: its values are
+#' negative, so it has no geometric mean until a transform is agreed
+#' (austraits-means#39). A starting list rather than a settled scope: add a trait here to give it an observed mean. Every name
 #' must be a trait in `config/traits.yml` (`check_observed_means_traits()`, so
 #' a renamed trait stops the release rather than silently dropping out); a
 #' trait with no usable records simply has no rows.
 observed_means_traits <- function() {
   c(
-    "bud_bank_location", "clonal_spread_mechanism",
-    "dispersal_syndrome", "dispersal_unit", "dispersers",
-    "fire_time_from_fire_to_flowering", "flower_colour", "flower_diameter",
-    "flowering_time", "fruit_colour", "fruit_dehiscence", "fruit_dry_mass",
-    "fruit_fleshiness", "fruit_height", "fruit_length", "fruit_type",
-    "fruit_width", "huber_value", "leaf_area", "leaf_area_ratio",
-    "leaf_arrangement", "leaf_axil_angle", "leaf_base_shape",
-    "leaf_compoundness", "leaf_delta13C", "leaf_dry_mass",
-    "leaf_dry_matter_content", "leaf_glaucousness", "leaf_hairs_adult_leaves",
-    "leaf_hairs_immature_leaves", "leaf_hairs_juvenile_leaves",
-    "leaf_inclination_angle", "leaf_lamina_division", "leaf_lamina_posture",
-    "leaf_length", "leaf_lobation", "leaf_margin", "leaf_margin_posture",
-    "leaf_mass_fraction", "leaf_mass_per_area", "leaf_N_per_area",
-    "leaf_N_per_dry_mass", "leaf_P_per_area", "leaf_P_per_dry_mass",
-    "leaf_phenology", "leaf_photosynthetic_rate_per_area_maximum",
+    "bark_thickness", "bud_bank_location", "clonal_spread_mechanism",
+    "dispersal_appendage", "dispersal_syndrome", "dispersal_unit",
+    "dispersers", "fire_time_from_fire_to_flowering", "flower_colour",
+    "flower_diameter", "flowering_time", "fruit_colour", "fruit_dehiscence",
+    "fruit_dry_mass", "fruit_fleshiness", "fruit_height", "fruit_length",
+    "fruit_type", "fruit_width", "fruiting_time", "genome_size",
+    "huber_value", "leaf_area", "leaf_area_ratio", "leaf_arrangement",
+    "leaf_axil_angle", "leaf_base_shape", "leaf_C_per_dry_mass",
+    "leaf_chlorophyll_per_dry_mass", "leaf_compoundness", "leaf_delta13C",
+    "leaf_dry_mass", "leaf_dry_matter_content", "leaf_glaucousness",
+    "leaf_hairs_adult_leaves", "leaf_hairs_immature_leaves",
+    "leaf_hairs_juvenile_leaves", "leaf_inclination_angle",
+    "leaf_K_per_dry_mass", "leaf_lamina_division", "leaf_lamina_posture",
+    "leaf_length", "leaf_lifespan", "leaf_lobation", "leaf_margin",
+    "leaf_margin_posture", "leaf_mass_fraction", "leaf_mass_per_area",
+    "leaf_N_per_area", "leaf_N_per_dry_mass", "leaf_P_per_area",
+    "leaf_P_per_dry_mass", "leaf_phenology",
+    "leaf_photosynthetic_rate_per_area_maximum",
     "leaf_photosynthetic_rate_per_dry_mass_maximum", "leaf_phyllotaxis",
     "leaf_shape", "leaf_stomatal_conductance_per_area_at_Amax",
     "leaf_stomatal_density_abaxial", "leaf_stomatal_density_adaxial",
-    "leaf_type", "leaf_water_content_per_dry_mass", "leaf_width",
-    "leaflet_area", "life_form", "life_history", "lifespan", "nitrogen_fixing",
-    "parasitic", "petiole_length", "photosynthetic_pathway",
-    "plant_climbing_mechanism", "plant_growth_form", "plant_growth_substrate",
-    "plant_height", "plant_height_climbing_plant", "plant_photosynthetic_organ",
-    "plant_physical_defence_structures", "plant_succulence",
-    "pollination_syndrome", "post_fire_flowering",
-    "post_fire_recruitment", "reproductive_maturity", "resprouting_capacity",
-    "root_structure", "seed_dormancy_class", "seed_dry_mass", "seed_length",
+    "leaf_tannin_per_dry_mass", "leaf_type",
+    "leaf_water_content_per_dry_mass", "leaf_width", "leaf_work_to_punch",
+    "leaflet_area", "life_form", "life_history", "lifespan",
+    "nitrogen_fixing", "parasitic", "petiole_length",
+    "photosynthetic_pathway", "plant_climbing_mechanism", "plant_growth_form",
+    "plant_growth_substrate", "plant_height", "plant_height_climbing_plant",
+    "plant_photosynthetic_organ", "plant_physical_defence_structures",
+    "plant_spinescence", "plant_succulence", "plant_tolerance_inundation",
+    "plant_tolerance_salt", "ploidy", "pollination_syndrome",
+    "post_fire_flowering", "post_fire_recruitment", "reproductive_maturity",
+    "resprouting_capacity", "root_shoot_ratio", "root_structure",
+    "seed_dormancy_class", "seed_dry_mass", "seed_germination", "seed_length",
     "seed_shape", "seed_viability", "seed_width", "seedbank_location",
-    "seedbank_longevity_class", "serotiny", "sex_type", "stem_density",
-    "stem_growth_habit", "stem_mass_fraction", "stem_vessel_density",
-    "stem_vessel_diameter", "stem_vessel_lumen_fraction", "storage_organ",
+    "seedbank_longevity_class", "seedling_establishment_conditions",
+    "serotiny", "sex_type", "stem_density", "stem_growth_habit",
+    "stem_mass_fraction", "stem_vessel_density", "stem_vessel_diameter",
+    "stem_vessel_lumen_fraction", "storage_organ",
     "vegetative_reproduction_ability", "wood_density", "woodiness",
     "woodiness_detailed"
   )
@@ -142,24 +159,36 @@ observed_means <- function(database,
 
 #' Records of the given traits, with infraspecific taxa rolled up to species.
 #'
-#' Records of a subspecies, variety or form are relabelled with their species
-#' (the taxa table's `binomial`). Taxon details (`taxon_rank`, `genus`,
-#' `family`, `establishment_means`, `taxon_id`) then come from the species'
-#' own row of the taxa table; a species that has no row of its own gets rank
-#' "species" and keeps its records' genus and family.
+#' Records of a subspecies, variety or form are relabelled with their species:
+#' the name up to its rank marker (`subsp.`, `var.`, `f.`, ...), so that
+#' *Mentha x piperita var. citrata* becomes *Mentha x piperita*. The taxa
+#' table's `binomial` is not used: for a hybrid it holds the first two words,
+#' "Mentha x" or the first parent. Hybrid formulae and intergrades (*Acacia
+#' trachycarpa x Acacia tumida var. pilbarensis*, *Myoporum acuminatum -
+#' Myoporum boninense subsp. australe*) are not rolled up, since they belong
+#' to neither parent; they keep their own rows and ranks.
+#'
+#' A rolled-up record gets rank "species" and keeps its own `genus` and
+#' `family` (the same as its species'); `establishment_means` and `taxon_id`
+#' come from the species' row of the taxa table, and are empty for a species
+#' that has no row of its own.
 #'
 #' @param flattened a flattened database.
 #' @param taxa the database's taxa table.
 #' @param traits trait names to keep.
 observed_means_records <- function(flattened, taxa, traits) {
 
+  rank_marker <- "\\s(subsp|var|f|forma|nothosubsp|nothovar)\\.\\s.*$"
+  hybrid_formula <- "\\s(x|-)\\s[A-Z]"
+
   species_of <- taxa |>
     dplyr::filter(
       .data$taxon_rank %in% c("subspecies", "variety", "form"),
-      !is.na(.data$binomial),
-      .data$binomial != .data$taxon_name
+      grepl(rank_marker, .data$taxon_name),
+      !grepl(hybrid_formula, .data$taxon_name)
     ) |>
-    dplyr::distinct(.data$taxon_name, .species = .data$binomial)
+    dplyr::distinct(.data$taxon_name) |>
+    dplyr::mutate(.species = sub(rank_marker, "", .data$taxon_name))
 
   flattened |>
     dplyr::filter(.data$trait_name %in% traits) |>
@@ -340,7 +369,7 @@ observed_means_reliability <- function(n_datasets, n_records) {
 observed_means_dictionary <- function() {
   tibble::tribble(
     ~column, ~definition,
-    "taxon_name", "Taxon name as aligned in the AusTraits build, with subspecies, varieties and forms rolled up to their species. Genus-level names are kept as their own rows.",
+    "taxon_name", "Taxon name as aligned in the AusTraits build, with subspecies, varieties and forms rolled up to their species. Genus-level names and hybrid formulae are kept as their own rows.",
     "trait_name", "AusTraits trait name (APD).",
     "unit", "Unit of the numeric trait values; empty for categorical traits.",
     "estimate_type", "Always observed_mean: computed directly from the records, with no model.",

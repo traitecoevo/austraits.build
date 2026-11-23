@@ -160,6 +160,30 @@ test_that("subspecies, varieties and forms are rolled up to their species", {
   expect_equal(means$value[means$taxon_name == "Acacia a"], 4)
 })
 
+test_that("hybrids roll up to the nothospecies, and hybrid formulae not at all", {
+  # Names and binomials as the taxa table of the development build has them:
+  # for a hybrid, `binomial` is the first two words, which is not the species
+  taxa <- tibble::tibble(
+    taxon_name = c(
+      "Mentha x piperita var. citrata",
+      "Acacia trachycarpa x Acacia tumida var. pilbarensis",
+      "Myoporum acuminatum - Myoporum boninense subsp. australe",
+      "Prostanthera latifolia"
+    ),
+    taxon_rank = c("variety", "variety", "subspecies", "variety"),
+    binomial = c("Mentha x", "Acacia trachycarpa", "Myoporum acuminatum", "Prostanthera latifolia"),
+    establishment_means = NA_character_,
+    taxon_id = NA_character_
+  )
+  flattened <- dplyr::bind_rows(lapply(taxa$taxon_name, record, trait_name = "plant_height", value = 1)) |>
+    dplyr::select(-"establishment_means", -"taxon_id") |>
+    dplyr::mutate(taxon_rank = taxa$taxon_rank)
+
+  records <- observed_means_records(flattened, taxa, traits = "plant_height")
+  expect_equal(records$taxon_name, c("Mentha x piperita", taxa$taxon_name[2:4]))
+  expect_equal(records$taxon_rank, c("species", "variety", "subspecies", "variety"))
+})
+
 test_that("`post_export()` writes the observed means of a database", {
   skip_if_not_installed("arrow")
   withr::local_dir(root)
@@ -186,8 +210,9 @@ test_that("`post_export()` writes the observed means of a database", {
   expect_equal(unique(means$method), "geometric")
   # one row per taxon x trait x unit
   expect_equal(anyDuplicated(means[c("taxon_name", "trait_name", "unit")]), 0)
-  # no infraspecific taxa
-  expect_false(any(means$taxon_rank %in% c("subspecies", "variety", "form")))
+  # no infraspecific taxa, other than hybrid formulae
+  infraspecific <- means$taxon_rank %in% c("subspecies", "variety", "form")
+  expect_false(any(infraspecific & !grepl("\\s(x|-)\\s[A-Z]", means$taxon_name)))
 
   numeric <- means[means$type == "numerical", ]
   expect_true(all(numeric$value > 0))
