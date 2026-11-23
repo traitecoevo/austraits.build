@@ -244,7 +244,7 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
 
     This writes `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, the observed means (`austraits-x.x.x-observed-means.parquet`, `.csv.gz` and `-dictionary.csv`), `austraits-x.x.x.zip`, `dictionary.html` and `NEWS.md` to `export/data/austraits-x.x.x/`. `export/` is not committed.
 
-    The observed means are one value per taxon and trait, computed from the records by `R/observed_means.R`, for the traits listed in `observed_means_traits()`. Open the parquet and check a few species you know.
+    The observed means are one value per taxon and trait, for every trait, computed from the records by `traits.use::summarise_trait_means()` (`R/observed_means.R` holds AusTraits' settings for it). Open the parquet and check a few species you know.
 
 6.  Add the new release to the top of the root `NEWS.md`: copy the automated summary from `export/data/austraits-x.x.x/NEWS.md` and add the personalised details. `create_release()` doesn't touch the root `NEWS.md`, which holds every past release.
 
@@ -281,6 +281,6 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
 
 -   If `create_release()` stops while rendering `news.Rmd`, the previous release's rds isn't where step 4 puts it.
 
--   If `create_release()` stops with "Traits listed for the observed means are not in `config/traits.yml`", a trait in `observed_means_traits()` (`R/observed_means.R`) was renamed or removed in the APD. Rename or drop it there. CI checks the same list against `config/traits.yml`, so this should surface on the `traits.yml` branch, not at release.
+-   If `create_release()` stops with "The observed means' columns do not match", the installed traits.use is older or newer than this repository expects. Install the traits.use release listed in `DESCRIPTION`.
 
 -   Zenodo's metadata (creators, description, related identifiers) is typed into the web form, and each new version starts as a copy of the previous one. Nothing flows from `config/metadata.yml`, so check the creators and related identifiers by eye.

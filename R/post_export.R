@@ -11,14 +11,15 @@
 #
 #   austraits-<version>-observed-means.parquet         one value per taxon and
 #   austraits-<version>-observed-means.csv.gz          trait, computed from the
-#   austraits-<version>-observed-means-dictionary.csv  records; method and
-#                                                      columns are in
-#                                                      `R/observed_means.R`
+#   austraits-<version>-observed-means-dictionary.csv  records, by
+#                                    `traits.use::summarise_trait_means()`;
+#                                    AusTraits' settings for it are in
+#                                    `R/observed_means.R`
 #
 # They are written here, at release, rather than in a `post_build()` step,
-# because a `post_build()` runs on every build: these take about three
-# minutes (roughly 25 seconds to flatten, 50 to save the rds, 25 for parquet,
-# and 100 for the observed means). Parquet is an AusTraits release output
+# because a `post_build()` runs on every build: these take about two minutes
+# (roughly 25 seconds to flatten, 50 to save the rds, 25 for parquet, and 10
+# for the observed means). Parquet is an AusTraits release output
 # rather than a traits.build one (traits.build#201), which is why it is
 # written here. A release needs `arrow` installed.
 #
@@ -33,14 +34,10 @@ post_export <- function(database, path) {
 
   version_number <- database$build_info$version
 
-  # before anything slow: a trait renamed in `config/traits.yml` but not in the
-  # observed means' list stops the release here
-  check_observed_means_traits()
-
   flattened <- traits.use::flatten_database(database)
 
   saveRDS(flattened, file.path(path, sprintf("austraits-%s-flattened.rds", version_number)))
   arrow::write_parquet(flattened, file.path(path, sprintf("austraits-%s-flattened.parquet", version_number)))
 
-  write_observed_means(observed_means(database, flattened), path, version_number)
+  write_observed_means(observed_means(database), path, version_number)
 }
