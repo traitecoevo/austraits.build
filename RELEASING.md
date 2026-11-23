@@ -242,7 +242,9 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
     create_release(austraits, v_prev = "p.p.p")
     ```
 
-    This writes `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, `austraits-x.x.x.zip`, `dictionary.html` and `NEWS.md` to `export/data/austraits-x.x.x/`. `export/` is not committed.
+    This writes `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, the observed means (`austraits-x.x.x-observed-means.parquet`, `.csv.gz` and `-dictionary.csv`), `austraits-x.x.x.zip`, `dictionary.html` and `NEWS.md` to `export/data/austraits-x.x.x/`. `export/` is not committed.
+
+    The observed means are one value per taxon and trait, computed from the records by `R/observed_means.R`, for the traits listed in `observed_means_traits()`. Open the parquet and check a few species you know.
 
 6.  Add the new release to the top of the root `NEWS.md`: copy the automated summary from `export/data/austraits-x.x.x/NEWS.md` and add the personalised details. `create_release()` doesn't touch the root `NEWS.md`, which holds every past release.
 
@@ -263,6 +265,7 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
 11. Add a new version to Zenodo ([10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417)):
 
     -   replace the files (`austraits-x.x.x.zip`, `austraits-x.x.x.rds`, `NEWS.md`, `dictionary.html`, and the root `README.md`, which `create_release()` doesn't write), checking against the previous version's file list
+    -   add the three observed-means files, which are new from the release after 7.0.0
     -   update the version number and date
     -   update the version number for the files in the description
 
@@ -277,5 +280,7 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
 -   The versions in `config/metadata.yml` drift between releases. Check each against `DESCRIPTION` and `apd_version` in `scripts/build_traits_yml_from_APD.R`.
 
 -   If `create_release()` stops while rendering `news.Rmd`, the previous release's rds isn't where step 4 puts it.
+
+-   If `create_release()` stops with "Traits listed for the observed means are not in `config/traits.yml`", a trait in `observed_means_traits()` (`R/observed_means.R`) was renamed or removed in the APD. Rename or drop it there. CI checks the same list against `config/traits.yml`, so this should surface on the `traits.yml` branch, not at release.
 
 -   Zenodo's metadata (creators, description, related identifiers) is typed into the web form, and each new version starts as a copy of the previous one. Nothing flows from `config/metadata.yml`, so check the creators and related identifiers by eye.
