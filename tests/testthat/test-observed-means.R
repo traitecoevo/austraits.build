@@ -86,7 +86,9 @@ test_that("`post_export()` writes the observed means of a database", {
   expect_equal(sort(unique(means$trait_name[means$method == "arithmetic"])),
                sort(intersect(signed, means$trait_name)))
   expect_gt(sum(means$method == "arithmetic"), 0)
-  expect_true(all(means$method[means$type == "categorical"] == "geometric"))
+  # categorical rows: the most frequent value, or for month traits the months
+  # at least half the records give
+  expect_true(all(means$method[means$type == "categorical"] %in% c("mode", "majority")))
   expect_equal(anyDuplicated(means[c("taxon_name", "trait_name", "unit")]), 0)
 
   # the csv holds the same table
