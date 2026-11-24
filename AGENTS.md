@@ -4,7 +4,7 @@
 compilation of traits for Australian plant species (Falster et al. 2021,
 doi:10.1038/s41597-021-01006-6). It holds the raw source datasets and the configuration that the
 `traits.build` engine harmonises into the released AusTraits resource. Type is `Compendium`, not a
-package; it `Depends` on `traits.build (>= 2.1.0)`.
+package; it `Depends` on `traits.build (>= 3.0.0)`.
 
 ## Repo-local guidance
 
