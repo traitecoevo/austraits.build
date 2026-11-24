@@ -6,7 +6,8 @@
 #'
 #' The steps around this function are in `RELEASING.md`.
 #'
-#' The flattened database, as rds and parquet, is written by `post_export()` in
+#' The flattened database, as rds and parquet, and the observed means (one value
+#' per taxon and trait, `R/observed_means.R`) are written by `post_export()` in
 #' `R/post_export.R`, which `traits.build::build_post_export()` runs.
 #'
 #' @param austraits AusTraits database object
@@ -26,7 +27,7 @@ create_release <- function(austraits, v_prev= NULL) {
   filename <- sprintf(I("%s/austraits-%s.rds"), export_dir, version_number)
   saveRDS(austraits, filename)
 
-  # flattened database, as rds and parquet
+  # flattened database, as rds and parquet, and the observed means
   traits.build::build_post_export(austraits, export_dir)
 
   # dictionary_target:
