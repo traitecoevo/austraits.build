@@ -1,0 +1,334 @@
+source:
+  dataset:
+    key: WA_Seed_Centre_2026
+    bibtype: Online
+    author: Botanic Gardens and Parks Authority
+    year: 2026
+    title: WA Seed Centre Kings Park dataset from Australian Virtual Seed Bank
+    publisher: Australian Virtual Seed Bank
+    url: https://seedbank.ala.org.au
+contributors:
+  data_collectors:
+  - last_name: Stevens
+    given_name: Jason C.
+    ORCID: 0000-0001-5821-9206
+    affiliation: Kings Park Science, Botanic Gardens and Parks Authority
+  - last_name: Crawford
+    given_name: Andrew
+    ORCID: 0000-0002-9902-9940
+    affiliation: Western Australian Seed Centre, Kensington, Department of Biodiversity,
+      Conservation and Attractions
+  - last_name: Stray
+    given_name: Matthew
+    ORCID: .na.character
+    affiliation: Western Australian Seed Centre, Botanic Gardens and Parks Authority
+  - last_name: Eyles
+    given_name: Kathryn
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership
+  - last_name: Desmond
+    given_name: Bradley
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        location_name = ifelse(
+          !is.na(`Decimal Latitude`),
+          paste0("seeds_collected_at_", `Decimal Latitude`, "_lat_and_", `Decimal Longitude`, "_long"),
+          NA
+        ),
+        collection_date = dplyr::coalesce(
+          as.character(`Collection Date`),
+          stringr::str_sub(as.character(`Storage Date`), 1, 4),
+          stringr::str_sub(as.character(`Date Tested`), 1, 4),
+          "2026"
+        ),
+        basis_of_record = ifelse(`Collection provenance` == "Cultivated/domestic source", "captive_cultivated", "field"),
+        gm_per_seed = ifelse(as.numeric(`Seed/gm`) > 0, 1 / as.numeric(`Seed/gm`), NA),
+        seed_mass_replicates = as.character(round(dplyr::coalesce(
+          as.numeric(`Quantity (g)`) / gm_per_seed,
+          as.numeric(`Quantity (count)`)
+        ))),
+        seed_mass_replicates = dplyr::na_if(seed_mass_replicates, "0"),
+        measurement_remarks = ifelse(!is.na(Collector), paste0("Collector: ", Collector), NA)
+      ) %>%
+      filter(!is.na(`Scientific Name`))
+    '
+  collection_date: collection_date
+  taxon_name: Scientific Name
+  location_name: location_name
+  description: Seed trait data from the WA Seed Centre Kings Park, part of the Botanic
+    Gardens and Parks Authority, including seed mass of collected seeds and data on
+    germination trials.
+  life_stage: adult
+  measurement_remarks: measurement_remarks
+  sampling_strategy: A key function of the Botanic Gardens and Parks Authority is
+    to conserve, manage, display and undertake research into collections of Western
+    Australian flora, and to promote the understanding of biodiversity. The WA Seed
+    Centre Kings Park is located in the Biodiversity Conservation Centre in Kings
+    Park and Botanic Garden and has been involved in the collection, storage and testing
+    of Western Australian native plant seed for over 40 years. Seeds from over 3500
+    different plant species are stored in the seedbank and maintained to International
+    Standards.
+  original_file: Data downloaded from the Australian Virtual Seed Bank
+    (https://seedbank.ala.org.au) GraphQL API (https://events-databox.ala.org.au/graphql)
+    on 10 Nov 2026, all records for The Western Australian Seed Centre (Kings Park).
+  notes: data.csv has one row per seed accession and one row per germination trial (with
+    its treatment and the accession's taxon, locality and dates), distinguished by `Event
+    Type`. Where an accession has no collection date, collection_date is the year it went
+    into storage, else the year of the germination test, else 2026 (download year). Rows
+    with `Data Version` = "2025 download" are values from the Feb 2025 download that are
+    no longer in the Australian Virtual Seed Bank.
+identifiers:
+- var_in: Accession Number
+  identifier_type: catalogNumber
+  institution_code: Western Australia Botanic Gardens and Parks Authority
+locations: locations.csv
+contexts:
+- context_property: storage relative humidity (%)
+  category: treatment_context
+  var_in: Storage Relative Humidity
+- context_property: storage seed bank
+  category: treatment_context
+  var_in: Storage Seed Bank
+- context_property: seed collection fill rate
+  category: treatment_context
+  var_in: Collection Fill Rate / X-Ray
+- context_property: seed germination media/substrate
+  category: treatment_context
+  var_in: Treatment Media/Substrate
+- context_property: seed germination light hours
+  category: treatment_context
+  var_in: Treatment Light Hours
+- context_property: seed germination dark hours
+  category: treatment_context
+  var_in: Treatment Dark Hours
+- context_property: seed germination day temperature
+  category: treatment_context
+  var_in: Treatment Day Temp
+- context_property: seed germination night temperature
+  category: treatment_context
+  var_in: Treatment Night Temp
+- context_property: seed germination pretreatment
+  category: treatment_context
+  var_in: Treatment Pretreatment
+- context_property: AVSB data version
+  category: method_context
+  var_in: Data Version
+traits:
+- var_in: gm_per_seed
+  unit_in: g
+  trait_name: seed_dry_mass
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: seed_mass_replicates
+  basis_of_record: basis_of_record
+  methods: The average number of seeds or fruits per gram of the accession. This may
+    be an estimate.
+- var_in: Adjusted Germination %
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  basis_of_record: lab
+  methods: The proportion of seeds germinated, expressed as a percentage of the total
+    viable seeds tested.
+- var_in: Germination Treatment (mapped)
+  unit_in: .na
+  trait_name: seed_germination_treatment
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  basis_of_record: lab
+  methods: Summary of any physical or chemical treatment(s) applied to a seed before
+    it is tested. The pretreatment recorded for each germination trial is grouped into
+    treatment categories.
+substitutions: .na
+taxonomic_updates:
+- find: Acacia
+  replace: Acacia sp. [Acacia; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Arbutus
+  replace: Arbutus sp. [Arbutus; WA_Seed_Centre_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-11)
+  taxonomic_resolution: genus
+- find: Austrostipa
+  replace: Austrostipa sp. [Austrostipa; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Baeckea
+  replace: Baeckea sp. [Baeckea; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Banksia
+  replace: Banksia sp. [Banksia; WA_Seed_Centre_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-11)
+  taxonomic_resolution: genus
+- find: Calandrinia
+  replace: Calandrinia sp. [Calandrinia; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Callistachys
+  replace: Callistachys sp. [Callistachys; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Chamelaucium
+  replace: Chamelaucium sp. [Chamelaucium; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Conostylis
+  replace: Conostylis sp. [Conostylis; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Eucalyptus
+  replace: Eucalyptus sp. [Eucalyptus; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Eucalyptus buprestium x Eucalyptus staeri
+  replace: Eucalyptus x [Eucalyptus buprestium x Eucalyptus staeri; WA_Seed_Centre_2026_2]
+  reason: Exact match to APC genus. Taxon name includes ' x ' indicating a hybrid
+    taxon and taxon can only be aligned to genus-rank (2025-02-26)
+  taxonomic_resolution: genus
+- find: Eucalyptus connexa
+  replace: Eucalyptus connata
+  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
+    and filler words are removed (2026-11-11)
+  taxonomic_resolution: species
+- find: Eucalyptus macrocarpa x Eucalyptus pyriformis
+  replace: Eucalyptus x [Eucalyptus macrocarpa x Eucalyptus pyriformis; WA_Seed_Centre_2026]
+  reason: Exact match to APC genus. Taxon name includes ' x ' indicating a hybrid
+    taxon and taxon can only be aligned to genus-rank (2026-11-11)
+  taxonomic_resolution: genus
+- find: Eucalyptus preissiana x Eucalyptus staeri
+  replace: Eucalyptus x [Eucalyptus preissiana x Eucalyptus staeri; WA_Seed_Centre_2026_2]
+  reason: Exact match to APC genus. Taxon name includes ' x ' indicating a hybrid
+    taxon and taxon can only be aligned to genus-rank (2025-02-26)
+  taxonomic_resolution: genus
+- find: Fimbristylis
+  replace: Fimbristylis sp. [Fimbristylis; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Goodenia
+  replace: Goodenia sp. [Goodenia; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Grevillea
+  replace: Grevillea sp. [Grevillea; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Hakea
+  replace: Hakea sp. [Hakea; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Heliotropium
+  replace: Heliotropium sp. [Heliotropium; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Ipomoea
+  replace: Ipomoea sp. [Ipomoea; WA_Seed_Centre_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-11)
+  taxonomic_resolution: genus
+- find: Lasiopetalum
+  replace: Lasiopetalum sp. [Lasiopetalum; WA_Seed_Centre_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-11)
+  taxonomic_resolution: genus
+- find: Lomandra
+  replace: Lomandra sp. [Lomandra; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Patersonia
+  replace: Patersonia sp. [Patersonia; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Rhodanthe
+  replace: Rhodanthe sp. [Rhodanthe; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Scholtzia
+  replace: Scholtzia sp. [Scholtzia; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Senecio
+  replace: Senecio sp. [Senecio; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Senna
+  replace: Senna sp. [Senna; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Sesbania
+  replace: Sesbania sp. [Sesbania; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Sporobolus
+  replace: Sporobolus sp. [Sporobolus; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Stackhousia
+  replace: Stackhousia sp. [Stackhousia; WA_Seed_Centre_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-11)
+  taxonomic_resolution: genus
+- find: Stenocarpus
+  replace: Stenocarpus sp. [Stenocarpus; WA_Seed_Centre_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-11)
+  taxonomic_resolution: genus
+- find: Stipa
+  replace: Stipa sp. [Stipa; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APNI-listed genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Thryptomene
+  replace: Thryptomene sp. [Thryptomene; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Xanthorrhoea
+  replace: Xanthorrhoea sp. [Xanthorrhoea; WA_Seed_Centre_2026_2]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+exclude_observations:
+- variable: taxon_name
+  find: Acrocarpus fraxinifolius, Calodendrum, Cassia javanica, Epidendrum ibaguense,
+    Inga ynga, Welwitschia mirabilis
+  reason: non-native, non-naturalised taxa
+- variable: location_name
+  find: seeds_collected_at_-39.533333_lat_and_26.85_long
+  reason: coordinates outside Australia
+questions: .na
