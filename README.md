@@ -66,10 +66,10 @@ To build the database follows these steps
 
 ***Install `traits.build`***
 
-The first step is to install a copy of [traits.build](https://github.com/traitecoevo/traits.build/). This installs version 3.0.0, which is what this repository builds with, together with [traits.use](https://github.com/traitecoevo/traits.use/), which `traits.build` depends on:
+The first step is to install a copy of [traits.build](https://github.com/traitecoevo/traits.build/). This installs its `develop` branch, which is what this repository builds with, together with [traits.use](https://github.com/traitecoevo/traits.use/), which `traits.build` depends on:
 
 ```r
-remotes::install_github("traitecoevo/traits.build@v3.0.0", quick = TRUE)
+remotes::install_github("traitecoevo/traits.build", quick = TRUE)
 ```
 ***Clone repository***
 
