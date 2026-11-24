@@ -9,31 +9,39 @@
 root <- normalizePath(file.path("..", ".."))
 source(file.path(root, "R", "observed_means.R"), local = TRUE)
 
-test_that("AVH_2026's label bounds are used as observations", {
-  # One specimen bound per record, as the AVH height dataset has them
+test_that("AVH_2026's label bounds are used as records", {
+  # As the AVH height dataset has them: one bound per specimen, basis field,
+  # each specimen at its own location; one location with two specimens
   records <- tibble::tibble(
-    dataset_id = "AVH_2026", taxon_name = "Acacia a", observation_id = c("01", "02", "03"),
-    trait_name = "plant_height", value = c("1", "4", "100"), unit = "m",
-    value_type = c("minimum", "maximum", "raw"), basis_of_record = "preserved_specimen",
-    location_id = NA_character_, original_name = "Acacia a"
+    dataset_id = "AVH_2026", taxon_name = "Acacia a", observation_id = c("01", "02", "03", "04"),
+    trait_name = "plant_height", value = c("1", "4", "2", "8"), unit = "m",
+    value_type = c("minimum", "maximum", "maximum", "maximum"), basis_of_record = "field",
+    location_id = c("01", "02", "03", "03"), original_name = "Acacia a"
   )
 
   means <- observed_means(records)
-  # the two bounds are two observations in one group; `raw` is not a value
-  # type this dataset is given
-  expect_equal(means$value, 2)
-  expect_equal(means$n_records, 2)
+  # three location groups: 1, 4 and the geometric mean of 2 and 8, which is 4
+  expect_equal(means$n_records, 4)
+  expect_equal(means$n_locations, 3)
+  expect_equal(means$value, exp(mean(log(c(1, 4, 4)))))
   expect_equal(means$n_flora, 0)
 
-  # another dataset's bounds are a flora range each, and its raw record is used
-  other <- observed_means(dplyr::mutate(records, dataset_id = "Other_2020"))
-  expect_equal(other$n_records, 3)
-  expect_equal(other$n_flora, 2)
+  # without the rule, field bounds are not used at all
+  other <- traits.use::summarise_trait_means(records)
+  expect_equal(nrow(other), 0)
 })
 
 test_that("the dictionary must match the columns written", {
   means <- observed_means(traits.use::austraits_lite)
   path <- withr::local_tempdir()
+
+  # a database without some taxon columns writes the columns it has
+  fewer <- dplyr::select(means, -"establishment_means")
+  expect_length(write_observed_means(fewer, path, "0.0.0"), 3)
+  unlink(dir(path, full.names = TRUE))
+
+  # an unversioned database cannot name its files
+  expect_error(write_observed_means(means, path, NULL), "no version")
   expect_error(
     write_observed_means(dplyr::rename(means, mean = "value"), path, "0.0.0"),
     "do not match"
@@ -65,12 +73,19 @@ test_that("`post_export()` writes the observed means of a database", {
   expect_equal(names(dictionary), c("column", "type", "definition"))
   expect_false(anyNA(dictionary$definition))
 
-  # every trait of the database, one row per taxon x trait x unit
+  # every categorical trait of the database, and every numeric trait with a
+  # usable record; one row per taxon x trait x unit
   expect_setequal(means$trait_name[means$type == "categorical"],
                   unique(database$traits$trait_name[is.na(database$traits$unit)]))
+  numeric_traits <- unique(database$traits$trait_name[!is.na(database$traits$unit) &
+                                                        database$traits$value_type %in% c("raw", "mean", "median")])
+  expect_true(all(numeric_traits %in% means$trait_name))
   expect_equal(unique(means$estimate_type), "observed_mean")
-  # geometric, or arithmetic for a trait on a signed scale
-  expect_true(all(means$method %in% c("geometric", "arithmetic")))
+  # arithmetic for traits on a signed scale, which austraits_lite has
+  signed <- names(Filter(function(d) isTRUE(as.numeric(d$allowed_values_min) < 0), database$definitions))
+  expect_equal(sort(unique(means$trait_name[means$method == "arithmetic"])),
+               sort(intersect(signed, means$trait_name)))
+  expect_gt(sum(means$method == "arithmetic"), 0)
   expect_true(all(means$method[means$type == "categorical"] == "geometric"))
   expect_equal(anyDuplicated(means[c("taxon_name", "trait_name", "unit")]), 0)
 

@@ -8,7 +8,8 @@
 # The calculation is `traits.use::summarise_trait_means()`, which any
 # traits.build database can use; its help page describes the method. In
 # brief: for a numeric trait, the geometric mean of dataset x location means
-# and flora range midpoints, each counting once; for a categorical trait, the
+# and flora range midpoints, each counting once (an arithmetic mean for a
+# trait whose values can be negative); for a categorical trait, the
 # most frequent value and the count of every value; for every trait in the
 # database, with subspecies, varieties and forms rolled up to their species.
 #
@@ -22,9 +23,12 @@
 #' A dataset listed here enters the observed means with the value types given
 #' here, as observations, instead of the default raw, mean and median.
 #'
-#' `AVH_2026` (heights from herbarium specimen labels) carries one bound per
-#' specimen, a minimum or a maximum, and no raw values, so the default would
-#' drop all of it. Each bound is used as one observation.
+#' `AVH_2026` (heights from herbarium specimen labels) records a minimum or a
+#' maximum per specimen, and a few specimens both, with `basis_of_record`
+#' `field` and no raw values. The default uses bounds only from preserved
+#' specimens and the literature, so it would drop all of them. With this rule
+#' each bound is a record, averaged with the other AVH records at its location
+#' (one specimen per location, mostly) like a raw value.
 #'
 #' @return tibble(dataset_id, value_type), one row per allowed combination.
 observed_means_value_type_rules <- function() {
@@ -59,7 +63,15 @@ observed_means <- function(database) {
 #' @return the three file paths, invisibly.
 write_observed_means <- function(means, path, version_number) {
 
+  if (length(version_number) != 1 || is.na(version_number) || !nzchar(version_number)) {
+    stop("The database records no version (`build_info$version`), which names the files; ",
+         "build it with `build_add_version()`, as `build.R` does.", call. = FALSE)
+  }
+
+  # A taxon column is in the table only if the database's taxa table has it
   dictionary <- traits.use::trait_means_dictionary()
+  dictionary <- dictionary[dictionary$column %in% names(means) |
+                             !dictionary$column %in% c("taxon_rank", "genus", "family", "establishment_means", "taxon_id"), ]
   if (!identical(names(means), dictionary$column)) {
     stop(
       "The observed means' columns do not match `traits.use::trait_means_dictionary()`: ",

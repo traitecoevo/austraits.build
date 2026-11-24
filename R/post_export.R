@@ -33,6 +33,10 @@ source("R/observed_means.R", local = TRUE)
 post_export <- function(database, path) {
 
   version_number <- database$build_info$version
+  if (length(version_number) != 1 || is.na(version_number) || !nzchar(version_number)) {
+    stop("The database records no version (`build_info$version`), which names the release files; ",
+         "build it with `build_add_version()`, as `build.R` does.", call. = FALSE)
+  }
 
   flattened <- traits.use::flatten_database(database)
 
