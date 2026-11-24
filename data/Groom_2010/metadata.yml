@@ -10,7 +10,26 @@ source:
     number: 1-2
     pages: 61--72
     doi: 10.1007/s11104-009-0135-6
-  secondary:
+  source:
+  - key: Groom_2004
+    bibtype: Article
+    year: 2004
+    author: P. K. Groom and B. B. Lamont
+    title: Fruit and seed development in two Hakea species (Proteaceae)
+    journal: Journal of the Royal Society of Western Australia
+    volume: '87'
+    pages: 135--138
+  - key: Lamont_2002_2
+    bibtype: Article
+    year: 2002
+    author: B. B. Lamont and P. K. Groom
+    title: Green cotyledons of two Hakea species control seedling mass and morphology
+      by supplying mineral nutrients rather than organic compounds
+    journal: New Phytologist
+    volume: '153'
+    number: '1'
+    pages: 101--110
+    doi: 10.1046/j.0028-646x.2001.00300.x
   - key: Pate_1986
     bibtype: Article
     year: '1986'
@@ -22,6 +41,17 @@ source:
     number: '6'
     pages: 747--770
     doi: 10.1093/oxfordjournals.aob.a087159
+  - key: Stock_1989
+    bibtype: Article
+    year: 1989
+    author: W. D. Stock and J. S. Pate and J. Kuo and A. P. Hansen
+    title: Resource control of seed set in Banksia laricina C. Gardner (Proteaceae)
+    journal: Functional Ecology
+    volume: '3'
+    number: '4'
+    pages: 453--460
+    doi: 10.2307/2389619
+  secondary:
   - key: Stock_1991
     bibtype: Article
     year: '1991'
@@ -56,7 +86,9 @@ dataset:
         `P_content_mg_g-1` = if_else(source %in% c("Kuo_1982","Denton_2007",
                             "Milberg_1998","Milberg_1997","Hocking_1982","Hocking_1986"),
                             0, `P_content_mg_g-1`),
-        across(c(`seed_dry_mass_mg`,`P_content_mg_g-1`), ~na_if(.x, 0))
+        across(c(`seed_dry_mass_mg`,`P_content_mg_g-1`), ~na_if(.x, 0)),
+        seed_source_id = ifelse(source %in% c("Kuo_1982","Denton_2007","Milberg_1998","Milberg_1997","Hocking_1982","Hocking_1986"),
+                                NA_character_, dplyr::recode(source, Lamont_2002 = "Lamont_2002_2"))
       ) %>%
       group_by(species) %>%
         mutate(across(c(`fire_response`, `serotiny`), replace_duplicates_with_NA)) %>%
@@ -121,6 +153,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
+  source_id: seed_source_id
   methods: values sourced from other studies; values from Denton_2007 have been removed,
     since we also have this study in AusTraits
 - var_in: P_content_mg_g-1
@@ -130,6 +163,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
+  source_id: seed_source_id
   methods: values sourced from other studies; values from Denton_2007 have been removed,
     since we also have this study in AusTraits
 substitutions:
