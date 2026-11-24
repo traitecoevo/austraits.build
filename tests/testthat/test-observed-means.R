@@ -69,7 +69,9 @@ test_that("`post_export()` writes the observed means of a database", {
   expect_setequal(means$trait_name[means$type == "categorical"],
                   unique(database$traits$trait_name[is.na(database$traits$unit)]))
   expect_equal(unique(means$estimate_type), "observed_mean")
-  expect_equal(unique(means$method), "geometric")
+  # geometric, or arithmetic for a trait on a signed scale
+  expect_true(all(means$method %in% c("geometric", "arithmetic")))
+  expect_true(all(means$method[means$type == "categorical"] == "geometric"))
   expect_equal(anyDuplicated(means[c("taxon_name", "trait_name", "unit")]), 0)
 
   # the csv holds the same table
