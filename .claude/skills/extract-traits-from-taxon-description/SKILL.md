@@ -35,6 +35,11 @@ if kept, is a scratch script; the CSVs are the deliverables.
 
 ## What to read
 
+The PDF is always in `~/GitHub/austraits.build/export/pdfs/` or
+`~/Library/CloudStorage/OneDrive-UNSW/Documents/data_for_GitHub_repos/austraits.build/*processed pdfs/`
+(literal `*` in the folder name; quote the path), named `<dataset_id>.pdf` --
+look there before asking the user for it.
+
 Read the whole paper. Every part can hold characters:
 
 | Section | Holds |

@@ -21,6 +21,14 @@ that the reconnaissance skill's own doc doesn't mention.
 
 ## Step 0 -- identify the dataset id and read the whole paper
 
+**The PDFs are always in one of two places** -- look there before asking the
+user for the file or searching the web: `~/GitHub/austraits.build/export/pdfs/`
+or `~/Library/CloudStorage/OneDrive-UNSW/Documents/data_for_GitHub_repos/austraits.build/*processed pdfs/`
+(the folder name starts with a literal `*`, so quote the path). Files are named
+`<dataset_id>.pdf`, with supplements as `<dataset_id>_SI.pdf` /
+`<dataset_id>_tables.pdf`. The same PDF's reference list is where to get full
+citations for the studies a compiled value cites (`source_id` keys).
+
 - Confirm the target folder: `data/<Surname_Year>/` (create it if it doesn't
   exist yet). Check whether `raw/trait_data.csv` already exists there --
   if it does, this is likely a re-run or an extension, not a first pass;
@@ -139,6 +147,12 @@ mapped one; never leave a real measurement out just because it won't map.
 - **Outcomes of manipulations are not traits.** Fruit set, fruit initiation, seed set, seeds per fruit and seed mass per fruit are traits only when measured on unmanipulated, open-pollinated plants: natural populations, open controls and procedural controls. Outcomes under bagging, hand self- or cross-pollination, supplementation, emasculation, or anther removal or painting are not. Extract those rows with a treatment column so they stay in data.csv, but they are filtered out in custom_R_code. Score the authors' conclusion as `breeding_system`, and as `pollination_vector_*: autonomous` if bagged flowers set fruit. A value pooled across treatments counts as manipulated. Per-plant values from experimental plants, such as Scaccabarozzi_2025's tagged plants, are not mapped either.
 - Buzzing is the `foraging behaviour` context (`buzzing`, Lopresti_2026), not a trait.
 - Honeybee colour-hexagon loci (x, y) are converted, not added as new traits. `flower_colour_bee_hue` = atan2(x, y) in degrees, mod 360: 0 at the top of the hexagon, increasing clockwise, as in pavo. `flower_colour_bee_chroma` = sqrt(x² + y²). Check the hues against the sectors the paper states.
+
+**`resprouting_capacity_proportion_individuals` only when the source measures the
+proportion resprouting** across all (or most) plants of a population. Never derive a
+`0` from "100% dead" or a fire-killed species: that restates `resprouting_capacity:
+fire_killed` and makes the numeric trait less useful. Post-fire mortality from a
+population count stays an unmapped raw column (He_2011).
 
 **Geophytes, cultivation and species descriptions (Reiter_2025).**
 - For a geophyte, check every deciduousness trait: `leaf_phenology` (deciduous / summer_dormancy / withered_at_flowering), `foliage_time`, and `bud_bank_location` (`fleshy_underground_organ`) as well as `storage_organ`.
