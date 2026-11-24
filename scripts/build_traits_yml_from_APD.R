@@ -11,7 +11,7 @@ library(traits.build)
 # The APD release this build is pinned to. APD is a versioned, citable vocabulary
 # (Wenk et al. 2024, doi:10.1038/s41597-024-03368-z), so a build should record
 # which release it used. Bump this deliberately, and re-run, when APD releases.
-apd_version <- "2.1.2"
+apd_version <- "3.0.0"
 
 # Read the *published* copies, not the APD repo's working tree.
 # raw.githubusercontent.com/.../master/ was doing two things badly at once: it

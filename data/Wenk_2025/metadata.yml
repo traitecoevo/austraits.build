@@ -7,6 +7,7 @@ source:
     title: 'Unpublished data: Gap-filling plant height and leaf dimension values from
       floras and the taxonomic literature to create a near-complete trait layer for
       Australian plant species, University of New South Wales, Australia'
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Wenk
@@ -34,6 +35,8 @@ dataset:
   data_is_long_format: yes
   custom_R_code: '
     data |>
+      mutate(source_remarks = ifelse(is.na(source_id) & !reference_OG %in% "[[unknown reference]]",
+        str_remove(reference_OG, "^!!"), NA_character_)) |>
       filter(!str_detect(trait_value, "\\(")) |>
       mutate(unit = case_when(
         unit == "feet" ~ "ft",
@@ -156,7 +159,7 @@ dataset:
     plant species.
   basis_of_record: literature
   life_stage: adult
-  measurement_remarks: reference
+  measurement_remarks: source_remarks
   source_id: source_id
   sampling_strategy: Combination of AI and manual scoring from online floras and taxonomic
     descriptions.
@@ -837,7 +840,7 @@ traits:
   methods: unknown
 - var_in: peduncle_length
   unit_in: unit
-  trait_name: peduncle_length
+  trait_name: inflorescence_peduncle_length
   entity_type: species
   value_type: value_type
   basis_of_value: measurement

@@ -4,7 +4,7 @@
 compilation of traits for Australian plant species (Falster et al. 2021,
 doi:10.1038/s41597-021-01006-6). It holds the raw source datasets and the configuration that the
 `traits.build` engine harmonises into the released AusTraits resource. Type is `Compendium`, not a
-package; it `Depends` on `traits.build (>= 2.1.0)`.
+package; it `Depends` on `traits.build (>= 3.0.0)`.
 
 ## Repo-local guidance
 
@@ -26,8 +26,9 @@ package; it `Depends` on `traits.build (>= 2.1.0)`.
 - **Claude Code project skills:** `.claude/skills/` — curation workflow guidance (building a new
   dataset's `metadata.yml`, fixing `locations:`, resolving `substitutions.csv`, extracting trait/
   location tables from a source PDF or straight into an existing dataset's `raw/` folder, pivoting
-  a raw file into `data.csv`, extracting traits from flora/fact-sheet text, refreshing the dataset
-  pipeline tracker) written up as reusable
+  a raw file into `data.csv`, extracting traits from flora/fact-sheet text, giving a compilation's
+  `source_id` values full references (`add-sources`, with helpers in `ignore/source_references.R`, a local file not in git),
+  refreshing the dataset pipeline tracker) written up as reusable
   skills, checked in on purpose so every Claude Code session opened in this repo picks them up
   automatically. They're tooling for AI-assisted curation, not part of the `traits.build` pipeline
   itself, but are kept under version control like any other repo convention — edit them the same
