@@ -119,7 +119,7 @@ If such changes have been made, ensure `traits.use`, `traits.build` and `austrai
 
     -   Update version number
     -   Ensure the proper version of `traits.use` is listed under Depends
-    -   Ensure the proper version of `traits.use` is listed under Remotes (e.g. `traitecoevo/traits.use`)
+    -   Leave `traits.use` unpinned under Remotes (`traitecoevo/traits.use`, not a tag); the version under Depends sets the minimum
 
     NEWS updates
 
@@ -153,10 +153,10 @@ Do this on its own branch, after the `traits.build` release, so the builds below
 
 1.  Install the `traits.use` and `traits.build` releases from sections 2 and 3, and the current `APCalign`. As the first commit on this branch, update `DESCRIPTION`:
 
-    -   Depends lists the new traits.build (e.g. `traits.build (>= 2.3.0)`)
-    -   Remotes points at its tag (e.g. `traitecoevo/traits.build@v2.3.0`), and at the `traits.use` release tag rather than its default branch
+    -   Depends lists the new traits.build and the traits.use it needs (e.g. `traits.build (>= 2.3.0)`, `traits.use (>= 1.0.0)`)
+    -   Remotes stays unpinned: `traitecoevo/traits.build` and `traitecoevo/traits.use`, not a tag or branch
 
-    CI installs traits.build and traits.use from Remotes, so without this it checks the taxon list against the previous release of traits.build.
+    CI installs traits.build and traits.use from Remotes, which install each package's default branch (traits.build `develop`, traits.use `master`). Just after a release, that is the release plus its .9000 version bump. The minimum versions in Depends are what stop a build with an older traits.build or traits.use.
 
 2.  Regenerate `build.R` so it builds every dataset in `data/`, then check none are missing:
 
@@ -221,7 +221,7 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
     DESCRIPTION edits
 
     -   Update version number
-    -   Check Depends and Remotes list the traits.build release from section 3 (set in section 4, step 1)
+    -   Check Depends lists the traits.build release from section 3 as its minimum, and Remotes is unpinned (both set in section 4, step 1)
 
     README
 
