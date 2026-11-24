@@ -1,0 +1,257 @@
+source:
+  dataset:
+    key: Australian_PlantBank_2026
+    bibtype: Online
+    author: Australian PlantBank
+    year: 2026
+    title: Australian PlantBank dataset from Australian Virtual Seed Bank
+    publisher: Australian Virtual Seed Bank
+    url: https://seedbank.ala.org.au
+contributors:
+  data_collectors:
+  - last_name: Offord
+    given_name: Catherine A.
+    ORCID: 0000-0002-9553-6590
+    affiliation: The Australian PlantBank, The Australian Botanic Garden Mount Annan
+  - last_name: Emery
+    given_name: Nathan J.
+    ORCID: 0000-0002-3385-1675
+    affiliation: Botanic Gardens of Sydney, Australia
+  - last_name: Paroissien
+    given_name: Ruby
+    ORCID: 0000-0001-6673-6414
+    affiliation: The Australian PlantBank, The Australian Botanic Garden Mount Annan
+  - last_name: Eyles
+    given_name: Kathryn
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership
+  - last_name: Desmond
+    given_name: Bradley
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        location_name = ifelse(
+          !is.na(`Decimal Latitude`),
+          paste0("seeds_collected_at_", `Decimal Latitude`, "_lat_and_", `Decimal Longitude`, "_long"),
+          NA
+        ),
+        collection_date = dplyr::coalesce(as.character(`Collection Date`), "2026"),
+        measurement_remarks = ifelse(!is.na(Collector), paste0("Collector: ", Collector), NA),
+        germination_unadjusted = ifelse(
+          is.na(`Adjusted Germination %`) & as.numeric(`Number Tested`) > 0,
+          100 * as.numeric(`Number Germinated`) / as.numeric(`Number Tested`),
+          NA
+        )
+      ) %>%
+      filter(!is.na(`Scientific Name`))
+    '
+  collection_date: collection_date
+  taxon_name: Scientific Name
+  location_name: location_name
+  description: Seed trait data from the Australian PlantBank, The Royal Botanic Gardens
+    & Domain Trust, Mount Annan, NSW, including seed mass of collected seeds and data
+    on germination trials.
+  basis_of_record: lab
+  life_stage: adult
+  measurement_remarks: measurement_remarks
+  sampling_strategy: The Australian PlantBank was built in NSW in 2013. It is an international centre for plant research and learning, incorporating the largest native plant conservation seedbank in Australia. Like the National Herbarium of NSW, the Australian PlantBank forms a living reference collection for identification, research and restoration. Visitors can immerse themselves in the workings of our scientists by seeing into the laboratories aided by award-winning interpretation. As well as storing millions of seeds, PlantBank staff contribute to the conservation, research and restoration of threatened species and plant communities through our partnerships in Australia and overseas.
+  original_file: Data downloaded from the Australian Virtual Seed Bank
+    (https://seedbank.ala.org.au) GraphQL API (https://events-databox.ala.org.au/graphql)
+    on 10 Nov 2026, all records for the Australian PlantBank.
+  notes: data.csv has one row per seed accession and one row per germination trial (with
+    its treatment and the accession's taxon, locality and dates), distinguished by `Event
+    Type`. Accessions without a collection date have collection_date 2026 (download year).
+    Rows with `Data Version` = "2025 download" are values from the Feb 2025 download that
+    are no longer in the Australian Virtual Seed Bank.
+identifiers:
+- var_in: Accession Number
+  identifier_type: catalogNumber
+  institution_code: Australian PlantBank
+locations: locations.csv
+contexts:
+- context_property: storage temperature (C)
+  category: treatment_context
+  var_in: Storage Temperature
+- context_property: storage seed bank
+  category: treatment_context
+  var_in: Storage Seed Bank
+- context_property: form in storage
+  category: entity_context
+  var_in: Form in Storage
+- context_property: seed germination media/substrate
+  category: treatment_context
+  var_in: Treatment Media/Substrate
+- context_property: seed germination day temperature
+  category: treatment_context
+  var_in: Treatment Day Temp
+- context_property: seed germination night temperature
+  category: treatment_context
+  var_in: Treatment Night Temp
+- context_property: seed germination light hours
+  category: treatment_context
+  var_in: Treatment Light Hours
+- context_property: seed germination dark hours
+  category: treatment_context
+  var_in: Treatment Dark Hours
+- context_property: seed germination pretreatment
+  category: treatment_context
+  var_in: Treatment Pretreatment
+- context_property: AVSB data version
+  category: method_context
+  var_in: Data Version
+traits:
+- var_in: Adjusted Germination %
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Number Tested
+  methods: The proportion of seeds germinated, expressed as a percentage of the total
+    viable seeds tested.
+- var_in: germination_unadjusted
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Number Tested
+  methods: The number of seeds germinated as a percentage of the number of seeds tested,
+    for trials without an adjusted germination percentage.
+- var_in: Germination Treatment (mapped)
+  unit_in: .na
+  trait_name: seed_germination_treatment
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Summary of any physical or chemical treatment(s) applied to a seed before
+    it is tested. The pretreatment recorded for each germination trial is grouped into
+    treatment categories.
+substitutions: .na
+taxonomic_updates:
+- find: Arthropodium
+  replace: Arthropodium sp. [Arthropodium; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Austrostipa
+  replace: Austrostipa sp. [Austrostipa; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Brachyscome
+  replace: Brachyscome sp. [Brachyscome; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Brassica
+  replace: Brassica sp. [Brassica; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Cassinia
+  replace: Cassinia sp. [Cassinia; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Casuarina
+  replace: Casuarina sp. [Casuarina; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Eucalyptus
+  replace: Eucalyptus sp. [Eucalyptus; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Geranium
+  replace: Geranium sp. [Geranium; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Helicteres
+  replace: Helicteres sp. [Helicteres; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Leiocarpa
+  replace: Leiocarpa sp. [Leiocarpa; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Lenwebbia
+  replace: Lenwebbia sp. [Lenwebbia; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Lindernia
+  replace: Lindernia sp. [Lindernia; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Olearia
+  replace: Olearia sp. [Olearia; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Plantago
+  replace: Plantago sp. [Plantago; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Poa
+  replace: Poa sp. [Poa; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Prostanthera
+  replace: Prostanthera sp. [Prostanthera; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Pultenaea
+  replace: Pultenaea sp. [Pultenaea; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Sporobolus
+  replace: Sporobolus sp. [Sporobolus; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Stylidium
+  replace: Stylidium sp. [Stylidium; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Viola
+  replace: Viola sp. [Viola; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Vittadinia
+  replace: Vittadinia sp. [Vittadinia; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Xerochrysum
+  replace: Xerochrysum sp. [Xerochrysum; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Myrtaceae
+  replace: Myrtaceae sp. [Myrtaceae; Australian_PlantBank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted family
+    (2025-02-26)
+  taxonomic_resolution: family
+exclude_observations:
+- variable: taxon_name
+  find: Fungi
+  reason: plants identified only to family (supplied as 'Indet <family>') that the seed bank portal matched to Fungi
+questions: .na
