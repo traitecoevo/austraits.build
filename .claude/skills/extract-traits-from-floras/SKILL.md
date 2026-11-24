@@ -34,6 +34,10 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   `data/<id>/raw/build_data_csv.R`, which reads the source and writes `data/<id>/data.csv`.
   The build never runs it; it exists for provenance and re-extraction. Irregular sentences
   that regex can't parse go in a small override CSV in `raw/` (e.g. `habitat_overrides.csv`).
+- **Copy the dataset's own scripts into `data/<id>/raw/scripts/`** (user 2026-11-09, for tracing): the scraper / OCR / text readers
+  from the scraping repo (`data_extra/<source>/scripts`), and the job's metadata generator, vetting and check scripts
+  (`ignore/jobs/<job>/`: make_meta.py, vet.py, eco_cand.py, proc / final_qa / compare scripts; not one-off debug or diff scripts),
+  with a README.md giving each file's origin path. Refresh the copies whenever a script changes, before committing the dataset.
   Source typos are fixed explicitly at the top of the script, with a comment
   (e.g. a reversed range "20–15 mm" → "15–20 mm").
 - **Pair every categorical trait.** Write `<trait>_description` (the verbatim source phrase)
@@ -53,7 +57,9 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   order with their qualifier ("blue-purple; dark blue; lilac", "sometimes scrambling"); for
   numeric traits one `<trait>_description` per trait with the verbatim measurement.
 - **Never drop parenthetical extremes.** "(3.7–) 10 (–30) m", "2–4 (rarely 6) mm": typical
-  range in `_min`/`_max`, extremes in `_extreme_min`/`_extreme_max` (unmapped for now).
+  range in `_min`/`_max`, extremes in `_extreme_min`/`_extreme_max` (long format: minimum / maximum rows with measurement_range =
+  extreme). **Settled (user 2026-11-05):** they are always scraped into data.csv but not mapped into AusTraits (custom_R_code filters
+  them out); no metadata question about them.
 - **Genus and family copy-down (FoA-style treatments)**: a categorical value stated singly in
   the genus (else family) description is the group's default and is copied to member taxa silent
   on that trait (`trait_scoring_method` = `inferred_from_genus` / `inferred_from_family`). Drop
@@ -61,6 +67,42 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   segments naming a genus in brackets ("(Hydrocleys)"). A statement counts only if it names
   exactly one term, counting terms with no level ("flat, terete or triquetrous" is not "all
   terete"). Never copy numbers.
+  - **HARD RULE (user 2026-11-08, restated: "how does this rule keep getting ignored?"):** copy ONLY when the group text gives that
+    one value, unambiguously. Ambiguity is itself a reason not to copy. **A group's Habitat text is never copied**: it lists where the
+    group's species grow, mostly in words that are no trait level, so one level looks like the only value. A habitat water reader
+    added for NT_2026 ran on group profiles and copied semiaquatic to 505 Grevillea ("Occurs in most habitats, but only a few species
+    alpine, few in swamps"), 224 NHNSW Cyperaceae ("mostly in damp or swampy places"), Stellaria ("a wide range of habitats …
+    including … swamps"), Andersonia, Terminalia ("Many species … often of riverine and swampy habitats"), Dichanthium ("from marshes
+    to subdesert"), Phalaris. Nor is a statement about some of the species copied ("a few / some / many / most species"). Any new or
+    widened reader: check whether it runs on genus / family profiles and could pass the copy-down filter, and read the "group copies
+    gained" table of every rebuild diff first.
+    The group's substrate is taken from its description in the full read when the group filter drops the segment for an unrelated
+    "or" phrase ("Deciduous terrestrial orchids growing singly or in loose groups": Microtis, Drakaea, Cyanicula, Elythranthera;
+    Caladenia "Most above-ground parts of these terrestrial orchids are hairy") and it is the only substrate anywhere in the group's
+    text, Habitat included. Their Habitat had stood in for it, so excluding the Habitat had left 78 orchids without a substrate or a
+    geophyte height type. Corunastylis says "terrestrial" only in its Habitat, so it is not copied.
+    **Every group substrate copy passes a clause check** (`sub_clean_ok`, 2026-11-08). Each clause (split at . ;) of the group text that
+    names the substrate must have no "or" / "to" next to another substrate or habitat word. Its comma segments that name a substrate
+    or habitat must have no hedge, quantity or conditional word (some, many, few, sometimes, rarely, occasionally, mostly, usually,
+    often …, not, when, if, where). A hedge in another segment of the clause doesn't count: Lastreopsis "Terrestrial ferns, rhizome
+    usually creeping" and Todea "usually arborescent" are copied. Juncaginaceae "emergent when aquatic" is not. "Annual or perennial aquatic herbs" still counts, and "singly or
+    in loose groups" is ignored. Mistletoe groups are never copied. Blocked so far: Ericaceae "epiphytic or not" (128 NHNSW taxa in
+    rebuild 3); also, already in HEAD, NHNSW Loranthaceae "terrestrial, root-parasitic shrubs or trees, or aerial, stem-parasitic shrubs"
+    (terrestrial on 38 mistletoes), Isolepis "… OR aquatic …", Lindsaeaceae "Terrestrial [or sometimes epiphytic]"; and Polypodiaceae
+    "Epiphytic or growing on rocks, rarely terrestrial", Ficus "some epiphytic", Rorippa "some aquatic", Hydrocharitaceae "Freshwater or
+    marine", Myriophyllum "aquatic to fully emergent", Pandanus, Triglochin, Typha "aquatic or semi-aquatic". The check covers substrate
+    only; other traits still use the group filter alone.
+  - **An "or" makes only its own words alternatives (user 2026-11-05):** Hakea "Fruit a smooth or rugose to tuberculate woody
+    modified follicle" is a woody follicle — the "X or Y" words (each a word or an "A to B" range) are removed from the group text and
+    the rest of the segment is kept. A segment still goes whole when the alternative is a phrase ("solitary or in racemes", "a capsule
+    or a berry") or "X or not".
+    **Only when the "or" joins two plain modifiers of what follows** (build10 review, 2026-11-05): the segment also goes whole when the
+    next word continues the alternative ("stipules absent or small and caducous", "bisexual or unisexual and then plants dioecious",
+    "opposite or alternate and spiral", "smooth or covered in imbricate scales", "entire or serrate (... leaves needle-like)"), when the
+    terms are plural nouns ("climbers or leafless parasites"), "-ing" words ("splitting to base or remaining fused") or adverbs ("simple
+    or palmately lobed"), or when words before the pair join it to more ("free and alternating with the tepals or fused"). Read loosely,
+    the rule had copied Campanulaceae / Asparagaceae dioecious, Convolvulaceae parasitic, Apocynaceae caducous stipules, Amaranthaceae
+    spiral leaves and Ericaceae needle leaves to every member — caught before commit.
   - **Species descriptions name only the exceptions (user 2026-10-31)**, as for terrestrial vs
     aquatic: a member taxon that scores the trait itself keeps its own value, and a single
     contradicting member does not stop the copy to the silent members (Hibbertia "Fruit a
@@ -71,8 +113,10 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
     alternatives belong to other traits ("creeping rhizome, annually renewed tuber or thickened
     rootstocks"; "simple, pinnatifid, pinnate or bipinnate") are not caught by the veto: add them to
     `copydown_exclude`, and read every new copy-down reaching ≥40 taxa after a build.
-  - **Hedged group statements are copied** as a plain value (no commonness_qualifier; the
-    `inferred_from_*` method and the "[family description] …" text carry the source):
+  - **Hedged group statements are copied with their hedge word as commonness_qualifier (user 2026-11-05; before: a plain value)**:
+    "Fruit usually a capsule" → capsule `usually`, "Leaves mostly basal" → `mostly`, "connate (mostly)" → `mostly`; and the main value
+    of "X or rarely Y" / "X, rarely Y" → X `usually` (the rare Y is not copied). Read from the group's own text (the hedge words are
+    removed only for the segment filter). An "or" between plain alternatives copies nothing for that trait. Older wording:
     "Fruit usually a capsule" (Orchidaceae), "Fruit mostly a caryopsis …, rarely a nut, berry,
     or an utricle" (Poaceae) → capsule / caryopsis. Copied hedges: usually, mostly, mainly,
     generally, commonly, typically, predominantly, normally, chiefly. Not "often" /
@@ -100,7 +144,9 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   ("probably in response to rain") → description only. Field seedlings/germination after fire → also
   `post_fire_recruitment`.
 - **Climbers:** "vine" = `climber_herbaceous` unless stated woody; "liana" = `climber_woody`; "twiner" stays
-  `climber` (twining is kept in plant_climbing_mechanism / stem_growth_habit).
+  `climber` (twining is kept in plant_climbing_mechanism / stem_growth_habit). The "vine" rule holds only for a source that also uses
+  "liana". In a source that never says "liana", "vine" covers woody and herbaceous climbers alike, so it is plain `climber` (user
+  2026-11-09; Cooper_2004_2). Check the whole source before choosing.
 - **Growth form by family when the text names none:** Arecaceae -> `palmoid`; ferns -> `fern`;
   Centrolepidaceae -> `graminoid herb`. "with woody base" -> `subshrub`; "woody perennial" says nothing.
 - **Species -> infraspecific inheritance:** a subspecies/variety/form silent on a trait inherits its species' own
@@ -277,11 +323,26 @@ branch; check every mapped trait exists in that branch's traits.yml and flag gap
   or trees") is not a value for every member: add it to `copydown_exclude`.
 - **Inferred defaults** (terrestrial / leaf / not_parasitic) unless the text names a special case: the broad water /
   epiphyte / rock test reads the habit sentence + Habitat / Ecology / Notes (morphology only for unambiguous wording;
-  "midrib submerged", "on secondary branches" are not habitats); herbs without Habitat text get the default; plants of
-  swamps / marshes (herbs and woody plants alike) are inferred `terrestrial swampy` (`swampy`: a substrate level added
-  2026-10-30, replacing `semiaquatic` for swamp plants in every dataset; explicit "semi-aquatic" wording stays semiaquatic); other wet wording (creek beds,
-  lake margins) leaves herbs unscored. Habitat
-  text is kept verbatim as `habitat_description`.
+  "midrib submerged", "on secondary branches" are not habitats); herbs without Habitat text get the default; other wet wording
+  (creek beds, lake margins) leaves herbs unscored. Habitat text is kept verbatim as `habitat_description`.
+- **Water plants and swamps (user 2026-11-07, after Marsilea hirsuta lost "aquatic" in four 2026 datasets; all sources):**
+  - **Swamp and marsh plants (herbs and woody plants alike) are `semiaquatic`** (user: a swamp is not fully aquatic). This
+    replaces "terrestrial semiaquatic" (2026-10-28) and "terrestrial swampy" (2026-10-30 to 11-06); the `swampy` level in
+    traits.yml is no longer used here. "Swampy" is a habitat as much as a substrate, and AusTraits has no habitat trait, so the
+    swamp detail lives in `habitat_description`. Not plants beside a swamp ("edges of mangrove swamps", "near swamps", "swamp
+    margins") or swamp-named trees ("swamp gum").
+  - **The Habitat text is read for water plants** when the description names no substrate: "in (shallow / still / running ...)
+    water", "in water bodies", "submerged", "floating in the water", "emergent aquatic", "aquatic weed" → aquatic; "amphibious",
+    "semi-aquatic", "partly submerged / immersed", "drying mud", herbs "in / on (wet) mud" (not woody plants on mud, nor
+    mudflats), swamps, marshes → semiaquatic. Text order, commonness word of the comma segment, negated segments skipped. FoA
+    Marsilea hirsuta "Grows in shallow water and drying mud" → aquatic semiaquatic. Refinements from the chunk test: trees and
+    shrubs standing in water (mangroves "in brackish waters", Ilex arnhemensis) are semiaquatic; water plants (waterlily families,
+    or floating / submerged leaves in the description: Nymphoides, Myriophyllum glomeratum) in a swamp are aquatic; "water" before a
+    place noun ("in freshwater swamps / lakes / clay pans") is read by that noun; place names ("Bacchus Marsh", "Tootgarook Swamp")
+    are not habitats (also in the inferred rule). A hedged-only mention keeps its hedge (Triglochin hexagona "rarely swamps" →
+    semiaquatic rarely) and, being the taxon's own text, replaces a family copy.
+  - **"Aquatic or terrestrial" plants of water or mud are amphibious:** the terrestrial alternative becomes semiaquatic (Marsilea
+    "Aquatic or terrestrial herb. Grows in shallow water or mud." → aquatic semiaquatic; also in the LucidFerns_2026 script).
 - **Source unit typos:** fix in `fix_text` only with evidence (a later description, or the profile's own diagnostic
   features), and flag them; e.g. Austrostipa heights given in m for dm.
 - **Measurements:** "to c. 0.5 m" is a maximum; an extreme in its own unit ("to 40 cm (–1 m) across") is converted to the
@@ -578,6 +639,452 @@ not the main checkout's: the user switches branches in the main checkout, and it
 - **Comparison (2026-11-02):** GrassBase_2014 (4 traits) agrees on leaf and culm sizes; its seed_length is the grain, which
   2026 records as fruit_length. ABRS Poaceae: FoA's "Tufted perennial" (caespitose) has no AusGrass species-level equivalent.
 
+## Florabase (WAH_2026_1 to _4, user 2026-11-04)
+
+- **Scope:** `data_extra/florabase_profiles.csv`, current and not-current names (one profile per cleaned name, current first);
+  marine algae (Huisman's Algae of Australia and their families), fungi and protists left out. **One dataset per kind of text**
+  (user): WAH_2026_1 Descriptive Catalogue brief descriptions, WAH_2026_2 C. Hollister & K.R. Thiele key descriptions,
+  WAH_2026_3 DELTA genus / family descriptions (L. Watson, H.R. Coleman, J. Gathe ...) + prose species descriptions (R. Davis
+  Ptilotus), WAH_2026_4 Swan NRM management notes. Do not look at WAH_1998 / WAH_2022 / WAH_2023 while extracting.
+- **Same parser, Florabase mode:** `FOA_SOURCE=florabase FB_TEXT=brief|key|delta Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R`;
+  build brief and key before delta (delta reads their data.csv). WAH_2026_4 has its own script (`data/WAH_2026_4/raw/build_data_csv.R`).
+  Names from the classification path's last element without authority ("×molesta" -> "x molesta"); metadata first created by
+  `ignore/jobs/fb1/make_meta.py`, then add-only. **Names (2026-11-05):** drop only the authority words, never an epithet or rank
+  (two ranks, nothovar., cv., "forma" -> "f.", hybrid formulae "A b x c" and intergrades "A b - c" all kept); phrase names kept as
+  written: "sp.", a rank before a capitalised or quoted word ("subsp. Badgingarra (S.D. Hopper 7114)", "subsp. A Kimberley Flora"),
+  "variant", a bracketed voucher. Reducing these to the species name dropped ~390 profiles as duplicates of the species.
+  "Tree-like monocot" -> palmoid (Pandanus, Xanthorrhoea, Kingia; without it a "perennial" fell back to herb).
+- **Brief descriptions:** text before "Fl." = description; "Fl. <colours>, <months>" -> "Flowers <colours>." + phenology; the rest is
+  habitat. Colours joined by "-", "/" or "&" are **each** scored ("pink-red-brown" -> pink, red, brown; user). Bracketed peaks
+  "(mainly Apr-May)", "(mainly 8-10)" -> mainly rows; "or Mar (occasionally)" -> occasionally; "(depending on rainfall)" -> cue.
+- **Keys:** the raw character lists (943, mostly Fabaceae: "Stems Indumentum hairy, Pustules or glands absent, ...") are rewritten as
+  the key's own prose before parsing (sizes and hairs first, margins / tubercles / glands after ";"). "Pustules or glands" are
+  surface glands, not extrafloral nectaries; "apparently absent" stipules = absent; "indehiscent and splitting into sections
+  (schizocarps)" = indehiscent schizocarp; sizes coded 0 are left out and "0-X" is "to X". **"(?)" states are scored with
+  scoring_certainty = uncertain** (user): each such profile is parsed again with every state, and values only that reading finds
+  go on uncertain rows.
+- **DELTA:** sections Habit and leaf form, Reproductive type, Inflorescence and flower, Fruit and seed, Physiology, Special features,
+  Additional characters; anatomy, seedling and pollen sentences, geography, etymology, uses left out; "To X m high." joins the habit
+  sentence. "Entomophilous" etc. -> pollination_syndrome; "Photosynthetic pathway: C3 and C4" -> c3 c4; "Dispersal unit the fruit" ->
+  dispersal_unit. **Genus / family rows are taxa of WAH_2026_3 and are copied down** (user) to every Florabase taxon with a
+  description: a taxon is silent only when none of its texts (WAH_2026_1, _2, _3) scores the trait, and those values count for the
+  veto; taxa with no DELTA / prose text carry only their copies in WAH_2026_3.
+  - Genus / family rows are read in full (alternatives kept); the group filter is only for the copy-down, where conditional clauses
+    ("when compound, pinnate") are dropped and a DELTA pollination / pathway / dispersal-unit statement counts only as a single
+    unqualified term ("Anemophilous (rarely ...), or entomophilous (nearly always)" is not copied).
+  - **Family copies only where the families match (user 2026-11-04):** the DELTA family descriptions are Watson's pre-APG families
+    (narrow Asparagaceae, Malvaceae without Sterculiaceae, Scrophulariaceae without Myoporaceae), so a family value goes only to genera
+    whose own DELTA profile names that family ("Family Sterculiaceae." in Lasiopetalum); genera with another or no header get none.
+  - Not copied (read 2026-11-04): Myoporaceae / Eremophila "deciduous" (Eremophila are evergreen; user: kept on the genus row,
+    flagged), Orchidaceae "Floral nectaries present", seed wings of Eucalyptus / Corymbia / Grevillea / Banksia, Petrophile
+    "helicophylla spirally twisted". "neither X nor Y" negates both; "(the ... fleshy endosperm ...)" and "hooded by the petals" are not
+    seed or stamen characters; "not gland-dotted" is not an extrafloral nectary.
+- **Management notes:** General Biology fields mapped by tables (growth / life form, reproduction -> clonal spread, dispersal agents ->
+  dispersers + dispersal_syndrome, time to first flowering -> reproductive_maturity, seedbank persistence -> seedbank_longevity_class
+  (Short = transient, Medium = short_persistent, Long = long_persistent; years only when no class word), fire response, regeneration
+  strategy -> resprouting_capacity_non_fire_disturbance, woody structure -> wood_porosity); calendars with "(O)" = occasionally;
+  Germination months -> recruitment_time and "Type of stem. Succulent" -> plant_succulence succulent_stems (user 2026-11-05);
+  Active Growth / Dormant months -> active_growing_time / dormancy_time (new y/n calendar traits, user 2026-11-05: two traits because
+  they are complements for only 57 of 87 taxa). Plain "Reproduction. Seed." is not scored not_vegetative. "Generally
+  survives fire" is resprouts (usually), confirmed by the user 2026-11-05.
+- **All sources (2026-11-04):** a hyphenated "non-" negates only its own word ("Non-lignotuberous shrub" is a shrub).
+
+## VicFlora: Flora of Victoria (RBGV_2026, user 2026-11-05)
+
+- **Scope:** `data_extra/vicflora_profiles.csv` (8,399 profiles: families, genera, species, infraspecific taxa), dataset id RBGV_2026,
+  long format. **Vascular plants only** (user): profiles whose parent chain reaches Bryophyta, Marchantiophyta or Anthocerotophyta are
+  left out (chains that break below the phylum, e.g. Australina -> Urticaceae, are kept). **Introduced and extinct taxa included** (user).
+  Do not look at RBGV_2022 / RBGV_2023 while extracting: they are the comparison case.
+- **Same parser, VicFlora mode:** `FOA_SOURCE=vicflora FOA_CORES=12 Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R` (~11 min). Fields:
+  Description; Distribution and habitat → Habitat; Notes; common_name; profile_author (else profile_source) → author; establishment_means
+  introduced → biostatus; Bioregions (treatment) + Outside Victoria → distribution; EPBC / FFG / Victorian threat status → conservation.
+  Names are written without authorities in the source ("×" → "x "); phrase names ("Astrotricha sp. 1 subsp. 2", "Caladenia sp. aff.
+  concolor (Violet Town)") kept as written. Metadata first created by `ignore/jobs/vf1/make_meta.py`, then add-only.
+- **Phenology:** the "Flowers Sep.–Oct." / "Fruits mostly Dec.–Feb." / "Flowers and fruits ..." sentences of the description are moved to
+  the phenology with the months written out as in FoA ("Flowers September–October"; a sentence-final "Oct." keeps its full stop);
+  "Description based on Victorian specimens only." is dropped. "Flowers most of (the) year" stays blank (earlier rule).
+- **Herbarium-specimen months (user: also scored):** each profile's counts of specimens with flowers / fruit / buds per month →
+  flowering_time / fruiting_time / candidate flower_bud_time, "y" where at least one specimen, on rows with trait_scoring_method =
+  from_herbarium_specimens (counts in value_description), beside the description's own calendar. Added after the species →
+  infraspecific inheritance and the copy-down, so they neither stop nor are passed on by them. Taxa with no description are not written
+  (question2 in metadata: should their specimen months be?).
+- **Copy-down exclusions found here (all sources, 2026-11-05; NHNSW had the same):** Acacia "Leaves bipinnate, reduced to phyllodes
+  or rarely absent" (not bipinnate for phyllodinous species); Poaceae ligule "membranous, a row of hairs ..." (not membranous);
+  Cyperaceae "Leaves basal and/or cauline" / "only at base of the culm or also cauline" (not basal) — alternatives with no level of the trait.
+- **Ecology vetted** (`ignore/jobs/vf1/eco_cand.py` → 651 sentences, `vet.py` → raw/ecology_vetted.csv, 766 rows): fire response,
+  clonality, dispersal, pollination and breeding systems, germination, lifespan, salt tolerance; habitat-only wording ("in saline
+  swamps", "seasonally flooded") is not a tolerance.
+  - **A genus / family Notes / Ecology statement is copied to the members only when it states one value that clearly applies to every
+    member (user 2026-11-05, all sources; a member whose own text differs still overrides the copy). Never when any word suggests
+    ambiguity ("most" definitely means don't copy). This is for the vetted ecology statements only: the description copy-down keeps
+    its hedge list ("Fruit usually a capsule" is still copied; user 2026-11-05). ABRS: 12 hedged statements dropped by
+    `ignore/jobs/vf1/drop_hedged_group_copies.py` (Chiloglottis "Most species", Zieria "Usually pollinated by flies", Euphrasia
+    "primarily by native bees", Viola "Cleistogamous flowers are common" ...).**
+  - VicFlora: not copied when hedged ("usually open only on the death of the branch"), conditional ("plants grown in shaded sites"),
+    about some species ("several have become naturalised"), or contradicted by a member's own text or by the same note ("Some species
+    apparently producing seed without fertilization"). Copied: Chiloglottis thynnine wasps (C. cornuta self; VicFlora states it for the
+    genus without "most"), Cryptostylis ichneumon wasp, Glossodia bees, Stylidium / Levenhookia insects, Najas / Ruppiaceae /
+    Posidoniaceae / Cymodoceaceae water, Amphibolis seedling, Taraxacum natives self-compatible, Hakea resprouts / killed read from each
+    species' own lignotuber wording. Not copied: Hakea serotiny (varies between Hakea species; user), Prasophyllum insects / nectar,
+    Salix vegetative, Fumaria cleistogamy, Cotoneaster birds, Gyrostemonaceae lifespan / fire germination, Taraxacum introduced apomixis
+    ("all introduced taxa investigated to date").
+
+## SA Flora: Flora of South Australia online (SAH_2026, user 2026-11-05)
+
+- **Scope:** `data_extra/saflora_profiles.csv` (6,949 accepted names: 1,249 genera, 4,906 species, 794 infraspecific taxa, 2 cultivars;
+  no family profiles; all vascular), dataset id SAH_2026 (user), long format, introduced taxa included ("Naturalised" and "Questionably
+  naturalised" -> biostatus introduced). Do not look at SAH_2014 / SAH_2022 / SAH_2023 while extracting: they are the comparison case.
+  The user asked for a first pass without questions: judgement calls go to metadata questions and the report.
+- **Same parser, SA Flora mode:** `FOA_SOURCE=saflora FOA_CORES=8 Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R`. Fields:
+  Description (paragraphs joined by " | " in the scrape: a full stop ends each paragraph, since " | " is the parser's own unit
+  separator; "8–30 X 1–8 mm" is a dimension); Habitat; Notes + Biological Notes + Taxonomic Notes -> Notes; Common Name; Author (else
+  Authors); Native status -> biostatus; Distribution (SA regions, "*" = naturalised there, then other states); EPBC / SA conservation
+  status. Names are written without authorities in the source; phrase names, hybrid formulae ("Acacia dodonaeifolia x Acacia
+  paradoxa") and cultivars ("Platanus x hispanica cv. Acerifolia", rank "unranked" -> species rows) kept as written. Profile links in
+  the saflora_url column. Metadata first created by `ignore/jobs/sa1/make_meta.py`, then add-only.
+- **Misfiled text (the web pages themselves):** about 10 profiles have description sentences under "Common Names" (Arthropodium,
+  Digitaria violascens, Gratiola pumilo, Trifolium cernuum), "Phenology" (Hibbertia, Soleirolia, Rumex pulcher) or "Published
+  Illustrations" (Solanum coactiliferum, Tecticornia calyptrata); `sa_mv` in the SA block moves them into the description; the Ptilotus
+  hair-terminology note under "Phenology" is a note.
+- **Phenology:** "Flowers: Aug.-Oct." -> "Flowers August-October."; a field with no flowering / fruiting word ("July-October.", "Mainly
+  winter", "Irregular periods, mainly August-November.") is the flowering time; "Flowers and/or fruits: ..." (133 profiles) is read as
+  flowering and fruiting; the Acacia notes (Whibley & Symon: "collected in flower between December and February and in pod between
+  February and June") are read as written; those the parser misreads (regional calendars "in adjacent N.T. and Qld it flowers ...",
+  "(in Vic.)", "principally", "Irregular periods, mainly ...") are hand-read into raw/phenology_overrides.csv by
+  `ignore/jobs/sa1/phen_over.py` (34 taxa; other states / regions on population_region rows). "mainly X and occasionally at other times
+  throughout the year" is "occasionally at other times" (the rest of the year on an occasionally row).
+- **Genus Habitat is not read:** it describes the genus worldwide ("About 60 species in Europe, Asia ...; confined primarily to saline
+  and gypseous soils"), so it would copy Frankenia gypsum to every SA species.
+- **Source slips (fix_text):** OCR slips ("15–2 mm wide", "i.5", "D.6", "2.-5") and cm / m for mm (Ecballium ovary, Medicago truncatula
+  pod) corrected; illegible pod lengths (Acacia menzelii "2.514.5 cm", A. symonii "345 cm") put in square brackets so they are not read.
+- **plant_width (all sources, found here):** a width is not the plant's when the last noun before it is an organ that leads its own
+  comma segment ("articles cylindrical, ... 2–3 mm diam.", "joints ... 7–16 cm wide", "lowest 2 leaves ... 2.5–20 mm broad", "Perennial
+  stems arising from a rhizome, to 130 cm high, c. 4 mm diam."), an organ inside a phrase with a width under 2 cm ("with branches
+  decumbent ..., 10–18 mm diam."), a lamina-like organ given its length first ("adult leaves to 12 cm long, 9 cm wide", "cladodes ...,
+  28–40 cm long, 6.5–20 cm wide", "leaves 2.5–6 cm long and wide"), or a bracketed size before an organ ("thin (less than 5 mm diam.)
+  grooved branches"). It stays the
+  plant's after a plant noun or spread word, with a spread word in the measurement ("forming dense mats up to 30 cm diam") or "across",
+  and for larger widths after an organ inside a phrase ("shrub with woody rootstock, to 1 m diam.", "small tree, usually with a few
+  thick trunks, to 10 m high, 10 m wide"). (Two stricter versions lost real ABRS / NHNSW / RBGV widths: checked on the build12 / 13
+  diffs before this one.)
+- **Comparison with SAH_2014 / 2022 / 2023 (2026-11-06, `ignore/jobs/sa2/`: `proc_sah.R` processes all four with traits.build,
+  `cmp2.R` aligns names to APC via config/taxon_list.csv, `cmp4.R` numeric minimum / maximum, `cmp5.R` categorical value words):**
+  2,849 of the old datasets' 3,705 accepted taxa are in SAH_2026; the other 856 have no description on the SA Flora website (641) or
+  are under a name it does not list (215), so the old datasets stay the only SA source for them. 91% of 12,703 shared minimum /
+  maximum pairs are identical and 89% of shared categorical values agree; most differences are the website's revised text (Eucalyptus,
+  Pultenaea heights), old extraction errors (Banksia infructescence as fruit width, Fumaria height 2 mm) or vocabulary
+  (lobed / lobed_deep). Parser and source errors it found, fixed for all sources:
+  - "ram" after a number is an OCR slip for mm (21 SA profiles); source unit slips in fix_text (Swainsona campestris pod, Gyrostemon
+    ramulosus leaves);
+  - thistle "marginal spines ..., 2-6 mm long" and Cirsium "0.8-2 mm long spinules" are not leaf lengths (`marginal spines` is a leaf
+    part; spinules an outgrowth);
+  - Frankenia "long-shoot leaves 2-13 mm long" are the leaves (long- / short-shoot qualifiers; "shoot" after "long-" is not another
+    organ), not the "leaf bases ... 0.1-0.5 mm long" that follow;
+  - Proteaceae: a "cone" is never the fruit - "Fruiting cone ... 1.5-4 cm long" (Petrophile, Isopogon) is the infructescence
+    (infructescence_length / _width), and so is a bare "Cones ovoid, 15-40 mm long" (FoA) or "Cone with persistent scales, 11-14 mm
+    long" (Florabase key) in those two genera ("cone scales" are its bracts); Hakea "pollen-presenter ..., central cone 0.1-0.35 mm
+    long" is a part of the presenter;
+  - plant_photosynthetic_organ cladode (and leaf_type leafless) only for leafless plants: "broom-like" alone is not leafless; "radical /
+    cauline / basal / lobed / linear leaves absent", "stems / scapes / branchlets leafless", "often appearing leafless", "leafless except
+    for 2 leaves", "leafless ... or leafy" are partial, but "leafless except for the sheaths" (Restionaceae) or "except a small scale"
+    is leafless; the Florabase pea key's "absent or apparently so (reduced to scales)" (109 taxa: Jacksonia, Daviesia, Bossiaea ...)
+    is rewritten to "absent or reduced to scales" before the hedge filter cuts it; Centrolepis, Aphelia and Gaimardia are leafy genera of Restionaceae (APG IV);
+    Gastrodia and the other leafless mycoheterotrophic orchid genera are non-photosynthetic;
+  - a hyphenated "leaf-blade ... 0.7-1 mm wide" unit after a leaf length with no width gives the leaf width (Frankenia);
+  - leaf hairs count as "leaves described" for the photosynthetic-organ / parasitic inference (thistles have no leaf size or shape).
+  Left as they are: genus woodiness copied onto a few species whose own text says "shrubs" (8 SA taxa, mostly soft-wooded succulents,
+  where semi_woody is right); flowering-stem height as plant_height of herbs (Ranunculus lappaceus) and frond length of ferns (Todea).
+- **User answers (2026-11-06):** "Flowers and/or fruits" -> both flowering_time and fruiting_time; "Questionably naturalised" ->
+  introduced; genus Habitat never used; Acacia notes on studies done elsewhere (Cape Peninsula, Perth, Sydney, Victoria) are scored as
+  the species' traits with no region, unless the note explicitly states the trait differs between regions (then population_region
+  rows). The remaining question (illegible values) is in metadata.yml (`ignore/jobs/sa1/add_questions.py`).
+- **Ecology vetted** (`ignore/jobs/sa1/eco_cand.py` -> 388 sentences, `vet.py` -> raw/ecology_vetted.csv): the Acacia notes are long
+  study summaries (germination trials, seed predation, insect faunas): scored only where they state a trait of the species (fire-killed,
+  ant / bird dispersal, suckering, bird pollination of A. pycnantha ...); seed treatment experiments, "seed eaten by birds", mistletoe /
+  dodder host lists, "regenerating around planted trees" and horticultural notes are not scored. Genus copies only for statements
+  that hold for every member: Calochilus self, Chiloglottis thynnine wasps (not C. cornuta: self-pollinated in SA), Corybas and
+  Pterostylis flies; not Acianthus "mainly", Diuris / Glossodia "chiefly", Microtis / Thelymitra / Oxalis "most", Prasophyllum (by
+  season), Nicotiana "may", Fumaria (shade / late plants), Amphibromus "fairly common".
+
+## FloraNT: Northern Territory flora online (NT_2026, user 2026-11-07)
+
+- **Scope:** the user asked for "all traits" from `split_sentences_NT_Flora.csv` (the 2022 scrape; OneDrive
+  `data_for_GitHub_repos/.../floras/`), named NT_2026. That file is only each factsheet's Description, with infraspecific names cut
+  back to the species (71 names repeated) and 24 unnamed family descriptions; the user chose to re-scrape the full factsheets
+  (`ignore/jobs/nt1/scrape.py` -> `data_extra/ntflora_profiles.csv`, pages cached in `data_extra/NTFlora_html`, 0.5 s between requests:
+  6,817 factsheets, 1,156 genera, 4,980 species incl. 292 phrase names and hybrids, 681 infraspecific; no family factsheets exist).
+  The site HAS changed since 2022: 2,867 of the 3,003 old descriptions are identical, 33 lightly edited, 46 revised under the same name,
+  30 under names no longer on the site, 4 now without a description; 798 descriptions are new. Do not look at NTH_2014 / 2022 / 2023 /
+  2025 while extracting: they are the comparison case.
+- **Scrape gotcha:** browse rows mark phrase names as `<species normal >sp. Watarrka</species>`: match tags with attributes
+  (`<species\b[^>]*>`), or every phrase name is lost.
+- **Same parser, NT Flora mode:** `FOA_SOURCE=ntflora FOA_CORES=4 nice -n 19 Rscript data/ABRS_AtoM_2026/raw/build_data_csv.R`. Fields:
+  Description; Habitat (species only: a genus Habitat is the genus as a whole); Notes + Diagnostic Characters + Similar Taxa -> Notes
+  (comparative, so not read for morphology); Flowering / Fruiting (Ecological Attributes: month lists "Mar, Apr, May" or ranges ->
+  "Flowers March, April, May. Fruits ..."; "not recorded" dropped; the ferns' "Fertile plants: Apr-Aug" kept as written, once, without
+  "Flowers", so it is not flowering time); Common Name without the genus name that opens every list ("Avicennia, White Mangrove");
+  Flora Description Source -> Author; Introduced Status "Introduced to NT" / "Formerly introduced" -> biostatus introduced;
+  Bioregion + Distribution Notes + International -> Distribution; EPBC / TPWCA conservation status. Profile links in ntflora_url.
+- **Diagnostic Characters as description:** only for the 98 factsheets with no Description, and only their sentences that name or
+  compare no other taxon ("differs from P. micrantha", "P saxatilis has ...", "Var. angustifolia and var. distans have ...", text after
+  "----"); sentences split after full words only ("Ewart & O.B. Davies").
+- **Lost characters in the site text:** "¬" and soft hyphens are line-break hyphens ("other¬wise", "40¬-70mm"); `\x1a` is a lost quote
+  mark (restored as curly quotes) or fraction ("2/3\x1a", "c. \x1a the length" -> "[?]"); "¿" -> "[?]".
+- **Parser fix found here (all sources):** "annual stems / shoots / culms / branches / growth" is not life_history annual ("subshrub with
+  annual stems", Flemingia parviflora; also ~10 ABRS taxa, Linum marginale, Solanum hystrix ...).
+- **Review of the first build (traits.build `dataset_process`: 117,318 traits, 66 excluded values; `ignore/jobs/nt1/proc_nt.R`):**
+  source slips in fix_text (m for mm: Coccinia / Aegiceras styles, Jacksonia divisa seeds, Grevillea miniata / versicolor and Suriana
+  leaf widths; "ree or mallee", "shub", "nflorescence", "lnflorescence", lowercase "vine. petioles", "slender. fruit"; Sersalisia sericea's
+  page starts mid-leaf, marked "[start of the description lost on the FloraNT page]"; "Leafy twigs", Agave / Aloe "tuft of ... leaves"
+  and Polygala longifolia "plant often leafless ..., linear ..." leaf sizes were plant widths). Real extremes stay (Nelumbo pedicels
+  1-3.5 m, Barringtonia filaments 8-15 cm, palm leaves 4-6 m) and are excluded only by the traits.yml ranges.
+- **Swamps in land-unit lists (all sources; user 2026-11-07: "terrestrial semiaquatic"):** a swamp named in a sentence that also names
+  two or more dry land units ("rocky or gravelly hills or rises ..., sandplains, ..., temporary freshwater swamps and claypans", FloraNT's
+  central Australian lists, 95 factsheets; Florabase "hills, dunes, ridges, flats, freshwater swamps, salt lakes", ~69 WAH_2026_1 taxa;
+  ~12 ABRS / NHNSW sentences) gives terrestrial AND semiaquatic, in text order (the Habitat reader adds terrestrial beside the swamp,
+  value_description "[habitat] plains, hills; swamp"); the inferred substrate ignores those swamp words (`swamp_list_strip`), so they
+  never give semiaquatic alone. (85 NT dryland taxa, Atriplex vesicaria ..., had been semiaquatic only.) Mistletoes are skipped: their
+  Habitat lists their hosts' country. "around swamp or creek margins" and "fringes of temporary freshwater swamps" are beside a swamp,
+  not in one; but "within or on the fringes of X" is in X (`swamp_in_re`), and "swamps and creek margins" / "swamps and immediate
+  fringes" are the swamps themselves (a broader edge pattern that ate them left "in temporary freshwater" and gave aquatic: Verbena).
+- **User 2026-11-07: site only.** The 57 descriptions only in the 2022 file (30 renamed / removed taxa, 4 now without a description,
+  23 family descriptions) are not added.
+- **Mistletoes (all sources):** "mistletoe" and "stem parasitic" (with a space) are stem_parasitic; when the habit says nothing, the
+  Habitat's "parasitic on Eucalyptus" is read (stem_parasitic in Loranthaceae / Viscaceae). FloraNT has no family factsheets, so the
+  Loranthaceae family statement that covers the mistletoes in the other sources is missing here.
+  (Rebuild review, user 2026-11-08) The Viscaceae genera, now in Santalaceae (Korthalsella, Viscum, Notothixos, Ginalloa …), are
+  mistletoes too: generic "parasitic" → stem_parasitic, and their Habitat is not read for swamps. A generic "parasitic" beside a specific
+  kind (stem / root parasitic) is dropped. **Subject and object:** "frequently parasitised by the mistletoe Lysiana …" (Acacia
+  brachystachya) and "host of / for …" name the plant as a host, not a parasite: not read. A commonness word before "parasitic on"
+  is about the host ("Usually parasitic on Syzygium smithii"; Cuscuta "usually parasitic on … Polygonaceae"), not a qualifier.
+- **Eucalypts:** FloraNT's 92 "Eucalypts of Australia" descriptions are EUCLID's ("Eucalypt descriptions courtesy of Centre for Plant
+  Biodiversity Research", site credits), so they repeat CPBR_2026 text.
+- **Not read:** propagation fields (Seed / Cutting / Division Collection and Propagation: horticultural), Ethnobotany, Weeds Status
+  (dates), Etymology, Taxonomic Literature, NT Parks, Restricted Range / NT Endemic flags.
+- **Ecology vetted** (`ignore/jobs/nt1/eco_cand.py` -> 585 sentences, `vet.py` -> raw/ecology_vetted.csv, 201 rows / 112 taxa):
+  "seen (mostly) in recently burnt areas" -> post_fire_recruitment + establish_post_fire with the frequency word; "flowers after dry
+  season fires" -> fire_enhanced_flowering; "obligate seeder" / "fire sensitive" -> fire_killed; mangrove notes (Floodplain Flora:
+  buoyant fruit -> hydrochory, pollinators); a Similar Taxa statement about the other species is scored on that species (Acacia
+  salicina root-suckering from the A. ligulata factsheet). Evidence sentences end at full stops not after abbreviations ("A. salicina",
+  "et al.", "e.g."). Genus copies only Casuarina (wind) and Macaranga (gap colonisers). Not scored: host lists, "vine thicket" habitats,
+  colonies not stated clonal, fire-protected habitats, fire-regime susceptibility, timber / firewood uses.
+
+## Book scans: Cooper & Cooper 2004 (Cooper_2004_2, user 2026-11-08)
+
+- **Scope:** "Fruits of the Australian Tropical Rainforest" (Nokomis Editions), photographed by the user as four PDFs
+  (`OneDrive .../taxon_descriptions/resources-books/Cooper_2004_pages001-100.pdf` ... `401-560.pdf`) plus two sets of rescanned pages
+  (`..._pages_rescanned.pdf`, `..._rescanned2.pdf`, re-photos of existing pages, some without a readable page number: matched to their
+  page by shared words). **Dataset: a new `Cooper_2004_2`** beside the existing `Cooper_2004` (21 dispersal modes from a spreadsheet;
+  user: "New dataset alongside"). User: scrape the book only; **don't rebuild the other sources** for it, so every parser change made
+  for it is gated by `cooper_mode` until the user asks for a rebuild.
+- **OCR:** the PDFs' own text layer (Adobe Paper Capture) is unusable (columns interleaved, "50-IO0", "8 111"). Re-OCR with Apple Vision
+  (`VNRecognizeTextRequest`, accurate, en-AU; a small Swift tool), at the scans' native 240 dpi. A full-page pass drops lines ("long;
+  calyx green. Sep.-Dec." under Annona glabra), so a second pass OCRs each text column on its own and keeps the union. Columns: cluster
+  the x0 of full-page lines of 20+ characters and under a column's width (not the running heads, which start mid-page, nor lines Vision
+  ran across two columns); a cluster starting inside the previous column's width is its indented key lines, not a column. Each column
+  is OCR'd with a 0.04 margin into its neighbours and rebuilt from Vision's **word boxes**, keeping the words whose centre lies in the
+  column's core (between the mid-gutters): fixed strips clipped lines or left centred genus headings outside every strip, and dropping
+  "cut" lines lost whole lines that Vision had joined to a neighbour's fragment. Lines wider than a column (a genus introduction set
+  across the page, Syzygium p. 356) are taken whole from the full-page pass and read as a band between the columns above and below it.
+  Strips of the facing page caught at a photo's edge (5+ narrow lines outside the page's own text) are dropped. Pieces of one visual
+  line returned separately (the bold "Leaves" a little lower than its line) are joined. Check recall against the Adobe layer word by
+  word per page (`recall2.py`: from ~1,190 missing words to ~770, mostly running heads and fragments).
+  Vision slips seen: "mm" read "m" (6 sizes, fixed in fix_text after checking the Adobe layer; the palms' metre sizes are real), "Old"
+  for Qld, "Elacocarpus", "Excoccaria", "Julv", "Mav", "var," - all corrected.
+  Scripts and OCR output: `~/GitHub/austraits.build-data.scraping.scripts/data_extra/Cooper_2004_ocr/`; the assembled entries:
+  `data_extra/cooper2004_profiles.csv`.
+- **Assembly into entries** (one row per taxon, fields habit / leaves / inflorescence / flower / male & female cones / fruit / notes /
+  distribution; plus common name, etymology, other names, book page, genus text). Pitfalls found:
+  - Plate captions repeat names ("Annona squamosa" under the painting): a bare name is a caption when the name has a proper heading
+    (authority on the line or the next) elsewhere, or when it repeats the entry being read; two-line captions ("... fitzalanii" /
+    "subsp. tenuipes"). Not body lines that look like names ("Fruit unknown.", "Any month.", "Domatia present").
+  - Authorities may be full names on the next line ("Michael J. Parsons", "Peter G. Wilson") or carry the infraspecific name ("Lam. subsp.
+    integrifolia", "(F. Muell.) Puttock subsp. fitzalanii", "forma grayi"); phrase-name brackets may be on the next line ("Medicosma sp."
+    / "(Karnak)"); infraspecific phrase names in brackets ("Rapanea subsessilis (subsp. Gordonvale)").
+  - Genus headings misread ("ACACI", "DIOSPY.", "MACARAI"): the genus as spelt in its etymology line ("Acacia from ..."), or the genus
+    word of the species headings when it heads 2+ species (never build a name from the current genus when the heading names another real
+    genus). Etymology lines are not species ("Asystasia possibly from ...", "Abrus thought to ..."); habit lines are not species
+    ("Pandanus tree to 10 m", "Vine twiner" ~ Vigna).
+  - Keys (numbered couplets) pause the entry; it resumes only at a field it has not reached yet, below a gap, not on a second couplet
+    lead ("Fruit receptacle conspicuous") - a key to varieties sits between a species heading and its description (Stephania japonica,
+    Ficus virens, Carnarvonia araliifolia).
+  - Gaps between lines are measured to the line above that overlaps horizontally (a caption or key answer beside a heading made its gap 0).
+  - Line-break hyphens are told from compounds by the words seen whole elsewhere ("Cas-sowaries" but "Rat-kangaroos", "fruit-doves").
+  - Ficus has a "Figs" paragraph instead of Fruit. A family heading ends the entry being read, but a running head repeating the current
+    family does not (it cut off continued entries). A name with two entries (a key answer inside a family key read as a heading) keeps
+    the entry with the most fields; adjacent entries whose epithets are clipped forms of one another ("Bridelia leichhardt") are merged.
+  - QA: entries per genus against the book's "Rainforest tropical Queensland: N species" (`genus_counts.csv`: 495 of ~520 counted genera
+    match; most others are infraspecific taxa the book does not count), duplicate names, entries without fields. Result: 2,416 taxa.
+- **Same parser, Cooper mode:** `FOA_SOURCE=cooper`. The months that end the Flower and Fruit paragraphs ("Sep.-Dec.", "Jan.-Apr. & Aug.",
+  "Any month", "Season unknown") go to the phenology text ("Flowers Sep.-Dec. Fruits Oct.-June."). FoA forms: "diam. 50-80 mm" -> "50-80
+  mm diam.", "about" -> "c.", "x" -> "×", "mm through" (third fruit dimension) -> "thick". "Flower petals 6, ..." -> "Petals 6, ...". The
+  habitat is the Distribution's opening (before "from / in the ... [place]"; "a native of X now naturalised in ..." -> introduced). Family
+  modes use the current family (config/taxon_list.csv by genus); the book's family is in raw/taxon_info.csv. **All sources** (user
+  2026-11-08; the others take it at their next rebuild): "separate male and female plants" -> dioecious. Cooper-only (gated; user
+  2026-11-08): the hedges "may be", "may have", "can have", "can be" are rare-type qualifiers recorded as **sometimes** ("may be
+  buttressed", 930 in the book; the words stay in value_description); **"Vine" is plain `climber`** (the user's rule: "vine" is
+  climber_herbaceous only in a source that also uses "liana"; the word "liana" appears nowhere in this book, text layer or OCR). The book
+  never says woody or herbaceous for a climber either, so a plain climber takes the habit's hints (user 2026-11-09): corky bark, older
+  stems corky or lenticels, or a shrub/tree alternative ("Shrub or vine twiner") -> `climber_woody`; a herb alternative ("Herb or vine
+  trailer") -> `climber_herbaceous`; Deeringia arborescens -> `climber_woody` from its etymology ("this vine becoming large and woody");
+  a stem diameter alone is not a hint (Cassytha); the other ~350 climbers stay `climber`; a fruit given only as "diam. X mm" gets width and height, not length
+  (user: the globose-only rule stands); altitude ranges are left in the distribution text (user: skip). A vine's habit size in mm is an
+  organ's, not the climbing length
+  (Capparis "spines ... 1-3 mm long"). Ranks are set from the names ("forma" -> "f."; "Rapanea subsessilis (subsp. Gordonvale)" is a
+  subspecies). Nothing is copied down: the genera and families have no morphological description. Build check (traits.build
+  dataset_process, `ignore/jobs/cooper1/proc_cooper.R`): 83,473 values, 2,416 taxa, 119 traits, 1 value out of range (Dolichandrone
+  petals 125-175 mm, real).
+- **Notes -> dispersers** (`data/Cooper_2004_2/raw/vet_notes.R` -> raw/ecology_vetted.csv; user 2026-11-08, as in Cooper_2013): "fruit /
+  flesh / aril eaten by X" (also "seeds and aril eaten by") -> `dispersers` (Cassowaries -> cassowaries, flying-foxes -> flying_foxes,
+  bats, rats / melomys -> rodents, rat-kangaroos / pademelons / possums / pigs -> mammals, any bird -> birds; a shared head noun "Regent
+  and Satin Bowerbirds"); "seeds eaten by X" alone -> candidate `seed_predators`. The clause is the evidence.
+
+## Book PDFs with a text layer: Brophy, Craven & Doran 2013 (Brophy_2013, user 2026-11-09)
+
+- **Scope:** "Melaleucas: their botany, essential oils and uses" (ACIAR Monograph 156), chapter 7 species accounts, five PDFs in
+  `OneDrive .../resources-books/` (`Melaleucas_mn156-species-a-c_1.pdf`, `-d-k`, `-p-r`, `-s-z`, and `mn156-species-l-o_1.pdf`, named
+  differently). 290 species (every index entry), 27 subspecies, 10 varieties. One new dataset, `Brophy_2013` (none existed). The book's
+  non-Australian taxa (7 New Caledonian species and M. sphaerodendra's 2 varieties, M. cajuputi subsp. cumingiana of South-East Asia) stay
+  in data.csv and are listed under metadata.yml `exclude_observations` (variable taxon_name; user 2026-11-09: **this is how a source's
+  non-Australian taxa are handled**). Lord Howe Island taxa (M. howeana) are Australian.
+- **Text:** born-digital (InDesign), so the PDFs' own text layer is used, no OCR: `pdftotext -bbox-layout` blocks, read left column then
+  right, rotated running heads and page numbers dropped (`data_extra/Brophy_2013_text/scripts/blocks.py`); a species starts at its heading
+  block ("Melaleuca acacioides F.Muell.", near the page top) and is split at the book's labels (`profiles.py` ->
+  `data_extra/brophy2013_profiles.csv`). Text-layer slips: soft hyphens; hard line-break hyphens told from compounds by word counts over
+  the book (line-internal words only: a line's first word may be the broken piece); three letter-spaced lines and "paper y", "hair y";
+  label variants ("Natural Occurrence", "Natural Distribution", "References on essential oils :"); M. nesophila's publication printed
+  under "Description:".
+- **Same parser, Brophy mode** (`FOA_SOURCE=brophy`, all gated): Ecology "Recorded as occurring in ..." -> habitat ("Grows in ..."),
+  Flowering time "Recorded as flowering from May to November" -> phenology as written, Natural occurrence -> distribution. A species with
+  subspecies / varieties has one "subsp. X:" paragraph per taxon in those fields and a key in its Notes ("The two subspecies are
+  distinguished as follows: subsp. X: ...; subsp. Y: ..."; also "have been distinguished", "can be recognised ... as follows"): each
+  infraspecific taxon gets a row with its paragraphs and its key text as its description (the species description inherited where silent);
+  the species row keeps the species description, and the key is removed from its Notes. Craven's leaf blade: the cross-section shapes
+  ("in transverse section transversely elliptic, transversely linear or ...", over several commas up to ", the base") are not leaf_shape
+  (they had leaked into 212 taxa); an indumentum clause before the outline ("blade glabrescent, the indumentum as on the branchlets,
+  linear ...") is bracketed so the outline stays in the blade's unit (17 species had no leaf_shape). **All sources:** "Stamens 6-7 per
+  bundle" is not read as a stamens-per-flower count. **Brophy mode** (user 2026-11-09): it is scored per flower, times the bundles (5 in
+  Melaleuca, or as stated, "usually in 5 bundles or occasionally in 6, 15-26 per bundle when in 5 bundles" -> x 5), the words and the
+  multiplier in value_description ("6--7 per bundle [x 5 bundles]"), extremes kept; a per-flower count later in the clause ("Stamens free
+  or ..., 52-71 per flower") is read too. Not scored (no traits.yml trait): bundle claw, ovules per locule, triads / monads per inflorescence, inflorescence width, length:width ratio, oil gland density,
+  cotyledons, filament colour (candidate, as in ABRS_Myrtaceae_2026).
+- **Oil yield** (`data/Brophy_2013/raw/oil_yield.R` -> raw/ecology_vetted.csv): dry-weight yields ->
+  `leaf_essential_oil_per_dry_mass`, fresh-weight yields -> **`leaf_essential_oil_per_fresh_mass`** (added to config/traits.yml by the user's
+  request 2026-11-09, mirroring the dry-mass trait); unit_in %, as written; "<0.1%" -> max, "nil" -> 0, "trace" not a value; mixed
+  chemotype / collection / basis statements by hand (range over them, per basis); the two yields the book calls unreliable are left out.
+  The oil composition has no trait.
+- Build check (`ignore/jobs/brophy1/proc_brophy.R`): 12,691 values, 317 taxa, 59 traits; nothing excluded beyond the 10 non-Australian taxa. 43 names are not in
+  config/taxon_list.csv (the New Caledonian and Asian taxa, ex-Callistemon names, new infraspecific taxa).
+
+## Australian Tropical Rainforest Plants online (ATRP_2026, user 2026-11-09)
+
+- **Scope:** the Lucid online edition 8 species pages, scraped 2026-11-08 (`data_extra/atrp_fact_sheets.csv`, pages in `ATRP_html/`):
+  2,762 species and infraspecific taxa; the 176 family pages describe families world-wide and are not read. **New dataset `ATRP_2026`**
+  beside ATRP_2020 (growth form and a few other traits from the 2022 scrape; user: "New ATRP_2026").
+- **Names:** use `index_name`, not `taxon_name` - the scrape's taxon_name drops the infraspecific part of 209 names (both subspecies of
+  Actephila petiolaris were "Actephila petiolaris"); "( L.S.Smith" -> "(L.S.Smith".
+- **Same parser, ATRP mode** (`FOA_SOURCE=atrp`, gated): Stem, Leaves, Flowers and Fruit paragraphs are the description; Seedlings the
+  seedling text; Distribution and Ecology is the distribution, and its habitat sentences ("grows in", "found in", "A characteristic tree
+  of ...", "Parasitic on rain forest plants", any sentence naming a vegetation type or substrate, but not "Occurs in CYP ...", "Endemic
+  to ...", "Also found in ...", "Altitudinal range ...") the habitat; "An introduced species" / "naturalised" -> introduced. Page link,
+  RFK code, synonyms and icons go to raw/taxon_info.csv, not on every row.
+- **Habit icons** (`ATRP_scripts/page_extras.py` -> `atrp_page_extras.csv`; user 2026-11-09): the icons are the growth form and the text's
+  growth forms the icons lack are added ("[ATRP habit icon] ..." in value_description): Tree, Shrub, Herb, Grass -> graminoid, "Palm,
+  pandan or cycad" -> palmoid, **Vine -> climber_woody** (its pages say "stem diameters to N cm recorded"), **Slender Vine ->
+  climber_herbaceous** (stem diameter up to c. 2 cm); a text climber beside an icon climber is dropped; Mistletoe -> stem_parasitic
+  (when the text says nothing), Epiphyte -> epiphyte substrate; **Weed is ignored** (introduced status comes from the text). A vine's
+  climbing height must be in m (the Stem paragraph's "Vine stem diameters to 3 cm recorded" is not a height; as for Cooper).
+- **Seedlings** (`data/ATRP_2026/raw/seedlings.R` -> raw/ecology_vetted.csv): seedling_germination_location from the seedling photo
+  caption ("Cotyledon stage, epigeal germination"); seed_germination_time from "Seed germination time 15 to 19 days" ("ca." read,
+  "to 43 days" -> max). Germination times over 1,000 days (Acacia auriculiformis "9 to 3664 days") are excluded by the traits.yml range.
+- Text slips fixed (fix_text): m for mm (Argyrodendron sp. Boonjee flowers, Ristantia filaments, Diospyros rugosula corolla lobes), Cocos
+  leaflets given width x length, Philydrum "bulb-shaped" seeds read as a bulb.
+- Build check (`ignore/jobs/atrp1/proc_atrp.R`): 2,762 taxa, 152 traits; ~48 values excluded (germination times > 1,000 d, 0.5 mm
+  tubes, palm prophylls as bracteoles, corolla shapes such as urceolate / campanulate given as petal shapes).
+- Known parser issue seen here (all sources, not fixed): a pedicel length after a comma inside a flower clause ("Male flowers: ... on
+  filiform pedicels, 5-9 mm long") is also read as flower_length.
+
+## Book scans: George 2002, Verticordia (George_2002, user 2026-11-09)
+
+- **Scope:** E.A. George (2002) "Verticordia: the turner of hearts" (plates by M. Pieroni), the species accounts: six photographed PDFs
+  (`resources-books/Verticordia George compressed_Part1.pdf` ... `_Part6.pdf`, 145 pages, 150 ppi). `Verticordia George.pdf` in the same
+  folder is the same 145 pages at 560 ppi: OCR it (page numbers match). 101 species, 23 subspecies, 44 varieties. New dataset.
+- **OCR** (`data_extra/Verticordia_ocr/scripts/page.py`): the Paper Capture layer is unusable (scrambled lines). Apple Vision on the page
+  rendered at 250 dpi, three ways: the whole page, the two text columns cropped, and three overlapping full-width bands. Layout: a
+  full-width species description and key, then two columns of notes. Vision's word boxes inside a line are too rough to split a line it
+  ran across both columns, so a wide line is replaced by the column crops' lines when the left crop's text ends short of the gutter and
+  the right crop's starts at it. Lines the full page missed are added from the bands (full-width text, first) and then the crops. Full-page
+  "lines" much taller than their kind's median are Vision garbling several lines and are dropped (compared with lines of the same kind:
+  the full-width text is set larger than the columns; never drop entry headings). Map labels, page numbers and the running foot dropped;
+  key answers at the far right ("...... var. major") joined to their line. Recall vs the Adobe layer (`recall.py`): ~410 missing words, mostly
+  the layer's own split words ("culti vation").
+- **Entries** (`entries.py` -> `data_extra/verticordia_profiles.csv`): headings "4. Verticordia endlicheriana Schauer (1846)", "4a. ... var.
+  endlicheriana", hybrid "91. Verticordia × eurardyensis", wrapped "21b. ... subsp. cylindracea A.S. George" / "var. cylindracea (1991)"
+  (names keep every rank); an infraspecific heading's species epithet is its species entry's (OCR "servata"). Species: common name,
+  etymology / type, description (first sentence that opens a habit, "A shrub ...", "Usually a slender spindly shrub ...", even without a
+  full stop before it), key ("There are five varieties:", "The species has two subspecies, one of which contains two varieties:", numbered
+  or unnumbered two-taxon keys). Each taxon's notes: labelled DISTRIBUTION, HABITAT, FLOWERING PERIOD, DISTINGUISHING CHARACTERISTICS,
+  RELATED (AND CONFUSING) SPECIES, OTHER NAME(S) USED, CONSERVATION STATUS, CULTIVATION, PLATE. An infraspecific taxon's opening
+  paragraph is split by sentence: name / collection sentences -> etymology_type, the rest -> its description. Key paths: each taxon gets
+  the leads on its path through the key (answers matched fuzzily to the entries, "subsp. roet"); used only when the key reads cleanly.
+- **Same parser, Verticordia mode** (`FOA_SOURCE=verticordia`, gated): species description; infraspecific description + key path (species
+  inherited where silent); Habitat, Distribution, "Flowers <Flowering period>"; Notes = distinguishing + related species (not cultivation:
+  garden plants). "Floral leaves" sizes -> `entity_measured` floral_leaf (beside "Stem leaves" cauline_leaf); their shapes are still in
+  leaf_shape with the stem leaves'. OCR slip fixed: V. dasystylis subsp. dasystylis key "petals 2-2.5 m long".
+- Build check (`ignore/jobs/vert1/proc_vert.R`): 168 taxa, 56 traits, nothing excluded; 75 candidate traits (staminodes, hypanthium,
+  sepal colour ...) not in traits.yml.
+
+## Book scans: Chinnock 2007, Eremophila and allied genera (Chinnock_2007_2, user 2026-11-09)
+
+- **Scope:** R.J. Chinnock (2007) "Eremophila and allied genera" (Rosenberg), the taxon accounts; photographed as `Eremophile 093-300.pdf`
+  (book p. 93 + file page - 1 to file p. 52 = book p. 144, then + 93: **book p. 145 is missing** from every scan, the heading and opening
+  of Myoporum degeneri), `Eremophile 301-500.pdf` (+ 300), `Eremophile 501-650.pdf` (+ 500), and `Eremophila 2.pdf`, 10 rescans placed by
+  their printed page number (one unnumbered, placed by word overlap: p. 346) and merged with the main scan. New dataset
+  beside Chinnock_2007 (25 traits from a spreadsheet). 253 species (Myoporum 30, Bontia, Pentacoelium, Diocirea 4, Glycocystis,
+  Calamphoreus, Eremophila 215) and 104 subspecies.
+- **OCR** (`data_extra/Eremophila_ocr/scripts/page.py`, the Verticordia method at 240 dpi): two-column pages with inset maps, photos and
+  figures. Gutter = the white space between 0.38 and 0.65 that the fewest narrow lines cross; column crops widened past the gutter and
+  filtered by word centre (duplicates removed in entries.py); three overlapping full-width bands for lines a pass drops. A wide line is a
+  merged two-column line when the crops' lines end short of / start at the gutter, or when narrow lines of both columns lie within 0.05
+  of it (then split by the left crop's word count). Tall garbled lines dropped against lines of their own kind (headings exempt). Do not
+  tighten the neighbour test to "a right neighbour starts at the gutter": real merged lines beside a map lost their split and one taxon's
+  distribution ran into the previous one (tried and reverted 2026-11-09; section blocks are handled in entries.py instead).
+- **Entries** (`entries.py` -> `data_extra/chinnock2007_profiles.csv`, `pages_used.csv`): headings "86. Eremophila metallicorum S. Moore, ..."
+  and "3b. Subsp. australe ..." (epithet read with a capital accepted, "197c. Subsp. Lanata"); rescans merged with the main scan line by
+  line; pieces of one visual line joined in x order. Dropped: keys (couplet numbers aligned and stepping 0/1), figure and plate pages,
+  legends, scale bars, photo captions, map axis labels.
+  - **Section and genus openings** (heading, Latin and English diagnoses, map, key to species) sit full width above the section's first
+    entry; on such a page the rows from the section start to the first heading are read line by line as full-width text (`sect_block`;
+    not running heads, which sit at y < 0.04 on either margin). Each entry's text is then cut at the first section marker after its labels
+    (`SECT_START`: section heading + author, "(Lecto)type species:", genus heading "3. Bontia L.", Latin "Frutices/Frutex ...", "Key to
+    species/subspecies", old genus names with authors "Duttonia F. Muell."). Before this, section text sat inside 6 descriptions
+    (E. campanulata "Leaves sessile, alternate to subopposite", E. pentaptera "Fruit dry, non-woody, 4-locular ...") and in notes.
+  - **Map captions** read into the text beside the map (~190 entries): `strip_caps` removes the cue ("Map 62", "Distribution of", "of
+    Distribution", "Ma 120.") with the name words right after it, then the name words it lacks within 20 words and before the next section
+    label, out of place: never "E. rigida", "subsp. australe", "Latin rigida", a synonym "Bontia clarkei (Oldfield ...)", or a sentence's
+    subject ("Map Eremophila praecox occurs on"; "Distribution of Eremophila longifolia is Eremophila longifolia widespread" keeps the first).
+    "See Map 5 (page 64)." stays. Map scale / axis scraps and Cyrillic OCR letters are dropped. Review every removal (diff) after a change:
+    the first versions cut real names in citations, derivations and notes.
+  - Description start, lost distribution label, common names, organ-size moves and habit normalisation as before; `FIX_TEXT` holds the
+    hand fixes checked against the page images (E. phyllopoda "Erect", E. cuneifolia misprint 9.0-24, E. latrobei subsp. latrobei's
+    scrambled label, E. rigens's legend scrap, ...). A figure reference without its number and a trailing section name are dropped.
+  - **One indumentum for several organs** ("... shrub 0.5-1.2 m tall with branches, leaves, pedicels and sepals clothed in a silvery-grey
+    simple tomentum", subspecies' "Branches and leaves velutinous."): copied into the Branches and Leaves sentences as an "indumentum" part
+    ("Branches ...; indumentum clothed in ...", before a petiole or leaf-base clause), so the parser reads only hairs from it (as plain
+    text it made leaf colour, "persistent" leaves and stems, "appressed" leaves, "simple" leaves and petiole hairs); stem_hairs reads the
+    indumentum part in Chinnock mode. 69 taxa; ~40 had no stem or leaf hairs, and subspecies had inherited the species' "glabrous hairy".
+- **Same parser, Chinnock mode** (`FOA_SOURCE=chinnock`): family Scrophulariaceae; Distribution and ecology -> distribution, its habitat
+  sentences -> habitat, its flowering sentences with months -> phenology; Notes -> notes. `raw/vet_family.R`: leaf_compoundness simple for
+  every taxon from the family description (inferred_from_family; the book never says "simple").
+- **Metadata** (`ignore/jobs/erem1/make_meta.py --force`): non-Australian taxa (Bontia, Pentacoelium, extra-Australian Myoporum) under
+  `exclude_observations`; question1 asks for book p. 145 (missing from every scan: heading and opening of Myoporum degeneri).
+- **Checks** (`ignore/jobs/erem1/`): `qa.py` (sizes read independently from each description; known artefacts only), `compare.R` +
+  `compare2.R` + `compare_csv.py` (against Chinnock_2007; ~/Downloads/Chinnock_2007_vs_Chinnock_2007_2.csv), `proc_erem.R`
+  (dataset_process: 17,414 values, 339 taxa, 88 traits, only the metadata exclusions; 357 entries, 253 species, 104 subspecies).
+  Chinnock_2007's own errors found this way: every leaf_shape "elliptical", seed_shape "ellipsoid" for "oblong", and the sizes of
+  D. violacea, E. campanulata, caperata, decussata, dendritica, glabra, granitica, humilis, macmillaniana, oppositifolia, petrophila,
+  pinnatifida, rhegos, rotundifolia, M. cordifolium (book text checked).
+
 ## Every trait for every taxon (user 2026-10-30)
 
 - **A trait proposed in any family or group is checked for all other taxa.** The per-dataset `raw/candidate_traits.csv`
@@ -634,8 +1141,8 @@ not the main checkout's: the user switches branches in the main checkout, and it
   "subaquatic" → `semiaquatic`, "subdeciduous" → `semi_deciduous`), else to the base value (globoid, basifixed, opposite,
   terminal); the source word stays in value_description. The parser looks the sub- / semi- levels up in traits.yml, so levels
   added later are used without changing the script.
-- A hedged swamp habitat ("may be anticipated along streams and in swampy areas", E. rudis) → terrestrial + a secondary `swampy`
-  row with scoring_certainty possibly. A habitat sentence for the species that says "habitat depending on the subspecies" is
+- A hedged swamp habitat ("may be anticipated along streams and in swampy areas", E. rudis) → terrestrial + a secondary
+  `semiaquatic` row (`swampy` until 2026-11-07) with scoring_certainty possibly. A habitat sentence for the species that says "habitat depending on the subspecies" is
   scored only on the subspecies whose own paragraph names that habitat.
 - Hybrids written "Eucalyptus x phylacis" get rank species (they were dropped when the profile had no rank).
 - The FoA scrape loses text after a "<" ("branches <8 cm diameter smooth" → "branches Juvenile growth …"; ~17–29 profiles,
@@ -813,6 +1320,9 @@ taxon, then main row first.
   Simple "or" with no qualifier stays on the main row.
 - **"tufted"/"tufts" on a graminoid → add `tussock`**, in text order (e.g. "tufted grass-like
   plant" → `tussock graminoid`). Not for tufted herbs or ferns.
+- **Mallet, marlock (user 2026-11-05):** scored as the source term (`mallet`, `marlock`; "Mallett" too), mapped to `mallee` (user's mapping) by a
+  `match: word` substitution in each dataset's metadata.yml so the mapping can change later; they count as trees for the life
+  history / woodiness inferences.
 - Mappings: grass / sedge / grass-like → `graminoid`; palm, cycad, banana → `palmoid`; tree fern
   → `fern palmoid`; orchid, aquatic plant → `herb`; vine/climber → `climber`
   (`climber_woody` / `climber_herbaceous` when stated, and then drop the generic `climber`);
