@@ -25,7 +25,7 @@ examples kept in `custom_R_code`: `eFLOWER_2021`, `Kew_2019_1`/`_3`/`_4`/`_5`,
 
 ## Shared helpers
 
-`scripts/source_references.R` (source it from the repo root):
+`ignore/source_references.R` (source it from the repo root; a local file -- `ignore/` is git-ignored):
 
 | function | does |
 |---|---|
@@ -221,6 +221,19 @@ dataset), and the record is named in a column mapped to
 does the same). Theses, consultancy reports and society bulletins are
 sources. A personal communication that adds "also see <paper>" cites the paper,
 with the personal communication in the remarks column.
+
+**Map a source column to `measurement_remarks` only where it links a record
+to information about its source that is cited nowhere else** -- an
+unpublished source, an author's reply to queries. Not for lists of published
+works offered as evidence for the dataset's own scoring (Osborne_2014,
+Metcalfe_2020_1/_2: the records cite the dataset, no remark), and not when
+the remark would repeat the
+record's `source_id` (derive a remark column that is blank wherever
+`source_id` is set), repeat references the trait's `methods` already cite
+(Meers_2007), or point to the dataset's own `secondary` papers (Ottaviani_2015
+keeps its papers as `secondary`; only the author's replies are remarks). A
+`#` comment, or an apostrophe, inside `custom_R_code` breaks it: the code is a
+single-quoted YAML string read as one line.
 
 For a compilation whose references are numbered or abbreviated, also keep in
 `data.csv` (not mapped into AusTraits) a `reference_full` column with each
