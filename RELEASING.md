@@ -260,11 +260,20 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
 
 10. Create release on GitHub from the tag, paste in the new `NEWS.md` section, flag as "latest release", and attach the files in `export/data/austraits-x.x.x/`.
 
-11. Add a new version to Zenodo ([10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417)):
+11. Add a new version to Zenodo ([10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417)) as a draft, with `traits.build::zenodo_deposit()`. It sets the metadata from `config/metadata.yml` (creators, contributors, related identifiers, version, date) and the description from `config/zenodo_description.md`, and uploads the files. It never publishes. The functions are in traits.build's `develop` from traitecoevo/traits.build#320; if the traits.build release in `DESCRIPTION` predates them, install `develop` just for this step. You need a personal access token from zenodo.org (Applications → Personal access tokens, scope `deposit:write`) in `ZENODO_TOKEN`.
 
-    -   replace the files (`austraits-x.x.x.zip`, `austraits-x.x.x.rds`, `NEWS.md`, `dictionary.html`, and the root `README.md`, which `create_release()` doesn't write), checking against the previous version's file list
-    -   update the version number and date
-    -   update the version number for the files in the description
+    ``` r
+    austraits <- readRDS("export/data/austraits-x.x.x/austraits-x.x.x.rds")
+    metadata <- traits.build::zenodo_metadata(austraits)
+    files <- c(list.files("export/data/austraits-x.x.x", full.names = TRUE), "README.md")
+    basename(files)
+    traits.build::zenodo_deposit(metadata, record = 3568417, files = files, sandbox = FALSE)
+    ```
+
+    -   `files` should be `austraits-x.x.x.zip`, `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, `austraits-x.x.x-observed-means.parquet`, `austraits-x.x.x-observed-means.csv.gz`, `austraits-x.x.x-observed-means-dictionary.csv`, `dictionary.html`, `NEWS.md` and the root `README.md` (which `create_release()` doesn't write). Files from the previous version that are not in the list are removed from the draft.
+    -   Before writing anything, `zenodo_deposit()` compares the new metadata with the previous version's and stops if a creator, contributor or related identifier would be dropped, or a creator's name changes. Fix that in `config/metadata.yml` (people who are not data collectors of any dataset go under `project_contributors`), rebuild from step 3, and run it again. Pass `allow_removals = TRUE` only once you have checked every name it lists. Contributors renamed by a dataset's `metadata.yml` (a corrected spelling) are listed but don't stop it.
+    -   If an upload is interrupted, run the same call with `draft = <id>` (the id it printed); files already uploaded are skipped.
+    -   Open the draft's link, check it (creators, contributors, files, description), and publish it on Zenodo. Grants, keywords and communities are carried over from the previous version.
 
 12. Update the `austraits` vignette's list of Zenodo doi's (section 2, step 7).
 
@@ -278,4 +287,5 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
 
 -   If `create_release()` stops while rendering `news.Rmd`, the previous release's rds isn't where step 4 puts it.
 
--   Zenodo's metadata (creators, description, related identifiers) is typed into the web form, and each new version starts as a copy of the previous one. Nothing flows from `config/metadata.yml`, so check the creators and related identifiers by eye.
+-   Before 8.0.0, Zenodo's metadata (creators, description, related identifiers) was typed into the web form, and each new version started as a copy of the previous one, so the record and `config/metadata.yml` drifted apart. `zenodo_deposit()` (step 11) now sets it from the repository; change the record by changing `config/metadata.yml` or `config/zenodo_description.md`, not in the web form, or the next release will overwrite it.
+-   To try a deposit without touching the real record, get a token from sandbox.zenodo.org (a separate account and token), set `ZENODO_SANDBOX_TOKEN`, and run `zenodo_deposit(metadata, record = NA, files = files)`: `sandbox = TRUE` is the default, and `record = NA` starts a new record there.
