@@ -5,6 +5,7 @@ source:
     year: 2019
     author: Rachel Standish
     title: 'Unpublished data: Jarrah forest, Murdoch University'
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Standish
@@ -15,7 +16,7 @@ contributors:
   - last_name: Daws
     given_name: Matthew
     ORCID: 0000-0002-9120-4724
-    affiliation: Environment Department, Alcoa of Australia, Huntly, Western Australia
+    affiliation: Environment Department, Alcoa of Australia, Australia
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
@@ -25,7 +26,11 @@ dataset:
         `Seed mass (mg)` = ifelse(is.na(seed_mass_omit_duplicate), `Seed mass (mg)`, NA),
         site_name = "Jarrah_forest",
         seed_mass_basis_of_record = ifelse(`SM data source` %in% c("Weighed", "Standish et al, unpub data"),
-          "field","literature")
+          "field","literature"),
+        FR_remark = ifelse(is.na(FR_source_id), `FR data source`, NA),
+        SS_remark = ifelse(is.na(SS_source_id), `SS data source`, NA),
+        SM_remark = ifelse(is.na(SM_source_id), `SM data source`, NA),
+        NAS_remark = ifelse(is.na(NAS_source_id), `NAS data source`, NA)
       )
   '
   collection_date: 2019
@@ -57,8 +62,9 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  source_id: FR_source_id
   basis_of_record: literature
-  measurement_remarks: FR data source
+  measurement_remarks: FR_remark
   methods: Excel spreadsheet "AusTraits_jarrah forest" archived in google drive provides
     full reference details in worksheet 3.
 - var_in: Seed storage
@@ -68,8 +74,9 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  source_id: SS_source_id
   basis_of_record: literature
-  measurement_remarks: SS data source
+  measurement_remarks: SS_remark
   methods: Excel spreadsheet "AusTraits_jarrah forest" archived in google drive provides
     full reference details in worksheet 3.
 - var_in: Life Form
@@ -95,8 +102,9 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: .na
+  source_id: SM_source_id
   basis_of_record: seed_mass_basis_of_record
-  measurement_remarks: SM data source
+  measurement_remarks: SM_remark
   methods: data from various literature sources or weighed as part of the study; see
     unmapped column "SM data source" in data.csv file; values that are marked as being
     sourced from Kew have been removed, since we have this data set independently.
@@ -109,8 +117,9 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  source_id: NAS_source_id
   basis_of_record: literature
-  measurement_remarks: NAS data source
+  measurement_remarks: NAS_remark
   methods: data from various literature sources; see unmapped column "NAS data source"
     in data.csv file. Excel spreadsheet "AusTraits_jarrah forest" archived in google
     drive provides full reference details in worksheet 3.
@@ -139,6 +148,8 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  source_id: NAS_source_id
+  measurement_remarks: NAS_remark
   methods: data from various literature sources; see unmapped column "NAS data source"
     in data.csv file. Excel spreadsheet "AusTraits_jarrah forest" archived in google
     drive provides full reference details in worksheet 3.

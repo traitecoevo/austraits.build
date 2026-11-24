@@ -30,6 +30,13 @@ mistaken for one.
 
 ## Step 0 -- read the whole paper first
 
+**The PDFs are always in one of two places** -- look there before asking the
+user for the file or searching the web: `~/GitHub/austraits.build/export/pdfs/`
+or `~/Library/CloudStorage/OneDrive-UNSW/Documents/data_for_GitHub_repos/austraits.build/*processed pdfs/`
+(the folder name starts with a literal `*`, so quote the path). Files are named
+`<dataset_id>.pdf`, with supplements as `<dataset_id>_SI.pdf` /
+`<dataset_id>_tables.pdf`.
+
 Get the page count, then read every page (the `Read` tool caps at 20
 pages/call -- most journal articles fit in one call). Do not jump straight to
 a "Results" heading: numeric trait values worth recording turn up in the

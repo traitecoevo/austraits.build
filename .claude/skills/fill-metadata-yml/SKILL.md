@@ -71,7 +71,14 @@ develop, so reinstalling from develop doesn't help. Test with
 ## Step 1 -- source (primary / secondary_NN)
 
 The user will usually hand you the reference list directly (pasted text, a
-screenshot, or a paper PDF) rather than expect you to look it up. Map it to
+screenshot, or a paper PDF) rather than expect you to look it up. If not, **read
+it from the dataset's PDF, which is always in one of two places** --
+`~/GitHub/austraits.build/export/pdfs/` or
+`~/Library/CloudStorage/OneDrive-UNSW/Documents/data_for_GitHub_repos/austraits.build/*processed pdfs/`
+(literal `*` in the folder name; quote the path), named `<dataset_id>.pdf` with
+`_SI` / `_tables` supplements. Check there before asking the user or searching
+the web, including for the full citations of studies a compilation's
+`source_id` values name; use Crossref only to confirm a DOI. Map it to
 `source:` entries:
 
 - `primary:` is whichever reference the user names as primary (ask if not
@@ -237,6 +244,10 @@ Plants in towns, suburbs, parks, gardens, yards, streets and on private
 properties are `captive_cultivated`, not `field` -- "they certainly aren't
 wild-growing plants" (Dorey_2021, flame trees in towns and parks). Keep `field`
 for weeds growing there and for national or conservation parks.
+`captive_cultivated` also covers plants growing in arboreta, botanic gardens,
+plantations or glasshouses. Lab experiments on harvested material, such as
+seed bank germination and viability trials, are `lab` (seed bank datasets,
+2026-11-10).
 
 **Map categorical values with `substitutions:`, not in data.csv.** For an
 extraction's long-format data.csv, set `dataset: value: trait_value` (the
@@ -244,6 +255,13 @@ source's own snake_case terms, e.g. `almost_complete`, `non_glaucous`) and add
 one substitution per source term -> AusTraits value(s). `trait_value_clean`
 stays in data.csv as the curator's reference but isn't the build column
 (Hallam_1970).
+
+**One column feeding two traits needs a copy of the column.** Two `traits:`
+entries with the same `var_in` don't work: both become the first trait and
+every value is doubled. Copy the column in `custom_R_code`
+(`dplyr::mutate(stem_growth_habit = LifeForm)`), map the copy, and substitute
+the values that belong to the other trait to `.na`. A life form of
+"groundcover" is `stem_growth_habit: prostrate` (Chu_2022).
 
 **Never filter out categorical values just because they don't map** to
 `allowed_values_levels`. Let them reach traits.build so they land in
@@ -449,7 +467,9 @@ intensity are always mapped as `contexts:` (`category: plot_context`), even
 when every record shares the same value (Harvey_2017: `fire intensity` =
 `moderate to high intensity` throughout). These are key contextual values
 for fire-response traits, and they let users compare records across
-datasets.
+datasets. Datasets that mirror a data portal (the AVSB seed bank datasets) also
+keep the portal's fields as contexts even when constant, so they match the
+portal (storage seed bank, storage temperature, form in storage).
 
 **Specimen vouchers, tag numbers and similar per-individual codes go in the
 `identifiers:` block, never in `entity_context`.** Keep them in a plain
@@ -493,7 +513,10 @@ synonyms to the currently accepted name (via `config/taxon_list.csv`), so an
 outdated-but-valid name such as *Leptospermum attenuatum* (now *L.
 trinervium*) needs no entry. A `taxonomic_updates` entry is only needed when
 an original name is misspelt relative to any name ever used, i.e. it doesn't
-exactly match an APC/APNI canonical name. Never hand-write entries, never run
+exactly match an APC/APNI canonical name -- but the user adds those too,
+through their standard APCalign workflow. That includes obvious typos
+(Chu_2025: a `Spyridium halmotrianum` -> `halmaturinum` entry I added was
+rejected). Never hand-write entries, never run
 the alignment and paste the results in, and never edit `taxon_name` in
 data.csv. Do flag likely APCalign pitfalls as a `questions:` entry, e.g. a
 non-Australian taxon that would fuzzy-match to the wrong Australian species
@@ -507,7 +530,10 @@ the database: sites pooled into a metapopulation mean are listed once in the
 location's `georeference remarks`; where in the paper a value came from stays
 in data.csv's `source_section` (unmapped); unit reinterpretations, typos and
 protocol detail go in `notes:`, `methods:` or `questions:`; a value measured
-in another study is recorded through `source_id` (DeSmedt_2018).
+in another study is recorded through `source_id` (DeSmedt_2018). The one
+exception is collector credit: the AVSB seed bank datasets map
+`measurement_remarks` = "Collector: <name>" on every record, because the
+contributors want their collectors credited.
 
 Use `notes:` to record anything a later curator should know about how
 `data.csv` was derived (disambiguated location names, derived/matched
@@ -516,7 +542,9 @@ step's chat report when converting the raw file. Leave out what follows from
 the normal rules or is already said elsewhere: a description of the source
 tables (that's `original_file`), or "each record gives a row mapped to the most
 specific flower_visitor level" (Dorey_2021: "you're just following 'normal'
-rules, right?").
+rules, right?"). For a taxon-description dataset, say that data.csv carries the
+unmapped per-taxon columns `treatment_type` and `original_concept_year` (see
+`extract-traits-from-taxon-description`), and give the counts by type.
 
 **Never annotate a field's own content with what kind of field it is or where
 it came from** -- e.g. don't append `(Materials and methods, verbatim)` or

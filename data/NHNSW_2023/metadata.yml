@@ -13,8 +13,7 @@ contributors:
   - last_name: Duretto
     given_name: Marco
     ORCID: 0000-0003-1013-4291
-    affiliation: National Herbarium of New South Wales, Australian Institute of Botanical
-      Science, Royal Botanic Gardens and Domain Trust, Sydney, Australia
+    affiliation: National Herbarium of New South Wales, Australian Institute of Botanical Science, Royal Botanic Gardens and Domain Trust, Australia
   - last_name: Coleman
     given_name: David
     ORCID: 0000-0002-1773-6597
@@ -40,6 +39,7 @@ dataset:
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "recurved", "revolute"), trait_value),
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "incurved", "involute"), trait_value),
         measurement_remarks = ifelse(is.na(category), NA, paste0("Trait value refers to ", category)),
+        measurement_remarks = ifelse(is.na(Source), measurement_remarks, ifelse(is.na(measurement_remarks), Source, paste0(measurement_remarks, "; ", Source))),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred"), flora_value, NA),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_species"), "inferred_from_species", inferred),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_genus"), "inferred_from_genus", inferred),

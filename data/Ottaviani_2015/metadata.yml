@@ -81,21 +81,19 @@ contributors:
   - last_name: Ottaviani
     given_name: Gianluigi
     ORCID: 0000-0003-3027-4638
-    affiliation: Centro de Investigaciones sobre Desertificación, Consejo Superior
-      de Investigaciones Científicas, Universitat de València, Generalitat Valenciana
-      (CIDE, CSIC-UV-GV), Valencia, Spain
+    affiliation: Centro de Investigaciones sobre Desertificación (CIDE, CSIC-UV-GV), Spain
   - last_name: Mucina
     given_name: Ladislav
     ORCID: 0000-0003-0317-8886
-    affiliation: Murdoch University, Perth, Western Australia, Australia
+    affiliation: Murdoch University, Australia
   - last_name: Keppel
     given_name: Gunnar
     ORCID: 0000-0001-7092-6149
-    affiliation: Adelaide University, Adelaide, South Australia, Australia
+    affiliation: Adelaide University, Australia
   - last_name: Wardell-Johnson
     given_name: Grant
     ORCID: 0000-0002-6751-9224
-    affiliation: Curtin University, Perth, Western Australia, Australia
+    affiliation: Curtin University, Australia
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
@@ -106,7 +104,10 @@ dataset:
           `Site name` == "Boyagin Rock" & `Sample location` == "landscape matrix",
           "woodland",
           `Habitat type`
-        )
+        ),
+        species_traits_remark = dplyr::if_else(
+          stringr::str_detect(dplyr::coalesce(species_traits_source, ""), "response to AusTraits queries"),
+          species_traits_source, NA_character_)
       )
     '
   collection_date: 2012-09/2012-12
@@ -427,6 +428,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  measurement_remarks: species_traits_remark
   methods: We focussed on two geophytic, common species on granite outcrops that are
     reduced to their belowground rhizomes during the hot, dry summers. ^p Leaf phenology
     of these two species is from this statement (Ottaviani_2018); that of the other
@@ -438,6 +440,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  measurement_remarks: species_traits_remark
   methods: We focussed on two geophytic, common species on granite outcrops that are
     reduced to their belowground rhizomes during the hot, dry summers. ^p Life form
     of these two species is from this statement (Ottaviani_2018); the author confirmed
@@ -449,6 +452,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  measurement_remarks: species_traits_remark
   methods: We studied seven plant traits for two common, rhizomatous granite outcrop
     species (the fern Cheilanthes austrotenuifolia, and the herb Stypandra glauca) with
     seasonal foliage during the cooler, wetter winter months. ^p Clonal spread mechanism

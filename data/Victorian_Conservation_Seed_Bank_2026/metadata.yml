@@ -1,0 +1,214 @@
+source:
+  dataset:
+    key: Victorian_Conservation_Seed_Bank_2026
+    bibtype: Online
+    author: Victorian Conservation Seed Bank
+    year: 2026
+    title: Victorian Conservation Seed Bank dataset from Australian Virtual Seed Bank
+    publisher: Australian Virtual Seed Bank
+    url: https://seedbank.ala.org.au
+contributors:
+  data_collectors:
+  - last_name: Robinson
+    given_name: Alastair
+    ORCID: 0000-0001-8581-2718
+    affiliation: Royal Botanic Gardens Victoria, Australia
+  - last_name: Miller
+    given_name: Rebecca
+    ORCID: 0000-0003-2785-0024
+    affiliation: Royal Botanic Gardens Victoria, Australia
+  - last_name: Eyles
+    given_name: Kathryn
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership, Australia
+  - last_name: Desmond
+    given_name: Bradley
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        location_name = ifelse(
+          !is.na(`Decimal Latitude`),
+          paste0("seeds_collected_at_", `Decimal Latitude`, "_lat_and_", `Decimal Longitude`, "_long"),
+          NA
+        ),
+        collection_date = dplyr::coalesce(
+          as.character(`Collection Date`),
+          stringr::str_sub(as.character(`Storage Date`), 1, 4),
+          stringr::str_sub(as.character(`Date Tested`), 1, 4),
+          "2026"
+        ),
+        measurement_remarks = ifelse(!is.na(Collector), paste0("Collector: ", Collector), NA),
+        germination_unadjusted = ifelse(
+          is.na(`Adjusted Germination %`),
+          dplyr::coalesce(
+            suppressWarnings(as.numeric(`Final Germination Percentage`)),
+            ifelse(
+              as.numeric(`Number Tested`) > 0,
+              100 * as.numeric(`Number Germinated`) / as.numeric(`Number Tested`),
+              NA
+            )
+          ),
+          NA
+        )
+      ) %>%
+      filter(!is.na(`Scientific Name`))
+    '
+  collection_date: collection_date
+  taxon_name: Scientific Name
+  location_name: location_name
+  description: Seed trait data from the Victorian Conservation Seed Bank, including
+    seed mass of collected seeds and data on germination trials.
+  basis_of_record: lab
+  life_stage: adult
+  measurement_remarks: measurement_remarks
+  sampling_strategy: The Victorian Conservation Seedbank is Victoria's primary facility
+    for the conservation of the state's most threatened plants. It stores the seeds
+    and spores of native Victorian plants, particularly endemics and at-risk species,
+    forming the basis for our research into effective long-term germplasm storage,
+    germination characteristics, and the propagation of recalcitrant native species.
+    The centre, supported by our associated laboratories and plant propagation nurseries,
+    forms part of Royal Botanic Gardens Victoria's Bushfire Plant Recovery and Care
+    Unit, which aims to support the restoration of fire damaged landscapes and ecosystems.
+  original_file: Data downloaded from the Australian Virtual Seed Bank
+    (https://seedbank.ala.org.au) GraphQL API (https://events-databox.ala.org.au/graphql)
+    on 10 Nov 2026, all records for the Victorian Conservation Seed Bank.
+  notes: data.csv has one row per seed accession and one row per germination trial (with
+    its treatment and the accession's taxon, locality and dates), distinguished by `Event
+    Type`. Where an accession has no collection date, collection_date is the year it went
+    into storage, else the year of the germination test, else 2026 (download year). Rows
+    with `Data Version` = "2025 download" are values from the Feb 2025 download that are
+    no longer in the Australian Virtual Seed Bank.
+identifiers:
+- var_in: Accession Number
+  identifier_type: catalogNumber
+  institution_code: Victorian Conservation Seedbank
+- var_in: Herbarium Voucher
+  identifier_type: catalogNumber
+  institution_code: National Herbarium of Victoria (MEL)
+locations: locations.csv
+contexts:
+- context_property: storage temperature (C)
+  category: treatment_context
+  var_in: Storage Temperature
+- context_property: storage seed bank
+  category: treatment_context
+  var_in: Storage Seed Bank
+- context_property: seed collection fill rate
+  category: treatment_context
+  var_in: Collection Fill Rate / X-Ray
+- context_property: seed germination test length
+  category: treatment_context
+  var_in: Test Length
+- context_property: seed germination media/substrate
+  category: treatment_context
+  var_in: Treatment Media/Substrate
+- context_property: seed germination day temperature
+  category: treatment_context
+  var_in: Treatment Day Temp
+- context_property: seed germination night temperature
+  category: treatment_context
+  var_in: Treatment Night Temp
+- context_property: seed germination pretreatment
+  category: treatment_context
+  var_in: Treatment Pretreatment
+- context_property: seed germination chemical treatment
+  category: treatment_context
+  var_in: Chemical
+- context_property: seed germination light hours
+  category: treatment_context
+  var_in: Treatment Light Hours
+- context_property: seed germination dark hours
+  category: treatment_context
+  var_in: Treatment Dark Hours
+- context_property: AVSB data version
+  category: method_context
+  var_in: Data Version
+traits:
+- var_in: Adjusted Germination %
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Number Tested
+  methods: The proportion of seeds germinated, expressed as a percentage of the total
+    viable seeds tested.
+- var_in: germination_unadjusted
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Number Tested
+  methods: The number of seeds germinated as a percentage of the number of seeds tested
+    (the seed bank's final germination percentage), for trials without an adjusted
+    germination percentage.
+- var_in: Germination Treatment (mapped)
+  unit_in: .na
+  trait_name: seed_germination_treatment
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Summary of any physical or chemical treatment(s) applied to a seed before
+    it is tested. The pretreatment and chemical treatment recorded for each germination
+    trial are grouped into treatment categories.
+substitutions: .na
+taxonomic_updates:
+- find: Arthropodium
+  replace: Arthropodium sp. [Arthropodium; Victorian_Conservation_Seed_Bank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Astrotricha
+  replace: Astrotricha sp. [Astrotricha; Victorian_Conservation_Seed_Bank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Baeckea
+  replace: Baeckea sp. [Baeckea; Victorian_Conservation_Seed_Bank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-11)
+  taxonomic_resolution: genus
+- find: Carpobrotus
+  replace: Carpobrotus sp. [Carpobrotus; Victorian_Conservation_Seed_Bank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Eucalyptus
+  replace: Eucalyptus sp. [Eucalyptus; Victorian_Conservation_Seed_Bank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Hydrocotyle
+  replace: Hydrocotyle sp. [Hydrocotyle; Victorian_Conservation_Seed_Bank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2026-11-11)
+  taxonomic_resolution: genus
+- find: Lachnagrostis
+  replace: Lachnagrostis sp. [Lachnagrostis; Victorian_Conservation_Seed_Bank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Plantago
+  replace: Plantago sp. [Plantago; Victorian_Conservation_Seed_Bank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+- find: Senna artemisioides subsp. artemisioides
+  replace: Senna artemisioides subsp. x artemisioides
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2025-02-20)
+  taxonomic_resolution: subspecies
+- find: Tecticornia
+  replace: Tecticornia sp. [Tecticornia; Victorian_Conservation_Seed_Bank_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-20)
+  taxonomic_resolution: genus
+exclude_observations: .na
+questions: .na

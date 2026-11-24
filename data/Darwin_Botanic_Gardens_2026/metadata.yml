@@ -1,0 +1,120 @@
+source:
+  dataset:
+    key: Darwin_Botanic_Gardens_2026
+    bibtype: Online
+    author: George Brown Darwin Botanic Gardens Seed Bank
+    year: 2026
+    title: George Brown Darwin Botanic Gardens Seed Bank data from Australian Virtual Seed Bank
+    publisher: Australian Virtual Seed Bank
+    url: https://seedbank.ala.org.au
+contributors:
+  data_collectors:
+  - last_name: Liu
+    given_name: Ben
+    ORCID: .na.character
+    affiliation: George Brown Darwin Botanic Gardens, Australia
+  - last_name: Eyles
+    given_name: Kathryn
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership, Australia
+  - last_name: Desmond
+    given_name: Bradley
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        location_name = ifelse(
+          !is.na(`Decimal Latitude`),
+          paste0("seeds_collected_at_", `Decimal Latitude`, "_lat_and_", `Decimal Longitude`, "_long"),
+          NA
+        ),
+        measurement_remarks = ifelse(!is.na(Collector), paste0("Collector: ", Collector), NA)
+      ) %>%
+      filter(!is.na(`Scientific Name`))
+    '
+  collection_date: Collection Date
+  taxon_name: Scientific Name
+  location_name: location_name
+  description: Seed trait data from the George Brown Darwin Botanic Gardens Seed Bank,
+    including data on germination trials.
+  basis_of_record: lab
+  life_stage: adult
+  measurement_remarks: measurement_remarks
+  sampling_strategy: The George Brown Darwin Botanic Gardens is located 2km from the
+    Darwin CBD. The gardens contain vibrant displays of native plants from northern
+    Australia as well as other exotic tropical plants from around the world. The various
+    plantings throughout the gardens present a rich tapestry of tropical orchids, heliconias,
+    bromeliads and gingers. With the recent addition of a new Visitor and Event Centre,
+    visitors have the opportunity to learn about the Gardens natural and cultural history
+    as well as the diverse plant collections and the many uses Aboriginal people have
+    for Australia's native tropical plants.
+  original_file: Data downloaded from the Australian Virtual Seed Bank
+    (https://seedbank.ala.org.au) GraphQL API (https://events-databox.ala.org.au/graphql)
+    on 10 Nov 2026, all records for the George Brown Darwin Botanic Gardens Seed Bank
+    (data resource dr21625).
+  notes: data.csv has one row per seed accession and one row per germination trial (with
+    its treatment and the accession's taxon, locality and dates), distinguished by `Event
+    Type`. Accession rows carry no mapped traits; the weekly germination counts (`7 Days`
+    to `98 Days`), plant form and the collection site descriptions (sampled-plant height,
+    population size, plants sampled and seeding) are in data.csv.
+identifiers:
+- var_in: Accession Number
+  identifier_type: catalogNumber
+  institution_code: George Brown Darwin Botanic Gardens Seed Bank
+- var_in: Herbarium Voucher
+  identifier_type: catalogNumber
+  institution_code: Northern Territory Herbarium (DNA)
+locations: locations.csv
+contexts:
+- context_property: storage seed bank
+  category: treatment_context
+  var_in: Storage Seed Bank
+- context_property: seed germination media/substrate
+  category: treatment_context
+  var_in: Treatment Media/Substrate
+- context_property: seed germination day temperature
+  category: treatment_context
+  var_in: Treatment Day Temp
+- context_property: seed germination night temperature
+  category: treatment_context
+  var_in: Treatment Night Temp
+- context_property: seed germination light hours
+  category: treatment_context
+  var_in: Treatment Light Hours
+- context_property: seed germination dark hours
+  category: treatment_context
+  var_in: Treatment Dark Hours
+- context_property: seed germination pretreatment
+  category: treatment_context
+  var_in: Treatment Pretreatment
+- context_property: seed germination test length
+  category: treatment_context
+  var_in: Test Length
+traits:
+- var_in: Adjusted Germination %
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: Number Tested
+  methods: The proportion of seeds germinated, expressed as a percentage of the total
+    viable seeds tested.
+- var_in: Germination Treatment (mapped)
+  unit_in: .na
+  trait_name: seed_germination_treatment
+  entity_type: individual
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Summary of any physical or chemical treatment(s) applied to a seed before
+    it is tested. The pretreatment recorded for each germination trial is grouped into
+    treatment categories.
+substitutions: .na
+taxonomic_updates: .na
+exclude_observations: .na
+questions: .na
