@@ -6,6 +6,18 @@ source:
     author: Mark K. J. Ooi, Peter Myerscough, Tony Auld
     title: 'Unpublished data: Longterm seed mass field campaign, University of New
       South Wales'
+  source:
+  - key: Vening_2017
+    bibtype: Article
+    year: 2017
+    author: Gabrielle S. Vening and Lydia K. Guja and Peter G. Spooner and Jodi N. Price
+    title: Seed dormancy and germination of three grassy woodland forbs required for
+      diverse restoration
+    journal: Australian Journal of Botany
+    volume: '65'
+    number: '8'
+    pages: 625--637
+    doi: 10.1071/bt17036
 contributors:
   data_collectors:
   - last_name: Ooi
@@ -30,6 +42,8 @@ dataset:
   custom_R_code:        '
     data %>% 
       mutate(`DATE OF COLLECTION` = util_format_collection_date(`DATE OF COLLECTION`, "dmy")) %>% 
+      mutate(dormancy_source_id = ifelse(`Source dormancy type` %in% "Vening etal 2017 Aust J Bot", "Vening_2017", NA_character_)) %>%
+      mutate(dormancy_remark = ifelse(str_detect(`Source dormancy type` %>% replace_na(""), "website"), `Source dormancy type`, NA_character_)) %>%
       group_by(SPECIES) %>%
         mutate(across(c(DORM_TYPE), replace_duplicates_with_NA)) %>%
       ungroup() %>%
@@ -473,6 +487,8 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  source_id: dormancy_source_id
+  measurement_remarks: dormancy_remark
   methods: Determined by expert opinion. Dormancy type is based on a classification
     scheme developed by Baskin and Baskin (2014).
 substitutions:
