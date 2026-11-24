@@ -32,7 +32,15 @@ The downloads below provide the data in several formats:
 - austraits-{{version}}-flattened.parquet: contains a flattened version of the dataset in parquet format; all data tables are joined into a wider format
 - austraits-{{version}}-observed-means.parquet and austraits-{{version}}-observed-means.csv.gz: the observed mean of each trait for each taxon, computed from the records, in parquet and gzipped csv format; austraits-{{version}}-observed-means-dictionary.csv describes their columns
 
-For R users, access and manipulation of data is assisted with the [austraits R package](http://github.com/traitecoevo/austraits). The package can both download data and provides examples and functions for running queries.
+For R users, the [traits.use](https://github.com/traitecoevo/traits.use) package reads and queries the data, and the [austraits R package](https://traitecoevo.github.io/austraits/) downloads AusTraits releases and provides examples.
+
+**OTHER WAYS TO ACCESS AUSTRAITS**
+
+This record holds the full releases. The same data can also be reached in other ways (see <https://austraits.org/#access>):
+
+- the [AusTraits data portal](https://austraits.org/portal), to browse, filter and download data in the browser, without code;
+- [tutorials](https://traitecoevo.github.io/traits.build-book/content/AusTraits_tutorial.html) with worked examples of exploring and analysing the data;
+- taxon-level trait summaries on species pages of the [Atlas of Living Australia](https://www.ala.org.au).
 
 **STRUCTURE OF AUSTRAITS**
 
