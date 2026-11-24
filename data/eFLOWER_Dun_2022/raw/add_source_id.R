@@ -28,7 +28,7 @@
 #     the record cites the dataset (the reason is in `note`).
 #
 # Every key is then checked against the references already in AusTraits
-# (scripts/source_references.R): the same work takes its existing key and entry,
+# (ignore/source_references.R): the same work takes its existing key and entry,
 # and a key naming a different work takes the next free suffix. Records whose
 # citation names no work (43 with no reference at all, and the `unidentified`
 # ones) keep a blank `source_id`, citing the dataset.
@@ -38,7 +38,7 @@
 # hand-written rows), then checked by hand; edit it directly to fix a reference.
 
 suppressMessages({library(dplyr); library(readr); library(stringr); library(tibble); library(purrr)})
-source("scripts/source_references.R")
+source("ignore/source_references.R")
 
 dir <- "data/eFLOWER_Dun_2022"
 d <- read_csv(file.path(dir, "data.csv"), col_types = cols(.default = col_character()),

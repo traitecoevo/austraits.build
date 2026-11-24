@@ -23,7 +23,7 @@
 #     `measurement_remarks` (column `source_remark`).
 
 suppressMessages({library(dplyr); library(readr); library(stringr); library(tibble); library(purrr); library(tidyr)})
-source("scripts/source_references.R")
+source("ignore/source_references.R")
 
 dir <- "data/Tsakalos_2022"
 d <- read_csv(file.path(dir, "data.csv"), col_types = cols(.default = col_character()),

@@ -22,7 +22,7 @@
 # "Kew SID" seed masses are removed by the raw R code (they are in Kew_2019_1).
 
 suppressMessages({library(dplyr); library(readr); library(stringr); library(tibble); library(purrr)})
-source("scripts/source_references.R")
+source("ignore/source_references.R")
 
 dir <- "data/Standish_2019"
 d <- read_csv(file.path(dir, "data.csv"), col_types = cols(.default = col_character()),

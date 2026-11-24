@@ -26,10 +26,10 @@
 # raw/references.csv holds the works, from the supplement's Literature Cited
 # (raw/Gross 2005 Supp info ajb20907-sup-0001.pdf), with DOIs from CrossRef; a
 # work already in AusTraits gives only its key (`same_as`). Each key is checked
-# against AusTraits (scripts/source_references.R).
+# against AusTraits (ignore/source_references.R).
 
 suppressMessages({library(dplyr); library(readr); library(stringr); library(tibble); library(purrr)})
-source("scripts/source_references.R")
+source("ignore/source_references.R")
 
 dir <- "data/Gross_2005"
 d <- read_csv(file.path(dir, "data.csv"), col_types = cols(.default = col_character()),

@@ -32,7 +32,7 @@
 # it is in AusTraits, otherwise its earliest source is kept.
 
 suppressMessages({library(dplyr); library(readr); library(stringr); library(tibble); library(purrr)})
-source("scripts/source_references.R")
+source("ignore/source_references.R")
 
 dir <- "data/McCarthy_2017_2"
 v <- bind_rows(

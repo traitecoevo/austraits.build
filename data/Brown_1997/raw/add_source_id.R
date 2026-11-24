@@ -44,7 +44,7 @@
 # reads those, each checked against records of the same plant, place and year.
 
 suppressMessages({library(dplyr); library(readr); library(stringr); library(tibble); library(purrr)})
-source("scripts/source_references.R")
+source("ignore/source_references.R")
 
 dir <- "data/Brown_1997"
 d <- read_csv(file.path(dir, "data.csv"), col_types = cols(.default = col_character()),
