@@ -59,20 +59,29 @@ jobs:
       # datasets tested: each dataset's tests read nothing but its own folder
       # and config/. Any other change (config/, R/, the workflow, ...) can
       # affect every dataset, so it tests all of them, as does every push.
+      #
+      # `changed` lists every dataset whose folder a pull request touches,
+      # whatever else it changes; the build step rebuilds those.
       - name: choose datasets to test
         id: scope
         run: |
-          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            changed=$(git diff --name-only HEAD^1 HEAD)
-            if [ -n "$changed" ] && ! printf '%s\n' "$changed" | grep -qv '^data/'; then
-              ids=$(printf '%s\n' "$changed" | cut -d/ -f2 | sort -u | tr '\n' ' ')
-              echo "Only data/ changed; testing: $ids"
-              echo "ids=$ids" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          fi
-          echo "Testing every dataset"
           echo "ids=" >> "$GITHUB_OUTPUT"
+          echo "changed=" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            echo "Testing every dataset"
+            exit 0
+          fi
+          files=$(git diff --name-only HEAD^1 HEAD)
+          # `|| true`: grep exits 1 when nothing matches, which pipefail would
+          # turn into a failed step
+          changed=$(printf '%s\n' "$files" | { grep '^data/[^/]*/' || true; } | cut -d/ -f2 | sort -u | tr '\n' ' ')
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          if [ -n "$files" ] && ! printf '%s\n' "$files" | grep -qv '^data/'; then
+            echo "Only data/ changed; testing: $changed"
+            echo "ids=$changed" >> "$GITHUB_OUTPUT"
+          else
+            echo "Changes outside data/; testing every dataset"
+          fi
 
       - name: check sources
         env:
@@ -126,8 +135,23 @@ jobs:
           key: ${{ steps.cache-key.outputs.key }}-${{ hashFiles('R/**') }}-
           restore-keys: ${{ steps.cache-key.outputs.key }}-${{ hashFiles('R/**') }}-
 
+      # Rebuild every dataset the pull request touches, whether or not targets
+      # thinks it changed. targets tracks each dataset's data.csv, metadata.yml
+      # and locations file, but not every file a dataset reads: an edit to a
+      # dataset's sources.yml, for one, rebuilds nothing (traits.build
+      # template, to be fixed there). Forcing the touched datasets covers any
+      # such file, and costs only those datasets.
       - name: build austraits
+        env:
+          CHANGED: ${{ steps.scope.outputs.changed }}
         run: |
+          ids <- strsplit(trimws(Sys.getenv("CHANGED")), " +")[[1]]
+          # Nothing to invalidate on a cold build, and tar_invalidate() errors
+          # when there is no store
+          if (length(ids) > 0 && dir.exists("_targets")) {
+            message("Rebuilding the datasets this pull request touches: ", paste(ids, collapse = ", "))
+            targets::tar_invalidate(tidyselect::any_of(c(paste0(ids, "_config"), paste0(ids, "_raw"), ids)))
+          }
           targets::tar_make()
         shell: Rscript {0}
 
