@@ -156,4 +156,4 @@ This work received investment ([TD044](https://doi.org/10.47486/TD044),
 
 Further information about the AusTraits project is available at the project website [austraits.org](https://austraits.org).
 
-**Reuse**: At this stage, only the compiled AusTraits dataset is available for reuse, via Zenodo. The raw data sources provided in this repository are not available for reuse in their current form, without further discussion from data contributors.
+**Reuse**: The compiled AusTraits database is released on Zenodo under CC-BY 4.0. Individual datasets remain the copyright of their contributors; the raw data files in this repository are included in AusTraits, and may be reused, under the same licence, citing AusTraits and the dataset's source (see [LICENCE](LICENCE)).

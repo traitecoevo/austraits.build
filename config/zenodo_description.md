@@ -1,12 +1,14 @@
-AusTraits is a transformative database, containing measurements on the traits of Australia's plant taxa, standardised from hundreds of disconnected primary sources. So far, data have been assembled from > 300 distinct sources, describing > 500 plant traits and > 34,000 taxa.
+AusTraits is a transformative database, containing measurements on the traits of Australia's plant taxa, standardised from hundreds of disconnected primary sources. Version {{version}} assembles 503 datasets, which draw on more than 3,900 distinct sources, into 2,450,777 records of 631 plant traits for 38,472 taxa.
 
-To handle the harmonising of diverse data sources, we use a reproducible workflow to implement the various changes required for each source to reformat it suitable for incorporation in AusTraits. Such changes include restructuring datasets, renaming variables, changing variable units, changing taxon names. While this repository contains the harmonised data, the raw data and code used to build the resource are also available on the project's GitHub repository, <https://github.com/traitecoevo/austraits.build/>.
+To handle the harmonising of diverse data sources, we use a reproducible workflow to implement the various changes required for each source to reformat it suitable for incorporation in AusTraits. Such changes include restructuring datasets, renaming variables, changing variable units, changing taxon names. While this record contains the harmonised data, the raw data and code used to build the resource are also available on the project's GitHub repository, <https://github.com/traitecoevo/austraits.build/>.
 
 Further information on the project is available at the project website [austraits.org](https://austraits.org) and in the associated publication (see below).
 
 **CONTRIBUTORS**
 
-The project is jointly led by Prof Daniel Falster (UNSW Sydney), Prof Rachael Gallagher (Western Sydney University), Dr Elizabeth Wenk (UNSW Sydney), and Dr Hervé Sauquet (Royal Botanic Gardens and Domain Trust Sydney), with input from > 300 contributors from > 100 institutions (see full list above). The project was initiated by Prof Rachael Gallagher and Prof Ian Wright while at Macquarie University.
+The project is jointly led by Prof Daniel Falster (UNSW Sydney), Prof Rachael Gallagher (Western Sydney University), Dr Elizabeth Wenk (UNSW Sydney), and Dr Hervé Sauquet (Royal Botanic Gardens and Domain Trust Sydney), with data from 531 contributors at more than 100 institutions (see full list above). The project was initiated by Prof Rachael Gallagher and Prof Ian Wright while at Macquarie University.
+
+The contributors listed above are the current project team, the advisory board (listed as "Other", as Zenodo has no role for advisors), and everyone whose data are in this release. Many others helped build AusTraits in earlier years, as project members, advisors and contributors. They are credited on the earlier versions of this record and on the [AusTraits team page](https://austraits.org/team/team-partners.html), and we thank them all.
 
 We are grateful to the following institutions for contributing data: the Council of Heads of Australasian Herbaria (CHAH; Australasian Virtual Herbarium); the Australian Government Department of Climate Change, Energy, the Environment and Water (DCCEEW), including the Australian Biological Resources Study; the Australian National Botanic Gardens and the Centre for Australian National Biodiversity Research; the National Herbarium of New South Wales (Botanic Gardens of Sydney); the Northern Territory Herbarium; the Queensland Herbarium; the State Herbarium of South Australia; the Tasmanian Herbarium; the Western Australian Herbarium; the Royal Botanic Gardens Victoria and the Victorian Department of Environment, Land, Water and Planning; the Royal Botanic Gardens, Kew; and the Brisbane Rainforest Action and Information Network.
 
@@ -14,7 +16,7 @@ AusTraits has been supported by investment from the Australian Research Data Com
 
 **ACCESSING AND USE OF DATA**
 
-The compiled AusTraits database is released under an open source licence (CC-BY), enabling re-use by the community.
+The compiled AusTraits database is released under an open licence (CC-BY 4.0), enabling re-use by the community. Individual datasets remain the copyright of their contributors and are included in AusTraits under CC-BY 4.0.
 
 A requirement of use is that users cite the AusTraits resource paper, which includes all contributors as co-authors:
 
@@ -35,7 +37,7 @@ The full database:
 
 The observed means (the mean, or for categorical traits the most frequent value, of each trait for each taxon, computed from the records):
 
-- austraits-{{version}}-observed-means.zip: in plain text format (.csv), with the dictionary describing their columns
+- austraits-{{version}}-observed-means.csv.gz: in plain text format (gzipped .csv)
 - austraits-{{version}}-observed-means.rds: as compressed R object
 - austraits-{{version}}-observed-means.parquet: in parquet format
 - austraits-{{version}}-observed-means-dictionary.csv: describes their columns
@@ -67,10 +69,7 @@ As a community resource, we are very keen for people to contribute. Assembly of 
 
 Here are some of the ways you can contribute:
 
-**Using and citing the data**: Use AusTraits in your research and cite it (see above), along with the original data sources.
-
-**Reporting Errors**: If you notice a possible error in AusTraits, please [post an issue on GitHub](https://github.com/traitecoevo/austraits.build/issues).
-
-**Refining documentation:** We welcome additions and edits that make using the existing data or adding new data easier for the community.
-
-**Contributing new data**: We gladly accept new data contributions to AusTraits. See full instructions on how to contribute at <https://github.com/traitecoevo/austraits.build/>.
+- **Using and citing the data**: Use AusTraits in your research and cite it (see above), along with the original data sources.
+- **Reporting errors**: If you notice a possible error in AusTraits, please [post an issue on GitHub](https://github.com/traitecoevo/austraits.build/issues).
+- **Refining documentation**: We welcome additions and edits that make using the existing data or adding new data easier for the community.
+- **Contributing new data**: We gladly accept new data contributions to AusTraits. See full instructions on how to contribute at <https://github.com/traitecoevo/austraits.build/>.

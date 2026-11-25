@@ -98,7 +98,7 @@ If such changes have been made, ensure `traits.use`, `traits.build` and `austrai
 
 6.  Bump the version number in `DESCRIPTION` to x.x.x.9000, merge into `develop`.
 
-7.  The AusTraits-specific `austraits` package (`load_austraits()`, the AusTraits vignette) sits on top of `traits.use`. Its vignette (`vignettes/austraits.Rmd.orig`, precomputed into `austraits.Rmd`) requires further changes after the `austraits.build` release to ensure it includes the newest release in its list of Zenodo doi's (section 5, step 12).
+7.  The AusTraits-specific `austraits` package (`load_austraits()`, the AusTraits vignette) sits on top of `traits.use`. Its vignette (`vignettes/austraits.Rmd.orig`, precomputed into `austraits.Rmd`) requires further changes after the `austraits.build` release to ensure it includes the newest release in its list of Zenodo doi's (section 5, step 13).
 
 ## 3. Update traits.build
 
@@ -242,17 +242,27 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
     create_release(austraits, v_prev = "p.p.p")
     ```
 
-    This writes `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, the observed means (`austraits-x.x.x-observed-means.parquet`, `.rds`, `.zip` (the csv and dictionary) and `-dictionary.csv`), `austraits-x.x.x.zip`, `dictionary.html` and `NEWS.md` to `export/data/austraits-x.x.x/`. `export/` is not committed.
+    This writes `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, the observed means (`austraits-x.x.x-observed-means.parquet`, `.rds`, `.csv.gz` and `-dictionary.csv`), `austraits-x.x.x.zip`, `dictionary.html` and `NEWS.md` to `export/data/austraits-x.x.x/`. `export/` is not committed.
 
     The observed means are one value per taxon and trait, for every trait, computed from the records by `traits.use::summarise_trait_means()` (`R/observed_means.R` holds AusTraits' settings for it). Open the parquet and check a few species you know.
 
-6.  Add the new release to the top of the root `NEWS.md`: copy the automated summary from `export/data/austraits-x.x.x/NEWS.md` and add the personalised details. `create_release()` doesn't touch the root `NEWS.md`, which holds every past release.
+6.  Update the counts in `config/zenodo_description.md` (its first paragraph, and the number of contributors under CONTRIBUTORS) from the database built in step 3. Records, traits and taxa are counted as the NEWS table counts them:
 
-7.  Commit, open a PR from `prepare-for-release` to `develop`, and merge.
+    ``` r
+    library(dplyr)
+    austraits$traits %>% summarise(datasets = n_distinct(dataset_id), records = n(),
+                                   traits = n_distinct(trait_name), taxa = n_distinct(taxon_name))
+    length(austraits$sources)  # reference entries; a few works have two keys, so round down
+    sum(vapply(traits.build::zenodo_metadata(austraits)$contributors, `[[`, "", "type") == "DataCollector")
+    ```
 
-8.  **Merge commit** `develop` to `master` (a PR from `develop` to `master`, merged with "Create a merge commit", NOT "Squash and merge"). As long as nothing was committed directly to `master`, its files are now identical to the branch you built from, so there is no need to rebuild. That holds only if nothing else is merged into `develop` between the build in step 3 and this merge, so hold other PRs until the tag is pushed.
+7.  Add the new release to the top of the root `NEWS.md`: copy the automated summary from `export/data/austraits-x.x.x/NEWS.md` and add the personalised details. `create_release()` doesn't touch the root `NEWS.md`, which holds every past release.
 
-9.  Tag `master`:
+8.  Commit, open a PR from `prepare-for-release` to `develop`, and merge.
+
+9.  **Merge commit** `develop` to `master` (a PR from `develop` to `master`, merged with "Create a merge commit", NOT "Squash and merge"). As long as nothing was committed directly to `master`, its files are now identical to the branch you built from, so there is no need to rebuild. That holds only if nothing else is merged into `develop` between the build in step 3 and this merge, so hold other PRs until the tag is pushed.
+
+10. Tag `master`:
 
     ``` bash
     git checkout master && git pull
@@ -260,9 +270,9 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
     git push origin vx.x.x
     ```
 
-10. Create release on GitHub from the tag, paste in the new `NEWS.md` section, flag as "latest release", and attach the files in `export/data/austraits-x.x.x/`.
+11. Create release on GitHub from the tag, paste in the new `NEWS.md` section, flag as "latest release", and attach the files in `export/data/austraits-x.x.x/`.
 
-11. Add a new version to Zenodo ([10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417)) as a draft, with `traits.build::zenodo_deposit()`. It sets the metadata from `config/metadata.yml` (creators, contributors, related identifiers, version, date) and the description from `config/zenodo_description.md`, and uploads the files. It never publishes. The functions are in traits.build's `develop` from traitecoevo/traits.build#320; if the traits.build release in `DESCRIPTION` predates them, install `develop` just for this step. You need a personal access token from zenodo.org (Applications → Personal access tokens, scope `deposit:write`) in `ZENODO_TOKEN`.
+12. Add a new version to Zenodo ([10.5281/zenodo.3568417](https://doi.org/10.5281/zenodo.3568417)) as a draft, with `traits.build::zenodo_deposit()`. It sets the metadata from `config/metadata.yml` (creators, contributors, related identifiers, version, date) and the description from `config/zenodo_description.md`, and uploads the files. It never publishes. The functions are in traits.build's `develop` from traitecoevo/traits.build#320; if the traits.build release in `DESCRIPTION` predates them, install `develop` just for this step. You need a personal access token from zenodo.org (Applications → Personal access tokens, scope `deposit:write`) in `ZENODO_TOKEN`.
 
     ``` r
     austraits <- readRDS("export/data/austraits-x.x.x/austraits-x.x.x.rds")
@@ -272,15 +282,15 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
     traits.build::zenodo_deposit(metadata, record = 3568417, files = files, sandbox = FALSE)
     ```
 
-    -   `files` should be `austraits-x.x.x.zip`, `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, `austraits-x.x.x-observed-means.parquet`, `austraits-x.x.x-observed-means.rds`, `austraits-x.x.x-observed-means.zip`, `austraits-x.x.x-observed-means-dictionary.csv`, `dictionary.html`, `NEWS.md` and the root `README.md` (which `create_release()` doesn't write). Files from the previous version that are not in the list are removed from the draft.
-    -   Before writing anything, `zenodo_deposit()` compares the new metadata with the previous version's and stops if a creator, contributor, related identifier or reference would be dropped, or a creator's name changes. Fix that in `config/metadata.yml` (people who are not data collectors of any dataset go under `project_contributors`), rebuild from step 3, and run it again. Where the loss is right, such as a spelling a dataset has corrected, name it: `allow_removals = c("Wilson, J. Barstow")` accepts that one and still stops on anything else (that name is expected at 8.0.0: the v7.0.0 record has a typo the datasets don't). Contributors renamed by a dataset's `metadata.yml` are listed but don't stop it.
+    -   `files` should be `austraits-x.x.x.zip`, `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, `austraits-x.x.x-observed-means.parquet`, `austraits-x.x.x-observed-means.rds`, `austraits-x.x.x-observed-means.csv.gz`, `austraits-x.x.x-observed-means-dictionary.csv`, `dictionary.html`, `NEWS.md` and the root `README.md` (which `create_release()` doesn't write). Files from the previous version that are not in the list are removed from the draft.
+    -   Before writing anything, `zenodo_deposit()` compares the new metadata with the previous version's and stops if a creator, contributor, related identifier or reference would be dropped, or a creator's name changes. Fix that in `config/metadata.yml` (people who are not data collectors of any dataset go under `project_contributors`), rebuild from step 3, and run it again. Where the loss is right, such as a spelling a dataset has corrected or someone no longer credited, name it in `allow_removals`, which still stops on anything else. Expected at 8.0.0: `allow_removals = c("Wilson, J. Barstow", "Indiarto, Dony", "Baxter, Caitlan", "Allen, Stuart", "10.1038/s41597-021-01006-6")`, that is, a typo on the v7.0.0 record that the datasets don't have; three past project members no longer listed (see the comment above `project_contributors`); and the Scientific Data paper's `isPublishedIn` relation, as 8.0.0 was not published there (it stays as `isDescribedBy` and `isCitedBy`). Contributors renamed by a dataset's `metadata.yml` are listed but don't stop it.
     -   It also keeps the ORCIDs and affiliations on the previous version for people the repository has without them (mostly dataset assistants, which are free text), and lists them.
     -   If an upload is interrupted, run the same call with `draft = <id>` (the id it printed); files already uploaded are skipped.
     -   Open the draft's link, check it (creators, contributors, files, description), and publish it on Zenodo. Grants, keywords and communities are carried over from the previous version.
 
-12. Update the `austraits` vignette's list of Zenodo doi's (section 2, step 7).
+13. Update the `austraits` vignette's list of Zenodo doi's (section 2, step 7).
 
-13. **Merge commit** `master` into `develop` (`git merge master --no-ff`), then bump the version number in `DESCRIPTION` and `config/metadata.yml` to x.x.x.9000 and merge into `develop`.
+14. **Merge commit** `master` into `develop` (`git merge master --no-ff`), then bump the version number in `DESCRIPTION` and `config/metadata.yml` to x.x.x.9000 and merge into `develop`.
 
 ### Hiccups and past errors
 
@@ -292,6 +302,6 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
 
 -   If `create_release()` stops with "The observed means' columns do not match", the installed traits.use is older or newer than this repository expects. Install the traits.use release listed in `DESCRIPTION`.
 
--   Before 8.0.0, Zenodo's metadata (creators, description, related identifiers) was typed into the web form, and each new version started as a copy of the previous one, so the record and `config/metadata.yml` drifted apart. `zenodo_deposit()` (step 11) now sets it from the repository; change the record by changing `config/metadata.yml` or `config/zenodo_description.md`, not in the web form, or the next release will overwrite it.
+-   Before 8.0.0, Zenodo's metadata (creators, description, related identifiers) was typed into the web form, and each new version started as a copy of the previous one, so the record and `config/metadata.yml` drifted apart. `zenodo_deposit()` (step 12) now sets it from the repository; change the record by changing `config/metadata.yml` or `config/zenodo_description.md`, not in the web form, or the next release will overwrite it.
 
 -   To try a deposit without touching the real record, get a token from sandbox.zenodo.org (a separate account and token), set `ZENODO_SANDBOX_TOKEN`, and run `zenodo_deposit(metadata, record = NA, files = files)`: `sandbox = TRUE` is the default, and `record = NA` starts a new record there.
