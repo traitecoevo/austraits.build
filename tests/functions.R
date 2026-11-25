@@ -104,7 +104,7 @@ test_build_dataset <- function(path_metadata, path_data, info, definitions, unit
 test_structure <- function(data, info, schema, definitions, single_dataset = TRUE) {
   
   vars_austraits <-
-    schema$austraits$elements %>% names()
+    schema$database$elements %>% names()
 
   vars_tables <- vars_austraits %>% subset(., !(. %in% c("dataset_id", "definitions", "schema", "sources", "metadata", "build_info")))
 
@@ -116,7 +116,7 @@ test_structure <- function(data, info, schema, definitions, single_dataset = TRU
   # test structure of tables
   for(v in vars_tables) {
     
-    comparison <- schema$austraits$elements[[v]]$elements %>% names()
+    comparison <- schema$database$elements[[v]]$elements %>% names()
        
     test_dataframe_named(data[[v]], comparison, info = paste(info, " - structure of ", v))
   }

@@ -680,7 +680,7 @@ For each `traits:` entry, fill:
   underlie one reported numeric *value*, not how many individuals were
   involved in an observation.
   **The correct value follows directly from `entity_type:` above, per the
-  real schema text (`schema$austraits$elements$traits$elements$replicates`):**
+  real schema text (`schema$database$elements$traits$elements$replicates`):**
   `entity_type: species` (a taxonomic-description/invariant-categorical fact)
   gets `replicates: .na`. `entity_type: individual` gets `replicates: 1` (one
   organism, one measurement) -- not a stated sample size, since there's only
