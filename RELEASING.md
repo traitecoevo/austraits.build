@@ -246,13 +246,14 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
 
     The observed means are one value per taxon and trait, for every trait, computed from the records by `traits.use::summarise_trait_means()` (`R/observed_means.R` holds AusTraits' settings for it). Open the parquet and check a few species you know.
 
-6.  Update the counts in `config/zenodo_description.md` (its first paragraph, and the number of contributors under CONTRIBUTORS) from the database built in step 3. Records, traits and taxa are counted as the NEWS table counts them:
+6.  Update the counts in `config/zenodo_description.md` (its first paragraph, and the number of contributors under CONTRIBUTORS) and in the first paragraph of `README.md` from the database built in step 3, counted as the NEWS table counts them. Species are accepted species: `taxon_name` also counts infraspecific taxa and names known only to genus, many of them one per location (`Eucalyptus sp. [Coen; Dorey_2023]`).
 
     ``` r
     library(dplyr)
-    austraits$traits %>% summarise(datasets = n_distinct(dataset_id), records = n(),
-                                   traits = n_distinct(trait_name), taxa = n_distinct(taxon_name))
-    length(austraits$sources)  # reference entries; a few works have two keys, so round down
+    austraits$traits %>% summarise(datasets = n_distinct(dataset_id), sources = n_distinct(source_id),
+                                   records = n(), traits = n_distinct(trait_name))
+    austraits$taxa %>% filter(taxon_name %in% austraits$traits$taxon_name,
+                              taxon_rank == "species", taxonomic_status == "accepted") %>% nrow()
     sum(vapply(traits.build::zenodo_metadata(austraits)$contributors, `[[`, "", "type") == "DataCollector")
     ```
 
