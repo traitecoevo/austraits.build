@@ -42,7 +42,7 @@ package; it `Depends` on `traits.build (>= 3.0.0)`.
 
 **Build/run:** the README's recipe is install `traits.build`, clone this repo, then `source("build.R")`
 (it can use multiple CPUs — raise `workers`). After running you get an `austraits` object in the
-workspace and a saved copy in `export/data`. Tests of the functions in `R/` live in `tests/testthat/` and run on CI: `testthat::test_dir("tests/testthat", stop_on_failure = TRUE)` from the repo root (`tests/build/` and `tests/functions.R` are older and not run). Default branch is
+workspace and a saved copy in `export/data`. Tests of the functions in `R/` live in `tests/testthat/` and run on CI: `testthat::test_dir("tests/testthat", stop_on_failure = TRUE)` from the repo root (`tests/build/` and `tests/functions.R` are older and not run). CI (`.github/workflows/check-build.yml`, on Linux) then runs `dataset_test()` one dataset per core with `.github/scripts/dataset_test_parallel.R`, which also works locally (`Rscript .github/scripts/dataset_test_parallel.R [ids]`) and, unlike `dataset_test()` itself, fails when a dataset does. A pull request tests only the datasets whose folders it touches, unless it changes a shared input (`config/`, `R/`, `DESCRIPTION`, `.github/`), which tests all of them; pushes to develop test all of them. CI builds with a `targets` pipeline it generates from `data/`, not with the committed `build.R`; pull requests reuse the store from the last develop build, so they rebuild only what changed. Default branch is
 `develop`.
 
 > Gotcha 1: `config/traits.yml` is **generated from APD** via `scripts/build_traits_yml_from_APD.R`
