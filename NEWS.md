@@ -33,10 +33,10 @@ full set of changes in the source can be viewed at:
 Compared to the last version, this release contains substantial
 additions of new data and improvement of old data.
 
-| version | dataset_id |  taxa | locations | traits | records |
-|:--------|-----------:|------:|----------:|-------:|--------:|
-| 7.0.0   |        410 | 33370 |      6301 |    530 | 1798215 |
-| 8.0.0   |        503 | 38456 |    188888 |    629 | 2443820 |
+| version | dataset_id | source_id | species |  taxa | locations | traits | records |
+|:--------|-----------:|----------:|--------:|------:|----------:|-------:|--------:|
+| 7.0.0   |        410 |        NA |   26171 | 33370 |      6301 |    530 | 1798215 |
+| 8.0.0   |        503 |      3773 |   26436 | 38472 |    188934 |    631 | 2450777 |
 
 This release contains:
 

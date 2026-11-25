@@ -64,10 +64,21 @@ Compared to the last version, this release contains substantial additions of new
 ```{r, results="asis"}
 
 f_summarise <- function(data, v) { 
+  # source_id is a key of `sources` from 8.0.0; before, it was free text, so
+  # its count would not be one of sources
+  keys <- unlist(lapply(unclass(data$sources), function(e) attr(e, "key")))
+  sources <- if (all(data$traits$source_id %in% keys)) n_distinct(data$traits$source_id) else NA_integer_
+  # accepted species; taxa also counts infraspecific taxa and names known
+  # only to genus, many of them one per location
+  species <- data$taxa %>%
+    filter(taxon_name %in% data$traits$taxon_name, taxon_rank == "species", taxonomic_status == "accepted") %>%
+    nrow()
   data$traits %>% 
   mutate(locations = ifelse(!is.na(location_id), paste(dataset_id, location_id), NA)) %>%
   summarise(version = data$build_info$version %>% as.character,
             dataset_id = n_distinct(dataset_id),
+            source_id = sources,
+            species = species,
             taxa = n_distinct(taxon_name),
             locations = n_distinct(locations),
             traits = n_distinct(trait_name),

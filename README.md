@@ -8,7 +8,7 @@
 
 ![](inst/figures/logo.png)
 
-AusTraits is a transformative database, containing measurements on the traits of Australia’s plant species, standardised from hundreds of disconnected primary sources. So far, data have been assembled from > 500 distinct sources, describing > 600 plant traits for > 38k taxa. The dataset and approach is documented in detail in the following publication
+AusTraits is a transformative database, containing measurements on the traits of Australia’s plant species, standardised from hundreds of disconnected primary sources. Version 8.0.0 assembles 503 datasets, which draw on 3,773 sources, into 2,450,777 records of 631 plant traits for 26,436 species. The dataset and approach is documented in detail in the following publication
 
 > Falster D, Gallagher R, Wenk, E et al. (2021) AusTraits, a curated plant trait database for the Australian flora. Scientific Data 8: 254. DOI: [10.1038/s41597-021-01006-6](http://doi.org/10.1038/s41597-021-01006-6)
 
@@ -57,7 +57,7 @@ This repository (`austraits.build`) contains the raw data to compile AusTraits f
 
 ![](inst/figures/Workflow.png)
 
-We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise > 450 different sources into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
+We use the [`traits.build`](https://traitecoevo.github.io/traits.build/)  R package and workflow to harmonise 503 datasets into a unified dataset. The workflow is fully-reproducible and open, meaning it exposes the decisions made in the processing of data into a harmonised and curated dataset and can also be rerun by others. AusTraits is built so that the database can be rebuilt from its parts at any time. This means that decisions made along the way (in how data is transformed or encoded) can be inspected and modified, and new data can be easily incorporated.
 
 A publication describes the `traits.build` workflow:
 > Wenk EH, Bal P, Coleman D, Gallagher RG, Yang S, Falster DS, (2024) Traits.build: A data model, workflow and R package for building harmonised ecological trait databases. *Ecological Informatics* 83: 102773. DOI: [10.1016/j.ecoinf.2024.102773](https://doi.org/10.1016/j.ecoinf.2024.102773)
