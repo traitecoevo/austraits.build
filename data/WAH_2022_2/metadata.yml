@@ -69,7 +69,11 @@ dataset:
           woodiness_a = stringr::str_replace(woodiness_a, "soft_wood","semi_woody")
         ) %>%
       ungroup() %>%
-      mutate(location_name = "Western Australia")
+      mutate(location_name = "Western Australia") |>
+      mutate(
+        stem_constitution = ifelse(str_detect(stem_growth_habit_a, "\\bspindly\\b"), "spindly", NA_character_),
+        stem_growth_habit_a = na_if(str_squish(str_remove_all(stem_growth_habit_a, "\\bspindly\\b")), "")
+      )
   '
   collection_date: 2022
   taxon_name: taxon_name
@@ -141,6 +145,16 @@ traits:
 - var_in: stem_growth_habit_a
   unit_in: .na
   trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: This dataset is sourced from the shorter taxon profiles on the Florabase
+    online website (version date 2022-09-14).Trait values were extracted through algorithms
+    described under the dataset's sampling strategy.
+- var_in: stem_constitution
+  unit_in: .na
+  trait_name: stem_constitution
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
