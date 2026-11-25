@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Lewis_2015
     bibtype: Article
     year: '2015'
@@ -45,7 +45,8 @@ dataset:
       mutate(individual_id = ifelse(is.na(Potnum),dplyr::row_number()+500,Potnum)) %>%
       group_by(individual_id) %>%
         mutate(observation_num = row_number()) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(`date_gas_exchange` = coalesce(util_format_collection_date(`date_gas_exchange`), "2015"))
   '
   collection_date: date_gas_exchange
   taxon_name: Species
@@ -111,6 +112,7 @@ locations:
     latitude (deg): -33.61
     longitude (deg): 150.7407
     description: naturally sun-lit and C/T-controlled glasshouse
+    state: NSW
 contexts:
 - context_property: CO2 treatment
   category: treatment_context

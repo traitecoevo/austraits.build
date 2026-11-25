@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Auld_2000
     bibtype: Article
     year: '2000'
@@ -25,7 +25,12 @@ dataset:
       mutate(
         `Seed weight (mg)` = stringr::str_extract(`Seed weight (mg)`, "[:digit:]+\\.[:digit:]+"),
         `Proportion viable` = stringr::str_extract(`Proportion viable`, "[:digit:]+\\.[:digit:]+")
-      )
+      ) %>%
+      mutate(`Seed weight (mg)` = ifelse(
+        paste(`Species`, `Seed weight (mg)`) %in% c(
+          "Kunzea ambigua 0.58", "Kunzea capitata 1.06"
+        ),
+        NA, `Seed weight (mg)`))
   '
   collection_date: 1990/1992
   taxon_name: Species
@@ -48,43 +53,52 @@ dataset:
     seeds were collected opportunistically from as many individuals as possible and
     pooled within each species. Sites were located to the north or south of Sydney.
   original_file: none, transcribed from manuscript
-  notes: none
+  notes: 2 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Site 1, KCNP:
     latitude (deg): -33.654
     longitude (deg): 151.259
     description: open heath to open forest
     soil type: soils derived from Hawkesbury Sandstone
+    state: NSW
   Site 2, KCNP:
     latitude (deg): -33.654
     longitude (deg): 151.259
     description: open heath to open forest
     soil type: soils derived from Hawkesbury Sandstone
+    state: NSW
   Site 3, KCNP:
     latitude (deg): -33.654
     longitude (deg): 151.259
     description: open heath to open forest
     soil type: soils derived from Hawkesbury Sandstone
+    state: NSW
   Site 4, KCNP:
     latitude (deg): -33.654
     longitude (deg): 151.259
     description: open heath to open forest
     soil type: soils derived from Hawkesbury Sandstone
+    state: NSW
   Site 5, Royal NP:
     latitude (deg): -34.13
     longitude (deg): 151.081
     description: open heath to open forest
     soil type: soils derived from Hawkesbury Sandstone
+    state: NSW
   Site 6, Royal NP:
     latitude (deg): -34.13
     longitude (deg): 151.08
     description: open heath to open forest
     soil type: soils derived from Hawkesbury Sandstone
+    state: NSW
   Site 7, near Maroota:
     latitude (deg): -33.464
     longitude (deg): 150.995
     description: open heath to open forest
     soil type: soils derived from Hawkesbury Sandstone
+    state: NSW
 contexts: .na
 traits:
 - var_in: Seed weight (mg)

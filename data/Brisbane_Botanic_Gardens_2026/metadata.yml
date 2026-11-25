@@ -1,0 +1,92 @@
+source:
+  dataset:
+    key: Brisbane_Botanic_Gardens_2026
+    bibtype: Online
+    author: Brisbane Botanic Garden
+    year: 2026
+    title: Brisbane Botanic Garden dataset from Australian Virtual Seed Bank
+    publisher: Australian Virtual Seed Bank
+    url: https://seedbank.ala.org.au
+contributors:
+  data_collectors:
+  - last_name: Demuth
+    given_name: Ross
+    ORCID: .na.character
+    affiliation: Brisbane Botanic Gardens Mt Coot-tha, Australia
+  - last_name: Eyles
+    given_name: Kathryn
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership, Australia
+  - last_name: Desmond
+    given_name: Bradley
+    ORCID: .na.character
+    affiliation: Australian Seed Bank Partnership, Australia
+  dataset_curators: Elizabeth Wenk
+dataset:
+  data_is_long_format: no
+  custom_R_code: '
+    data %>%
+      mutate(
+        location_name = ifelse(
+          !is.na(`Decimal Latitude`),
+          paste0("seeds_collected_at_", `Decimal Latitude`, "_lat_and_", `Decimal Longitude`, "_long"),
+          NA
+        ),
+        collection_date = dplyr::coalesce(as.character(`Collection Date`), "2026"),
+        measurement_remarks = ifelse(!is.na(Collector), paste0("Collector: ", Collector), NA)
+      ) %>%
+      filter(!is.na(`Scientific Name`))
+    '
+  collection_date: collection_date
+  taxon_name: Scientific Name
+  location_name: location_name
+  description: Seed trait data from the Brisbane Botanic Gardens, including seed mass
+    of collected seeds and data on germination trials.
+  basis_of_record: lab
+  life_stage: adult
+  measurement_remarks: measurement_remarks
+  sampling_strategy: Brisbane Botanic Gardens, Mt Coot-tha are Queensland's premier subtropical botanic gardens, located seven kilometres from the Brisbane central business district. Opened in 1976, the 56 ha site houses Australian native and international collections, including the state significant 4 ha Queensland Conservation Collection and the Brisbane Botanic Gardens Seed Bank.
+  original_file: Data downloaded from the Australian Virtual Seed Bank
+    (https://seedbank.ala.org.au) GraphQL API (https://events-databox.ala.org.au/graphql)
+    on 10 Nov 2026, all records for the Brisbane Botanic Gardens.
+  notes: data.csv has one row per seed accession and one row per germination trial (with
+    the accession's taxon, locality and dates), distinguished by `Event Type`. Accessions
+    without a collection date have collection_date 2026 (download year).
+identifiers:
+- var_in: Accession Number
+  identifier_type: catalogNumber
+  institution_code: Brisbane Botanic Gardens
+locations: locations.csv
+contexts: .na
+traits:
+- var_in: Adjusted Germination %
+  unit_in: '%'
+  trait_name: seed_germination
+  entity_type: individual
+  value_type: mean
+  basis_of_value: measurement
+  replicates: unknown
+  methods: The proportion of seeds germinated, expressed as a percentage of the total
+    viable seeds tested.
+substitutions: .na
+taxonomic_updates:
+- find: Senna artemisioides subsp. artemisioides
+  replace: Senna artemisioides subsp. x artemisioides
+  reason: Exact match of the first three words of the taxon name to an APC-accepted
+    canonical name (2025-02-26)
+  taxonomic_resolution: subspecies
+- find: Senna
+  replace: Senna sp. [Senna; Brisbane_Botanic_Gardens_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted genus
+    (2025-02-26)
+  taxonomic_resolution: genus
+- find: Asteraceae
+  replace: Asteraceae sp. [Asteraceae; Brisbane_Botanic_Gardens_2026]
+  reason: Exact match of the first word of the taxon name to an APC-accepted family
+    (2025-02-26)
+  taxonomic_resolution: family
+exclude_observations:
+- variable: taxon_name
+  find: Aneilema papuanum
+  reason: non-native, non-naturalised taxa
+questions: .na

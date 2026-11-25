@@ -1,3 +1,244 @@
+# AusTraits v8.0.0
+
+This is a major release of the AusTraits database.
+
+- austraits-8.0.0.zip: contains the compiled dataset and details of
+  structure
+- austraits-8.0.0.rds: contains a version of the dataset for direct
+  loading in R
+- austraits-8.0.0-flattened.rds: contains a flattened version of the
+  dataset for direct loading in R; all data tables are joined into a
+  wider format in this version
+- austraits-8.0.0-flattened.parquet: contains the flattened version of
+  the dataset saved in parquet format
+- austraits-8.0.0-observed-means.parquet, `.rds`, `.csv.gz`: contains
+  one value per taxon and trait, computed from the records (a geometric
+  mean for numeric traits, or an arithmetic mean for traits whose values
+  can be negative, such as water potentials; the most frequent value for
+  categorical traits, and for traits recording months, such as flowering
+  time, the months at least half the records give), with the datasets
+  and references each value draws on, with its column dictionary in
+  austraits-8.0.0-observed-means-dictionary.csv
+- source code v8.0.0.zip: contains the source materials used to build
+  the compiled dataset
+
+For details on access, structure, and usage please visit
+<https://doi.org/10.5281/zenodo.3568417>.
+
+This release was generated from source materials available at
+<https://github.com/traitecoevo/austraits.build/releases/tag/v8.0.0> A
+full set of changes in the source can be viewed at:
+<https://github.com/traitecoevo/austraits.build/compare/v7.0.0...v8.0.0>
+
+Compared to the last version, this release contains substantial
+additions of new data and improvement of old data.
+
+| version | dataset_id | source_id | species |  taxa | locations | traits | records |
+|:--------|-----------:|----------:|--------:|------:|----------:|-------:|--------:|
+| 7.0.0   |        410 |        NA |   26171 | 33370 |      6301 |    530 | 1798215 |
+| 8.0.0   |        503 |      3773 |   26436 | 38472 |    188934 |    631 | 2450777 |
+
+This release contains:
+
+- **93 new sources added to the dataset**: ANBG_2026, AVH_2026,
+  Allen_2024, Anderegg_2020, Andres_2024, Australian_PlantBank_2026,
+  Bell_1995, Bignell_1997, Bond_2026, Brisbane_Botanic_Gardens_2026,
+  Britton_2026, Brown_1997, Cernusak_2004, Coates_2024, Cook_2005,
+  Cornwell_2018, Dadswell_1972, Dalrymple_2015,
+  Darwin_Botanic_Gardens_2026, Davila_2002, Davila_2007, Davis_2026,
+  Dilly_2025, Dorey_2021, Dorey_2023, Doyle_2023, Doyle_2025,
+  DrewSmythe_2023, EakinBusher_2016, EakinBusher_2020, Elliott_2026,
+  Fernando_2006, Fernando_2007, Fuller_2025, Gille_2024, Gosper_1999,
+  Greening_Australia_2026, Hallam_1970, Houston_2002, Johnson_1980,
+  Johnson_2013, Judd_1996, Kingston_1961, Ladd_2006, Ladd_2019,
+  Ladd_2023, Lamont_2026, Lequerica_Tamara_2025, Li_1997, Li_2025,
+  Lopresti_2023, Mata_2021, McCarthy_2017_2, McNeice_2026,
+  McQuillan_2020, Myrans_2021, Myrans_2024, Myrans_2025, OGrady_1999,
+  OGrady_2006, OGrady_2009, Osmolovsky_2026, Ottaviani_2015,
+  PerezMartinez_2025, Popic_2013, Prendergast_2022, Prendergast_2022_2,
+  Prendergast_2026, Prendergast_2026_2, Prendergast_2026_3, Read_1985,
+  Ritchie_2021, SA_Seed_Conservation_Centre_2026, Saunders_2024,
+  Sauquet_2026, Sevenello_2026, SimpsonSouthward_2026, Sims_2026,
+  Steart_2009, Stephens_2020, Stephens_2022, Stephens_2024_2,
+  Tas_Seed_Conservation_Centre_2026, Tasker_2026, Taylor_1988,
+  Tennakoon_1997, Victorian_Conservation_Seed_Bank_2026,
+  WA_Seed_Centre_2026, Wenk_2025, Westerband_2023, Wirthensohn_1998,
+  Xirocostas_2024, Yates_2004
+
+- **109 new contributors:** Alison Ritchie, Alyssa Weinstein, Amy-Marie
+  Gilpin, Andrea Westerband, Andrew Crawford, Anne Griebel, Anne Taylor,
+  Anthony O’Grady, Belinda Davis, Ben Halliwell, Ben Liu, Brad Murray,
+  Bradley Desmond, C. M. Bignell, Carole Elliott, Catherine A. Offord,
+  Catherine Lestrange, Chantelle Doyle, Charlotte Mills, Clément Gille,
+  Colin T. Johnson, Daniel Krix, David Steart, David T. Bell, Denise R.
+  Fernando, Dinithi Chithrarachchige, E.M. Brown, Eli Bendall, Emily
+  Eakin-Busher, Emma Sumner, Gabrielle Hartill, Garry Cook, Gemma Hoyle,
+  Gianluigi Ottaviani, Glenda Wardle, Grant Wardell-Johnson, Gunnar
+  Keppel, H. E. Dadswell, Haifeng Li, Harriet Simpson-Southward, Harry
+  Myrans, Inna Osmolovsky, Jack McCausland, James B. Dorey, James
+  Mitchell-Williams, James Wood, Jason C. Stevens, Jerry Smith, Jessi J.
+  Drew-Smythe, John Hunter, Joshua Coates, Karen A. Johnson, Karen D.
+  Sommerville, Karen Frick, Kate Fuller, Kathryn Eyles, Kit Prendergast,
+  Kushan Tennakoon, Ladislav Mucina, Laura Lopresti, Laura Victoria
+  Perez-Martinez, Leander D. L. Anderegg, Leon Sims, Leonie Monks, Luis
+  Mata, Maddison Teys, Manu Saunders, Manuel Lequerica-Tamara, Manuel
+  Sevenello, Matthew Stray, Maximilian McQuillan, Megan Dilly, Michelle
+  Wirthensohn, N. D. Hallam, Natalie Allen, Nathan J. Emery, P. G. Ladd,
+  Paige Lieurance, Phillip Ladd, R. S. T. Kingston, Rebecca Miller,
+  Rebecca Stolper, Rhiannon L. Dalrymple, Robert Henry, Roslyn Gleadow,
+  Ross Demuth, Ruby Paroissien, Ryan Phillips, Sally Norton, Samantha
+  Andres, Samantha Setterfield, Sasha Tetu, Scott Johnson, Stephen D.
+  Hopper, Suzi Bond, T. F. Houston, Terry S. Judd, Thomas White, Todd E.
+  Minchinton, Tony J. Popic, Travis Britton, Vinod Jacob, William
+  McNeice, Xin’e Li, Yann Gagnon, Yvonne C. Davila, Yvonne Davila, Zoe
+  Ball, Zoe Xirocostas
+
+- **0 sources removed**– most replaced by corrected or updated sources
+  above:
+
+- **600909 new or updated records for 185 existing traits**
+
+- **61458 new records for 95 new traits:** bark_ribbon_type,
+  breeding_system, flower_anther_length, flower_colour_bee_chroma,
+  flower_colour_bee_hue, flower_colour_bee_type,
+  flower_colour_brightness, flower_colour_chroma,
+  flower_corolla_tube_opening, flower_dichogamy, flower_filament_length,
+  flower_lifespan, flower_nectar_production,
+  flower_nectar_sugar_concentration, flower_nectar_volume,
+  flower_perianth_fusion_categorical, flower_petal_length,
+  flower_pollen_ovule_ratio, flower_pollinator_reward,
+  flower_scent_production, flower_visitor, flowers_per_inflorescence,
+  fruit_set_proportion, germination_cues, inflorescence_length,
+  inflorescence_peduncle_length, inflorescence_type,
+  leaf_1_8_cineole_per_dry_mass, leaf_apex_shape,
+  leaf_cellulose_delta13C, leaf_cellulose_delta18O,
+  leaf_cuticle_thickness, leaf_epicuticular_wax_crystal_form,
+  leaf_epicuticular_wax_density, leaf_epicuticular_wax_density_class,
+  leaf_epicuticular_wax_tube_diameter,
+  leaf_epicuticular_wax_tube_length, leaf_essential_oil_per_dry_mass,
+  leaf_glaucousness_juvenile_leaves, leaf_guard_cell_width,
+  leaf_length_missing, leaf_length_to_stem_length_ratio,
+  leaf_length_to_width_ratio, leaf_length_type,
+  leaf_light_compensation_point, leaf_nitrate_per_dry_mass,
+  leaf_oil_gland_diameter, leaf_saturated_water_content_per_dry_mass,
+  leaf_stomatal_complex_type, leaf_surface_colour, leaf_water_delta18O,
+  leaf_wax_per_dry_mass, leaflet_length, leaflet_width, petiole_shape,
+  plant_canopy_form, plant_height_epiphyte, plant_height_missing,
+  plant_height_type, plant_tolerance_fire, pollination_vector_known,
+  pollination_vector_possible, rhizome_form, root_phenol_per_dry_mass,
+  root_Si_per_dry_mass, root_vessel_diameter,
+  root_vessel_lumen_fraction, seed_coat_thickness, seed_count,
+  seed_germination_time_to_50_percent, seed_ovule_ratio,
+  seed_reserve_to_seed_area_ratio, seeds_per_fruit, stem_base_form,
+  stem_branching_form, stem_constitution, stem_diameter,
+  stem_vessel_element_length, stem_vessel_grouping,
+  stem_vessel_perforation_plate_type, wood_axial_parenchyma_arrangement,
+  wood_density_air_dry, wood_deposit_frequency, wood_fibre_diameter,
+  wood_fibre_length, wood_fibre_pit_type,
+  wood_fibre_wall_thickness_categorical,
+  wood_growth_ring_distinctiveness, wood_radial_air_dry_shrinkage,
+  wood_radial_unit_shrinkage, wood_ray_cell_longitudinal_count,
+  wood_ray_cell_type, wood_ray_density,
+  wood_tangential_air_dry_shrinkage, wood_tangential_unit_shrinkage
+
+Details on new studies:
+
+| dataset_id                            |  taxa | locations | traits | records |
+|:--------------------------------------|------:|----------:|-------:|--------:|
+| ANBG_2026                             |  2298 |      2732 |      4 |   17351 |
+| AVH_2026                              | 23430 |    162311 |     16 |  365670 |
+| Allen_2024                            |     1 |         5 |      3 |      10 |
+| Anderegg_2020                         |     8 |       108 |      5 |    2622 |
+| Andres_2024                           |    64 |         2 |      7 |     780 |
+| Australian_PlantBank_2026             |  2185 |      3314 |      2 |   11281 |
+| Bell_1995                             |    42 |         2 |     13 |     605 |
+| Bignell_1997                          |    21 |        10 |      2 |      44 |
+| Bond_2026                             |    44 |        26 |      2 |      97 |
+| Brisbane_Botanic_Gardens_2026         |    78 |         1 |      1 |      83 |
+| Britton_2026                          |   214 |         1 |     10 |    3911 |
+| Brown_1997                            |  1142 |      1272 |      1 |    4108 |
+| Cernusak_2004                         |    31 |         6 |      6 |     288 |
+| Coates_2024                           |    69 |         6 |      1 |    5130 |
+| Cook_2005                             |     2 |         3 |      4 |      15 |
+| Cornwell_2018                         |    46 |        18 |      2 |     100 |
+| Dadswell_1972                         |   106 |         1 |     16 |    2946 |
+| Dalrymple_2015                        |   357 |        17 |      5 |    8245 |
+| Darwin_Botanic_Gardens_2026           |    65 |        68 |      2 |     159 |
+| Davila_2002                           |     1 |         2 |     16 |      48 |
+| Davila_2007                           |     1 |         4 |      5 |     546 |
+| Davis_2026                            |    40 |        15 |      4 |      60 |
+| Dilly_2025                            |   223 |         1 |      6 |     976 |
+| Dorey_2021                            |   147 |       207 |      1 |     301 |
+| Dorey_2023                            |  3334 |      2962 |      1 |    9122 |
+| Doyle_2023                            |     1 |         4 |      1 |      55 |
+| Doyle_2025                            |     1 |         2 |      3 |       9 |
+| DrewSmythe_2023                       |    50 |         4 |      1 |     346 |
+| EakinBusher_2016                      |     4 |         2 |     14 |      58 |
+| EakinBusher_2020                      |     5 |         4 |     14 |     146 |
+| Elliott_2026                          |    70 |        32 |      4 |     230 |
+| Fernando_2006                         |     3 |         1 |      1 |       3 |
+| Fernando_2007                         |     1 |         9 |      4 |      34 |
+| Fuller_2025                           |   239 |         1 |      3 |     779 |
+| Gille_2024                            |    10 |        10 |     14 |     758 |
+| Gosper_1999                           |    27 |         8 |      2 |     150 |
+| Greening_Australia_2026               |     9 |         3 |      3 |      38 |
+| Hallam_1970                           |   315 |         6 |      4 |     685 |
+| Houston_2002                          |     4 |         5 |     14 |      37 |
+| Johnson_1980                          |    39 |        44 |     14 |    1082 |
+| Johnson_2013                          |   103 |        12 |      5 |     398 |
+| Judd_1996                             |    10 |         6 |     22 |     203 |
+| Kingston_1961                         |   333 |        25 |      6 |    2410 |
+| Ladd_2006                             |     8 |         1 |      9 |      57 |
+| Ladd_2019                             |     4 |         4 |      7 |      19 |
+| Ladd_2023                             |     2 |         5 |     13 |      34 |
+| Lamont_2026                           |    22 |        12 |      5 |      66 |
+| Lequerica_Tamara_2025                 |    86 |        30 |      1 |     204 |
+| Li_1997                               |    33 |        29 |      6 |     528 |
+| Li_2025                               |   100 |         8 |      3 |     254 |
+| Lopresti_2023                         |     1 |         7 |     19 |      75 |
+| Mata_2021                             |    97 |        15 |      1 |     660 |
+| McCarthy_2017_2                       |    73 |         1 |      5 |      76 |
+| McNeice_2026                          |     5 |         1 |     13 |    1063 |
+| McQuillan_2020                        |     8 |        29 |     15 |     766 |
+| Myrans_2021                           |     6 |         6 |     10 |    1125 |
+| Myrans_2024                           |     3 |        19 |      8 |    2011 |
+| Myrans_2025                           |     4 |         7 |      4 |     320 |
+| OGrady_1999                           |     2 |         1 |      1 |      24 |
+| OGrady_2006                           |     2 |         3 |      2 |      42 |
+| OGrady_2009                           |     4 |         2 |      5 |      40 |
+| Osmolovsky_2026                       |     5 |         1 |      3 |      15 |
+| Ottaviani_2015                        |    20 |         8 |     12 |    2649 |
+| PerezMartinez_2025                    |   191 |         1 |      6 |    3725 |
+| Popic_2013                            |    52 |         1 |      2 |     232 |
+| Prendergast_2022                      |    96 |         1 |      2 |     362 |
+| Prendergast_2022_2                    |   346 |        14 |      1 |    1766 |
+| Prendergast_2026                      |    80 |        22 |      1 |     613 |
+| Prendergast_2026_2                    |   268 |       125 |      1 |    1494 |
+| Prendergast_2026_3                    |   360 |       354 |      1 |    1342 |
+| Read_1985                             |    11 |         3 |      6 |     149 |
+| Ritchie_2021                          |     2 |        11 |      3 |      41 |
+| SA_Seed_Conservation_Centre_2026      |  2071 |      2995 |      3 |   20394 |
+| Saunders_2024                         |    19 |         2 |     20 |      71 |
+| Sauquet_2026                          |    70 |        23 |      3 |     242 |
+| Sevenello_2026                        |    12 |         1 |      2 |     110 |
+| SimpsonSouthward_2026                 |    57 |       158 |      4 |    7681 |
+| Sims_2026                             |    27 |        16 |      1 |     729 |
+| Steart_2009                           |     5 |         1 |     14 |      70 |
+| Stephens_2020                         |    28 |         6 |      8 |     783 |
+| Stephens_2022                         |    94 |         6 |      1 |     121 |
+| Stephens_2024_2                       |    34 |         3 |      8 |    1316 |
+| Tas_Seed_Conservation_Centre_2026     |  1104 |      1396 |      4 |   26305 |
+| Tasker_2026                           |     9 |        16 |     12 |      71 |
+| Taylor_1988                           |    97 |         1 |      8 |    1213 |
+| Tennakoon_1997                        |    19 |         4 |     11 |     126 |
+| Victorian_Conservation_Seed_Bank_2026 |  1278 |      1361 |      2 |    5701 |
+| WA_Seed_Centre_2026                   |  2569 |      2612 |      3 |    9909 |
+| Wenk_2025                             | 15233 |         1 |     68 |  121835 |
+| Westerband_2023                       |   517 |        62 |      9 |    3278 |
+| Wirthensohn_1998                      |    21 |         4 |     17 |     461 |
+| Xirocostas_2024                       |     9 |        21 |      1 |     255 |
+| Yates_2004                            |     1 |         2 |     21 |      25 |
+
 # AusTraits v7.0.0
 
 This is a major release of the AusTraits database.

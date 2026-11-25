@@ -10,35 +10,164 @@ on:
       - main
       - master
       - develop
+  workflow_dispatch:
 
 name: build
+
+# A new push to a pull request cancels the run it supersedes, which would
+# otherwise hold a runner for half an hour testing a commit nobody needs.
+# Pushes to a branch queue instead, so every commit to develop is checked.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
     if: github.event.pull_request.draft == false
-    runs-on: macOS-latest
+    # Linux, not macOS: 4 cores rather than 3, and no waiting for the
+    # organisation's five shared macOS runners
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
+        with:
+          # A pull request is checked out as a merge commit; its first parent
+          # is the base branch, which is what `HEAD^1` below compares against
+          fetch-depth: 2
 
       - uses: r-lib/actions/setup-r@v2
-      
+        with:
+          use-public-rspm: true
+
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: local::.
+          extra-packages: |
+            local::.
+            any::targets
+            any::crew
+            any::qs2
+
+      - name: test functions
+        run: |
+          testthat::test_dir("tests/testthat", stop_on_failure = TRUE)
+        shell: Rscript {0}
+
+      # A pull request tests only the datasets whose folders it touches: each
+      # dataset's tests read nothing but its own folder and the shared inputs.
+      # A change to a shared input can affect every dataset, so it tests all
+      # of them: config/ (traits, units, taxon list), R/ (custom_R_code.R),
+      # DESCRIPTION, and the CI itself (.github/). Changes elsewhere (docs,
+      # scripts/, .claude/, ...) test nothing. Every push tests every dataset,
+      # which also catches a new traits.build breaking datasets nobody touched.
+      #
+      # Outputs: `scope` is all, some or none; `ids` the datasets to test when
+      # it is some; `changed` every dataset folder the pull request touches,
+      # whatever else it changes, which the build step rebuilds.
+      - name: choose datasets to test
+        id: scope
+        run: |
+          if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            echo "Testing every dataset"
+            { echo "scope=all"; echo "ids="; echo "changed="; } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          files=$(git diff --name-only HEAD^1 HEAD)
+          # `|| true`: grep exits 1 when nothing matches, which pipefail would
+          # turn into a failed step
+          changed=$(printf '%s\n' "$files" | { grep '^data/[^/]*/' || true; } | cut -d/ -f2 | sort -u | tr '\n' ' ')
+          shared=$(printf '%s\n' "$files" | { grep -E '^(config/|R/|DESCRIPTION$|\.github/)' || true; })
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          if [ -n "$shared" ]; then
+            echo "Shared inputs changed, so testing every dataset:"
+            printf '%s\n' "$shared" | sed 's/^/  /'
+            { echo "scope=all"; echo "ids="; } >> "$GITHUB_OUTPUT"
+          elif [ -n "$changed" ]; then
+            echo "Testing the datasets this pull request touches: $changed"
+            { echo "scope=some"; echo "ids=$changed"; } >> "$GITHUB_OUTPUT"
+          else
+            echo "No dataset or shared input changed; no datasets to test"
+            { echo "scope=none"; echo "ids="; } >> "$GITHUB_OUTPUT"
+          fi
 
       - name: check sources
+        if: steps.scope.outputs.scope != 'none'
+        env:
+          IDS: ${{ steps.scope.outputs.ids }}
         run: |
-          library(traits.build)
-          source("R/custom_R_code.R")
-          dataset_test(dir("data"))
+          read -ra ids <<< "$IDS"
+          Rscript .github/scripts/dataset_test_parallel.R "${ids[@]}"
+
+      # The build uses traits.build's `targets` pipeline rather than build.R:
+      # it builds datasets in parallel, and is regenerated here from data/ so
+      # it always includes every dataset, which the committed build.R did not
+      # for months.
+      - name: set up build pipeline
+        run: |
+          traits.build::build_setup_pipeline(
+            method = "targets",
+            database_name = "austraits",
+            workers = parallel::detectCores()
+          )
         shell: Rscript {0}
 
+      # The targets store (`_targets/`) from the last push to develop is
+      # restored for pull requests, so a pull request rebuilds only the
+      # datasets it changed and then recombines. targets notices changed data
+      # and config files for itself, but not three things the store depends
+      # on, so they are in the cache key instead and a change to any of them
+      # starts from scratch: the traits.build and traits.use versions, and
+      # R/, whose custom_R_code.R `dataset_process()` sources at run time.
+      # Pushes always build from scratch, so develop stays a full check and
+      # the store it saves is never built on a stale one.
+      - name: targets cache key
+        id: cache-key
+        run: |
+          sha <- function(pkg) {
+            d <- packageDescription(pkg)
+            if (is.null(d$RemoteSha)) d$Version else substr(d$RemoteSha, 1, 12)
+          }
+          key <- paste(
+            "targets", Sys.getenv("RUNNER_OS"), getRversion(),
+            sha("traits.build"), sha("traits.use"), packageVersion("targets"),
+            sep = "-"
+          )
+          cat("key=", key, "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
+        shell: Rscript {0}
+
+      - name: restore targets store
+        if: github.event_name == 'pull_request'
+        uses: actions/cache/restore@v4
+        with:
+          path: _targets
+          key: ${{ steps.cache-key.outputs.key }}-${{ hashFiles('R/**') }}-
+          restore-keys: ${{ steps.cache-key.outputs.key }}-${{ hashFiles('R/**') }}-
+
+      # Rebuild every dataset the pull request touches, whether or not targets
+      # thinks it changed. targets tracks each dataset's data.csv, metadata.yml
+      # and locations file, but not every file a dataset reads: an edit to a
+      # dataset's sources.yml, for one, rebuilds nothing (traits.build
+      # template, to be fixed there). Forcing the touched datasets covers any
+      # such file, and costs only those datasets.
       - name: build austraits
+        env:
+          CHANGED: ${{ steps.scope.outputs.changed }}
         run: |
-          source("build.R")
+          ids <- strsplit(trimws(Sys.getenv("CHANGED")), " +")[[1]]
+          # Nothing to invalidate on a cold build, and tar_invalidate() errors
+          # when there is no store
+          if (length(ids) > 0 && dir.exists("_targets")) {
+            message("Rebuilding the datasets this pull request touches: ", paste(ids, collapse = ", "))
+            targets::tar_invalidate(tidyselect::any_of(c(paste0(ids, "_config"), paste0(ids, "_raw"), ids)))
+          }
+          targets::tar_make()
         shell: Rscript {0}
 
+      - name: save targets store
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: actions/cache/save@v4
+        with:
+          path: _targets
+          key: ${{ steps.cache-key.outputs.key }}-${{ hashFiles('R/**') }}-${{ github.run_id }}

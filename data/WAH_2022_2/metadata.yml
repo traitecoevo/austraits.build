@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: WAH_2022_2
     bibtype: Online
     year: 2022
@@ -68,10 +68,16 @@ dataset:
           across(c(`plant_growth_form_a`, `stem_growth_habit_a`), replace_duplicates_with_NA),
           woodiness_a = stringr::str_replace(woodiness_a, "soft_wood","semi_woody")
         ) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(location_name = "Western Australia") |>
+      mutate(
+        stem_constitution = ifelse(str_detect(stem_growth_habit_a, "\\bspindly\\b"), "spindly", NA_character_),
+        stem_growth_habit_a = na_if(str_squish(str_remove_all(stem_growth_habit_a, "\\bspindly\\b")), "")
+      )
   '
-  collection_date: unknown/2022
+  collection_date: 2022
   taxon_name: taxon_name
+  location_name: location_name
   description: Plant growth form data extracted from the short profiles on Florabase,
     the Western Australia online flora.
   basis_of_record: preserved_specimen
@@ -98,7 +104,12 @@ dataset:
   original_file: .na
   notes: Descriptions by the Western Australian Herbarium, Department of Biodiversity,
     Conservation and Attractions. Text used with permission (https://florabase.dpaw.wa.gov.au/help/copyright).
-locations: .na
+locations:
+  Western Australia:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Taxa described in FloraBase; no specific collection locations.
+    state: WA
 contexts: .na
 traits:
 - var_in: life_history_a
@@ -134,6 +145,16 @@ traits:
 - var_in: stem_growth_habit_a
   unit_in: .na
   trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: This dataset is sourced from the shorter taxon profiles on the Florabase
+    online website (version date 2022-09-14).Trait values were extracted through algorithms
+    described under the dataset's sampling strategy.
+- var_in: stem_constitution
+  unit_in: .na
+  trait_name: stem_constitution
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -1211,11 +1232,6 @@ taxonomic_updates:
   replace: Chamelaucium drummondii
   reason: Exact match of the first two words of the taxon name to an APC-accepted
     canonical name (2023-11-02)
-  taxonomic_resolution: species
-- find: Chamelaucium forrestii MS
-  replace: Chamelaucium forrestii
-  reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
-    and filler words are removed (2025-06-06)
   taxonomic_resolution: species
 - find: Chamelaucium forrestii subsp. forrestii ms
   replace: Chamelaucium forrestii subsp. forrestii
@@ -2530,11 +2546,6 @@ taxonomic_updates:
   replace: Leucopogon sp. Southern Granite (E.D.Middleton EDM 266)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
   taxonomic_resolution: species
-- find: Leucopogon sp. Twertup (K.Newbey 10859)
-  replace: Leucopogon sp. Twertup (K.R.Newbey 10859)
-  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
-    and filler words are removed (2025-06-06)
-  taxonomic_resolution: species
 - find: Leucopogon sp. Twertup (K.R. Newbey 10859)
   replace: Leucopogon sp. Twertup (K.Newbey 10859)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
@@ -2665,11 +2676,6 @@ taxonomic_updates:
   replace: Maytenus sp. Mt Windell (S.van Leeuwen 846)
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
   taxonomic_resolution: species
-- find: Meeboldina decipiens MS
-  replace: Meeboldina decipiens
-  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
-    and filler words are removed (2025-06-06)
-  taxonomic_resolution: species
 - find: Meeboldina decipiens subsp. decipiens ms
   replace: Meeboldina decipiens
   reason: Exact match of the first two words of the taxon name to an APC-known canonical
@@ -2717,10 +2723,6 @@ taxonomic_updates:
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
   taxonomic_resolution: species
 - find: Microcorys sp. Forrestania (V. English 2004)
-  replace: Microcorys sp. Forrestiana (V.English 2004)
-  reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-21)
-  taxonomic_resolution: species
-- find: Microcorys sp. Forrestiana (V.English 2004)
   replace: Microcorys sp. Forrestania (V.English 2004)
   reason: Fuzzy match of taxon name to an APC-accepted canonical name once punctuation
     and filler words are removed (2025-06-06)

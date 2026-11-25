@@ -28,4 +28,10 @@ character_values %>%
   group_by(NDat,Taxon,Character,trait_value) %>%
   mutate_at(vars(trait_value),funs(replace(.,duplicated(.),NA))) %>%
   ungroup() %>%
+  # Flag PROTEUS records (NDat) already in eFLOWER_2021; filtered out in custom_R_code
+  mutate(omit_duplicate = ifelse(
+    NDat %in% read_csv("data/eFLOWER_2021/data.csv")$NDat, "eFLOWER_2021", NA_character_)) %>%
   write_csv("data/eFLOWER_Dun_2022/data.csv")
+
+# Give each record the key of its source and write the references (#888)
+source("data/eFLOWER_Dun_2022/raw/add_source_id.R")

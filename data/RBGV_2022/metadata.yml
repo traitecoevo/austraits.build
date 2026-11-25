@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: RBGV_2022
     bibtype: Online
     year: 2022
@@ -12,28 +12,28 @@ contributors:
   - last_name: Robinson
     given_name: Alastair
     ORCID: 0000-0001-8581-2718
-    affiliation: Royal Botanic Gardens Victoria
+    affiliation: Royal Botanic Gardens Victoria, Australia
     additional_role: contact
   - last_name: Walsh
     given_name: Neville
     ORCID: 0000-0003-4671-1425
-    affiliation: Royal Botanic Gardens Victoria
+    affiliation: Royal Botanic Gardens Victoria, Australia
   - last_name: Messina
     given_name: Andre
     ORCID: .na
-    affiliation: Royal Botanic Gardens Victoria
+    affiliation: Royal Botanic Gardens Victoria, Australia
   - last_name: Stajsic
     given_name: Val
     ORCID: .na
-    affiliation: Royal Botanic Gardens Victoria
+    affiliation: Royal Botanic Gardens Victoria, Australia
   - last_name: Ohlsen
     given_name: Daniel
     ORCID: 0000-0002-8030-7349
-    affiliation: Royal Botanic Gardens Victoria
+    affiliation: Royal Botanic Gardens Victoria, Australia
   - last_name: Klazenga
     given_name: Niels
     ORCID: 0000-0003-2224-6821
-    affiliation: Royal Botanic Gardens Victoria
+    affiliation: Royal Botanic Gardens Victoria, Australia
   - last_name: Coleman
     given_name: David
     ORCID: 0000-0002-1773-6597
@@ -49,11 +49,18 @@ dataset:
       filter(str_detect(taxon_name, " ")) %>%
       mutate(
         woodiness_a = stringr::str_replace(woodiness_a, "soft_wood","semi_woody")
+      ) %>%
+      mutate(location_name = "Victoria") |>
+      mutate(
+        stem_constitution = ifelse(str_detect(stem_growth_habit_a, "\\bspindly\\b"), "spindly", NA_character_),
+        stem_growth_habit_a = na_if(str_squish(str_remove_all(stem_growth_habit_a, "\\bspindly\\b")), "")
       )
   '
-  collection_date: unknown/2022
+  collection_date: 2022
   taxon_name: taxon_name
-  source_id: created_by
+  location_name: location_name
+  measurement_remarks: created_by
+  source_id: .na
   description: Plant growth form data extracted from VicFlora, the Victorian online
     flora.
   basis_of_record: preserved_specimen
@@ -81,7 +88,12 @@ dataset:
   notes: The text in VicFlora is provided under copyright by the Royal Botanic Gardens
     Board, but is published here under a Creative Commons Attribution 4.0 international
     licence (CC BY 4.0).
-locations: .na
+locations:
+  Victoria:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Taxa described in VicFlora; no specific collection locations.
+    state: Vic
 contexts: .na
 traits:
 - var_in: life_history_a
@@ -117,6 +129,16 @@ traits:
 - var_in: stem_growth_habit_a
   unit_in: .na
   trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: This dataset is sourced from the VicFlora online website (version date
+    2022-05-06). Trait values were extracted through algorithms described under the
+    dataset's sampling strategy.
+- var_in: stem_constitution
+  unit_in: .na
+  trait_name: stem_constitution
   entity_type: species
   value_type: mode
   basis_of_value: expert_score

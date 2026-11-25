@@ -1,0 +1,88 @@
+# austraits.build — agent & contributor guide
+
+`austraits.build` is the **data compendium that compiles the AusTraits database** — an open-source
+compilation of traits for Australian plant species (Falster et al. 2021,
+doi:10.1038/s41597-021-01006-6). It holds the raw source datasets and the configuration that the
+`traits.build` engine harmonises into the released AusTraits resource. Type is `Compendium`, not a
+package; it `Depends` on `traits.build (>= 3.0.0)`.
+
+## Repo-local guidance
+
+- **Source data:** `data/` — one subdirectory per contributed source (300+), each typically a
+  `data.csv` + `metadata.yml` pair. This is the bulk of the repo and the thing most PRs touch.
+- **Config (build inputs):** `config/` —
+  - `traits.yml` — trait definitions. **Generated** from the AusTraits Plant Dictionary (APD); see
+    below — don't hand-edit it as the source of truth.
+  - `metadata.yml` — resource-level metadata, `unit_conversions.csv`, `taxon_list.csv`.
+  - `report_dataset.qmd` — the AusTraits dataset report template. `traits.build::dataset_report()` uses it automatically when run from the repo root, in place of the generic template traits.build ships (traitecoevo/traits.build#140), so changes to the AusTraits report are made here, not in traits.build. It is a copy, not an include: a bug fix to traits.build's packaged `inst/support/report_dataset.qmd`, or a traits.build change to the shape of the `metadata.yml` it reads (as traits.build #304 did to `traits:`, and #298 will do to `source:`; see #885), has to be carried into this file too.
+- **Build script:** `build.R` — the top-level pipeline. It loads the schema/config, then for each source runs `dataset_configure()` → `dataset_process()` → `dataset_update_taxonomy()`, assembles the combined `austraits` object, and saves it. It also calls `traits.build::build_post_process()`, which would run a `post_build()` from `R/post_build.R` on every build; AusTraits has none. **`build.R` is auto-generated** (see header) from traits.build's `build_base.whisker` — regenerate it with `traits.build::build_setup_pipeline(method = "base", database_name = "austraits")` rather than editing by hand (the `base` method is what `build.R` is; `furrr` writes a different file).
+- **Custom build helpers:** `R/` — `build_align_taxon_names.R`, `build_update_taxon_list.R` (taxonomy alignment via **APCalign**), `create_release.R` (writes the release files), `custom_R_code.R`, and `post_export.R`, whose `post_export()` writes AusTraits' flattened rds and parquet exports and the observed means. No build runs it: `create_release()` does, via `traits.build::build_post_export()`.
+- **Observed means:** one value per taxon and trait, for every trait, computed directly from the records (a geometric mean for numeric traits, or an arithmetic mean for the 43 whose values can be negative, such as water potentials and isotope ratios; the most frequent value for categorical ones), with the datasets and references (`dataset_id`, `source_id`) each value draws on, written at release by `post_export()` as `austraits-<version>-observed-means.parquet`, `.rds`, `.csv.gz` and `-dictionary.csv`. The calculation is `traits.use::summarise_trait_means()`, shared with the other traits.build databases; `R/observed_means.R` holds what is AusTraits' own, the value-type rule for `AVH_2026` and the file writer. To change the method, change traits.use; [austraits-means](https://github.com/traitecoevo/austraits-means) reads this file for its modelled means and community layers, and the API and portal are to serve it, so tell those repos.
+- **Maintenance scripts:** `scripts/` — notably `build_traits_yml_from_APD.R` (regenerates
+  `config/traits.yml` from the APD repo), plus `news.Rmd`, `dictionary.Rmd` (rendered by
+  `create_release()`), reporting scripts.
+- **Release procedure:** `RELEASING.md` — the order of releases across APD,
+  austraits, traits.build, the taxon list and austraits.build, and the austraits.build steps.
+- **Output:** `export/` — after a build, `export/data/curr/` holds the compiled `austraits.rds`. `create_release()` in `R/create_release.R` writes a release into `export/data/austraits-<version>/`, including the flattened rds and parquet and the observed means from `R/post_export.R` (needs `arrow`).
+- **Claude Code project skills:** `.claude/skills/` — curation workflow guidance (building a new
+  dataset's `metadata.yml`, fixing `locations:`, resolving `substitutions.csv`, extracting trait/
+  location tables from a source PDF or straight into an existing dataset's `raw/` folder, pivoting
+  a raw file into `data.csv`, extracting traits from flora/fact-sheet text, giving a compilation's
+  `source_id` values full references (`add-sources`, with helpers in `ignore/source_references.R`, a local file not in git),
+  refreshing the dataset pipeline tracker) written up as reusable
+  skills, checked in on purpose so every Claude Code session opened in this repo picks them up
+  automatically. They're tooling for AI-assisted curation, not part of the `traits.build` pipeline
+  itself, but are kept under version control like any other repo convention — edit them the same
+  way you'd fix a bug, and expect them to keep growing as new gotchas turn up.
+- **Claude Code hook:** `.claude/settings.json` registers `.claude/hooks/check_metadata_yml.py`,
+  a PostToolUse hook that runs after Claude edits any `data/<id>/metadata.yml` and flags silent
+  gotchas (bare y/n/yes/no parsed as booleans, `custom_R_code:` not directly followed by
+  `collection_date:`, all-`species` entity_type alongside real `locations:`). Needs `python3` +
+  `pyyaml`; prints nothing when the file is clean.
+
+**Build/run:** the README's recipe is install `traits.build`, clone this repo, then `source("build.R")`
+(it can use multiple CPUs — raise `workers`). After running you get an `austraits` object in the
+workspace and a saved copy in `export/data`. Tests of the functions in `R/` live in `tests/testthat/` and run on CI: `testthat::test_dir("tests/testthat", stop_on_failure = TRUE)` from the repo root (`tests/build/` and `tests/functions.R` are older and not run). CI (`.github/workflows/check-build.yml`, on Linux) then runs `dataset_test()` one dataset per core with `.github/scripts/dataset_test_parallel.R`, which also works locally (`Rscript .github/scripts/dataset_test_parallel.R [ids]`) and, unlike `dataset_test()` itself, fails when a dataset does. A pull request tests only the datasets whose folders it touches, unless it changes a shared input (`config/`, `R/`, `DESCRIPTION`, `.github/`), which tests all of them; pushes to develop test all of them. CI builds with a `targets` pipeline it generates from `data/`, not with the committed `build.R`; pull requests reuse the store from the last develop build, so they rebuild only what changed. Default branch is
+`develop`.
+
+> Gotcha 1: `config/traits.yml` is **generated from APD** via `scripts/build_traits_yml_from_APD.R`
+> (which pulls from `traitecoevo/APD`). To change trait definitions, fix APD upstream and regenerate,
+> don't patch the YAML in place.
+>
+> Gotcha 2: `build.R` is machine-generated — edit `remake.yml.whisker` / rerun `build_setup_pipeline()`
+> instead of editing `build.R` directly, or your changes get clobbered on the next regeneration.
+
+---
+
+## AusTraits family — cross-package context
+
+`austraits.build` is part of the **AusTraits family** (a subset of the
+[`traitecoevo`](https://github.com/traitecoevo) org) — here, the actual AusTraits dataset
+compilation: it wires together APD (vocabulary) + APCalign (taxonomy) + the traits.build engine over
+raw source datasets, and produces the released `austraits-X.Y.Z.rds`. Family-wide concerns are
+documented centrally in
+**[austraits-meta](https://github.com/traitecoevo/austraits-meta)** — don't restate them here, read
+them there:
+
+- **Start with [`AGENTS.md`](https://github.com/traitecoevo/austraits-meta/blob/master/AGENTS.md)** —
+  pipeline order, who owns what, dependency direction, source-of-truth rules, cross-boundary
+  artifacts, gotchas.
+- **[`dependencies.yml`](https://github.com/traitecoevo/austraits-meta/blob/master/dependencies.yml)** —
+  machine-readable package graph + cross-boundary artifacts.
+- **[`governance/`](https://github.com/traitecoevo/austraits-meta/tree/master/governance)** —
+  label taxonomy, board #9 conventions, release playbooks, triage.
+
+**Filing issues:** the whole family is tracked on one board,
+[AusTraits #9](https://github.com/orgs/traitecoevo/projects/9) (new issues auto-add to it). Follow
+the [issue & labelling guide](https://github.com/traitecoevo/austraits-meta/blob/master/governance/issue-guide.md):
+pick one work-type label (`bug` / `task` / `epic`); Status and Priority are set on the board, not as
+labels.
+
+**Commit messages:** every family repo squash-merges, so the **PR title and body become the permanent
+commit message**. Keep the subject ≤50 characters as typed and the body ≤10 lines; put the working
+detail — what you tried, benchmarks, test counts, rejected alternatives — in the **first PR comment**
+instead. Full convention:
+[`commit-messages.md`](https://github.com/traitecoevo/austraits-meta/blob/master/governance/commit-messages.md).
+
+> austraits-meta is hand-maintained prose — a map, not ground truth. Verify specifics against the
+> actual repos.

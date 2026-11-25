@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Apgaua_2015
     bibtype: Article
     year: '2015'
@@ -18,14 +18,12 @@ contributors:
   - last_name: Apgaua
     given_name: Deborah
     ORCID: 0000-0002-6303-6989
-    affiliation: Centre for Rainforest Studies, School for Field Studies, Yungaburra,
-      Queensland 4872, Australia
+    affiliation: Centre for Rainforest Studies, School for Field Studies, Australia
     additional_role: contact
   - last_name: Tng
     given_name: David Yue Phin Jeremiah-Seok
     ORCID: 0000-0001-5135-0922
-    affiliation: Centre for Rainforest Studies, School for Field Studies, Yungaburra,
-      Queensland 4872, Australia
+    affiliation: Centre for Rainforest Studies, School for Field Studies, Australia
   - last_name: Laurance
     given_name: Susan
     ORCID: 0000-0002-2831-2933
@@ -33,7 +31,13 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code:        data %>% mutate(vessel_diameter = 2*sqrt(`Vessel Area (um2)`/3.14159))
+  custom_R_code: '
+    data %>%
+      mutate(
+        vessel_diameter = 2*sqrt(`Vessel Area (um2)`/3.14159),
+        `Theoretical Specific Conductivity (kg s-1 MPa-1)` = `Theoretical Specific Conductivity (kg s-1 MPa-1)` * 16
+      )
+  '
   collection_date: 2014-06/2015-03
   taxon_name: Species
   location_name: Study site
@@ -60,13 +64,20 @@ dataset:
   original_file: Apgaua et al. 2015.xls
   notes: Another researcher has data on Huber Value, predawn water potential, and
     midday water potential reported in the study. These data have not yet been merged
-    into AusTraits.
+    into AusTraits. Theoretical specific conductivity is multiplied by 16 in custom_R_code
+    (E. Wenk 2026-11-14). Recalculating it with the Hagen-Poiseuille equation from
+    each row's vessel area and density reproduces the supplied values (to within 0.2%
+    for 80% of rows) only when vessel radius is used in place of diameter, an error
+    of 2^4 = 16. The corrected values (median about 35 kg/m/MPa/s) are within 1-4
+    fold of Apgaua_2017 for the same species and site; they remain lower because they
+    are based on mean, not hydraulically weighted, vessel diameter.
 locations:
   Daintree Rainforest Observatory:
     latitude (deg): -16.1055556
     longitude (deg): 145.4444444
     description: lowland tropical rainforest, locally known as 'complex mesophyll
       vine forest'
+    state: Qld
 contexts: .na
 traits:
 - var_in: Theoretical Specific Conductivity (kg s-1 MPa-1)

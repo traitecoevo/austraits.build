@@ -49,6 +49,9 @@ This is a major/minor release of the AusTraits database.
 
 - `r sprintf("austraits-%s.zip", v_curr)`: contains the compiled dataset and details of structure
 - `r sprintf("austraits-%s.rds", v_curr)`: contains a version of the dataset for direct loading in R
+- `r sprintf("austraits-%s-flattened.rds", v_curr)`: contains a flattened version of the dataset for direct loading in R; all data tables are joined into a wider format in this version
+- `r sprintf("austraits-%s-flattened.parquet", v_curr)`: contains the flattened version of the dataset saved in parquet format
+- `r sprintf("austraits-%s-observed-means.parquet", v_curr)`, `.rds`, `.csv.gz`: contains one value per taxon and trait, computed from the records (a geometric mean for numeric traits, or an arithmetic mean for traits whose values can be negative, such as water potentials; the most frequent value for categorical traits, and for traits recording months, such as flowering time, the months at least half the records give), with the datasets and references each value draws on, with its column dictionary in `r sprintf("austraits-%s-observed-means-dictionary.csv", v_curr)`
 - source code `r sprintf("v%s.zip", v_curr)`: contains the source materials used to build the compiled dataset
 
 For details on access, structure, and usage please visit <https://doi.org/10.5281/zenodo.3568417>.
@@ -61,10 +64,21 @@ Compared to the last version, this release contains substantial additions of new
 ```{r, results="asis"}
 
 f_summarise <- function(data, v) { 
+  # source_id is a key of `sources` from 8.0.0; before, it was free text, so
+  # its count would not be one of sources
+  keys <- unlist(lapply(unclass(data$sources), function(e) attr(e, "key")))
+  sources <- if (all(data$traits$source_id %in% keys)) n_distinct(data$traits$source_id) else NA_integer_
+  # accepted species; taxa also counts infraspecific taxa and names known
+  # only to genus, many of them one per location
+  species <- data$taxa %>%
+    filter(taxon_name %in% data$traits$taxon_name, taxon_rank == "species", taxonomic_status == "accepted") %>%
+    nrow()
   data$traits %>% 
   mutate(locations = ifelse(!is.na(location_id), paste(dataset_id, location_id), NA)) %>%
   summarise(version = data$build_info$version %>% as.character,
             dataset_id = n_distinct(dataset_id),
+            source_id = sources,
+            species = species,
             taxa = n_distinct(taxon_name),
             locations = n_distinct(locations),
             traits = n_distinct(trait_name),

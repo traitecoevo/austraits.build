@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Williams_2005
     bibtype: Article
     year: '2005'
@@ -12,8 +12,8 @@ source:
     number: '6'
     pages: 1203--1213
     doi: 10.1111/j.1365-2745.2005.01039.x
-  secondary_01:
-    key: Tremont_1994
+  source:
+  - key: Tremont_1994
     bibtype: Article
     year: '1994'
     author: R. M. Tremont
@@ -24,8 +24,7 @@ source:
     number: '5'
     pages: 511--530
     doi: 10.1071/bt9940511
-  secondary_02:
-    key: McIntyre_1995
+  - key: McIntyre_1995
     bibtype: Article
     year: '1995'
     author: S. McIntyre and S. Lavorel and R. M. Tremont
@@ -52,7 +51,17 @@ dataset:
   data_is_long_format: no
   custom_R_code:        '
     data %>% 
-      mutate(site_name = "western Victoria")
+      mutate(site_name = "western Victoria") %>%
+      mutate(life_form_source_id = dplyr::case_when(
+        `Data source` == "(McIntyre et al 1995)" ~ "McIntyre_1995",
+        `Data source` == "(Tremont 1994)" ~ "Tremont_1994",
+        TRUE ~ NA_character_),
+        life_form_remark = ifelse(is.na(life_form_source_id), `Data source`, NA)) %>%
+      mutate(`Seed Weight (mg)_filtered` = ifelse(
+        paste(`Species`, `Seed Weight (mg)_filtered`) %in% c(
+          "Ajuga australis 0.25"
+        ),
+        NA, `Seed Weight (mg)_filtered`))
   '
   collection_date: 2001/2001
   taxon_name: Species
@@ -132,7 +141,9 @@ dataset:
     the sources from which they were obtained is presented in Appendix S1.
   original_file: Grassland Species Traits.xls submitted by the author and archived
     in the raw data folder and GoogleDrive folder
-  notes: none
+  notes: 1 seed_dry_mass value set to NA in custom_R_code as an outlier against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   western Victoria:
     latitude (deg): .na
@@ -149,6 +160,8 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  source_id: life_form_source_id
+  measurement_remarks: life_form_remark
   methods: Species were classified into lifeform classes according to a modification
     of the Raunkiaer (1934) classification scheme that groups species according to
     the height of their perennating buds. Modifications to the scheme were made following
@@ -179,6 +192,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  measurement_remarks: Source
   methods: Species were allocated to one of six classes of seed dispersal following
     McIntyre et al. (1995) based on the morphology of their seeds.
 - var_in: Vegetative Spread
@@ -188,6 +202,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  measurement_remarks: Source of vegetative spread data
   methods: Species were classified into lifeform classes according to a modification
     of the Raunkiaer (1934) classification scheme that groups species according to
     the height of their perennating buds. Modifications to the scheme were made following
@@ -233,6 +248,7 @@ traits:
   value_type: mean
   basis_of_value: measurement
   replicates: unknown
+  measurement_remarks: source of seed weight data
   methods: Seed mass data were obtained from the literature and unpublished sources.
     Quantities of seed held by nurseries specializing in the propagation of Victorian
     grassland flora were weighed to obtain mean seed mass for some further species,
@@ -245,6 +261,7 @@ traits:
   value_type: mode
   basis_of_value: expert_score
   replicates: .na
+  measurement_remarks: Source_for_seedbank_data
   methods: Data on the ability of seeds of each species to form a persistent soil
     seed bank were obtained from published studies of Australian grasslands or grassy
     woodlands. Because a number of these studies only recorded species present in

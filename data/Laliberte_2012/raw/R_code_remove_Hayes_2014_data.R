@@ -12,7 +12,10 @@ Hayes_2014_data %>%
 test %>%
   mutate(P_mature = ifelse(round(P_mature,4) == round(P_ug.g.DW,4),"",P_mature),
         Ca_mature = ifelse(round(Ca_mature,4) == round(Ca_ug.g.DW,4),"",Ca_mature),
-        N_mature = ifelse(round(N_mature,4) == round(N_ug.g.DW,4),"",Na_mature),
+        # NOTE (2026): this line originally returned `Na_mature` instead of `N_mature`, which wrote leaf Na
+        # values into N_mature for the 40 rows whose N differed from Hayes_2014 (issue #877).
+        # Those cells were set to NA in data.csv; all 86 samples have N in Hayes_2014.
+        N_mature = ifelse(round(N_mature,4) == round(N_ug.g.DW,4),"",N_mature),
         K_mature = ifelse(round(K_mature,4) == round(K_ug.g.DW,4),"",K_mature),
         Cu_mature = ifelse(round(Cu_mature,4) == round(Cu_ug.g.DW,4),"",Cu_mature),
         Mg_mature = ifelse(round(Mg_mature,4) == round(Mg_ug.g.DW,4),"",Mg_mature),

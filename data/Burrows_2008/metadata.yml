@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Burrows_2008
     bibtype: Article
     year: 2008
@@ -21,8 +21,12 @@ dataset:
   data_is_long_format: no
   custom_R_code:   '
     data %>%
-      mutate(time_to_flowering_type = fire_response)'
-  collection_date: unknown/2008
+      mutate(time_to_flowering_type = fire_response) %>%
+      mutate(
+        fire_response = ifelse(taxon_name %in% c("Acacia pentadenia", "Banksia occidentalis", "Banksia quercifolia", "Banksia seminuda", "Banksia verticillata", "Calothamnus rupestris", "Grevillea occidentalis", "Hovea trisperma", "Lambertia orbifolia", "Lasiopetalum floribunda", "Leucopogon pulchellus", "Melaleuca thymoides", "Melaleuca viminea", "Taxandria juniperina"), NA, fire_response),
+        seed_storage_location = ifelse(taxon_name %in% c("Acacia pentadenia", "Banksia occidentalis", "Banksia quercifolia", "Banksia seminuda", "Banksia verticillata", "Calothamnus rupestris", "Grevillea occidentalis", "Hovea trisperma", "Lambertia orbifolia", "Lasiopetalum floribunda", "Leucopogon pulchellus", "Melaleuca viminea", "Taxandria juniperina"), NA, seed_storage_location)
+      )'
+  collection_date: 2008
   taxon_name: taxon_name
   location_name: site
   description: Study that reports on the post-fire regeneration strategies, post-fire
@@ -45,7 +49,7 @@ dataset:
   original_file: Original journal article is archived in Google Drive. Transcribed
     spreadsheet is in raw folder.
   notes: Juvenile periods reported for resprouters assumed to be secondary juvenile
-    periods. This dataset includes the data in the manuscript, while an accompanying dataset_id, `Burrows_2008_2` is the raw file from DBCA associated with the study. Both are retained as the data in the paper are linked to locations, but include data for very few species.
+    periods. This dataset includes the data in the manuscript, while an accompanying dataset_id, `Burrows_2008_2` is the raw file from DBCA associated with the study. Both are retained as the data in the paper are linked to locations, but include data for very few species. Resprouting capacity and seedbank location are set to NA in custom_R_code for the 14 and 13 taxa whose values are also in `Burrows_2008_2`.
 locations:
   Lindsay forest:
     longitude (deg): 115.967

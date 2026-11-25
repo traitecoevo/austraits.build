@@ -1,6 +1,14 @@
 source:
-  primary:
-    key: Duncan_2011
+  dataset:
+    key: Williams_2011
+    bibtype: Unpublished
+    year: '2011'
+    author: Nicholas S. G. Williams
+    title: 'Unpublished data: Trait data for the native floras of Melbourne and Adelaide,
+      compiled for the Vegetation Function and NCEAS workshop publications, University
+      of Melbourne'
+  secondary:
+  - key: Duncan_2011
     bibtype: Article
     year: '2011'
     author: Richard P. Duncan and Steven E. Clemants and Richard T. Corlett and Amy
@@ -12,8 +20,7 @@ source:
     number: '4'
     pages: 509--519
     doi: 10.1111/j.1466-8238.2010.00633.x
-  secondary_01:
-    key: Palma_2017
+  - key: Palma_2017
     bibtype: Article
     year: '2017'
     author: Estibaliz Palma and Jane A. Catford and Richard T. Corlett and Richard
@@ -26,8 +33,7 @@ source:
     number: '7'
     pages: 875--886
     doi: 10.1111/ecog.02516
-  secondary_02:
-    key: Tait_2005
+  - key: Tait_2005
     bibtype: Article
     year: '2005'
     author: Catherine J. Tait and Christopher B. Daniels and Robert S. Hill
@@ -52,13 +58,11 @@ contributors:
   - last_name: Hahs
     given_name: Amy
     ORCID: 0000-0003-0163-6732
-    affiliation: School of Ecosystem and Forest Sciences, The University of Melbourne,
-      Australia
+    affiliation: School of Ecosystem and Forest Sciences, University of Melbourne, Australia
   - last_name: Duncan
     given_name: Richard P.
     ORCID: 0000-0003-2295-449X
-    affiliation: Institute for Applied Ecology, University of Canberra, ACT 2617,
-      Australia
+    affiliation: Institute for Applied Ecology, University of Canberra, Australia
   assistants: Catherine Tait, Monique Hallet, Steven Clemants
   dataset_curators: Elizabeth Wenk
 dataset:
@@ -72,6 +76,7 @@ dataset:
         stem_growth_habit = NA_character_,
         parasitic = NA_character_,
         plant_succulence = NA_character_,
+        `Pollination Syndrome` = `Pollination System`,
         `Seed Mass_filtered` = ifelse(Species %in% c("Aphanes australiana", "Dianella tasmanica", "Patersonia sericea"), NA, `Seed Mass_filtered`)
       ) %>%
       subset(`Extant/Extinct` == 1 & `Native/Exotic` == 0) %>%
@@ -98,7 +103,12 @@ dataset:
         c("11","12"),
         c("succulent","succulent_stems"),
         c("11","12")
-      )
+      ) %>%
+      mutate(`Seed Mass_filtered` = ifelse(
+        paste(`Species`, `Seed Mass_filtered`) %in% c(
+          "Empodisma minus 0.001", "Eucalyptus obliqua 9.3", "Glossodia major 0.001"
+        ),
+        NA, `Seed Mass_filtered`))
     '
   collection_date: 2011/2013
   taxon_name: Species
@@ -118,6 +128,9 @@ dataset:
     from Macquarie University labs, Leishman_1992 and Hughes_1992 in particular) have
     been filtered out. Excluded seed masses for Aphanes australiana, Dianella tasmanica,
     and Patersonia sericea in custom_R_code.
+    3 seed_dry_mass values set to NA in custom_R_code as outliers against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   grows in Adelaide:
     latitude (deg): NA
@@ -267,7 +280,16 @@ traits:
     filtered out.
 - var_in: Pollination System
   unit_in: .na
-  trait_name: pollination_system
+  trait_name: flower_visitor
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: Information from floras or google search for academic papers. Of particular
+    assistance- WA Florabase. Some assigned at genus level
+- var_in: Pollination Syndrome
+  unit_in: .na
+  trait_name: pollination_syndrome
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -456,16 +478,28 @@ substitutions:
 - trait_name: plant_growth_form
   find: 20
   replace: .na
-- trait_name: pollination_system
+- trait_name: flower_visitor
+  find: 0
+  replace: .na
+- trait_name: flower_visitor
+  find: 1
+  replace: animal
+- trait_name: flower_visitor
+  find: 2
+  replace: animal
+- trait_name: flower_visitor
+  find: 3
+  replace: autonomous
+- trait_name: pollination_syndrome
   find: 0
   replace: abiotic
-- trait_name: pollination_system
+- trait_name: pollination_syndrome
   find: 1
-  replace: biotic_unspecialised
-- trait_name: pollination_system
+  replace: biotic
+- trait_name: pollination_syndrome
   find: 2
-  replace: biotic_specialised
-- trait_name: pollination_system
+  replace: biotic
+- trait_name: pollination_syndrome
   find: 3
   replace: self
 - trait_name: photosynthetic_pathway

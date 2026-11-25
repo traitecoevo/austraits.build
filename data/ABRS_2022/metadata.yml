@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: ABRS_2022
     bibtype: Online
     year: 2022
@@ -25,9 +25,13 @@ dataset:
       filter(str_detect(taxon_name, " ")) %>%
       mutate(
         woodiness_a = stringr::str_replace(woodiness_a, "soft_wood", "semi_woody")
+      ) |>
+      mutate(
+        stem_constitution = ifelse(str_detect(stem_growth_habit_a, "\\bspindly\\b"), "spindly", NA_character_),
+        stem_growth_habit_a = na_if(str_squish(str_remove_all(stem_growth_habit_a, "\\bspindly\\b")), "")
       )
     '
-  collection_date: unknown/2022
+  collection_date: 2022
   taxon_name: taxon_name
   measurement_remarks: author
   description: Plant growth form data extracted from the Flora of Australia online
@@ -85,6 +89,14 @@ traits:
 - var_in: stem_growth_habit_a
   unit_in: .na
   trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: stem_constitution
+  unit_in: .na
+  trait_name: stem_constitution
   entity_type: species
   value_type: mode
   basis_of_value: expert_score
@@ -226,11 +238,6 @@ taxonomic_updates:
   replace: Eucalyptus carnei
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
   taxonomic_resolution: species
-- find: Eucalyptus dorsiventralis MS
-  replace: Eucalyptus dorsiventralis
-  reason: Fuzzy match of taxon name to an APC-known canonical name once punctuation
-    and filler words are removed (2025-06-06)
-  taxonomic_resolution: species
 - find: Eucalyptus erythrandra
   replace: Eucalyptus erythronema
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
@@ -284,7 +291,7 @@ taxonomic_updates:
     notes are ignored (2022-11-22)
   taxonomic_resolution: species
 - find: Eucalyptus tetragona
-  replace: Eucalyptus tetrodonta
+  replace: Eucalyptus x tetragona
   reason: match_07_fuzzy. Fuzzy alignment with accepted canonical name in APC (2022-11-22)
   taxonomic_resolution: species
 - find: Eucalyptus urnularis

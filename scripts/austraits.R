@@ -109,13 +109,13 @@ compare_versions <- function (v1, v2, path = "export/tmp", dataset_id=NULL, trai
   v2 <- readRDS(v2)
 
   if(!is.null(dataset_id)){
-    v1 <- v1 %>% austraits::extract_dataset(dataset_id)
-    v2 <- v2 %>% austraits::extract_dataset(dataset_id)
+    v1 <- v1 %>% traits.use::extract_dataset(dataset_id)
+    v2 <- v2 %>% traits.use::extract_dataset(dataset_id)
   }
 
   if(!is.null(trait_name)){
-    v1 <- v1 %>% austraits::extract_trait(trait_name)
-    v2 <- v2 %>% austraits::extract_trait(trait_name)
+    v1 <- v1 %>% traits.use::extract_trait(trait_name)
+    v2 <- v2 %>% traits.use::extract_trait(trait_name)
   }
 
 

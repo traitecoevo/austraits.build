@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: Metcalfe_2009
     bibtype: Article
     year: '2010'
@@ -63,7 +63,12 @@ dataset:
       move_values_to_new_trait(
         "Growth_form", "stem_growth_habit", "scrambler", "scrambler", "climber"
       ) %>%      
-      mutate(across(c(Fruit_type, Growth_form), ~na_if(.x,"")))
+      mutate(across(c(Fruit_type, Growth_form), ~na_if(.x,""))) %>%
+      mutate(`Seed_mass_filtered` = ifelse(
+        paste(`species_name`, `Seed_mass_filtered`) %in% c(
+          "Triumfetta rhomboidea 0.95"
+        ),
+        NA, `Seed_mass_filtered`))
 '
   collection_date: 2005/2005
   taxon_name: species_name
@@ -93,6 +98,9 @@ dataset:
     to the site name of the first site where it is present, by sequentially cycling
     through sites number 1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.2, 5.2. However the presence/absence
     data shows that most species are present on more than one site.
+    1 seed_dry_mass value set to NA in custom_R_code as an outlier against other
+    AusTraits datasets (at least 10-fold from the median for the same species, or
+    100-fold for the same genus); E. Wenk 2026-11-14.
 locations:
   Harney's:
     site code: 1.1
@@ -119,6 +127,7 @@ locations:
     tallest tree measured in plot (m): 24.0
     no. stems >10 cm/0.1 ha: 89.0
     fragment size: '>100 ha'
+    state: Qld
   Henry's:
     site code: 2.2
     geodetic datum: GDA94
@@ -144,6 +153,7 @@ locations:
     tallest tree measured in plot (m): 35.0
     no. stems >10 cm/0.1 ha: 108.0
     fragment size: 90 ha
+    state: Qld
   Mackay's:
     site code: 3.1
     geodetic datum: GDA94
@@ -169,6 +179,7 @@ locations:
     tallest tree measured in plot (m): 40.0
     no. stems >10 cm/0.1 ha: 53.0
     fragment size: 11 ha
+    state: Qld
   McDonald's:
     site code: 1.2
     geodetic datum: GDA94
@@ -194,6 +205,7 @@ locations:
     tallest tree measured in plot (m): 37.0
     no. stems >10 cm/0.1 ha: 135.0
     fragment size: 6 ha
+    state: Qld
   Shane's:
     site code: 3.2
     geodetic datum: GDA94
@@ -219,6 +231,7 @@ locations:
     tallest tree measured in plot (m): 28.0
     no. stems >10 cm/0.1 ha: 187.0
     fragment size: 2.5 ha
+    state: Qld
   Siam:
     site code: 4.2
     geodetic datum: GDA94
@@ -244,6 +257,7 @@ locations:
     tallest tree measured in plot (m): 16.0
     no. stems >10 cm/0.1 ha: 61.0
     fragment size: <1 ha
+    state: Qld
   Weiss:
     site code: 5.2
     geodetic datum: GDA94
@@ -269,6 +283,7 @@ locations:
     tallest tree measured in plot (m): 15.0
     no. stems >10 cm/0.1 ha: 141.0
     fragment size: <1 ha
+    state: Qld
   Zonta:
     site code: 2.1
     geodetic datum: GDA94
@@ -294,6 +309,7 @@ locations:
     tallest tree measured in plot (m): 35.0
     no. stems >10 cm/0.1 ha: 188.0
     fragment size: '>100 ha'
+    state: Qld
 contexts: .na
 traits:
 - var_in: Growth_form

@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: SAH_2022
     bibtype: Online
     year: 2022
@@ -12,8 +12,7 @@ contributors:
   - last_name: Kellermann
     given_name: Jürgen
     ORCID: 0000-0001-9124-9802
-    affiliation: State Herbarium of South Australia, Botanic Gardens and State Herbarium,
-      Hackney Road, Adelaide, SA 5000, Australia
+    affiliation: State Herbarium of South Australia, Botanic Gardens and State Herbarium, Australia
   - last_name: Coleman
     given_name: David
     ORCID: 0000-0002-1773-6597
@@ -29,10 +28,16 @@ dataset:
       filter(str_detect(taxon_name, " ")) %>%
       mutate(
         woodiness_a = stringr::str_replace(woodiness_a, "soft_wood","semi_woody")
+      ) %>%
+      mutate(location_name = "South Australia") |>
+      mutate(
+        stem_constitution = ifelse(str_detect(stem_growth_habit_a, "\\bspindly\\b"), "spindly", NA_character_),
+        stem_growth_habit_a = na_if(str_squish(str_remove_all(stem_growth_habit_a, "\\bspindly\\b")), "")
       )
   '
-  collection_date: unknown/2022
+  collection_date: 2022
   taxon_name: taxon_name
+  location_name: location_name
   description: Plant growth form data extracted from the eFlora of SA, the electronic
     Flora of South Australia.
   basis_of_record: preserved_specimen
@@ -56,10 +61,16 @@ dataset:
     classified as stem_parasitic, which was mentioned only in the genus description.
     Specific to the plant_growth_form trait, any taxon without a growth form and that
     was described as annual, biennial or perennial was inferred as herbaceous.
-  source_id: authors
+  measurement_remarks: authors
+  source_id: .na
   original_file: .na
   notes: .na
-locations: .na
+locations:
+  South Australia:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Taxa described in the eFlora of SA; no specific collection locations.
+    state: SA
 contexts: .na
 traits:
 - var_in: life_history_a
@@ -95,6 +106,16 @@ traits:
 - var_in: stem_growth_habit_a
   unit_in: .na
   trait_name: stem_growth_habit
+  entity_type: species
+  value_type: mode
+  basis_of_value: expert_score
+  replicates: .na
+  methods: This dataset is sourced from the Electronic Flora of South Australia online
+    website (version date 2022-05-06). Trait values were extracted through algorithms
+    described under the dataset's sampling strategy.
+- var_in: stem_constitution
+  unit_in: .na
+  trait_name: stem_constitution
   entity_type: species
   value_type: mode
   basis_of_value: expert_score

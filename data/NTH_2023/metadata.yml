@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: NTH_2023
     bibtype: Online
     year: 2022
@@ -7,6 +7,7 @@ source:
     title: Northern Territory Flora Online
     url: http://eflora.nt.gov.au/
     note: accessed on 6 May, 2022.
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Coleman
@@ -31,6 +32,7 @@ dataset:
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "recurved", "revolute"), trait_value),
         trait_value = ifelse(trait_name == "leaf_margin_posture", stringr::str_replace(trait_value, "incurved", "involute"), trait_value),
         measurement_remarks = ifelse(is.na(category), NA, paste0("Trait value refers to ", category)),
+        measurement_remarks = ifelse(is.na(authors), measurement_remarks, ifelse(is.na(measurement_remarks), authors, paste0(measurement_remarks, "; ", authors))),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred"), flora_value, NA),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_species"), "inferred_from_species", inferred),
         inferred = ifelse(stringr::str_detect(flora_value, "inferred_from_genus"), "inferred_from_genus", inferred),
@@ -89,10 +91,69 @@ dataset:
       distinct(source, taxon_name, trait_name, category, trait_value, units, value_type, inferred, .keep_all = TRUE) %>%
       group_by(taxon_name, trait_name, entity_measured, value_type) %>%
         mutate(observation_number = row_number()) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(location_name = "Northern Territory") |>
+      mutate(
+        source_id = {
+          works <- c(
+            Jessop_1981 = "Flora of Central Australia",
+            Cowie_2000 = "Supplementary Series Number 10|Osterkamp Madsen, M\\., 2011, Floodplain Flora",
+            Short_2011 = "Short, P\\.S\\. & Cowie, I\\.D\\. \\(eds\\)",
+            Dunlop_1995 = "Dunlop, C\\.R\\., Leach, G\\.J\\. and Cowie, I\\.D\\.",
+            Short_2003 = "fern allies of the Northern Territory",
+            Albrecht_2007 = "Southern Region Checklist",
+            Cowie_2008 = "Threatened Plants on the Bradshaw",
+            Dixon_2004 = "ymnosperms of the Northern Territory",
+            Kerrigan_2003 = "(Kerrigan, R\\.|Northern Territory Government) 2003, Kakadu",
+            Kerrigan_2004 = "Kerrigan, R\\. 2004, Kakadu",
+            Cowie_2005 = "Cowie, I\\.D\\. 2005\\. Kakadu",
+            Wightman_2006 = "Mangroves of the Northern Territory"
+          );
+          hits <- sapply(works, function(w) stringr::str_detect(dplyr::coalesce(authors, ""), w));
+          ifelse(rowSums(hits) == 1, names(works)[max.col(hits)], NA_character_)
+        }
+      ) %>%
+      mutate(
+        .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, "", `trait_value`, sep = "|"),
+        `trait_value` = ifelse(.flora_key %in% c(
+          "Paraceterach reynoldsii|leaf_length|maximum||1.7"
+        ), NA, `trait_value`),
+        `trait_value` = ifelse(.flora_key %in% names(c(
+          "Platyzoma microphyllum|leaf_width|maximum||1800" = 1.8,
+          "Platyzoma microphyllum|leaf_width|minimum||650" = 0.65
+        )), c(
+          "Platyzoma microphyllum|leaf_width|maximum||1800" = 1.8,
+          "Platyzoma microphyllum|leaf_width|minimum||650" = 0.65
+        )[.flora_key], `trait_value`)
+      ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, "", `trait_value`, sep = "|"),
+        `trait_value` = ifelse(.flora_key %in% c(
+          "Paraceterach reynoldsii|leaf_length|minimum||0.8",
+          "Paraceterach reynoldsii|leaf_width|maximum||0.4", "Paraceterach reynoldsii|leaf_width|minimum||0.2"
+        ), NA, `trait_value`),
+        `trait_value` = ifelse(.flora_key %in% names(c(
+          "Crotalaria smithiana|plant_height|maximum||0.5" = 500,
+          "Suriana maritima|leaf_width|maximum||5000" = 5, "Suriana maritima|leaf_width|minimum||1800" = 1.8
+        )), c(
+          "Crotalaria smithiana|plant_height|maximum||0.5" = 500,
+          "Suriana maritima|leaf_width|maximum||5000" = 5, "Suriana maritima|leaf_width|minimum||1800" = 1.8
+        )[.flora_key], `trait_value`)
+      ) %>%
+      select(-.flora_key) %>%
+      mutate(
+        .flora_key = paste(`taxon_name`, `trait_name`, `value_type`, "", `trait_value`, sep = "|"),
+        `trait_value` = ifelse(.flora_key %in% c(
+          "Paraceterach muelleri|leaf_length|maximum||2.5", "Paraceterach muelleri|leaf_length|minimum||1.2",
+          "Paraceterach muelleri|leaf_width|maximum||0.45", "Paraceterach muelleri|leaf_width|minimum||0.3"
+        ), NA, `trait_value`)
+      ) %>%
+      select(-.flora_key)
   '
-  collection_date: unknown/2022
+  collection_date: 2022
   taxon_name: taxon_name
+  location_name: location_name
   trait_name: trait_name
   value: trait_value
   measurement_remarks: measurement_remarks
@@ -115,11 +176,25 @@ dataset:
     possible, unclassified taxa were inferred as possessing a trait value from a higher-level
     taxonomic description e.g. the fruit type of all taxa in the Adenanthos genus
     were scored as `achene`, which was mentioned only in the genus description.
-  source_id: authors
+  source_id: source_id
   original_file: .na
   notes: Data supplied by the Department of Land Resource Management, Northern Territory
-    of Australia.
-locations: .na
+    of Australia. The scraped maximum plant height for Velleia glabrata (20000 mm)
+    is an error and is excluded from the build.
+    After outlier checks against other AusTraits datasets (at least 50-fold from the
+    same species, or 100-fold from the genus), flora-derived numeric values that were
+    parsing errors or unit typos in the source text are fixed in custom_R_code - 2
+    corrected where the source text gives the right value (mostly unit slips such as
+    mm for m), and 1 set to NA where it does not; E. Wenk 2026-11-14.
+    A further check of the source text found more values with the same kinds of errors
+    that were not flagged as outliers - 3 corrected and 7 set to NA in custom_R_code;
+    E. Wenk 2026-11-14.
+locations:
+  Northern Territory:
+    latitude (deg): .na
+    longitude (deg): .na
+    description: Taxa described in Northern Territory Flora Online; no specific collection locations.
+    state: NT
 contexts:
 - context_property: trait scoring method
   category: method_context

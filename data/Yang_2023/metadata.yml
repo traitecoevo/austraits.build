@@ -1,62 +1,12 @@
 source:
-  primary:
+  dataset:
     key: Yang_2023
     bibtype: Unpublished
     year: 2023
     author: Sophie Yang
     title: 'Unpublished data: Fire response traits scored from national and state
       floras and the taxonomic literature, University of New South Wales'
-  original_01:
-    key: ABRS_2022
-    bibtype: Online
-    year: 2022
-    author: '{Australian Biological Resources Study}'
-    title: Flora of Australia, Australian Biological Resources Study, Canberra.
-    publisher: Department of Climate Change, Energy, the Environment and Water, Canberra.
-    url: http://www.ausflora.org.au
-    note: accessed on 14 September, 2022.
-  original_02:
-    key: NHNSW_2022
-    bibtype: Online
-    year: 2022
-    author: National Herbarium of New South Wales
-    title: The Plant Information Network System of The Royal Botanic Gardens and Domain
-      Trust Version 2.0.
-    url: https://plantnet.rbgsyd.nsw.gov.au/
-    note: accessed on 6 May, 2022.
-  original_03:
-    key: NTH_2022
-    bibtype: Online
-    year: 2022
-    author: Department of Land Resource Management, Northern Territory of Australia
-    title: Northern Territory Flora Online
-    url: http://eflora.nt.gov.au/
-    note: accessed on 6 May, 2022.
-  original_04:
-    key: RBGV_2022
-    bibtype: Online
-    year: 2022
-    author: VicFlora
-    title: Flora of Victoria, Royal Botanic Gardens Victoria
-    url: https://vicflora.rbg.vic.gov.au/
-    note: accessed on 6 May, 2022.
-  original_05:
-    key: SAH_2022
-    bibtype: Online
-    year: 2022
-    author: State Herbarium of South Australia
-    title: eFlora of SA, Electronic Flora of South Australia
-    url: http://www.flora.sa.gov.au/
-    note: accessed on 6 May, 2022.
-  original_06:
-    key: WAH_2022_2
-    bibtype: Online
-    year: 2022
-    author: '{Western Australian Herbarium}'
-    title: Florabase—the Western Australian Flora.
-    publisher: Department of Biodiversity, Conservation and Attractions.
-    url: https://florabase.dpaw.wa.gov.au/
-    note: accessed on 14 September, 2022.
+  source: sources.yml
 contributors:
   data_collectors:
   - last_name: Yang
@@ -89,10 +39,11 @@ dataset:
         entity_type = ifelse(!is.na(fire_severity), "population", entity_type),
         entity_type = ifelse(!is.na(fire_intensity), "population", entity_type),
         entity_type = ifelse(!is.na(habitat_conditions), "population", entity_type),
-        entity_type = ifelse(taxon_name %in% c("Banksia ashbyi", "Grevillea pteridifolia", "Hakea marginata", "Paraprasophyllum constrictum"), "population", entity_type)
+        entity_type = ifelse(taxon_name %in% c("Banksia ashbyi", "Grevillea pteridifolia", "Hakea marginata", "Paraprasophyllum constrictum"), "population", entity_type),
+        source_id = ifelse(source_id == "WAH_2022", "WAH_2022_2", source_id)
       )
   '
-  collection_date: unknown/2022
+  collection_date: 2022
   taxon_name: taxon_name
   location_name: site
   source_id: source_id
@@ -458,7 +409,7 @@ substitutions:
   replace: post_fire_recruitment_absent
 - trait_name: post_fire_recruitment
   find: post_fire_recruitment no_post_fire_recruitment
-  replace: post_fire_recruitment_absent post_fire_recruitment
+  replace: post_fire_recruitment post_fire_recruitment_absent
 - trait_name: seedling_establishment_conditions
   find: establish_just_after_fire_only
   replace: establish_post_fire

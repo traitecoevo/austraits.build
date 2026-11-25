@@ -1,5 +1,5 @@
 source:
-  primary:
+  dataset:
     key: ABRS_1981
     bibtype: Online
     author: B. A. Barlow, H. T. Clifford, A. S. George, A. Kanis A. McCusker
@@ -22,9 +22,18 @@ dataset:
       distinct(taxon_name, trait_name, value_type, value, unit, original_name, entity_measured, inferred, .keep_all = TRUE) %>%
       group_by(taxon_name, trait_name, value_type, original_name, entity_measured, inferred) %>%
         mutate(observation_number = row_number()) %>%
-      ungroup()
+      ungroup() %>%
+      mutate(
+        .flora_key = paste(`original_name`, `trait_name`, `value_type`, `unit`, `value`, sep = "|"),
+        `value` = ifelse(.flora_key %in% c(
+          "Banksia blechnifolia|plant_height|maximum|m|0.01",
+          "Banksia chamaephyton|plant_height|maximum|m|0.02", "Banksia gardneri|plant_height|maximum|m|0.02",
+          "Bowenia serrulata|plant_height|maximum|m|0.015"
+        ), NA, `value`)
+      ) %>%
+      select(-.flora_key)
     '
-  collection_date: unknown/2015
+  collection_date: 2015
   taxon_name: original_name
   trait_name: trait_name
   value: value
@@ -35,6 +44,10 @@ dataset:
   original_file: STU
   notes: Request acknowledgment "Data was sourced from the Flora of Australia with
     permission from the Australian Biological Resources Study". Dataset was rechecked in Jan 2024 and a number of numeric trait values removed that represented different traits than what they were mapped as. 
+    After outlier checks against other AusTraits datasets (at least 50-fold from the
+    same species, or 100-fold from the genus), flora-derived numeric values that were
+    parsing errors or unit typos in the source text are fixed in custom_R_code - 4 set
+    to NA where it does not; E. Wenk 2026-11-14.
 locations: .na
 contexts:
 - context_property: trait scoring method
@@ -144,14 +157,6 @@ traits:
   entity_type: species
   value_type: value_type
   basis_of_value: measurement
-  replicates: .na
-  methods: unknown
-- var_in: plant_photosynthetic_organ
-  unit_in: .na
-  trait_name: plant_photosynthetic_organ
-  entity_type: species
-  value_type: mode
-  basis_of_value: expert_score
   replicates: .na
   methods: unknown
 - var_in: plant_diameter
