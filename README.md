@@ -24,7 +24,7 @@ In R, the [`austraits`](https://traitecoevo.github.io/austraits/) package loads 
 
 ```r
 remotes::install_github("traitecoevo/austraits")
-austraits <- austraits::load_austraits(version = "7.0.0")
+austraits <- austraits::load_austraits(version = "8.0.0")
 ```
 
 Its functions to filter, join, reshape and plot the data come from [`traits.use`](https://traitecoevo.github.io/traits.use/), which works on any `traits.build` database.
