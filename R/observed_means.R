@@ -53,9 +53,13 @@ observed_means <- function(database) {
 
 #' Write the observed means and their dictionary.
 #'
-#' Writes `<stem>.parquet`, `<stem>.rds`, `<stem>.zip` (holding `<stem>.csv` and
-#' the dictionary) and `<stem>-dictionary.csv`. The dictionary must define
-#' every column, in order, and stops the release if the two have drifted apart.
+#' Writes `<stem>.parquet`, `<stem>.rds`, `<stem>.csv.gz` and
+#' `<stem>-dictionary.csv`. The dictionary must define every column, in order,
+#' and stops the release if the two have drifted apart.
+#'
+#' The csv is gzipped, not zipped: it is one file, gzip streams, and most csv
+#' readers (readr, data.table, arrow, duckdb, polars, pandas) open it directly.
+#' traits.use's and austraits' `load_*(means = TRUE)` find it by that name.
 #'
 #' @param means output of `observed_means()`.
 #' @param path directory to write into.
@@ -85,20 +89,12 @@ write_observed_means <- function(means, path, version_number) {
   dictionary <- dictionary[c("column", "type", "definition")]
 
   stem <- file.path(path, sprintf("austraits-%s-observed-means", version_number))
-  files <- paste0(stem, c(".parquet", ".rds", ".zip", "-dictionary.csv"))
+  files <- paste0(stem, c(".parquet", ".rds", ".csv.gz", "-dictionary.csv"))
 
   arrow::write_parquet(means, files[1])
   saveRDS(means, files[2])
+  readr::write_csv(means, files[3], na = "")
   readr::write_csv(dictionary, files[4])
-
-  # The csv goes into a zip, like the plain-text release (`austraits-<version>.zip`),
-  # with the dictionary beside it
-  csv <- file.path(tempfile(), paste0(basename(stem), ".csv"))
-  dir.create(dirname(csv))
-  on.exit(unlink(dirname(csv), recursive = TRUE), add = TRUE)
-  readr::write_csv(means, csv, na = "")
-  unlink(files[3])
-  utils::zip(files[3], c(csv, files[4]), flags = "-jq")
 
   invisible(files)
 }
