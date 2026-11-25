@@ -8,7 +8,7 @@
 
 ![](inst/figures/logo.png)
 
-AusTraits is a transformative database, containing measurements on the traits of Australia’s plant species, standardised from hundreds of disconnected primary sources. So far, data have been assembled from > 450 distinct sources, describing > 500 plant traits for > 25k taxa. The dataset and approach is documented in detail in the following publication
+AusTraits is a transformative database, containing measurements on the traits of Australia’s plant species, standardised from hundreds of disconnected primary sources. So far, data have been assembled from > 500 distinct sources, describing > 600 plant traits for > 38k taxa. The dataset and approach is documented in detail in the following publication
 
 > Falster D, Gallagher R, Wenk, E et al. (2021) AusTraits, a curated plant trait database for the Australian flora. Scientific Data 8: 254. DOI: [10.1038/s41597-021-01006-6](http://doi.org/10.1038/s41597-021-01006-6)
 

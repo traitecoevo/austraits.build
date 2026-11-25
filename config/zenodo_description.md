@@ -1,4 +1,4 @@
-AusTraits is a transformative database, containing measurements on the traits of Australia's plant taxa, standardised from hundreds of disconnected primary sources. So far, data have been assembled from > 300 distinct sources, describing > 500 plant traits and > 34,000 taxa.
+AusTraits is a transformative database, containing measurements on the traits of Australia's plant taxa, standardised from hundreds of disconnected primary sources. So far, data have been assembled from > 500 distinct sources, describing > 600 plant traits and > 38,000 taxa.
 
 To handle the harmonising of diverse data sources, we use a reproducible workflow to implement the various changes required for each source to reformat it suitable for incorporation in AusTraits. Such changes include restructuring datasets, renaming variables, changing variable units, changing taxon names. While this repository contains the harmonised data, the raw data and code used to build the resource are also available on the project's GitHub repository, <https://github.com/traitecoevo/austraits.build/>.
 
@@ -6,7 +6,7 @@ Further information on the project is available at the project website [austrait
 
 **CONTRIBUTORS**
 
-The project is jointly led by Prof Daniel Falster (UNSW Sydney), Prof Rachael Gallagher (Western Sydney University), Dr Elizabeth Wenk (UNSW Sydney), and Dr Hervé Sauquet (Royal Botanic Gardens and Domain Trust Sydney), with input from > 300 contributors from over > 100 institutions (see full list above). The project was initiated by Dr Rachael Gallagher and Prof Ian Wright while at Macquarie University.
+The project is jointly led by Prof Daniel Falster (UNSW Sydney), Prof Rachael Gallagher (Western Sydney University), Dr Elizabeth Wenk (UNSW Sydney), and Dr Hervé Sauquet (Royal Botanic Gardens and Domain Trust Sydney), with input from > 450 contributors from > 100 institutions (see full list above). The project was initiated by Dr Rachael Gallagher and Prof Ian Wright while at Macquarie University.
 
 We are grateful to the following institutions for contributing data: the Council of Heads of Australasian Herbaria (CHAH; Australasian Virtual Herbarium); the Australian Government Department of Climate Change, Energy, the Environment and Water (DCCEEW), including the Australian Biological Resources Study; the Australian National Botanic Gardens and the Centre for Australian National Biodiversity Research; the National Herbarium of New South Wales (Botanic Gardens of Sydney); the Northern Territory Herbarium; the Queensland Herbarium; the State Herbarium of South Australia; the Tasmanian Herbarium; the Western Australian Herbarium; the Royal Botanic Gardens Victoria and the Victorian Department of Environment, Land, Water and Planning; the Royal Botanic Gardens, Kew; and the Brisbane Rainforest Action and Information Network.
 
