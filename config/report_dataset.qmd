@@ -87,6 +87,8 @@ definitions <- austraits$definitions
 data_study <- extract_dataset(austraits, dataset_id, partial_matches_allowed = F)
 metadata <- read_metadata(file.path("data", dataset_id, "metadata.yml"))
 schema <- austraits$schema
+# Databases built before traits.build 3.0.0 call this section `austraits`
+if (is.null(schema$database)) schema$database <- schema$austraits
 
 # Data release (not code/package release) of APCalign used to align taxon
 # names -- recorded as a dated GitHub release tag among the compiled
@@ -751,8 +753,8 @@ define_variable <- function(var, schema) {
 
   description <- switch(var,
                         value_type = schema$value_type$description,
-                        replicates = schema$austraits$elements$traits$elements$replicates,
-                        methods = schema$austraits$elements$methods$elements$methods
+                        replicates = schema$database$elements$traits$elements$replicates,
+                        methods = schema$database$elements$methods$elements$methods
                         )
 
   sprintf("The variable `%s` is *'%s'*.", var, description) %>%
@@ -1097,7 +1099,7 @@ We have records on the following taxa from your study. We have attempted to alig
 The table below shows all taxa in this study, where possible using the name aligned with the APC (version = `r apcalign_data_release`). Columns are as follows:
 
 ```{r, results='asis'}
-schema$austraits$elements$taxa$elements %>%
+schema$database$elements$taxa$elements %>%
   traits.use::convert_list_to_df1() %>%
   my_kable_styling()
 ```
@@ -1137,7 +1139,7 @@ empty_tibble_taxonomic_updates <-
   )
 
 tmp <- data_study$taxa %>%
-  select(any_of(names(schema$austraits$elements$taxa$elements))) %>%
+  select(any_of(names(schema$database$elements$taxa$elements))) %>%
   bind_rows(empty_tibble_taxa)
 
 if (nrow(tmp) < 10000) {
@@ -1233,7 +1235,7 @@ if (nrow(unknown_taxa) > 0) {
   ))
 
   unknown_taxa %>%
-    select(any_of(names(schema$austraits$elements$taxa$elements))) %>%
+    select(any_of(names(schema$database$elements$taxa$elements))) %>%
     dplyr::select(-dplyr::any_of(c("taxon_id", "scientific_name_id", "taxon_distribution", "establishment_means"))) %>%
     mutate(across(everything(), ~replace_na(.x, replace = ""))) %>%
     my_kable_styling() %>%
