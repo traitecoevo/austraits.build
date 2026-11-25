@@ -6,9 +6,9 @@ Further information on the project is available at the project website [austrait
 
 **CONTRIBUTORS**
 
-The project is jointly led by Dr Daniel Falster (UNSW Sydney), Dr Rachael Gallagher (Western Sydney University), Dr Elizabeth Wenk (UNSW Sydney), and Dr Hervé Sauquet (Royal Botanic Gardens and Domain Trust Sydney), with input from > 300 contributors from over > 100 institutions (see full list above). The project was initiated by Dr Rachael Gallagher and Prof Ian Wright while at Macquarie University.
+The project is jointly led by Prof Daniel Falster (UNSW Sydney), Prof Rachael Gallagher (Western Sydney University), Dr Elizabeth Wenk (UNSW Sydney), and Dr Hervé Sauquet (Royal Botanic Gardens and Domain Trust Sydney), with input from > 300 contributors from over > 100 institutions (see full list above). The project was initiated by Dr Rachael Gallagher and Prof Ian Wright while at Macquarie University.
 
-We are grateful to the following institutions for contributing data: the Council of Heads of Australasian Herbaria (Australasian Virtual Herbarium); the Australian Government Department of Climate Change, Energy, the Environment and Water, including the Australian Biological Resources Study; the Australian National Botanic Gardens and the Centre for Australian National Biodiversity Research; the National Herbarium of New South Wales (Botanic Gardens of Sydney); the Northern Territory Herbarium; the Queensland Herbarium; the State Herbarium of South Australia; the Tasmanian Herbarium; the Western Australian Herbarium; the Royal Botanic Gardens Victoria and the Victorian Department of Environment, Land, Water and Planning; the Royal Botanic Gardens, Kew; and the Brisbane Rainforest Action and Information Network.
+We are grateful to the following institutions for contributing data: the Council of Heads of Australasian Herbaria (CHAH; Australasian Virtual Herbarium); the Australian Government Department of Climate Change, Energy, the Environment and Water (DCCEEW), including the Australian Biological Resources Study; the Australian National Botanic Gardens and the Centre for Australian National Biodiversity Research; the National Herbarium of New South Wales (Botanic Gardens of Sydney); the Northern Territory Herbarium; the Queensland Herbarium; the State Herbarium of South Australia; the Tasmanian Herbarium; the Western Australian Herbarium; the Royal Botanic Gardens Victoria and the Victorian Department of Environment, Land, Water and Planning; the Royal Botanic Gardens, Kew; and the Brisbane Rainforest Action and Information Network.
 
 AusTraits has been supported by investment from the Australian Research Data Commons (ARDC), via their "Transformative data collections" (https://doi.org/10.47486/TD044) and "Data Partnerships" (https://doi.org/10.47486/DP720, https://doi.org/10.47486/DP720A) programs; and grants from the Australian Research Council (FT160100113, DE170100208, FT100100910) and Macquarie University, The ARDC is enabled by National Collaborative Research Investment Strategy (NCRIS).
 
@@ -44,7 +44,7 @@ This record holds the full releases. The same data can also be reached in other 
 
 **STRUCTURE OF AUSTRAITS**
 
-The compiled AusTraits database contains a series of relational tables and files. These elements include all the data, contextual information submitted with each contributed datasets, database schema, and trait definitions. The file dictionary.html provides the same information in textual format. Similar information is available at <https://traitecoevo.github.io/traits.build-book/>.
+The compiled AusTraits database contains a series of relational tables and files. These elements include all the data, contextual information submitted with each contributed datasets, database schema, and trait definitions. The flattened files (austraits-{{version}}-flattened.rds and .parquet) hold the same data as a single table, with all the tables joined onto each trait record. The file dictionary.html provides the same information in textual format. Similar information is available at <https://traitecoevo.github.io/traits.build-book/>.
 
 **CONTRIBUTING**
 
