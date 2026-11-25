@@ -10,40 +10,130 @@ on:
       - main
       - master
       - develop
+  workflow_dispatch:
 
 name: build
+
+# A new push to a pull request cancels the run it supersedes, which would
+# otherwise hold a runner for half an hour testing a commit nobody needs.
+# Pushes to a branch queue instead, so every commit to develop is checked.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
     if: github.event.pull_request.draft == false
-    runs-on: macOS-latest
+    # Linux, not macOS: 4 cores rather than 3, and no waiting for the
+    # organisation's five shared macOS runners
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          # A pull request is checked out as a merge commit; its first parent
+          # is the base branch, which is what `HEAD^1` below compares against
+          fetch-depth: 2
 
       - uses: r-lib/actions/setup-r@v2
-      
+        with:
+          use-public-rspm: true
+
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: local::.
+          extra-packages: |
+            local::.
+            any::targets
+            any::crew
+            any::qs2
 
       - name: test functions
         run: |
           testthat::test_dir("tests/testthat", stop_on_failure = TRUE)
         shell: Rscript {0}
 
-      - name: check sources
+      # A pull request that changes only files under data/ needs only those
+      # datasets tested: each dataset's tests read nothing but its own folder
+      # and config/. Any other change (config/, R/, the workflow, ...) can
+      # affect every dataset, so it tests all of them, as does every push.
+      - name: choose datasets to test
+        id: scope
         run: |
-          library(traits.build)
-          source("R/custom_R_code.R")
-          dataset_test(dir("data"))
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            changed=$(git diff --name-only HEAD^1 HEAD)
+            if [ -n "$changed" ] && ! printf '%s\n' "$changed" | grep -qv '^data/'; then
+              ids=$(printf '%s\n' "$changed" | cut -d/ -f2 | sort -u | tr '\n' ' ')
+              echo "Only data/ changed; testing: $ids"
+              echo "ids=$ids" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
+          echo "Testing every dataset"
+          echo "ids=" >> "$GITHUB_OUTPUT"
+
+      - name: check sources
+        env:
+          IDS: ${{ steps.scope.outputs.ids }}
+        run: |
+          read -ra ids <<< "$IDS"
+          Rscript .github/scripts/dataset_test_parallel.R "${ids[@]}"
+
+      # The build uses traits.build's `targets` pipeline rather than build.R:
+      # it builds datasets in parallel, and is regenerated here from data/ so
+      # it always includes every dataset, which the committed build.R did not
+      # for months.
+      - name: set up build pipeline
+        run: |
+          traits.build::build_setup_pipeline(
+            method = "targets",
+            database_name = "austraits",
+            workers = parallel::detectCores()
+          )
         shell: Rscript {0}
+
+      # The targets store (`_targets/`) from the last push to develop is
+      # restored for pull requests, so a pull request rebuilds only the
+      # datasets it changed and then recombines. targets notices changed data
+      # and config files for itself, but not three things the store depends
+      # on, so they are in the cache key instead and a change to any of them
+      # starts from scratch: the traits.build and traits.use versions, and
+      # R/, whose custom_R_code.R `dataset_process()` sources at run time.
+      # Pushes always build from scratch, so develop stays a full check and
+      # the store it saves is never built on a stale one.
+      - name: targets cache key
+        id: cache-key
+        run: |
+          sha <- function(pkg) {
+            d <- packageDescription(pkg)
+            if (is.null(d$RemoteSha)) d$Version else substr(d$RemoteSha, 1, 12)
+          }
+          key <- paste(
+            "targets", Sys.getenv("RUNNER_OS"), getRversion(),
+            sha("traits.build"), sha("traits.use"), packageVersion("targets"),
+            sep = "-"
+          )
+          cat("key=", key, "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
+        shell: Rscript {0}
+
+      - name: restore targets store
+        if: github.event_name == 'pull_request'
+        uses: actions/cache/restore@v4
+        with:
+          path: _targets
+          key: ${{ steps.cache-key.outputs.key }}-${{ hashFiles('R/**') }}-
+          restore-keys: ${{ steps.cache-key.outputs.key }}-${{ hashFiles('R/**') }}-
 
       - name: build austraits
         run: |
-          source("build.R")
+          targets::tar_make()
         shell: Rscript {0}
 
+      - name: save targets store
+        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        uses: actions/cache/save@v4
+        with:
+          path: _targets
+          key: ${{ steps.cache-key.outputs.key }}-${{ hashFiles('R/**') }}-${{ github.run_id }}
