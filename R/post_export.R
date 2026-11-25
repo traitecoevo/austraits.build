@@ -10,8 +10,9 @@
 #   austraits-<version>-flattened.parquet  the same table as parquet
 #
 #   austraits-<version>-observed-means.parquet         one value per taxon and
-#   austraits-<version>-observed-means.csv.gz          trait, computed from the
-#   austraits-<version>-observed-means-dictionary.csv  records, by
+#   austraits-<version>-observed-means.rds             trait, computed from the
+#   austraits-<version>-observed-means.csv.gz          records, by
+#   austraits-<version>-observed-means-dictionary.csv
 #                                    `traits.use::summarise_trait_means()`;
 #                                    AusTraits' settings for it are in
 #                                    `R/observed_means.R`
