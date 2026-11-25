@@ -11,7 +11,7 @@ This is a major release of the AusTraits database.
   wider format in this version
 - austraits-8.0.0-flattened.parquet: contains the flattened version of
   the dataset saved in parquet format
-- austraits-8.0.0-observed-means.parquet, `.csv.gz`: contains one value
+- austraits-8.0.0-observed-means.parquet, `.rds`, `.csv.gz`: contains one value
   per taxon and trait, computed from the records (a geometric mean for
   numeric traits, or an arithmetic mean for traits whose values can be
   negative, such as water potentials; the most frequent value for
