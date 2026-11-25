@@ -24,15 +24,23 @@ In addition, we encourage users to cite the original data sources, wherever poss
 
 Note that under the license data may be redistributed, provided the attribution is maintained.
 
-The downloads below provide the data in several formats:
+AusTraits is available in two forms, each in several formats: the full database, with every record and its context, and the observed means, one value per taxon and trait.
+
+The full database:
 
 - austraits-{{version}}.zip: data in plain text format (.csv, .bib, .yml files). Suitable for anyone, including those using Python.
 - austraits-{{version}}.rds: data as compressed R object. Suitable for users of R (see below).
 - austraits-{{version}}-flattened.rds: contains a flattened version of the dataset for direct loading in R; all data tables are joined into a wider format
 - austraits-{{version}}-flattened.parquet: contains a flattened version of the dataset in parquet format; all data tables are joined into a wider format
-- austraits-{{version}}-observed-means.parquet and austraits-{{version}}-observed-means.csv.gz: the observed mean of each trait for each taxon, computed from the records, in parquet and gzipped csv format; austraits-{{version}}-observed-means-dictionary.csv describes their columns
 
-For R users, the [traits.use](https://github.com/traitecoevo/traits.use) package reads and queries the data, and the [austraits R package](https://traitecoevo.github.io/austraits/) downloads AusTraits releases and provides examples.
+The observed means (the mean, or for categorical traits the most frequent value, of each trait for each taxon, computed from the records):
+
+- austraits-{{version}}-observed-means.zip: in plain text format (.csv), with the dictionary describing their columns
+- austraits-{{version}}-observed-means.rds: as compressed R object
+- austraits-{{version}}-observed-means.parquet: in parquet format
+- austraits-{{version}}-observed-means-dictionary.csv: describes their columns
+
+For R users, either the [traits.use](https://github.com/traitecoevo/traits.use) package or the [austraits R package](https://traitecoevo.github.io/austraits/) can be used to download AusTraits releases and to load and query the data.
 
 **OTHER WAYS TO ACCESS AUSTRAITS**
 
@@ -58,6 +66,8 @@ We envision AusTraits as an on-going collaborative community resource that:
 As a community resource, we are very keen for people to contribute. Assembly of the database is managed on GitHub at <https://github.com/traitecoevo/austraits.build/>.
 
 Here are some of the ways you can contribute:
+
+**Using and citing the data**: Use AusTraits in your research and cite it (see above), along with the original data sources.
 
 **Reporting Errors**: If you notice a possible error in AusTraits, please [post an issue on GitHub](https://github.com/traitecoevo/austraits.build/issues).
 

@@ -242,7 +242,7 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
     create_release(austraits, v_prev = "p.p.p")
     ```
 
-    This writes `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, the observed means (`austraits-x.x.x-observed-means.parquet`, `.csv.gz` and `-dictionary.csv`), `austraits-x.x.x.zip`, `dictionary.html` and `NEWS.md` to `export/data/austraits-x.x.x/`. `export/` is not committed.
+    This writes `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, the observed means (`austraits-x.x.x-observed-means.parquet`, `.rds`, `.zip` (the csv and dictionary) and `-dictionary.csv`), `austraits-x.x.x.zip`, `dictionary.html` and `NEWS.md` to `export/data/austraits-x.x.x/`. `export/` is not committed.
 
     The observed means are one value per taxon and trait, for every trait, computed from the records by `traits.use::summarise_trait_means()` (`R/observed_means.R` holds AusTraits' settings for it). Open the parquet and check a few species you know.
 
@@ -272,7 +272,7 @@ As a final step, we are ready for the actual austraits.build release! Below, `x.
     traits.build::zenodo_deposit(metadata, record = 3568417, files = files, sandbox = FALSE)
     ```
 
-    -   `files` should be `austraits-x.x.x.zip`, `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, `austraits-x.x.x-observed-means.parquet`, `austraits-x.x.x-observed-means.csv.gz`, `austraits-x.x.x-observed-means-dictionary.csv`, `dictionary.html`, `NEWS.md` and the root `README.md` (which `create_release()` doesn't write). Files from the previous version that are not in the list are removed from the draft.
+    -   `files` should be `austraits-x.x.x.zip`, `austraits-x.x.x.rds`, `austraits-x.x.x-flattened.rds`, `austraits-x.x.x-flattened.parquet`, `austraits-x.x.x-observed-means.parquet`, `austraits-x.x.x-observed-means.rds`, `austraits-x.x.x-observed-means.zip`, `austraits-x.x.x-observed-means-dictionary.csv`, `dictionary.html`, `NEWS.md` and the root `README.md` (which `create_release()` doesn't write). Files from the previous version that are not in the list are removed from the draft.
     -   Before writing anything, `zenodo_deposit()` compares the new metadata with the previous version's and stops if a creator, contributor, related identifier or reference would be dropped, or a creator's name changes. Fix that in `config/metadata.yml` (people who are not data collectors of any dataset go under `project_contributors`), rebuild from step 3, and run it again. Where the loss is right, such as a spelling a dataset has corrected, name it: `allow_removals = c("Wilson, J. Barstow")` accepts that one and still stops on anything else (that name is expected at 8.0.0: the v7.0.0 record has a typo the datasets don't). Contributors renamed by a dataset's `metadata.yml` are listed but don't stop it.
     -   It also keeps the ORCIDs and affiliations on the previous version for people the repository has without them (mostly dataset assistants, which are free text), and lists them.
     -   If an upload is interrupted, run the same call with `draft = <id>` (the id it printed); files already uploaded are skipped.

@@ -37,7 +37,7 @@ test_that("the dictionary must match the columns written", {
 
   # a database without some taxon columns writes the columns it has
   fewer <- dplyr::select(means, -"establishment_means")
-  expect_length(write_observed_means(fewer, path, "0.0.0"), 3)
+  expect_length(write_observed_means(fewer, path, "0.0.0"), 4)
   unlink(dir(path, full.names = TRUE))
 
   # an unversioned database cannot name its files
@@ -64,7 +64,7 @@ test_that("`post_export()` writes the observed means of a database", {
 
   version <- database$build_info$version
   stem <- file.path(path, sprintf("austraits-%s-observed-means", version))
-  expect_true(all(file.exists(paste0(stem, c(".parquet", ".csv.gz", "-dictionary.csv")))))
+  expect_true(all(file.exists(paste0(stem, c(".parquet", ".rds", ".zip", "-dictionary.csv")))))
   expect_true(file.exists(file.path(path, sprintf("austraits-%s-flattened.parquet", version))))
 
   means <- arrow::read_parquet(paste0(stem, ".parquet"))
@@ -91,8 +91,14 @@ test_that("`post_export()` writes the observed means of a database", {
   expect_true(all(means$method[means$type == "categorical"] %in% c("mode", "majority")))
   expect_equal(anyDuplicated(means[c("taxon_name", "trait_name", "unit")]), 0)
 
-  # the csv holds the same table
-  csv <- readr::read_csv(paste0(stem, ".csv.gz"), show_col_types = FALSE, guess_max = Inf)
+  # the rds, and the csv in the zip, hold the same table; the zip also holds the dictionary
+  expect_equal(as.data.frame(readRDS(paste0(stem, ".rds"))), as.data.frame(means))
+  expect_setequal(utils::unzip(paste0(stem, ".zip"), list = TRUE)$Name,
+                  basename(paste0(stem, c(".csv", "-dictionary.csv"))))
+  unzipped <- withr::local_tempdir()
+  utils::unzip(paste0(stem, ".zip"), exdir = unzipped)
+  csv <- readr::read_csv(file.path(unzipped, basename(paste0(stem, ".csv"))),
+                         show_col_types = FALSE, guess_max = Inf)
   expect_equal(dim(csv), dim(means))
   expect_equal(csv$value, means$value)
 
