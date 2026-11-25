@@ -148,6 +148,17 @@ dataset:
         )[.flora_key], `trait_value`)
       ) %>%
       select(-.flora_key) |>
+      mutate(
+        trait_value = ifelse(trait_name %in% c("plant_height_type", "leaf_length_type"),
+          str_squish(str_remove_all(trait_value, "NA_")), trait_value),
+        trait_name = case_when(
+          trait_name == "plant_height_type" & str_detect(trait_value, "^(not_given\\S*\\s*)+$") ~ "plant_height_missing",
+          trait_name == "leaf_length_type" & str_detect(trait_value, "^(not_given\\S*\\s*)+$") ~ "leaf_length_missing",
+          TRUE ~ trait_name
+        ),
+        trait_value = ifelse(trait_name %in% c("plant_height_type", "leaf_length_type"),
+          str_squish(str_remove_all(trait_value, "not_given\\S*")), trait_value)
+      ) |>
       generate_observation_numbers(taxon_name, trait_name, source_id)
   '
   collection_date: 2025-08/2026-02
@@ -406,6 +417,14 @@ traits:
   basis_of_value: expert_score
   replicates: .na
   methods: unknown
+- var_in: plant_height_missing
+  unit_in: .na
+  trait_name: plant_height_missing
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
 - var_in: leaflet_width
   unit_in: unit
   trait_name: leaflet_width
@@ -521,6 +540,14 @@ traits:
 - var_in: leaf_length_type
   unit_in: .na
   trait_name: leaf_length_type
+  entity_type: species
+  value_type: value_type
+  basis_of_value: expert_score
+  replicates: .na
+  methods: unknown
+- var_in: leaf_length_missing
+  unit_in: .na
+  trait_name: leaf_length_missing
   entity_type: species
   value_type: value_type
   basis_of_value: expert_score
@@ -856,6 +883,34 @@ substitutions:
 - trait_name: leaf_shape
   find: narrowly_spathulate
   replace: spathulate
+- trait_name: plant_height_type
+  find: trailing
+  replace: prostrate
+  match: word
+- trait_name: plant_height_type
+  find: creeping
+  replace: prostrate
+  match: word
+- trait_name: plant_height_type
+  find: cushion
+  replace: mat-forming
+  match: word
+- trait_name: plant_height_type
+  find: climber
+  replace: climbing
+  match: word
+- trait_name: leaf_length_type
+  find: reduced_to_scales
+  replace: scale_leaves
+  match: word
+- trait_name: leaf_length_missing
+  find: not_given_any_ref
+  replace: not_given
+  match: word
+- trait_name: stem_constitution
+  find: thick
+  replace: robust
+  match: word
 taxonomic_updates:
 - find: AAustrocallerya pilipes
   replace: Austrocallerya pilipes

@@ -113,7 +113,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
     dplyr::left_join(by = c("aligned_name", "taxon_name"),
       resources$APC %>%
         dplyr::mutate(
-          accepted_name = resources$`APC list (accepted)`$canonical_name[match(accepted_name_usage_ID, resources$`APC list (accepted)`$taxon_ID)],
+          accepted_name = resources$APC_accepted$canonical_name[match(accepted_name_usage_ID, resources$APC_accepted$taxon_ID)],
           taxon_name = accepted_name
         ) %>%
         dplyr::select(dplyr::all_of(c(
@@ -148,7 +148,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
         taxon_rank,
         ifelse(
           (taxonomic_dataset == "APC" & taxonomic_status == "accepted"),
-          resources$`APC list (accepted)`$taxon_rank[match(taxon_id, resources$`APC list (accepted)`$taxon_ID)],
+          resources$APC_accepted$taxon_rank[match(taxon_id, resources$APC_accepted$taxon_ID)],
           taxon_rank
         )),
       # For taxon names that are valid names (per herbarium standards) or repeatedly reported invasives, but
@@ -165,7 +165,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       taxon_id = ifelse(taxon_rank %in% c("genus", "family"), NA, taxon_id),
       scientific_name_id = ifelse(
         taxonomic_dataset == "APC",
-        resources$`APC list (accepted)`$scientific_name_ID[match(scientific_name, resources$`APC list (accepted)`$scientific_name)],
+        resources$APC_accepted$scientific_name_ID[match(scientific_name, resources$APC_accepted$scientific_name)],
         scientific_name_id),
       scientific_name_id = ifelse(taxon_rank %in% c("genus", "family"), NA, scientific_name_id)
     ) %>%
@@ -225,8 +225,8 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
     # There might have been a 1-off problem, but a good idea to remove rows without a value for `taxonomic_dataset` and see if there now is one.
     # For instance names that hadn't been in APC/APNI previously but were retained in AusTraits because we knew they were "real" names that were still working through CHAH
     # are in the taxon list and this way they will be replaced with their current identifiers, even if replace == FALSE
-      missing_taxa <- taxon_list %>% filter((is.na(taxonomic_dataset)|taxonomic_status == "unknown") & (taxon_name %in% resources$APC$canonical_name | taxon_name %in% resources$APNI$canonical_name)) 
-      taxon_list_filtered <- taxon_list %>% filter(!taxon_name %in% missing_taxa$taxon_name)
+      missing_taxa <- taxon_list %>% dplyr::filter((is.na(taxonomic_dataset)|taxonomic_status == "unknown") & (taxon_name %in% resources$APC$canonical_name | taxon_name %in% resources$APNI$canonical_name)) 
+      taxon_list_filtered <- taxon_list %>% dplyr::filter(!taxon_name %in% missing_taxa$taxon_name)
     
     
     # New taxon list
