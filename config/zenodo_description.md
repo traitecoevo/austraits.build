@@ -1,4 +1,4 @@
-AusTraits is a transformative database, containing measurements on the traits of Australia's plant taxa, standardised from hundreds of disconnected primary sources. Version {{version}} assembles 503 datasets, which draw on more than 3,900 distinct sources, into 2,450,777 records of 631 plant traits for 38,472 taxa.
+AusTraits is a transformative database, containing measurements on the traits of Australia's plant taxa, standardised from hundreds of disconnected primary sources. Version {{version}} assembles 503 datasets, which draw on 3,773 sources, into 2,450,777 records of 631 plant traits for 26,436 species.
 
 To handle the harmonising of diverse data sources, we use a reproducible workflow to implement the various changes required for each source to reformat it suitable for incorporation in AusTraits. Such changes include restructuring datasets, renaming variables, changing variable units, changing taxon names. While this record contains the harmonised data, the raw data and code used to build the resource are also available on the project's GitHub repository, <https://github.com/traitecoevo/austraits.build/>.
 
