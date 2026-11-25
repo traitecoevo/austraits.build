@@ -225,8 +225,8 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
     # There might have been a 1-off problem, but a good idea to remove rows without a value for `taxonomic_dataset` and see if there now is one.
     # For instance names that hadn't been in APC/APNI previously but were retained in AusTraits because we knew they were "real" names that were still working through CHAH
     # are in the taxon list and this way they will be replaced with their current identifiers, even if replace == FALSE
-      missing_taxa <- taxon_list %>% filter((is.na(taxonomic_dataset)|taxonomic_status == "unknown") & (taxon_name %in% resources$APC$canonical_name | taxon_name %in% resources$APNI$canonical_name)) 
-      taxon_list_filtered <- taxon_list %>% filter(!taxon_name %in% missing_taxa$taxon_name)
+      missing_taxa <- taxon_list %>% dplyr::filter((is.na(taxonomic_dataset)|taxonomic_status == "unknown") & (taxon_name %in% resources$APC$canonical_name | taxon_name %in% resources$APNI$canonical_name)) 
+      taxon_list_filtered <- taxon_list %>% dplyr::filter(!taxon_name %in% missing_taxa$taxon_name)
     
     
     # New taxon list
