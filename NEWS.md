@@ -11,10 +11,10 @@ This is a major release of the AusTraits database.
   wider format in this version
 - austraits-8.0.0-flattened.parquet: contains the flattened version of
   the dataset saved in parquet format
-- austraits-8.0.0-observed-means.parquet, `.rds`, `.csv.gz`: contains one value
-  per taxon and trait, computed from the records (a geometric mean for
-  numeric traits, or an arithmetic mean for traits whose values can be
-  negative, such as water potentials; the most frequent value for
+- austraits-8.0.0-observed-means.parquet, `.rds`, `.csv.gz`: contains
+  one value per taxon and trait, computed from the records (a geometric
+  mean for numeric traits, or an arithmetic mean for traits whose values
+  can be negative, such as water potentials; the most frequent value for
   categorical traits, and for traits recording months, such as flowering
   time, the months at least half the records give), with the datasets
   and references each value draws on, with its column dictionary in
@@ -96,9 +96,9 @@ This release contains:
 - **0 sources removed**– most replaced by corrected or updated sources
   above:
 
-- **600901 new or updated records for 185 existing traits**
+- **600909 new or updated records for 185 existing traits**
 
-- **55898 new records for 93 new traits:** bark_ribbon_type,
+- **61458 new records for 95 new traits:** bark_ribbon_type,
   breeding_system, flower_anther_length, flower_colour_bee_chroma,
   flower_colour_bee_hue, flower_colour_bee_type,
   flower_colour_brightness, flower_colour_chroma,
@@ -117,15 +117,16 @@ This release contains:
   leaf_epicuticular_wax_tube_diameter,
   leaf_epicuticular_wax_tube_length, leaf_essential_oil_per_dry_mass,
   leaf_glaucousness_juvenile_leaves, leaf_guard_cell_width,
-  leaf_length_to_stem_length_ratio, leaf_length_to_width_ratio,
-  leaf_length_type, leaf_light_compensation_point,
-  leaf_nitrate_per_dry_mass, leaf_oil_gland_diameter,
-  leaf_saturated_water_content_per_dry_mass, leaf_stomatal_complex_type,
-  leaf_surface_colour, leaf_water_delta18O, leaf_wax_per_dry_mass,
-  leaflet_length, leaflet_width, petiole_shape, plant_canopy_form,
-  plant_height_epiphyte, plant_height_type, plant_tolerance_fire,
-  pollination_vector_known, pollination_vector_possible, rhizome_form,
-  root_phenol_per_dry_mass, root_Si_per_dry_mass, root_vessel_diameter,
+  leaf_length_missing, leaf_length_to_stem_length_ratio,
+  leaf_length_to_width_ratio, leaf_length_type,
+  leaf_light_compensation_point, leaf_nitrate_per_dry_mass,
+  leaf_oil_gland_diameter, leaf_saturated_water_content_per_dry_mass,
+  leaf_stomatal_complex_type, leaf_surface_colour, leaf_water_delta18O,
+  leaf_wax_per_dry_mass, leaflet_length, leaflet_width, petiole_shape,
+  plant_canopy_form, plant_height_epiphyte, plant_height_missing,
+  plant_height_type, plant_tolerance_fire, pollination_vector_known,
+  pollination_vector_possible, rhizome_form, root_phenol_per_dry_mass,
+  root_Si_per_dry_mass, root_vessel_diameter,
   root_vessel_lumen_fraction, seed_coat_thickness, seed_count,
   seed_germination_time_to_50_percent, seed_ovule_ratio,
   seed_reserve_to_seed_area_ratio, seeds_per_fruit, stem_base_form,
@@ -155,7 +156,7 @@ Details on new studies:
 | Bond_2026                             |    44 |        26 |      2 |      97 |
 | Brisbane_Botanic_Gardens_2026         |    78 |         1 |      1 |      83 |
 | Britton_2026                          |   214 |         1 |     10 |    3911 |
-| Brown_1997                            |  1102 |      1236 |      1 |    4017 |
+| Brown_1997                            |  1142 |      1272 |      1 |    4108 |
 | Cernusak_2004                         |    31 |         6 |      6 |     288 |
 | Coates_2024                           |    69 |         6 |      1 |    5130 |
 | Cook_2005                             |     2 |         3 |      4 |      15 |
@@ -165,7 +166,7 @@ Details on new studies:
 | Darwin_Botanic_Gardens_2026           |    65 |        68 |      2 |     159 |
 | Davila_2002                           |     1 |         2 |     16 |      48 |
 | Davila_2007                           |     1 |         4 |      5 |     546 |
-| Davis_2026                            |    40 |        15 |      4 |      52 |
+| Davis_2026                            |    40 |        15 |      4 |      60 |
 | Dilly_2025                            |   223 |         1 |      6 |     976 |
 | Dorey_2021                            |   147 |       207 |      1 |     301 |
 | Dorey_2023                            |  3334 |      2962 |      1 |    9122 |
@@ -211,9 +212,9 @@ Details on new studies:
 | Popic_2013                            |    52 |         1 |      2 |     232 |
 | Prendergast_2022                      |    96 |         1 |      2 |     362 |
 | Prendergast_2022_2                    |   346 |        14 |      1 |    1766 |
-| Prendergast_2026                      |    80 |        22 |      1 |     611 |
-| Prendergast_2026_2                    |   251 |       119 |      1 |    1215 |
-| Prendergast_2026_3                    |   354 |       350 |      1 |    1296 |
+| Prendergast_2026                      |    80 |        22 |      1 |     613 |
+| Prendergast_2026_2                    |   268 |       125 |      1 |    1494 |
+| Prendergast_2026_3                    |   360 |       354 |      1 |    1342 |
 | Read_1985                             |    11 |         3 |      6 |     149 |
 | Ritchie_2021                          |     2 |        11 |      3 |      41 |
 | SA_Seed_Conservation_Centre_2026      |  2071 |      2995 |      3 |   20394 |
@@ -232,7 +233,7 @@ Details on new studies:
 | Tennakoon_1997                        |    19 |         4 |     11 |     126 |
 | Victorian_Conservation_Seed_Bank_2026 |  1278 |      1361 |      2 |    5701 |
 | WA_Seed_Centre_2026                   |  2569 |      2612 |      3 |    9909 |
-| Wenk_2025                             | 14772 |         1 |     66 |  116693 |
+| Wenk_2025                             | 15233 |         1 |     68 |  121835 |
 | Westerband_2023                       |   517 |        62 |      9 |    3278 |
 | Wirthensohn_1998                      |    21 |         4 |     17 |     461 |
 | Xirocostas_2024                       |     9 |        21 |      1 |     255 |
