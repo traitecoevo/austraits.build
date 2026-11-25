@@ -113,7 +113,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
     dplyr::left_join(by = c("aligned_name", "taxon_name"),
       resources$APC %>%
         dplyr::mutate(
-          accepted_name = resources$`APC list (accepted)`$canonical_name[match(accepted_name_usage_ID, resources$`APC list (accepted)`$taxon_ID)],
+          accepted_name = resources$APC_accepted$canonical_name[match(accepted_name_usage_ID, resources$APC_accepted$taxon_ID)],
           taxon_name = accepted_name
         ) %>%
         dplyr::select(dplyr::all_of(c(
@@ -148,7 +148,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
         taxon_rank,
         ifelse(
           (taxonomic_dataset == "APC" & taxonomic_status == "accepted"),
-          resources$`APC list (accepted)`$taxon_rank[match(taxon_id, resources$`APC list (accepted)`$taxon_ID)],
+          resources$APC_accepted$taxon_rank[match(taxon_id, resources$APC_accepted$taxon_ID)],
           taxon_rank
         )),
       # For taxon names that are valid names (per herbarium standards) or repeatedly reported invasives, but
@@ -165,7 +165,7 @@ build_update_taxon_list <- function(austraits, taxon_list, replace = FALSE) {
       taxon_id = ifelse(taxon_rank %in% c("genus", "family"), NA, taxon_id),
       scientific_name_id = ifelse(
         taxonomic_dataset == "APC",
-        resources$`APC list (accepted)`$scientific_name_ID[match(scientific_name, resources$`APC list (accepted)`$scientific_name)],
+        resources$APC_accepted$scientific_name_ID[match(scientific_name, resources$APC_accepted$scientific_name)],
         scientific_name_id),
       scientific_name_id = ifelse(taxon_rank %in% c("genus", "family"), NA, scientific_name_id)
     ) %>%
