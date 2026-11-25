@@ -55,35 +55,45 @@ jobs:
           testthat::test_dir("tests/testthat", stop_on_failure = TRUE)
         shell: Rscript {0}
 
-      # A pull request that changes only files under data/ needs only those
-      # datasets tested: each dataset's tests read nothing but its own folder
-      # and config/. Any other change (config/, R/, the workflow, ...) can
-      # affect every dataset, so it tests all of them, as does every push.
+      # A pull request tests only the datasets whose folders it touches: each
+      # dataset's tests read nothing but its own folder and the shared inputs.
+      # A change to a shared input can affect every dataset, so it tests all
+      # of them: config/ (traits, units, taxon list), R/ (custom_R_code.R),
+      # DESCRIPTION, and the CI itself (.github/). Changes elsewhere (docs,
+      # scripts/, .claude/, ...) test nothing. Every push tests every dataset,
+      # which also catches a new traits.build breaking datasets nobody touched.
       #
-      # `changed` lists every dataset whose folder a pull request touches,
-      # whatever else it changes; the build step rebuilds those.
+      # Outputs: `scope` is all, some or none; `ids` the datasets to test when
+      # it is some; `changed` every dataset folder the pull request touches,
+      # whatever else it changes, which the build step rebuilds.
       - name: choose datasets to test
         id: scope
         run: |
-          echo "ids=" >> "$GITHUB_OUTPUT"
-          echo "changed=" >> "$GITHUB_OUTPUT"
           if [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
             echo "Testing every dataset"
+            { echo "scope=all"; echo "ids="; echo "changed="; } >> "$GITHUB_OUTPUT"
             exit 0
           fi
           files=$(git diff --name-only HEAD^1 HEAD)
           # `|| true`: grep exits 1 when nothing matches, which pipefail would
           # turn into a failed step
           changed=$(printf '%s\n' "$files" | { grep '^data/[^/]*/' || true; } | cut -d/ -f2 | sort -u | tr '\n' ' ')
+          shared=$(printf '%s\n' "$files" | { grep -E '^(config/|R/|DESCRIPTION$|\.github/)' || true; })
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
-          if [ -n "$files" ] && ! printf '%s\n' "$files" | grep -qv '^data/'; then
-            echo "Only data/ changed; testing: $changed"
-            echo "ids=$changed" >> "$GITHUB_OUTPUT"
+          if [ -n "$shared" ]; then
+            echo "Shared inputs changed, so testing every dataset:"
+            printf '%s\n' "$shared" | sed 's/^/  /'
+            { echo "scope=all"; echo "ids="; } >> "$GITHUB_OUTPUT"
+          elif [ -n "$changed" ]; then
+            echo "Testing the datasets this pull request touches: $changed"
+            { echo "scope=some"; echo "ids=$changed"; } >> "$GITHUB_OUTPUT"
           else
-            echo "Changes outside data/; testing every dataset"
+            echo "No dataset or shared input changed; no datasets to test"
+            { echo "scope=none"; echo "ids="; } >> "$GITHUB_OUTPUT"
           fi
 
       - name: check sources
+        if: steps.scope.outputs.scope != 'none'
         env:
           IDS: ${{ steps.scope.outputs.ids }}
         run: |
