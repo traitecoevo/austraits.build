@@ -1097,6 +1097,10 @@ McCarthy_2017_config <- dataset_configure("data/McCarthy_2017/metadata.yml", def
 McCarthy_2017_raw <- dataset_process("data/McCarthy_2017/data.csv", McCarthy_2017_config, schema, resource_metadata, unit_conversions)
 McCarthy_2017 <- dataset_update_taxonomy(McCarthy_2017_raw, taxon_list)
 
+McCarthy_2017_2_config <- dataset_configure("data/McCarthy_2017_2/metadata.yml", definitions)
+McCarthy_2017_2_raw <- dataset_process("data/McCarthy_2017_2/data.csv", McCarthy_2017_2_config, schema, resource_metadata, unit_conversions)
+McCarthy_2017_2 <- dataset_update_taxonomy(McCarthy_2017_2_raw, taxon_list)
+
 McGlone_2015_config <- dataset_configure("data/McGlone_2015/metadata.yml", definitions)
 McGlone_2015_raw <- dataset_process("data/McGlone_2015/data.csv", McGlone_2015_config, schema, resource_metadata, unit_conversions)
 McGlone_2015 <- dataset_update_taxonomy(McGlone_2015_raw, taxon_list)
@@ -2294,6 +2298,7 @@ austraits_raw <- traits.use::bind_databases(
   Maslin_2012,
   Mata_2021,
   McCarthy_2017,
+  McCarthy_2017_2,
   McGlone_2015,
   McNeice_2026,
   McQuillan_2020,
