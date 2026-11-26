@@ -32,21 +32,49 @@ contributors:
   dataset_curators: Elizabeth Wenk
 dataset:
   data_is_long_format: no
-  custom_R_code: ' date_range <- function(x) ifelse(min(x) == max(x), min(x), paste(min(x),
-    max(x), sep = "/")); collection_month <- c("11/02/2023" = 1, "2/03/2023" = 2,
-    "30/03/2023" = 3, "4/05/2023" = 4, "10/06/2023" = 5, "29/06/2023" = 6, "3/08/2023"
-    = 7, "7/09/2023" = 8, "5/10/2023" = 9, "2/11/2023" = 10, "1/12/2023" = 11, "21/12/2023"
-    = 12, "1/02/2024" = 1); seeds <- data |> dplyr::filter(!is.na(Species)) |> dplyr::mutate(
-    date = util_format_collection_date(DateCollected, "dmy"), month = collection_month[DateCollected],
-    seed_count = as.numeric(Count), distance = suppressWarnings(as.numeric(MinimumDist))
-    ); dplyr::bind_rows( seeds |> dplyr::group_by(Species, Site) |> dplyr::summarise(
-    date_range = date_range(date), plant_height_max = stringr::str_extract(dplyr::first(HeightRange),
-    "[0-9.]+$"), SeedSize = dplyr::first(SeedSize), fruiting_time = paste(ifelse(1:12
-    %in% month, "y", "n"), collapse = ""), .groups = "drop" ), seeds |> dplyr::filter(!is.na(distance))
-    |> dplyr::group_by(Species, Site, SeverityGroup) |> dplyr::summarise( date_range
-    = date_range(date), distance_median = as.character(stats::median(rep(distance,
-    seed_count))), distance_max = as.character(max(distance)), seeds_measured = as.character(sum(seed_count)),
-    .groups = "drop" ) ) '
+  custom_R_code: '
+    date_range <- function(x) ifelse(min(x) == max(x), min(x), paste(min(x), max(x), sep = "/"));
+    collection_month <- c(
+      "11/02/2023" = 1, "2/03/2023" = 2, "30/03/2023" = 3, "4/05/2023" = 4,
+      "10/06/2023" = 5, "29/06/2023" = 6, "3/08/2023" = 7, "7/09/2023" = 8,
+      "5/10/2023" = 9, "2/11/2023" = 10, "1/12/2023" = 11, "21/12/2023" = 12,
+      "1/02/2024" = 1
+    );
+    seeds <- data |>
+      dplyr::filter(!is.na(Species)) |>
+      dplyr::mutate(
+        date = util_format_collection_date(DateCollected, "dmy"),
+        month = collection_month[DateCollected],
+        seed_count = as.numeric(Count),
+        distance = suppressWarnings(as.numeric(MinimumDist)),
+        distance = dplyr::if_else(
+          Site == "Mt Wilson" & SeedTrapline == "WE55" & TrapCount == "9" & Species == "Polyscias sambucifolia",
+          1.2,
+          distance
+        )
+      );
+    dplyr::bind_rows(
+      seeds |>
+        dplyr::group_by(Species, Site) |>
+        dplyr::summarise(
+          date_range = date_range(date),
+          plant_height_max = stringr::str_extract(dplyr::first(HeightRange), "[0-9.]+$"),
+          SeedSize = dplyr::first(SeedSize),
+          fruiting_time = paste(ifelse(1:12 %in% month, "y", "n"), collapse = ""),
+          .groups = "drop"
+        ),
+      seeds |>
+        dplyr::filter(!is.na(distance)) |>
+        dplyr::group_by(Species, Site) |>
+        dplyr::summarise(
+          date_range = date_range(date),
+          distance_median = as.character(stats::median(rep(distance, seed_count))),
+          distance_max = as.character(max(distance)),
+          seeds_measured = as.character(sum(seed_count)),
+          .groups = "drop"
+        )
+    )
+  '
   collection_date: date_range
   taxon_name: Species
   location_name: Site
@@ -157,10 +185,15 @@ dataset:
     per species x location, with collection_date the range of collection dates for
     that species at that location. Traps where no adult was found within 50 m (MinimumDist
     "Not found", Persoonia mollis and Nyssa sp.) or the taxon was unidentified ("Unknown")
-    cannot be quantified and are excluded. The number of seeds of each species per
+    cannot be quantified and are excluded. Dispersal distances are pooled across the
+    trap fire severity groups (SeverityGroup), as the study did not compare dispersal
+    distances between fire severities. The number of seeds of each species per
     trap per monthly collection (Count), cover over each seed trap at two time points
     (SeedTrapCoverT1, SeedTrapCoverT2) and the trap installation date (DateInitial)
-    are not mapped, but retained in data.csv.
+    are not mapped, but retained in data.csv. For Polyscias sambucifolia in trap WE55_9
+    at Mount Wilson, the 2/03/2023-30/03/2023 collection has MinimumDist 6 m, a transcription
+    error confirmed by the authors; custom_R_code corrects it to 1.2 m, the distance
+    recorded for this trap on the other collection dates.
 identifiers: .na
 locations:
   Mt Tomah:
@@ -190,21 +223,6 @@ locations:
     climate description: temperate oceanic (Koppen Cfb)
     state: NSW
 contexts:
-- context_property: fire severity
-  category: plot_context
-  var_in: SeverityGroup
-  values:
-  - find: Unburnt
-    value: unburnt
-    description: Unburnt forest adjacent to the fire edge.
-  - find: Low/Moderate
-    value: low to moderate
-    description: Burnt at low to moderate severity during the 2019-2020 fires, with
-      an unburnt or partially burnt canopy.
-  - find: High/Extreme
-    value: high to extreme
-    description: Burnt at high to extreme severity during the 2019-2020 fires, with
-      a completely burnt or consumed canopy.
 - context_property: dispersal distance calculation
   category: method_context
   var_in: calculation
@@ -258,7 +276,7 @@ traits:
     species, Persoonia mollis and Nyssa sp., both of which were found in only two
     traps in low quantities (2 and 5 seeds respectively). ^p The median is the seed-weighted
     median of the per-trap values. Values are summarised for each species at each
-    site and fire severity from the per-trap minimum dispersal distances (MinimumDist),
+    site, pooled across fire severities, from the per-trap minimum dispersal distances (MinimumDist),
     weighting each trap by the number of seeds of the species it caught. Each per-trap
     value is the distance to the closest adult, so it is a minimum estimate of how
     far those seeds travelled. Traps where no adult was found within 50 m are excluded.
@@ -285,7 +303,7 @@ traits:
     species, Persoonia mollis and Nyssa sp., both of which were found in only two
     traps in low quantities (2 and 5 seeds respectively). ^p The maximum is the largest
     per-trap value, so it is the distance at least one seed travelled. Values are
-    summarised for each species at each site and fire severity from the per-trap minimum
+    summarised for each species at each site, pooled across fire severities, from the per-trap minimum
     dispersal distances (MinimumDist). Each per-trap value is the distance to the
     closest adult, so it is a minimum estimate of how far those seeds travelled. Traps
     where no adult was found within 50 m are excluded.
@@ -356,19 +374,4 @@ exclude_observations:
 - variable: taxon_name
   find: Unknown 1
   reason: too little resolution
-questions:
-  question1: While most species per trap have a single `MinimumDist` value, Polyscias
-    sambucifolia in trap WE55_9 at Mount Wilson has two different MinimumDist values
-    (1.2 and 6 m) on different collection dates, so it is kept as two records. Is
-    it correct that your data file has two different minimum distances for this species
-    at this seed trap?
-  question2: Seeds were weighed as retrieved from the traps, generally including woody
-    endocarps. Confirming seed_dry_mass, not diaspore_dry_mass is the appropriate
-    trait name to use.
-  question3: I was trying to figure out how to best summarise dispersal distance -
-    I calculated the median and maximum distance travelled by a seed. But these are
-    still really both types of `minimum distance` since it is relative to the closest
-    tree. I have now mapped them as `minima` but added a context that indicated how
-    they were calculated.
-  question4: For the seed dispersal calculations, is it best to have separate calculations
-    by fire severity category or group across the fire severities?
+questions: .na
