@@ -16,7 +16,8 @@ test_that("AVH_2026's label bounds are used as records", {
     dataset_id = "AVH_2026", taxon_name = "Acacia a", observation_id = c("01", "02", "03", "04"),
     trait_name = "plant_height", value = c("1", "4", "2", "8"), unit = "m",
     value_type = c("minimum", "maximum", "maximum", "maximum"), basis_of_record = "field",
-    location_id = c("01", "02", "03", "03"), original_name = "Acacia a"
+    location_id = c("01", "02", "03", "03"), original_name = "Acacia a",
+    taxonomic_dataset = "APC", taxonomic_status = "accepted", taxon_rank = "species"
   )
 
   means <- observed_means(records)
@@ -29,6 +30,43 @@ test_that("AVH_2026's label bounds are used as records", {
   # without the rule, field bounds are not used at all
   other <- traits.use::summarise_trait_means(records)
   expect_equal(nrow(other), 0)
+})
+
+test_that("only APC-accepted species are published (#922)", {
+  taxa <- tibble::tribble(
+    ~taxon_name,                                ~taxonomic_dataset, ~taxonomic_status,  ~taxon_rank,
+    "Acacia a",                                 "APC",              "accepted",         "species",
+    "Acacia b subsp. c",                        "APC",              "accepted",         "subspecies",
+    "Acacia x grayana",                         "APC",              "accepted",         "species",
+    "Acacia d x Acacia e",                      "APC",              "accepted",         "species",
+    "(Acacia d x Acacia e) x Acacia f",         "APC",              "accepted",         "species",
+    "Acacia g subsp. h - Acacia g subsp. i",    "APC",              "accepted",         "subspecies",
+    "Acacia",                                   "APC",              "genus accepted",   "genus",
+    "Acacia sp. [Beerburrum; Dorey_2023]",      NA,                 NA,                 NA,
+    "Grevillea sp. Trayning (W. Johnston 071)", "APNI",             "unplaced",         "species",
+    "Cirsium palustre",                         "APC",              "excluded",         "species",
+    "Platanus x acerifolia",                    "APC",              "nomenclatural synonym", "species"
+  )
+  expect_equal(observed_means_accepted(taxa),
+               c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE))
+  expect_error(observed_means_accepted(taxa["taxon_name"]), "needs the taxonomy")
+
+  # the database and its flattened table give the same means, all of
+  # accepted species; the subspecies' records count towards their species
+  database <- traits.use::austraits_lite
+  means <- observed_means(database)
+  accepted <- database$taxa$taxon_name[observed_means_accepted(database$taxa)]
+  species <- unique(sub(" (subsp|var|f)\\. .*$", "", accepted))
+  expect_true(all(means$taxon_name %in% species))
+  expect_true(all(means$taxon_rank %in% "species"))
+  dropped <- setdiff(unique(database$traits$taxon_name), accepted)
+  expect_gt(length(dropped), 0)
+  expect_false(any(dropped %in% means$taxon_name))
+  # (a flat table has no definitions, so its signed traits can differ in
+  # method; the taxa and traits published are the same)
+  keys <- c("taxon_name", "trait_name", "unit")
+  flat <- observed_means(traits.use::flatten_database(database))
+  expect_equal(flat[keys], means[keys])
 })
 
 test_that("the dictionary must match the columns written", {
@@ -74,11 +112,13 @@ test_that("`post_export()` writes the observed means of a database", {
   expect_false(anyNA(dictionary$definition))
 
   # every categorical trait of the database, and every numeric trait with a
-  # usable record; one row per taxon x trait x unit
+  # usable record, of APC-accepted species; one row per taxon x trait x unit
+  records <- database$traits[database$traits$taxon_name %in%
+                               database$taxa$taxon_name[observed_means_accepted(database$taxa)], ]
   expect_setequal(means$trait_name[means$type == "categorical"],
-                  unique(database$traits$trait_name[is.na(database$traits$unit)]))
-  numeric_traits <- unique(database$traits$trait_name[!is.na(database$traits$unit) &
-                                                        database$traits$value_type %in% c("raw", "mean", "median")])
+                  unique(records$trait_name[is.na(records$unit)]))
+  numeric_traits <- unique(records$trait_name[!is.na(records$unit) &
+                                                records$value_type %in% c("raw", "mean", "median")])
   expect_true(all(numeric_traits %in% means$trait_name))
   expect_equal(unique(means$estimate_type), "observed_mean")
   # arithmetic for traits on a signed scale, which austraits_lite has

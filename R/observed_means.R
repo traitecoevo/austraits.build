@@ -13,8 +13,8 @@
 # most frequent value and the count of every value; for every trait in the
 # database, with subspecies, varieties and forms rolled up to their species.
 #
-# What is specific to AusTraits is here: the value-type rule below, and the
-# files the release carries. The modelled means and the community layers are
+# What is specific to AusTraits is here: the taxa published (APC-accepted
+# species only), the value-type rule below, and the files the release carries. The modelled means and the community layers are
 # built in traitecoevo/austraits-means, on top of these observed means, so a
 # change of method changes them too.
 
@@ -39,12 +39,47 @@ observed_means_value_type_rules <- function() {
   )
 }
 
-#' Observed means of a database, as AusTraits publishes them.
+#' The taxa AusTraits publishes observed means for: APC-accepted species
+#' (#922).
 #'
-#' @param database a built traits.build database.
+#' A name is kept when the APC accepts it at species rank or below (its
+#' subspecies, varieties and forms count towards their species) and it is not
+#' a hybrid formula or intergrade ("A x B", "A - B"). Named nothospecies, such
+#' as "Acacia x grayana", are APC-accepted species and are kept. Genus- and
+#' family-level names, names APCalign could not align below genus, APNI names
+#' the APC does not place, excluded names and synonyms are left out.
+#'
+#' @param taxa a data frame with columns `taxon_name`, `taxonomic_dataset`,
+#'   `taxonomic_status` and `taxon_rank`: a database's taxa table, or a flat
+#'   table.
+#' @return a logical vector, one per row of `taxa`.
+observed_means_accepted <- function(taxa) {
+  needed <- c("taxon_name", "taxonomic_dataset", "taxonomic_status", "taxon_rank")
+  missing <- setdiff(needed, names(taxa))
+  if (length(missing) > 0) {
+    stop("The observed means are published for APC-accepted species only, which needs the taxonomy: ",
+         "the table lacks ", paste(missing, collapse = ", "), ".", call. = FALSE)
+  }
+  taxa$taxonomic_dataset %in% "APC" &
+    taxa$taxonomic_status %in% "accepted" &
+    taxa$taxon_rank %in% c("species", "subspecies", "variety", "form") &
+    !grepl("\\s(x|-)\\s[A-Z(]", taxa$taxon_name)
+}
+
+#' Observed means of a database, as AusTraits publishes them: for
+#' APC-accepted species only (`observed_means_accepted()`).
+#'
+#' @param database a built traits.build database, or a flat table from one
+#'   that carries the taxonomy columns.
 #' @return one row per taxon x trait (x unit, for numeric traits), with the
 #'   columns `traits.use::trait_means_dictionary()` defines.
 observed_means <- function(database) {
+  if (is.data.frame(database)) {
+    database <- database[observed_means_accepted(database), ]
+  } else {
+    accepted <- database$taxa$taxon_name[observed_means_accepted(database$taxa)]
+    database$traits <- database$traits[database$traits$taxon_name %in% accepted, ]
+  }
   traits.use::summarise_trait_means(
     database,
     value_type_rules = observed_means_value_type_rules()
