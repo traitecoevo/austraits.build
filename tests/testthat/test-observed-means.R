@@ -1,7 +1,8 @@
 ## The observed means written at release (`R/observed_means.R`, run by
 ## `post_export()` in `R/post_export.R`). The calculation itself is
 ## `traits.use::summarise_trait_means()`, tested in traits.use; these test what
-## is AusTraits' own: the value-type rule, and the files a release carries.
+## is AusTraits' own: the taxa published (APC-accepted species only), the
+## value-type rule, and the files a release carries.
 ##
 ## Run from the repository root with
 ## `testthat::test_dir("tests/testthat", stop_on_failure = TRUE)`.
@@ -32,41 +33,91 @@ test_that("AVH_2026's label bounds are used as records", {
   expect_equal(nrow(other), 0)
 })
 
-test_that("only APC-accepted species are published (#922)", {
-  taxa <- tibble::tribble(
-    ~taxon_name,                                ~taxonomic_dataset, ~taxonomic_status,  ~taxon_rank,
-    "Acacia a",                                 "APC",              "accepted",         "species",
-    "Acacia b subsp. c",                        "APC",              "accepted",         "subspecies",
-    "Acacia x grayana",                         "APC",              "accepted",         "species",
-    "Acacia d x Acacia e",                      "APC",              "accepted",         "species",
-    "(Acacia d x Acacia e) x Acacia f",         "APC",              "accepted",         "species",
-    "Acacia g subsp. h - Acacia g subsp. i",    "APC",              "accepted",         "subspecies",
-    "Acacia",                                   "APC",              "genus accepted",   "genus",
-    "Acacia sp. [Beerburrum; Dorey_2023]",      NA,                 NA,                 NA,
-    "Grevillea sp. Trayning (W. Johnston 071)", "APNI",             "unplaced",         "species",
-    "Cirsium palustre",                         "APC",              "excluded",         "species",
-    "Platanus x acerifolia",                    "APC",              "nomenclatural synonym", "species"
+test_that("hybrid formulae are told from nothospecies and phrase names", {
+  formulae <- c(
+    "Acacia ampliceps x Acacia bivenosa",
+    "(Dockrillia pugioniformis x Dockrillia striolata) x Dockrillia pugioniformis",
+    "Apium prostratum var. filiforme - Apium prostratum var. prostratum",
+    "Salix x fragilis x Salix nigra",
+    "Acacia monticola x (Acacia d x Acacia e)"
   )
-  expect_equal(observed_means_accepted(taxa),
-               c(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE))
-  expect_error(observed_means_accepted(taxa["taxon_name"]), "needs the taxonomy")
+  not_formulae <- c(
+    "Acacia x grayana",
+    "Eucalyptus pauciflora var. x cylindrocarpa",
+    "Populus x Loch Valley (I.C.Clarke 2861)",
+    "Acacia sp. Beyondie - Newman (B.R.Maslin 1234)",
+    "Acacia aneura"
+  )
+  expect_equal(observed_means_hybrid_formula(formulae), rep(TRUE, 5))
+  expect_equal(observed_means_hybrid_formula(not_formulae), rep(FALSE, 5))
+  expect_equal(observed_means_hybrid_formula(character()), logical())
+})
 
-  # the database and its flattened table give the same means, all of
-  # accepted species; the subspecies' records count towards their species
+test_that("only APC-accepted species are published (#922)", {
+  # each row fails one condition at most, so each condition is tested alone
+  taxa <- tibble::tribble(
+    ~taxon_name,                                ~taxonomic_dataset, ~taxonomic_status,  ~taxon_rank,   ~ok,
+    "Acacia a",                                 "APC",              "accepted",         "species",     TRUE,
+    "Acacia b subsp. c",                        "APC",              "accepted",         "subspecies",  TRUE,
+    "Acacia h var. i",                          "APC",              "accepted",         "variety",     TRUE,
+    "Acacia j f. k",                            "APC",              "accepted",         "form",        TRUE,
+    "Acacia x grayana",                         "APC",              "accepted",         "species",     TRUE,
+    "Populus x Loch Valley (I.C.Clarke 2861)",  "APC",              "accepted",         "species",     TRUE,
+    "Acacia d x Acacia e",                      "APC",              "accepted",         "species",     FALSE,
+    "Acacia",                                   "APC",              "accepted",         "genus",       FALSE,
+    "Acacia l",                                 "APNI",             "accepted",         "species",     FALSE,
+    "Acacia m",                                 "APC",              "excluded",         "species",     FALSE,
+    "Acacia n",                                 NA,                 NA,                 NA,            FALSE,
+    NA,                                         "APC",              "accepted",         "species",     FALSE
+  )
+  expect_equal(observed_means_accepted(taxa), taxa$ok)
+  expect_error(observed_means_accepted(taxa["taxon_name"]), "needs the taxonomy")
+  expect_setequal(observed_means_species(taxa),
+                  c("Acacia a", "Acacia b", "Acacia h", "Acacia j", "Acacia x grayana",
+                    "Populus x Loch Valley (I.C.Clarke 2861)"))
+
+  # records of an infraspecific name the APC does not place count towards
+  # the accepted species; a species published only through its accepted
+  # subspecies; nothing of genera, unplaced or excluded names
+  record <- function(taxon_name, value, dataset, status, rank) {
+    tibble::tibble(
+      dataset_id = "D1", taxon_name = taxon_name, observation_id = "01",
+      trait_name = "plant_height", value = as.character(value), unit = "m",
+      value_type = "raw", basis_of_record = "field", location_id = dataset,
+      original_name = taxon_name, taxonomic_dataset = dataset,
+      taxonomic_status = status, taxon_rank = rank
+    )
+  }
+  records <- dplyr::bind_rows(
+    record("Aloe vera", 1, "APC", "accepted", "species"),
+    record("Aloe vera var. vera", 4, "APNI", "unplaced", "variety"),
+    record("Acacia b subsp. c", 2, "APC", "accepted", "subspecies"),
+    record("Acacia", 3, "APC", "genus accepted", "genus"),
+    record("Grevillea sp. Trayning (W. Johnston 071)", 3, "APNI", "unplaced", "species"),
+    record("Cirsium palustre", 3, "APC", "excluded", "species")
+  )
+  means <- observed_means(records)
+  expect_equal(means$taxon_name, c("Acacia b", "Aloe vera"))
+  expect_equal(means$n_records, c(1, 2))
+  expect_equal(means$value, c(2, 2))
+
+  # a database and its flattened table publish the same taxa and traits
+  # (a flat table has no definitions, so its signed traits can differ in
+  # method), all species, of APC-accepted names
   database <- traits.use::austraits_lite
   means <- observed_means(database)
-  accepted <- database$taxa$taxon_name[observed_means_accepted(database$taxa)]
-  species <- unique(sub(" (subsp|var|f)\\. .*$", "", accepted))
-  expect_true(all(means$taxon_name %in% species))
+  expect_true(all(means$taxon_name %in% observed_means_species(database$taxa)))
   expect_true(all(means$taxon_rank %in% "species"))
-  dropped <- setdiff(unique(database$traits$taxon_name), accepted)
-  expect_gt(length(dropped), 0)
+  dropped <- database$taxa$taxon_name[!observed_means_accepted(database$taxa) &
+                                        !database$taxa$taxon_rank %in% c("subspecies", "variety", "form")]
+  expect_gt(length(intersect(dropped, database$traits$taxon_name)), 0)
   expect_false(any(dropped %in% means$taxon_name))
-  # (a flat table has no definitions, so its signed traits can differ in
-  # method; the taxa and traits published are the same)
   keys <- c("taxon_name", "trait_name", "unit")
   flat <- observed_means(traits.use::flatten_database(database))
   expect_equal(flat[keys], means[keys])
+  unsigned <- !means$method %in% "arithmetic" & !flat$method %in% "arithmetic"
+  expect_equal(flat[unsigned, c(keys, "value", "value_mode", "n_records")],
+               means[unsigned, c(keys, "value", "value_mode", "n_records")])
 })
 
 test_that("the dictionary must match the columns written", {
@@ -110,6 +161,9 @@ test_that("`post_export()` writes the observed means of a database", {
   expect_equal(names(means), dictionary$column)
   expect_equal(names(dictionary), c("column", "type", "definition"))
   expect_false(anyNA(dictionary$definition))
+  # the dictionary says what AusTraits publishes, not traits.use's default
+  expect_match(dictionary$definition[dictionary$column == "taxon_name"], "Australian Plant Census")
+  expect_true(all(means$taxon_name %in% observed_means_species(database$taxa)))
 
   # every categorical trait of the database, and every numeric trait with a
   # usable record, of APC-accepted species; one row per taxon x trait x unit
