@@ -61,6 +61,148 @@ dataset:
       ) %>%
       select(-.flora_key) %>%
       mutate(
+        .dup_key = paste(`recordID`, `trait_name`, `value_type`, `height_final`, sep = "|"),
+        `height_final` = ifelse(.dup_key %in% c(
+          "01f41bd0-3d82-4372-a8c7-86dad868ebcd|plant_height|minimum|0.3",
+          "333c0de4-a70a-4cd8-b64d-7e30dd9303f4|plant_height|minimum|0.6096",
+          "556400b8-51a3-4100-9aac-bc3927db6ac6|plant_height|maximum|0.3",
+          "61d77d82-b04f-47a7-9a42-be7c0e2e1374|plant_height|maximum|0.4",
+          "61d77d82-b04f-47a7-9a42-be7c0e2e1374|plant_height|minimum|0.35",
+          "6333703e-3cb9-4f22-af49-6da3d2a35475|plant_height|minimum|0.04",
+          "673c8794-d9fe-4d8b-b1d8-069a912a89d0|plant_height|minimum|0.6",
+          "69942426-8198-4534-9954-e3254d54d33c|plant_height|maximum|10",
+          "9f912bc2-3269-409e-ad36-c32b6762025d|plant_height|minimum|0.5",
+          "a9434fbe-f49b-4274-8951-b7cec979f218|plant_height|maximum|2",
+          "b586623a-f2c6-49f1-bd4f-a89d07ed1705|plant_width|minimum|0.3",
+          "f7a45287-55a2-4253-a0de-073c5126eee4|plant_height|maximum|10",
+          "fe0b817d-c823-4692-92c6-f5038ad9f395|plant_height|minimum|1"
+        ), NA, `height_final`),
+        `height_final` = dplyr::coalesce(unname(c(
+          "01d05121-0474-4f3f-9de0-10fbabffb48a|plant_height|maximum|0.4572" = 0.381,
+          "01f41bd0-3d82-4372-a8c7-86dad868ebcd|plant_height|maximum|1.5" = 0.3,
+          "03679831-b083-44de-b932-c7770c920db5|plant_height|maximum|1.5" = 4.5,
+          "08050c68-36ae-44a5-9f31-0fe74e3d3066|plant_height|maximum|0.35" = 0.15,
+          "08e3b624-b0f8-4f57-af77-d7e3a2f8617d|plant_height|maximum|2.5" = 0.762,
+          "091a6aff-149e-45bb-a369-e804644d9b7b|plant_height|maximum|4.572" = 15,
+          "0b1b11e2-c362-4296-9a44-2de3f3b99ed8|plant_height|maximum|1.2" = 0.9144,
+          "0b1b11e2-c362-4296-9a44-2de3f3b99ed8|plant_height|minimum|0.9" = 0.6096,
+          "15e5d21f-649f-4ca5-9e2d-b276238f5235|plant_height|maximum|1.8288" = 0.1524,
+          "19854303-8968-487d-9177-112c41ea0729|plant_height|maximum|12" = 20,
+          "1ad52329-90a5-412e-9c93-639f75b6a488|plant_height|maximum|5" = 2.25,
+          "1ad52329-90a5-412e-9c93-639f75b6a488|plant_height|minimum|3" = 1.25,
+          "1dad0da2-d998-44dc-8f6e-7f0edc5c2acd|plant_height|maximum|1" = 0.4,
+          "1feb7c8f-05e9-4543-baad-359893c6bb39|plant_height|maximum|2" = 20,
+          "26813551-2a04-4152-925c-4221959aa108|plant_height|maximum|0.9144" = 0.6096,
+          "26813551-2a04-4152-925c-4221959aa108|plant_height|minimum|0.6096" = 0.3048,
+          "2698eea8-c5e4-4345-87e6-317afce228ea|plant_height|maximum|0.35" = 0.65,
+          "277ef1fe-d222-49cc-99b9-178333160823|plant_height|maximum|0.33" = 0.4572,
+          "2a57bbd4-73e7-49cb-8f76-0802b92bac43|plant_height|maximum|0.3048" = 0.2286,
+          "2a57bbd4-73e7-49cb-8f76-0802b92bac43|plant_height|minimum|0.2286" = 0.1524,
+          "2be0a4f5-a5b9-4926-b06b-f893c64d2765|plant_height|maximum|1" = 1.219,
+          "2d89510a-35ef-4a97-9a89-16a53c502c44|plant_height|maximum|0.457" = 0.762,
+          "333c0de4-a70a-4cd8-b64d-7e30dd9303f4|plant_height|maximum|0.9144" = 0.6096,
+          "3371a00b-7363-4df0-b94a-08885ea92491|plant_height|maximum|0.05" = 0.5,
+          "3371a00b-7363-4df0-b94a-08885ea92491|plant_height|minimum|0.02" = 0.2,
+          "3a798a47-026a-4d39-a8d3-cf1beab7894c|plant_height|maximum|1.524" = 0.9144,
+          "45698e45-f080-4dd4-ad32-3e870f714ee4|plant_width|maximum|0.6096" = 1.524,
+          "481b50c8-26b7-4968-9698-9579404cd8ae|plant_height|maximum|0.275" = 0.381,
+          "481b50c8-26b7-4968-9698-9579404cd8ae|plant_height|minimum|0.22" = 0.2286,
+          "491f7cc8-cce1-492e-a551-04580fc74468|plant_height|maximum|2.5" = 1.5,
+          "4d8458cb-9138-4023-8030-fffd3f8d458d|plant_height|maximum|1.2" = 4,
+          "526825df-af6e-47f6-a56f-8a74cb86f7d4|plant_height|maximum|1" = 1.219,
+          "55b81e1d-bef2-4ad4-9a5f-b36b97df8f39|plant_height|maximum|2.5" = 0.762,
+          "564464d6-07fc-4dac-8466-5b754b4d0b0b|plant_height|maximum|0.4572" = 0.9144,
+          "564464d6-07fc-4dac-8466-5b754b4d0b0b|plant_height|minimum|0.3048" = 0.6096,
+          "5781bf65-ea0d-465f-b383-1b218771a888|plant_height|maximum|1.5" = 15,
+          "59a3617d-8504-456a-9cbc-b0d3f519e882|plant_height|maximum|10" = 20,
+          "59a3617d-8504-456a-9cbc-b0d3f519e882|plant_height|minimum|7" = 17,
+          "5cf079fb-d911-4e76-ae3f-5cd6e46522fa|plant_height|maximum|2.5" = 25,
+          "5ea4aa87-b39a-4118-8418-b7579f725522|plant_height|maximum|0.09" = 0.2286,
+          "5ea4aa87-b39a-4118-8418-b7579f725522|plant_height|minimum|0.06" = 0.1524,
+          "5ec497de-57a0-4011-a121-ce9324d83466|plant_height|maximum|0.36" = 0.3048,
+          "5ec497de-57a0-4011-a121-ce9324d83466|plant_height|minimum|0.18" = 0.1524,
+          "6333703e-3cb9-4f22-af49-6da3d2a35475|plant_height|maximum|0.05" = 0.45,
+          "64a46a8d-87f4-466e-bdc2-25f3027b66ab|plant_height|maximum|9" = 6.096,
+          "66962fd5-635c-463a-9943-5ffd58eb88f4|plant_height|maximum|0.325" = 0.4572,
+          "66962fd5-635c-463a-9943-5ffd58eb88f4|plant_height|minimum|0.295" = 0.3048,
+          "672f5897-ff1c-4c40-aa5c-9b9dfb4e503b|plant_height|maximum|1" = 1.219,
+          "672f5897-ff1c-4c40-aa5c-9b9dfb4e503b|plant_height|minimum|0.5" = 0.6096,
+          "673c8794-d9fe-4d8b-b1d8-069a912a89d0|plant_height|maximum|1.05" = 0.6,
+          "6bcdaf81-5eb6-4584-b838-44e3145e7086|plant_height|maximum|0.8" = 0.5,
+          "6e36d242-7461-43d7-b108-e9dceab5c94b|plant_height|maximum|0.9" = 0.4572,
+          "6e36d242-7461-43d7-b108-e9dceab5c94b|plant_height|minimum|0.3" = 0.1524,
+          "7e80c8ba-3385-4550-aead-c82a179822ed|plant_height|maximum|0.4572" = 0.9144,
+          "7e80c8ba-3385-4550-aead-c82a179822ed|plant_height|minimum|0.3048" = 0.6096,
+          "822db4e6-6f69-4b63-91d7-ce8cae7d8ef8|plant_height|maximum|7.62" = 25,
+          "822db4e6-6f69-4b63-91d7-ce8cae7d8ef8|plant_height|minimum|6.096" = 20,
+          "9a18385b-672e-4f97-8ff5-7bd0d3075a7a|plant_height|maximum|0.27" = 0.4572,
+          "9a18385b-672e-4f97-8ff5-7bd0d3075a7a|plant_height|minimum|0.18" = 0.3048,
+          "9ec0670f-587b-4a2c-b410-77eaf1242b4a|plant_height|maximum|0.18" = 0.1524,
+          "9f42d5ce-3390-42c0-ae45-c5d6e8a27bee|plant_height|maximum|0.35" = 0.15,
+          "9f912bc2-3269-409e-ad36-c32b6762025d|plant_height|maximum|1" = 1.5,
+          "9fe62f7f-28db-470d-bb99-7813d10b08ea|plant_height|maximum|2.2" = 4,
+          "a13c9f3e-52da-4d24-b1d3-9517ddff1581|plant_height|maximum|3.048" = 6.096,
+          "a497f74e-90d2-4ef9-965f-1d788c8f51d1|plant_height|maximum|0.15" = 0.3048,
+          "a6af87fc-b590-4baf-808f-37075cc4b910|stem_length|maximum|0.3048" = 1.829,
+          "a8eef89d-8504-4b0b-9586-cc464746d5bd|plant_height|maximum|4" = 1.3,
+          "aa6a9e64-6b0b-4793-956e-98fa3a64e903|plant_height|maximum|0.4" = 0.8,
+          "ab5cba43-d66a-4d01-8dda-65527f1f2c19|plant_height|maximum|20.4" = 4,
+          "b41a9eed-b5b6-4dbf-aa89-3cc892801edb|plant_height|maximum|0.17" = 0.2286,
+          "b586623a-f2c6-49f1-bd4f-a89d07ed1705|plant_width|maximum|0.76" = 0.3,
+          "b67d3e33-d2a6-46dd-abc2-78eed5b28b79|plant_height|maximum|0.0381" = 0.4572,
+          "b67d3e33-d2a6-46dd-abc2-78eed5b28b79|plant_height|minimum|0.0254" = 0.3048,
+          "b7a11a71-b700-473d-873a-afa14565f065|plant_height|maximum|2" = 3,
+          "be2dce9a-7676-4e93-b7d9-9afe50d01bce|plant_height|maximum|1.5" = 0.15,
+          "be9e19c2-8868-4211-814f-3da401dc7968|plant_height|maximum|1" = 1.219,
+          "c10d06f7-4884-49bd-be53-196057471b25|plant_height|maximum|7" = 6.096,
+          "c10d06f7-4884-49bd-be53-196057471b25|plant_height|minimum|5" = 4.572,
+          "c6a63ad1-400b-4043-8971-5c4673a257a9|plant_height|minimum|7" = 3,
+          "c7c0a662-3d04-4dfc-9f47-13227ad1c263|plant_height|maximum|1" = 1.219,
+          "cc07f4b3-d48e-410f-a401-d7fb8385775e|plant_height|maximum|1" = 0.3,
+          "d19cee77-5d70-4923-a845-ac148717da9c|plant_height|maximum|5" = 3,
+          "d1dc0bc8-3c0d-4c45-af13-6d9c548a7d08|plant_height|maximum|0.9144" = 0.0762,
+          "d1dc0bc8-3c0d-4c45-af13-6d9c548a7d08|plant_height|minimum|0.6096" = 0.0508,
+          "d6034fd0-14df-4563-bab6-c17d1788257b|plant_height|maximum|32" = 6.096,
+          "d777a0ac-ca2e-4542-ad85-a93de4f2862c|plant_height|maximum|0.9" = 0.762,
+          "d7f479bb-1d27-4340-baa9-1b3443a769fb|plant_height|maximum|0.9144" = 0.6096,
+          "d889412f-e561-46a2-b028-d083b6ed14a2|plant_height|maximum|1.5" = 0.15,
+          "d9d7d6b5-0d80-4399-b826-5ec8e457a52d|plant_height|maximum|0.6096" = 1.829,
+          "d9d7d6b5-0d80-4399-b826-5ec8e457a52d|plant_height|minimum|0.3048" = 1.524,
+          "e061d831-df11-4d69-91d5-56e1dadb64ad|plant_height|maximum|22.8" = 4.572,
+          "e0aa4f23-d235-4073-9a2d-4bbf313e8cee|plant_height|maximum|30" = 5,
+          "e422e398-8095-4e7a-91e2-a3fa7edff070|plant_height|maximum|0.1016" = 1.219,
+          "e422e398-8095-4e7a-91e2-a3fa7edff070|plant_height|minimum|0.0762" = 0.9144,
+          "e6eca42d-57dc-4296-8ac9-8e28fe2321ab|plant_height|maximum|5" = 3,
+          "ec3bcd4e-7904-414d-a854-22bf3d22b724|plant_height|maximum|0.5" = 0.05,
+          "f3e1b02c-85cb-4b6e-9b91-a0c050a68cfa|plant_height|maximum|2.1336" = 2.286,
+          "f3e1b02c-85cb-4b6e-9b91-a0c050a68cfa|plant_height|minimum|0.4572" = 1.524,
+          "f60141e7-1bd2-4ba3-a2bb-4269f1122375|plant_height|minimum|10.668" = 7.62,
+          "f737bcf7-84d7-4524-969d-e572631b50d2|stem_length|maximum|3" = 0.3,
+          "f87e7f64-de71-4a3f-9e70-738ad5d127f9|plant_height|maximum|0.05" = 0.5,
+          "fb0c26ec-20d8-440f-8264-54081f4eb9b6|plant_height|maximum|3" = 10,
+          "fdfbfbaa-b6a8-4f34-b6af-821b872e3bcf|plant_height|maximum|0.6096" = 0.0508,
+          "fdfbfbaa-b6a8-4f34-b6af-821b872e3bcf|plant_height|minimum|0.3048" = 0.0254,
+          "fe0b817d-c823-4692-92c6-f5038ad9f395|plant_height|maximum|4" = 1.4,
+          "ffb85f66-5310-415a-b9b3-e92d0b9b027b|plant_height|maximum|0.048" = 0.0762,
+          "ffb85f66-5310-415a-b9b3-e92d0b9b027b|plant_height|minimum|0.008" = 0.0127
+        )[.dup_key]), `height_final`)
+      ) %>%
+      select(-.dup_key) %>%
+      bind_rows(
+        filter(., `value_type` == "maximum", paste(`recordID`, `trait_name`, sep = "|") %in% names(c(
+          "03679831-b083-44de-b932-c7770c920db5|plant_height" = 3,
+          "9fe62f7f-28db-470d-bb99-7813d10b08ea|plant_height" = 2,
+          "ab5cba43-d66a-4d01-8dda-65527f1f2c19|plant_height" = 2,
+          "c7c0a662-3d04-4dfc-9f47-13227ad1c263|plant_height" = 0.9144
+        ))) %>%
+          mutate(`height_final` = unname(c(
+          "03679831-b083-44de-b932-c7770c920db5|plant_height" = 3,
+          "9fe62f7f-28db-470d-bb99-7813d10b08ea|plant_height" = 2,
+          "ab5cba43-d66a-4d01-8dda-65527f1f2c19|plant_height" = 2,
+          "c7c0a662-3d04-4dfc-9f47-13227ad1c263|plant_height" = 0.9144
+          )[paste(`recordID`, `trait_name`, sep = "|")]), `value_type` = "minimum")
+      ) %>%
+      mutate(
         .wm = stringr::str_match_all(sub("^[^_]*_[^_]*_[^_]*_", "", identifier),
           stringr::regex("([0-9][0-9.]*)(?:\\s*-\\s*([0-9][0-9.]*))?\\s*(mm|cm|dm|metres?|meters?|m|ft|feet|in)\\.?\\s*(wide|across|in diam|diam\\.?|diameter|in width|width|deep|below|broad|girth|dbh)\\b",
             ignore_case = TRUE)),
@@ -125,6 +267,15 @@ dataset:
     that equal a number the label text gives as a width, diameter, depth or DBH (e.g.
     "1.5 m wide", "80cm across", "12 m. dbh") are also set to NA by a rule in custom_R_code,
     as the parser took a width or girth as height (about 380 values in the 2026 data).
+    Sheets of one collection held in several herbaria (same collector, collector number
+    and date) were compared, and values on 88 sheets in 84 collections whose sheets
+    disagreed are corrected in custom_R_code, keyed by recordID, where a duplicate sheet's
+    label, the sheet image or the record's own label text settles the value - lost
+    hyphens or decimal points, feet, inches and metres confused, wrong metric conversions
+    on the label, and widths, trunk, bark, leaf or soil measurements or other plants'
+    heights read as the plant's height. Where the label gives no height for the plant
+    the value is set to NA. A further 222 disagreements, mostly under 2-fold, could not
+    be settled and are left as recorded; D. Falster 2026-11-26.
 identifiers:
 - var_in: recordID
   identifier_type: recordID
