@@ -1053,6 +1053,14 @@ Lopresti_2023_config <- dataset_configure("data/Lopresti_2023/metadata.yml", def
 Lopresti_2023_raw <- dataset_process("data/Lopresti_2023/data.csv", Lopresti_2023_config, schema, resource_metadata, unit_conversions)
 Lopresti_2023 <- dataset_update_taxonomy(Lopresti_2023_raw, taxon_list)
 
+Lopresti_2023_2_config <- dataset_configure("data/Lopresti_2023_2/metadata.yml", definitions)
+Lopresti_2023_2_raw <- dataset_process("data/Lopresti_2023_2/data.csv", Lopresti_2023_2_config, schema, resource_metadata, unit_conversions)
+Lopresti_2023_2 <- dataset_update_taxonomy(Lopresti_2023_2_raw, taxon_list)
+
+Lopresti_2026_config <- dataset_configure("data/Lopresti_2026/metadata.yml", definitions)
+Lopresti_2026_raw <- dataset_process("data/Lopresti_2026/data.csv", Lopresti_2026_config, schema, resource_metadata, unit_conversions)
+Lopresti_2026 <- dataset_update_taxonomy(Lopresti_2026_raw, taxon_list)
+
 Lord_1997_config <- dataset_configure("data/Lord_1997/metadata.yml", definitions)
 Lord_1997_raw <- dataset_process("data/Lord_1997/data.csv", Lord_1997_config, schema, resource_metadata, unit_conversions)
 Lord_1997 <- dataset_update_taxonomy(Lord_1997_raw, taxon_list)
@@ -1320,6 +1328,18 @@ Osmolovsky_2026 <- dataset_update_taxonomy(Osmolovsky_2026_raw, taxon_list)
 Ottaviani_2015_config <- dataset_configure("data/Ottaviani_2015/metadata.yml", definitions)
 Ottaviani_2015_raw <- dataset_process("data/Ottaviani_2015/data.csv", Ottaviani_2015_config, schema, resource_metadata, unit_conversions)
 Ottaviani_2015 <- dataset_update_taxonomy(Ottaviani_2015_raw, taxon_list)
+
+Paroissien_2021_config <- dataset_configure("data/Paroissien_2021/metadata.yml", definitions)
+Paroissien_2021_raw <- dataset_process("data/Paroissien_2021/data.csv", Paroissien_2021_config, schema, resource_metadata, unit_conversions)
+Paroissien_2021 <- dataset_update_taxonomy(Paroissien_2021_raw, taxon_list)
+
+Paroissien_2026_config <- dataset_configure("data/Paroissien_2026/metadata.yml", definitions)
+Paroissien_2026_raw <- dataset_process("data/Paroissien_2026/data.csv", Paroissien_2026_config, schema, resource_metadata, unit_conversions)
+Paroissien_2026 <- dataset_update_taxonomy(Paroissien_2026_raw, taxon_list)
+
+Paroissien_2026_2_config <- dataset_configure("data/Paroissien_2026_2/metadata.yml", definitions)
+Paroissien_2026_2_raw <- dataset_process("data/Paroissien_2026_2/data.csv", Paroissien_2026_2_config, schema, resource_metadata, unit_conversions)
+Paroissien_2026_2 <- dataset_update_taxonomy(Paroissien_2026_2_raw, taxon_list)
 
 Pate_1989_config <- dataset_configure("data/Pate_1989/metadata.yml", definitions)
 Pate_1989_raw <- dataset_process("data/Pate_1989/data.csv", Pate_1989_config, schema, resource_metadata, unit_conversions)
@@ -2287,6 +2307,8 @@ austraits_raw <- traits.use::bind_databases(
   Lim_2017,
   Liu_2023,
   Lopresti_2023,
+  Lopresti_2023_2,
+  Lopresti_2026,
   Lord_1997,
   Lunt_2012,
   Lusk_2010,
@@ -2354,6 +2376,9 @@ austraits_raw <- traits.use::bind_databases(
   Osborne_2014,
   Osmolovsky_2026,
   Ottaviani_2015,
+  Paroissien_2021,
+  Paroissien_2026,
+  Paroissien_2026_2,
   Pate_1989,
   Pate_1990,
   Pate_1998,
